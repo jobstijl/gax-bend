@@ -1,7 +1,10 @@
 # Numerics: measuring, proving and tracking rounding error
 
-Status: ADR-005, 2026-10-04. Step 1 (the theorem, no underflow) is proven: `proofs/err.bend`. The survey behind it is summarised at
-the end, with sources.
+Status: ADR-005, 2026-10-04. Step 1 (the theorem, no underflow) is
+proven: `proofs/err.bend`. A first measurement against it, with a
+double-F32 reference, is in "Measured so far" and checked by
+`tests/err_measure.bend`. The survey behind it is summarised at the end,
+with sources.
 
 ## Where we start
 
@@ -89,6 +92,58 @@ the model. Faithful rounding (u = 2⁻²³) is the easier first target.
     tracking ‖m m̃ − 1‖.
 - **CPU against GPU, bit for bit**, kernel by kernel (Q5 showed equality
   for one).
+
+### Measured so far
+
+`bench/measure_pga3d.bend` and `bench/measure_cga3d.bend`, 100 000 random
+inputs per kernel (seeded, in [−1, 1)). Each kernel runs as the same
+generic code at four instantiations:
+- F32, the result under test;
+- double-F32 (`num/df32.bend`: TwoSum, Veltkamp–Dekker TwoProd,
+  Joldes–Muller–Popescu's AccurateDWPlusDW and DWTimesDW), the reference;
+- double-F32 on |inputs| with `neg` the identity, giving |e|abs;
+- a depth semiring on Nat (add = 1 + max, mul = 1 + a + b), giving k.
+
+The bound used is k·u·|e|abs with u = 2⁻²⁴, which is h(k) to first order.
+
+| kernel | k | max err / bound | mean | max err / (u·\|e\|abs) |
+|---|---|---|---|---|
+| PGA3D Motor.transform.Point | 12 | 0.63 | 0.057 | 4.5 |
+| PGA3D Motor.gp.Motor | 4 | 0.79 | 0.10 | 2.4 |
+| PGA3D Point.vee.Point | 2 | 0.96 | 0.20 | 1.9 |
+
+What this shows:
+- No sample breaks the bound. So nothing contradicts the hypothesis that
+  F32 rounds by the standard model.
+- For short kernels the bound is nearly attained: 0.96 for the two-term
+  sums of `vee`.
+- For the long sandwich the observed growth (4.5 u) is well below the worst
+  case (12 u), between √k and k. This fits the probabilistic picture.
+
+CGA3D `Vector.dot.Vector` on embedded points: x near (R, R/2, −R/3) and y
+within 1 of x, k = 5.
+
+| R | max err / bound | max relative error | max κ |
+|---|---|---|---|
+| 1 | 0.48 | 8·10⁻⁴ | 4.6·10⁴ |
+| 100 | 0.25 | 1.4 | 1.0·10⁸ |
+| 10⁴ | 0.26 | 7.9·10⁴ | 2.9·10¹³ |
+
+The absolute bound holds at every scale. The relative error tracks κ: at
+R = 100 the worst sample's distance has no correct digits. This is the null-basis
+cancellation of de Haan et al. 2024, now with a proven bound. A caller
+that needs distances far from the origin should translate the points
+towards the origin first, or use double-F32.
+
+Caveat: the reference has its own error, about k·2⁻⁴⁸·|e|abs. That is
+2⁻²⁴ of the bound, so err / bound is exact to about 10⁻⁷. The relative
+error, though, is only reliable while κ ≪ 2⁴⁸/k. The R = 10⁴ row exceeds
+that, so its relative error is an order of magnitude only. The exact
+dyadic oracle (step 3) removes this caveat.
+
+The gate runs `tests/err_measure.bend`, 20 000 samples per kernel. It also
+runs a control: the same check against a quarter of the bound must fail,
+and it does.
 
 ## 3. Track (optional, after 1 and 2)
 

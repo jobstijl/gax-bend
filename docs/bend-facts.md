@@ -320,3 +320,22 @@ proven by `{==}` on the normaliser's output:
   example in well under a second.
 - A CGA3D motor-on-vector sandwich has 64 to 68 monomials per diagonal
   coefficient (`NormSH` leaves 0 to 76), so per-field terms stay small.
+
+## Q15. Measuring F32 error with generic kernels (2026-10-04)
+
+`bench/measure_pga3d.bend`: 3 × 100 000 samples, each running a kernel at
+F32, at double-F32 twice and at a Nat semiring. It takes 3.8 s compiled,
+single job.
+
+- **One kernel, four semantics.** Because kernels take `~T, ~zero, ~add,
+  ~mul, ~neg`, the reference, |e|abs and k all come from the code under
+  test, with no second implementation. k is the generic kernel run at
+  (Nat, add = 1 + max, mul = 1 + a + b, neg = id).
+- **Instance functions must be affine.** Passing `Dep.add(+a, +b)` as `~add`
+  fails ("expected `@_:Nat -> …`, observed `@+a:Nat -> …`"): a function
+  argument's type includes the `+` marks.
+- **No FMA in Bend.** TwoProd uses the Veltkamp split (constant 4097, 17
+  multiplications and additions in all). Without FMA, double-F32 costs
+  about 20 F32 operations per multiplication.
+- An accumulator chosen by `Bool.pick` appears in both arms, so it needs
+  `+`, like any reused Data value.
