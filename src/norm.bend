@@ -208,3 +208,50 @@ def Norm.left(t: Tm) -> List<&2, Mono>:
 # a == b as a term that is zero
 def Tm.diff(a: Tm, b: Tm) -> Tm:
   TAdd{a, TNeg{b}}
+
+# Identities over rings with a half
+# ---------------------------------
+# A change of basis such as CGA's null basis (eo = ½(e- - e+)) brings in
+# ½. With h one of the variables and h + h = 1 in the ring, every monomial
+# m h^k equals m h^(k+1) + m h^(k+1). NormH.left lifts every monomial to the
+# same power of h, so that opposite ones cancel, and then cancels. This
+# decides every identity that holds in all commutative rings with h = ½.
+
+def Vs.count(+v: Nat, vs: List<&2, Nat>) -> Nat:
+  match vs:
+    case Nil{}:
+      0n
+    case w <> t:
+      +c = Vs.count(v, t)
+      Bool.pick(Nat, Nat.is_eq(v, w), 1n+c, c)
+
+def Ms.maxh(+v: Nat, ms: List<&2, Mono>) -> Nat:
+  match ms:
+    case Nil{}:
+      0n
+    case Mono{s, vs} <> t:
+      Nat.max(Vs.count(v, vs), Ms.maxh(v, t))
+
+# 2^k copies of m with k more factors h
+def Mono.lift(+v: Nat, k: Nat, m: Mono) -> List<&2, Mono>:
+  match k:
+    case 0n:
+      [m]
+    case 1n+j:
+      match m:
+        case Mono{+s, vs}:
+          +l = Mono.lift(v, j, Mono{s, Vs.ins(v, vs)})
+          Ms.app(l, l)
+
+# every monomial lifted to the power n of h
+def Ms.lift(+v: Nat, +n: Nat, ms: List<&2, Mono>) -> List<&2, Mono>:
+  match ms:
+    case Nil{}:
+      Nil{}
+    case Mono{+s, +vs} <> t:
+      Ms.app(Mono.lift(v, Nat.sub(n, Vs.count(v, vs)), Mono{s, vs}), Ms.lift(v, n, t))
+
+# what is left of t after lifting and cancellation, with h variable v
+def NormH.left(+v: Nat, t: Tm) -> List<&2, Mono>:
+  +ms = Tm.flat(t)
+  Ms.cancel(Ms.lift(v, Ms.maxh(v, ms), ms), Nil{})

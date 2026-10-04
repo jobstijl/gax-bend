@@ -401,3 +401,117 @@ def Norm.eq(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~
         Equal.cong(T, T, w => add(w, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), zero,
           Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Tm.diff(a, b), ok)),
         z(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))
+
+# Identities over rings with a half
+# ---------------------------------
+# With h + h = 1 for the variable v (hh), lifting a monomial to a higher
+# power of h keeps its value, so NormH.left decides identities over ℤ[½].
+
+def Alg.unit_l(~T: Data, ~mul: T -> T -> T, ~one: T, ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), +a: T)
+  -> {mul(one, a) == a : T}:
+  Equal.trans(T, mul(one, a), mul(a, one), a, mc(one, a), u(a))
+
+def Sgn.add(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), s: Bool, +x: T, +y: T) -> {add(N.Sgn.ap(~T, ~neg, s, x), N.Sgn.ap(~T, ~neg, s, y)) == N.Sgn.ap(~T, ~neg, s, add(x, y)) : T}:
+  match s:
+    case False{}:
+      {==}
+    case True{}:
+      Equal.sym(T, neg(add(x, y)), add(neg(x), neg(y)), na(x, y))
+
+# h P + h P = (h + h) P = P
+def Mono.dup.prod(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +h: T, +p: T, hh: {add(h, h) == one : T}) -> {add(mul(h, p), mul(h, p)) == p : T}:
+  Equal.trans(T, add(mul(h, p), mul(h, p)), mul(add(h, h), p), p,
+    Equal.sym(T, mul(add(h, h), p), add(mul(h, p), mul(h, p)), Alg.dist_r(~T, ~add, ~mul, ~mc, ~dl, h, h, p)),
+    Equal.trans(T, mul(add(h, h), p), mul(one, p), p,
+      Equal.cong(T, T, w => mul(w, p), add(h, h), one, hh),
+      Alg.unit_l(~T, ~mul, ~one, ~mc, ~u, p)))
+
+# two copies of m with one more factor h make m
+def Mono.dup(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +s: Bool, +vs: List<&2, Nat>, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T})
+  -> {add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, N.Vs.ins(v, vs)}), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, N.Vs.ins(v, vs)})) == N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, vs}) : T}:
+  Equal.trans(T, add(N.Sgn.ap(~T, ~neg, s, N.Vs.prod(~T, ~zero, ~mul, ~one, env, N.Vs.ins(v, vs))), N.Sgn.ap(~T, ~neg, s, N.Vs.prod(~T, ~zero, ~mul, ~one, env, N.Vs.ins(v, vs)))), add(N.Sgn.ap(~T, ~neg, s, mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs))), N.Sgn.ap(~T, ~neg, s, mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)))), N.Sgn.ap(~T, ~neg, s, N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)),
+    B.Eq.cong2(T, T, T, p => q => add(N.Sgn.ap(~T, ~neg, s, p), N.Sgn.ap(~T, ~neg, s, q)), N.Vs.prod(~T, ~zero, ~mul, ~one, env, N.Vs.ins(v, vs)), mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)), N.Vs.prod(~T, ~zero, ~mul, ~one, env, N.Vs.ins(v, vs)), mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)),
+      Vs.ins.prod(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, vs), Vs.ins.prod(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, vs)),
+    Equal.trans(T, add(N.Sgn.ap(~T, ~neg, s, mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs))), N.Sgn.ap(~T, ~neg, s, mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)))), N.Sgn.ap(~T, ~neg, s, add(mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)), mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)))), N.Sgn.ap(~T, ~neg, s, N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)),
+      Sgn.add(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, s, mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)), mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs))),
+      Equal.cong(T, T, w => N.Sgn.ap(~T, ~neg, s, w), add(mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs)), mul(N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs))), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs),
+        Mono.dup.prod(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, N.Env.at(~T, ~zero, env, v), N.Vs.prod(~T, ~zero, ~mul, ~one, env, vs), hh))))
+
+def Mono.lift.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +k: Nat, m: N.Mono, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T})
+  -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, k, m)) == N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m) : T}:
+  match k:
+    case 0n:
+      Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m))
+    case 1n+j:
+      match m:
+        case N.Mono{+s, +vs}:
+          Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)}), N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)}))),
+            add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)})), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)}))), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, vs}),
+            Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)}), N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)})),
+            Equal.trans(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)})), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)}))),
+              add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, N.Vs.ins(v, vs)}), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, N.Vs.ins(v, vs)})), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, vs}),
+              B.Eq.cong2(T, T, T, p => q => add(p, q), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)})), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, N.Vs.ins(v, vs)}),
+                N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, j, N.Mono{s, N.Vs.ins(v, vs)})), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, N.Vs.ins(v, vs)}),
+                Mono.lift.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, j, N.Mono{s, N.Vs.ins(v, vs)}, hh), Mono.lift.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, j, N.Mono{s, N.Vs.ins(v, vs)}, hh)),
+              Mono.dup(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, s, vs, hh)))
+
+def Ms.lift.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +n: Nat, l: List<&2, N.Mono>, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T})
+  -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, n, l)) == N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, l) : T}:
+  match l:
+    case Nil{}:
+      {==}
+    case N.Mono{+s, +vs} <> +t:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(N.Mono.lift(v, Nat.sub(n, N.Vs.count(v, vs)), N.Mono{s, vs}), N.Ms.lift(v, n, t))),
+        add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, Nat.sub(n, N.Vs.count(v, vs)), N.Mono{s, vs})), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, n, t))), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, vs}), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)),
+        Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Mono.lift(v, Nat.sub(n, N.Vs.count(v, vs)), N.Mono{s, vs}), N.Ms.lift(v, n, t)),
+        B.Eq.cong2(T, T, T, p => q => add(p, q), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Mono.lift(v, Nat.sub(n, N.Vs.count(v, vs)), N.Mono{s, vs})), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, N.Mono{s, vs}),
+          N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, n, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t),
+          Mono.lift.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, Nat.sub(n, N.Vs.count(v, vs)), N.Mono{s, vs}, hh), Ms.lift.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, n, t, hh)))
+
+# a term whose monomials cancel after lifting is zero, given h + h = 1
+def NormH.zero(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +t: N.Tm, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T},
+  ok: {N.NormH.left(v, t) == Nil{} : List<&2, N.Mono>})
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) == zero : T}:
+  Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flat(t)), zero,
+    Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flat(t)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), Tm.flat.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t)),
+    Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flat(t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), zero,
+      Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flat(t)),
+        Ms.lift.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t), hh)),
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), zero), zero,
+        Equal.sym(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))),
+          Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))))),
+        Equal.trans(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.NormH.left(v, t)), zero,
+          Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.NormH.left(v, t)), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t))), zero),
+            Ms.cancel.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flat(t)), N.Tm.flat(t)), Nil{})),
+          Equal.cong(List<&2, N.Mono>, T, w => N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, w), N.NormH.left(v, t), Nil{}, ok)))))
+
+# two terms whose difference cancels after lifting are equal, given h + h = 1
+def NormH.eq(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +a: N.Tm, +b: N.Tm, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T},
+  ok: {N.NormH.left(v, N.Tm.diff(a, b)) == Nil{} : List<&2, N.Mono>})
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b) : T}:
+  Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+    Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), zero), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))),
+      Equal.sym(T, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), zero), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a))),
+      Equal.cong(T, T, w => add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), w), zero, add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)),
+        Equal.sym(T, add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), zero,
+          Equal.trans(T, add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), zero, ac(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), inv(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))),
+    Equal.trans(T, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), add(add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+      Equal.sym(T, add(add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), aa(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))),
+      Equal.trans(T, add(add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(zero, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+        Equal.cong(T, T, w => add(w, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), zero,
+          NormH.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, N.Tm.diff(a, b), hh, ok)),
+        z(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))

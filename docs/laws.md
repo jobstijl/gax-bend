@@ -85,10 +85,14 @@ in pairs. All of it is structural and runs in the checker on closed terms.
 |---|---|---|---|---|
 | `Norm.zero` | `Norm.left(t) == []` ⇒ eval(t) = 0 | add_assoc, add_comm, zero_l, add_inv, mul_assoc, mul_comm, unit_r, dist_l, neg_add, neg_mul_l, neg_neg | proof | `proofs/norm.bend` |
 | `Norm.eq` | `Norm.left(a − b) == []` ⇒ eval(a) = eval(b) | as `Norm.zero` | proof | `proofs/norm.bend` |
+| `NormH.zero`, `NormH.eq` | the same over rings with a half: given h + h = 1 for a variable h, `NormH.left` lifts every monomial to the highest power of h, using m hᵏ = m hᵏ⁺¹ + m hᵏ⁺¹, then cancels | as `Norm.zero`, plus h + h = 1 | proof | `proofs/norm.bend` |
 
 The method is complete for identities whose expanded monomials cancel
 with coefficients ±1, which covers every polynomial identity: a
-coefficient c is c copies of a monomial. Its cost is quadratic in the
+coefficient c is c copies of a monomial. `NormH` is complete for
+identities over ℤ[½]: after lifting to a common power hᴺ, a term is zero
+at h = ½ exactly when its monomials cancel. It is what CGA's null basis
+needs (eo = ½(e₋ − e₊)). Its cost is quadratic in the
 number of monomials. Uses: `tests/norm_identities.bend` (positive);
 `tests/neg/norm_wrong.bend` claims (x + y)² = x² + y², and the checker
 reports the two xy monomials left over.
@@ -202,6 +206,7 @@ Each one must fail to check. The gate fails if any passes.
 | `wedge_grade_off.bend` | e1 ∧ e2 is a 3-vector | grades |
 | `kernel_sign.bend` | a PGA3D kernel with one sign flipped equals the spec | kernels |
 | `norm_wrong.bend` | (x + y)² = x² + y² over any commutative ring | normaliser |
+| `normh_wrong.bend` | h a + h h a = a given h + h = 1 | normaliser with ½ |
 | `transform_support.bend` | a motor moves a point to one with x = 0 | sandwiches |
 | `transform_kernel_sign.bend` | the PGA3D motor-on-point kernel with one sign flipped in its weight entry equals the spec | sandwich kernels |
 | `commutator_not_halved.bend` | the line-line commutator kernel equals xy − yx (not its half) | halved products |
