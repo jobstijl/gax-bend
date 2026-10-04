@@ -339,3 +339,20 @@ single job.
   about 20 F32 operations per multiplication.
 - An accumulator chosen by `Bool.pick` appears in both arms, so it needs
   `+`, like any reused Data value.
+
+## Q16. Nat at run time (2026-10-05)
+
+- **Compiled Nat is a native immediate, capped at 2⁴⁸ − 1.** 2⁴⁰ + 7
+  computes instantly; 2¹⁰⁰ stops the program with `bend: a Nat past the
+  largest immediate 2^48-1`. In the checker Nat is unbounded, so proofs
+  over Nat and Int (`proofs/int.bend`) are unaffected.
+- So `Int` cannot serve as an exact oracle for F32 sums at run time. A
+  product of two significands already takes 48 bits, and aligning
+  exponents takes far more. An exact oracle needs limbs (U32 words, a
+  Kulisch accumulator).
+- **The checker does not compute with large naturals efficiently.**
+  Instantiating a kernel error law at T = Dy with a concrete ε = 2⁻²⁴
+  made the checker evaluate (1 + 2⁻²⁴)ᵏ exactly. It hit the 16 GB cap
+  after 9 minutes. With ε a parameter assuming only pos(ε), the same check
+  takes 1.4 s (`tests/dyadic_ring.bend`). So state theorems over symbolic
+  constants and let concrete values arrive at run time.

@@ -194,6 +194,9 @@ and it does.
    **Done**, without underflow; the underflow form (`Err.bound_u`) has
    no per-kernel law yet.
 3. Dyadic numbers and the exact oracle; a measurement report per algebra.
+   **Dyadics done and proven an ordered ring** (`proofs/dyadic.bend`).
+   The oracle is not: run-time Nat is capped at 2⁴⁸ (bend-facts Q16), so
+   exact F32 sums need limbs. The double-F32 reference stays meanwhile.
 4. The software float: faithful rounding proven against the model, then
    correct rounding. The largest piece; recent Lean work (TorchLean's
    IEEE32Exec, FloatLib, Tunnell's FP) is the closest reference.

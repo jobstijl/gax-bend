@@ -155,6 +155,29 @@ for every theorem stated over one. That includes the rounding-error
 theorem, once a rounding with ε > 0 exists, which needs the dyadic numbers
 built on Int.
 
+## Dyadic numbers (`src/dyadic.bend`)
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| Dy ring | every law the normaliser takes (`Dy.r.*`) | nothing | proof | `proofs/dyadic.bend` |
+| Dy order | `Dy.pos` closed under + and ×; \|x\| ≥ 0; \|x + y\| ≤ \|x\| + \|y\|; \|xy\| = \|x\|\|y\|; \|−x\| = \|x\| | nothing | proof | `proofs/dyadic.bend` |
+
+A dyadic is an integer or ±(2k + 1)/2^(e + 1): one spelling per value, so
+the laws are equalities. The proofs use pairs (m, e) for m/2^e, equivalent
+when m₁2^e₂ = m₂2^e₁:
+- the normaliser `Dy.of` keeps the value (`Of.val`);
+- equivalent pairs normalise alike (`Of.eq`, by lexicographic induction on
+  the exponents, with parities);
+- a dyadic's own pair normalises back to it (`Of.self`).
+
+The nested laws (associativity, distributivity) are Int identities modulo
+the values of the inner normal forms. They are proven with the generic
+normaliser at T = Int (`Rel.many`, proofs/equiv.bend), with multipliers
+worked out by hand; a wrong multiplier fails. `tests/dyadic_ring.bend`
+instantiates the normaliser at T = Dy, and a generated kernel error law at
+T = Dy for any ε ≥ 0. So binary floating point's exact values form a
+concrete ordered ring for every theorem stated over one.
+
 ## Rounding error (`src/err.bend`, ADR-005)
 
 | law | statement | assumes | tag | proof |
@@ -175,8 +198,8 @@ Native F32 meets the model by hypothesis, which `tests/err_measure.bend`
 samples. The software float is to meet it by proof (numerics.md, order of
 work). The proof writer is `gen/proofs/err.bend`. Breaking `Err.D` (η_a
 in place of η_m in the product case) makes the check fail. A negative
-control in the gate needs a concrete rounding, so it comes with the
-dyadic numbers.
+control in the gate needs a concrete rounding: the dyadics now give the
+ring (proofs/dyadic.bend), and a proven rounding on them is the next step.
 
 ## Generated kernels (Layer K)
 
