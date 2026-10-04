@@ -388,3 +388,267 @@ def Odd.Multivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T
   match a b:
     case K.Odd{a_e1, a_e2, a_e3, a_eo, a_ei, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e123oi} K.Multivector{b_s, b_e1, b_e2, b_e3, b_eo, b_ei, b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi, b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123, b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i, b_e123oi}:
       {==}
+
+def Scalar.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Scalar<T>)
+  -> {K.Pseudoscalar.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Scalar.raw(~T, ~neg, a))) == O.Scalar.dual(~T, ~zero, ~neg, a) : K.Pseudoscalar<T>}:
+  match a:
+    case K.Scalar{a_s}:
+      {==}
+
+def Scalar.dual.supp(~T: Data, ~neg: T -> T, a: K.Scalar<T>)
+  -> {K.Pseudoscalar.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Scalar.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Scalar{a_s}:
+      {==}
+
+def Vector.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Vector<T>)
+  -> {K.Quadvector.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Vector.raw(~T, ~neg, a))) == O.Vector.dual(~T, ~zero, ~neg, a) : K.Quadvector<T>}:
+  match a:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei}:
+      {==}
+
+def Vector.dual.supp(~T: Data, ~neg: T -> T, a: K.Vector<T>)
+  -> {K.Quadvector.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Vector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei}:
+      {==}
+
+def Twist.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Twist<T>)
+  -> {K.Trivector.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Twist.raw(~T, ~neg, a))) == O.Twist.dual(~T, ~zero, ~neg, a) : K.Trivector<T>}:
+  match a:
+    case K.Twist{a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i}:
+      {==}
+
+def Twist.dual.supp(~T: Data, ~neg: T -> T, a: K.Twist<T>)
+  -> {K.Trivector.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Twist.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Twist{a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i}:
+      {==}
+
+def Bivector.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Bivector<T>)
+  -> {K.Trivector.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Bivector.raw(~T, ~neg, a))) == O.Bivector.dual(~T, ~zero, ~neg, a) : K.Trivector<T>}:
+  match a:
+    case K.Bivector{a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi}:
+      {==}
+
+def Bivector.dual.supp(~T: Data, ~neg: T -> T, a: K.Bivector<T>)
+  -> {K.Trivector.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Bivector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Bivector{a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi}:
+      {==}
+
+def Trivector.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Trivector<T>)
+  -> {K.Bivector.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Trivector.raw(~T, ~neg, a))) == O.Trivector.dual(~T, ~zero, ~neg, a) : K.Bivector<T>}:
+  match a:
+    case K.Trivector{a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123}:
+      {==}
+
+def Trivector.dual.supp(~T: Data, ~neg: T -> T, a: K.Trivector<T>)
+  -> {K.Bivector.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Trivector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Trivector{a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123}:
+      {==}
+
+def Quadvector.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Quadvector<T>)
+  -> {K.Vector.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Quadvector.raw(~T, ~neg, a))) == O.Quadvector.dual(~T, ~zero, ~neg, a) : K.Vector<T>}:
+  match a:
+    case K.Quadvector{a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Quadvector.dual.supp(~T: Data, ~neg: T -> T, a: K.Quadvector<T>)
+  -> {K.Vector.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Quadvector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Quadvector{a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Pseudoscalar.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Pseudoscalar.raw(~T, ~neg, a))) == O.Pseudoscalar.dual(~T, ~zero, ~neg, a) : K.Scalar<T>}:
+  match a:
+    case K.Pseudoscalar{a_e123oi}:
+      {==}
+
+def Pseudoscalar.dual.supp(~T: Data, ~neg: T -> T, a: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Pseudoscalar.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Pseudoscalar{a_e123oi}:
+      {==}
+
+def Motor.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Motor<T>)
+  -> {K.Odd.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Motor.raw(~T, ~neg, a))) == O.Motor.dual(~T, ~zero, ~neg, a) : K.Odd<T>}:
+  match a:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i}:
+      {==}
+
+def Motor.dual.supp(~T: Data, ~neg: T -> T, a: K.Motor<T>)
+  -> {K.Odd.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Motor.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i}:
+      {==}
+
+def Even.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Even<T>)
+  -> {K.Odd.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Even.raw(~T, ~neg, a))) == O.Even.dual(~T, ~zero, ~neg, a) : K.Odd<T>}:
+  match a:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Even.dual.supp(~T: Data, ~neg: T -> T, a: K.Even<T>)
+  -> {K.Odd.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Even.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Odd.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Odd<T>)
+  -> {K.Even.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Odd.raw(~T, ~neg, a))) == O.Odd.dual(~T, ~zero, ~neg, a) : K.Even<T>}:
+  match a:
+    case K.Odd{a_e1, a_e2, a_e3, a_eo, a_ei, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e123oi}:
+      {==}
+
+def Odd.dual.supp(~T: Data, ~neg: T -> T, a: K.Odd<T>)
+  -> {K.Even.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Odd.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Odd{a_e1, a_e2, a_e3, a_eo, a_ei, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e123oi}:
+      {==}
+
+def Multivector.dual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>)
+  -> {K.Multivector.of_raw(~T, ~zero, ~neg, S.MV.rcomp(~T, ~neg, 5n, K.Multivector.raw(~T, ~neg, a))) == O.Multivector.dual(~T, ~zero, ~neg, a) : K.Multivector<T>}:
+  match a:
+    case K.Multivector{a_s, a_e1, a_e2, a_e3, a_eo, a_ei, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i, a_e123oi}:
+      {==}
+
+def Multivector.dual.supp(~T: Data, ~neg: T -> T, a: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.rcomp(~T, ~neg, 5n, K.Multivector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Multivector{a_s, a_e1, a_e2, a_e3, a_eo, a_ei, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i, a_e123oi}:
+      {==}
+
+def Scalar.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Scalar<T>)
+  -> {K.Pseudoscalar.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Scalar.raw(~T, ~neg, a))) == O.Scalar.undual(~T, ~zero, ~neg, a) : K.Pseudoscalar<T>}:
+  match a:
+    case K.Scalar{a_s}:
+      {==}
+
+def Scalar.undual.supp(~T: Data, ~neg: T -> T, a: K.Scalar<T>)
+  -> {K.Pseudoscalar.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Scalar.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Scalar{a_s}:
+      {==}
+
+def Vector.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Vector<T>)
+  -> {K.Quadvector.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Vector.raw(~T, ~neg, a))) == O.Vector.undual(~T, ~zero, ~neg, a) : K.Quadvector<T>}:
+  match a:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei}:
+      {==}
+
+def Vector.undual.supp(~T: Data, ~neg: T -> T, a: K.Vector<T>)
+  -> {K.Quadvector.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Vector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei}:
+      {==}
+
+def Twist.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Twist<T>)
+  -> {K.Trivector.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Twist.raw(~T, ~neg, a))) == O.Twist.undual(~T, ~zero, ~neg, a) : K.Trivector<T>}:
+  match a:
+    case K.Twist{a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i}:
+      {==}
+
+def Twist.undual.supp(~T: Data, ~neg: T -> T, a: K.Twist<T>)
+  -> {K.Trivector.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Twist.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Twist{a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i}:
+      {==}
+
+def Bivector.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Bivector<T>)
+  -> {K.Trivector.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Bivector.raw(~T, ~neg, a))) == O.Bivector.undual(~T, ~zero, ~neg, a) : K.Trivector<T>}:
+  match a:
+    case K.Bivector{a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi}:
+      {==}
+
+def Bivector.undual.supp(~T: Data, ~neg: T -> T, a: K.Bivector<T>)
+  -> {K.Trivector.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Bivector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Bivector{a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi}:
+      {==}
+
+def Trivector.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Trivector<T>)
+  -> {K.Bivector.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Trivector.raw(~T, ~neg, a))) == O.Trivector.undual(~T, ~zero, ~neg, a) : K.Bivector<T>}:
+  match a:
+    case K.Trivector{a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123}:
+      {==}
+
+def Trivector.undual.supp(~T: Data, ~neg: T -> T, a: K.Trivector<T>)
+  -> {K.Bivector.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Trivector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Trivector{a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123}:
+      {==}
+
+def Quadvector.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Quadvector<T>)
+  -> {K.Vector.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Quadvector.raw(~T, ~neg, a))) == O.Quadvector.undual(~T, ~zero, ~neg, a) : K.Vector<T>}:
+  match a:
+    case K.Quadvector{a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Quadvector.undual.supp(~T: Data, ~neg: T -> T, a: K.Quadvector<T>)
+  -> {K.Vector.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Quadvector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Quadvector{a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Pseudoscalar.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Pseudoscalar.raw(~T, ~neg, a))) == O.Pseudoscalar.undual(~T, ~zero, ~neg, a) : K.Scalar<T>}:
+  match a:
+    case K.Pseudoscalar{a_e123oi}:
+      {==}
+
+def Pseudoscalar.undual.supp(~T: Data, ~neg: T -> T, a: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Pseudoscalar.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Pseudoscalar{a_e123oi}:
+      {==}
+
+def Motor.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Motor<T>)
+  -> {K.Odd.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Motor.raw(~T, ~neg, a))) == O.Motor.undual(~T, ~zero, ~neg, a) : K.Odd<T>}:
+  match a:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i}:
+      {==}
+
+def Motor.undual.supp(~T: Data, ~neg: T -> T, a: K.Motor<T>)
+  -> {K.Odd.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Motor.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i}:
+      {==}
+
+def Even.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Even<T>)
+  -> {K.Odd.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Even.raw(~T, ~neg, a))) == O.Even.undual(~T, ~zero, ~neg, a) : K.Odd<T>}:
+  match a:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Even.undual.supp(~T: Data, ~neg: T -> T, a: K.Even<T>)
+  -> {K.Odd.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Even.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i}:
+      {==}
+
+def Odd.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Odd<T>)
+  -> {K.Even.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Odd.raw(~T, ~neg, a))) == O.Odd.undual(~T, ~zero, ~neg, a) : K.Even<T>}:
+  match a:
+    case K.Odd{a_e1, a_e2, a_e3, a_eo, a_ei, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e123oi}:
+      {==}
+
+def Odd.undual.supp(~T: Data, ~neg: T -> T, a: K.Odd<T>)
+  -> {K.Even.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Odd.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Odd{a_e1, a_e2, a_e3, a_eo, a_ei, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e123oi}:
+      {==}
+
+def Multivector.undual.ok(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>)
+  -> {K.Multivector.of_raw(~T, ~zero, ~neg, S.MV.lcomp(~T, ~neg, 5n, K.Multivector.raw(~T, ~neg, a))) == O.Multivector.undual(~T, ~zero, ~neg, a) : K.Multivector<T>}:
+  match a:
+    case K.Multivector{a_s, a_e1, a_e2, a_e3, a_eo, a_ei, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i, a_e123oi}:
+      {==}
+
+def Multivector.undual.supp(~T: Data, ~neg: T -> T, a: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.lcomp(~T, ~neg, 5n, K.Multivector.raw(~T, ~neg, a))) == S.MV.zero(T, 5n) : S.MV(T, 5n)}:
+  match a:
+    case K.Multivector{a_s, a_e1, a_e2, a_e3, a_eo, a_ei, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23o, a_e31o, a_e12o, a_e23i, a_e31i, a_e12i, a_e1oi, a_e2oi, a_e3oi, a_e123, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i, a_e123oi}:
+      {==}

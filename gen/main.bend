@@ -5,6 +5,7 @@
 import Base
 import ./gen.bend as G
 import ./specs.bend as Sp
+import ./equiv.bend as EQ
 
 def Gen.put.fin(r: File & Result<&1, &1, U32 & String, Unit>) -> IO(Unit):
   (f, res) = r
@@ -71,3 +72,7 @@ def main() -> IO(Unit):
     Gen.emit(out ++ "/cga3d", G.Gen.out(Sp.CGA3D(), Gen.ops(), Gen.unary()))
     Gen.emit(out ++ "/stap", G.Gen.out(Sp.STAP(), Gen.ops(), Gen.unary()))
     Gen.emit(out ++ "/csta", G.Gen.out(Sp.CSTA(), Gen.ops(), Gen.unary()))
+    Gen.put(out ++ "/pga3d/equiv.bend", EQ.Eq.module(Sp.PGA3D(), EQ.laws.pga3d()))
+    Gen.put(out ++ "/vga3d/equiv.bend", EQ.Eq.module(Sp.VGA3D(), EQ.laws.vga3d()))
+    Gen.put(out ++ "/pga2d/equiv.bend", EQ.Eq.module(Sp.PGA2D(), EQ.laws.pga2d()))
+    Gen.put(out ++ "/sta/equiv.bend", EQ.Eq.module(Sp.STA(), EQ.laws.sta()))

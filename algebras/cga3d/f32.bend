@@ -3928,3 +3928,69 @@ def Odd.prepare.Multivector(a: K.Odd<F32>) -> O.OddMultivectorMap<F32>:
 
 def Odd.Multivector.apply(m: O.OddMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Odd.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
+def Scalar.dual(a: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Vector.dual(a: K.Vector<F32>) -> K.Quadvector<F32>:
+  O.Vector.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Twist.dual(a: K.Twist<F32>) -> K.Trivector<F32>:
+  O.Twist.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Bivector.dual(a: K.Bivector<F32>) -> K.Trivector<F32>:
+  O.Bivector.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Trivector.dual(a: K.Trivector<F32>) -> K.Bivector<F32>:
+  O.Trivector.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Quadvector.dual(a: K.Quadvector<F32>) -> K.Vector<F32>:
+  O.Quadvector.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Pseudoscalar.dual(a: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Motor.dual(a: K.Motor<F32>) -> K.Odd<F32>:
+  O.Motor.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Even.dual(a: K.Even<F32>) -> K.Odd<F32>:
+  O.Even.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Odd.dual(a: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Multivector.dual(a: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dual(~F32, ~0.0, ~F32.neg, a)
+
+def Scalar.undual(a: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Vector.undual(a: K.Vector<F32>) -> K.Quadvector<F32>:
+  O.Vector.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Twist.undual(a: K.Twist<F32>) -> K.Trivector<F32>:
+  O.Twist.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Bivector.undual(a: K.Bivector<F32>) -> K.Trivector<F32>:
+  O.Bivector.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Trivector.undual(a: K.Trivector<F32>) -> K.Bivector<F32>:
+  O.Trivector.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Quadvector.undual(a: K.Quadvector<F32>) -> K.Vector<F32>:
+  O.Quadvector.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Pseudoscalar.undual(a: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Motor.undual(a: K.Motor<F32>) -> K.Odd<F32>:
+  O.Motor.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Even.undual(a: K.Even<F32>) -> K.Odd<F32>:
+  O.Even.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Odd.undual(a: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Multivector.undual(a: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.undual(~F32, ~0.0, ~F32.neg, a)

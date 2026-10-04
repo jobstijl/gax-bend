@@ -34,6 +34,18 @@ def Scalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Scalar<A>) -> Scalar<B>:
     case Scalar{s}:
       Scalar{f(s)}
 
+def Scalar.raw(~T: Data, ~neg: T -> T, x: Scalar<T>) -> S.MV(T, 6n):
+  match x:
+    case Scalar{s}:
+      S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{s}}}}}}}
+
+def Scalar.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Scalar<T>:
+  Scalar{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], False{}, t)}
+
+def Scalar.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], t)
+
 type Vector<-T: Data> is Data:
   Vector{e1: T, e2: T, e3: T, e4: T, eo: T, ei: T}
 
@@ -90,6 +102,23 @@ def Vector.map(~A: Data, ~B: Data, ~f: A -> B, x: Vector<A>) -> Vector<B>:
   match x:
     case Vector{e1, e2, e3, e4, eo, ei}:
       Vector{f(e1), f(e2), f(e3), f(e4), f(eo), f(ei)}
+
+def Vector.raw(~T: Data, ~neg: T -> T, x: Vector<T>) -> S.MV(T, 6n):
+  match x:
+    case Vector{e1, e2, e3, e4, eo, ei}:
+      S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e1}}}}}}, S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e2}}}}}, S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e3}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{e4}}}, S.N{S.N{S.LZ{}, S.L{eo}}, S.N{S.L{ei}, S.LZ{}}}}}}}
+
+def Vector.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Vector<T>:
+  Vector{
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, True{}], False{}, t)}
+
+def Vector.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, True{}], t))))))
 
 type Twist<-T: Data> is Data:
   Twist{e23: T, e31: T, e12: T, e41: T, e42: T, e43: T, e1i: T, e2i: T, e3i: T, e4i: T}
@@ -171,6 +200,27 @@ def Twist.map(~A: Data, ~B: Data, ~f: A -> B, x: Twist<A>) -> Twist<B>:
   match x:
     case Twist{e23, e31, e12, e41, e42, e43, e1i, e2i, e3i, e4i}:
       Twist{f(e23), f(e31), f(e12), f(e41), f(e42), f(e43), f(e1i), f(e2i), f(e3i), f(e4i)}
+
+def Twist.raw(~T: Data, ~neg: T -> T, x: Twist<T>) -> S.MV(T, 6n):
+  match x:
+    case Twist{e23, e31, e12, e41, e42, e43, e1i, e2i, e3i, e4i}:
+      S.N{S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e12}}}}}, S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e31)}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e41)}}}, S.N{S.NZ{}, S.N{S.L{e1i}, S.LZ{}}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e23}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e42)}}}, S.N{S.NZ{}, S.N{S.L{e2i}, S.LZ{}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e43)}}}, S.N{S.NZ{}, S.N{S.L{e3i}, S.LZ{}}}}, S.N{S.N{S.NZ{}, S.N{S.L{e4i}, S.LZ{}}}, S.NZ{}}}}}
+
+def Twist.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Twist<T>:
+  Twist{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], False{}, t)}
+
+def Twist.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], t))))))))))
 
 type Bivector<-T: Data> is Data:
   Bivector{e23: T, e31: T, e12: T, e41: T, e42: T, e43: T, e1o: T, e2o: T, e3o: T, e4o: T, e1i: T, e2i: T, e3i: T, e4i: T, eoi: T}
@@ -282,6 +332,32 @@ def Bivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Bivector<A>) -> Bivector<B>:
   match x:
     case Bivector{e23, e31, e12, e41, e42, e43, e1o, e2o, e3o, e4o, e1i, e2i, e3i, e4i, eoi}:
       Bivector{f(e23), f(e31), f(e12), f(e41), f(e42), f(e43), f(e1o), f(e2o), f(e3o), f(e4o), f(e1i), f(e2i), f(e3i), f(e4i), f(eoi)}
+
+def Bivector.raw(~T: Data, ~neg: T -> T, x: Bivector<T>) -> S.MV(T, 6n):
+  match x:
+    case Bivector{e23, e31, e12, e41, e42, e43, e1o, e2o, e3o, e4o, e1i, e2i, e3i, e4i, eoi}:
+      S.N{S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e12}}}}}, S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e31)}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e41)}}}, S.N{S.N{S.LZ{}, S.L{e1o}}, S.N{S.L{e1i}, S.LZ{}}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e23}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e42)}}}, S.N{S.N{S.LZ{}, S.L{e2o}}, S.N{S.L{e2i}, S.LZ{}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e43)}}}, S.N{S.N{S.LZ{}, S.L{e3o}}, S.N{S.L{e3i}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{e4o}}, S.N{S.L{e4i}, S.LZ{}}}, S.N{S.N{S.L{eoi}, S.LZ{}}, S.NZ{}}}}}}
+
+def Bivector.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Bivector<T>:
+  Bivector{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, True{}, True{}], False{}, t)}
+
+def Bivector.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, True{}, True{}], t)))))))))))))))
 
 type Trivector<-T: Data> is Data:
   Trivector{e234: T, e314: T, e124: T, e123: T, e23o: T, e31o: T, e12o: T, e41o: T, e42o: T, e43o: T, e23i: T, e31i: T, e12i: T, e41i: T, e42i: T, e43i: T, e1oi: T, e2oi: T, e3oi: T, e4oi: T}
@@ -424,6 +500,37 @@ def Trivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Trivector<A>) -> Trivector<
     case Trivector{e234, e314, e124, e123, e23o, e31o, e12o, e41o, e42o, e43o, e23i, e31i, e12i, e41i, e42i, e43i, e1oi, e2oi, e3oi, e4oi}:
       Trivector{f(e234), f(e314), f(e124), f(e123), f(e23o), f(e31o), f(e12o), f(e41o), f(e42o), f(e43o), f(e23i), f(e31i), f(e12i), f(e41i), f(e42i), f(e43i), f(e1oi), f(e2oi), f(e3oi), f(e4oi)}
 
+def Trivector.raw(~T: Data, ~neg: T -> T, x: Trivector<T>) -> S.MV(T, 6n):
+  match x:
+    case Trivector{e234, e314, e124, e123, e23o, e31o, e12o, e41o, e42o, e43o, e23i, e31i, e12i, e41i, e42i, e43i, e1oi, e2oi, e3oi, e4oi}:
+      S.N{S.N{S.N{S.N{S.NZ{}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e123}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{e124}}}, S.N{S.N{S.LZ{}, S.L{e12o}}, S.N{S.L{e12i}, S.LZ{}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e314)}}}, S.N{S.N{S.LZ{}, S.L{neg(e31o)}}, S.N{S.L{neg(e31i)}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{neg(e41o)}}, S.N{S.L{neg(e41i)}, S.LZ{}}}, S.N{S.N{S.L{e1oi}, S.LZ{}}, S.NZ{}}}}}, S.N{S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{e234}}}, S.N{S.N{S.LZ{}, S.L{e23o}}, S.N{S.L{e23i}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{neg(e42o)}}, S.N{S.L{neg(e42i)}, S.LZ{}}}, S.N{S.N{S.L{e2oi}, S.LZ{}}, S.NZ{}}}}, S.N{S.N{S.N{S.N{S.LZ{}, S.L{neg(e43o)}}, S.N{S.L{neg(e43i)}, S.LZ{}}}, S.N{S.N{S.L{e3oi}, S.LZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.L{e4oi}, S.LZ{}}, S.NZ{}}, S.NZ{}}}}}
+
+def Trivector.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Trivector<T>:
+  Trivector{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, True{}, True{}], False{}, t)}
+
+def Trivector.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, True{}, True{}], t))))))))))))))))))))
+
 type Quadvector<-T: Data> is Data:
   Quadvector{e1234: T, e234o: T, e314o: T, e124o: T, e123o: T, e234i: T, e314i: T, e124i: T, e123i: T, e23oi: T, e31oi: T, e12oi: T, e41oi: T, e42oi: T, e43oi: T}
 
@@ -535,6 +642,32 @@ def Quadvector.map(~A: Data, ~B: Data, ~f: A -> B, x: Quadvector<A>) -> Quadvect
     case Quadvector{e1234, e234o, e314o, e124o, e123o, e234i, e314i, e124i, e123i, e23oi, e31oi, e12oi, e41oi, e42oi, e43oi}:
       Quadvector{f(e1234), f(e234o), f(e314o), f(e124o), f(e123o), f(e234i), f(e314i), f(e124i), f(e123i), f(e23oi), f(e31oi), f(e12oi), f(e41oi), f(e42oi), f(e43oi)}
 
+def Quadvector.raw(~T: Data, ~neg: T -> T, x: Quadvector<T>) -> S.MV(T, 6n):
+  match x:
+    case Quadvector{e1234, e234o, e314o, e124o, e123o, e234i, e314i, e124i, e123i, e23oi, e31oi, e12oi, e41oi, e42oi, e43oi}:
+      S.N{S.N{S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{e1234}}}, S.N{S.N{S.LZ{}, S.L{e123o}}, S.N{S.L{e123i}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{e124o}}, S.N{S.L{e124i}, S.LZ{}}}, S.N{S.N{S.L{e12oi}, S.LZ{}}, S.NZ{}}}}, S.N{S.N{S.N{S.N{S.LZ{}, S.L{neg(e314o)}}, S.N{S.L{neg(e314i)}, S.LZ{}}}, S.N{S.N{S.L{neg(e31oi)}, S.LZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.L{neg(e41oi)}, S.LZ{}}, S.NZ{}}, S.NZ{}}}}, S.N{S.N{S.N{S.N{S.N{S.LZ{}, S.L{e234o}}, S.N{S.L{e234i}, S.LZ{}}}, S.N{S.N{S.L{e23oi}, S.LZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.L{neg(e42oi)}, S.LZ{}}, S.NZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.N{S.L{neg(e43oi)}, S.LZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}}}
+
+def Quadvector.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Quadvector<T>:
+  Quadvector{
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, True{}, True{}], True{}, t)}
+
+def Quadvector.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, True{}, True{}], t)))))))))))))))
+
 type Quintvector<-T: Data> is Data:
   Quintvector{e234oi: T, e314oi: T, e124oi: T, e123oi: T, e1234o: T, e1234i: T}
 
@@ -592,6 +725,23 @@ def Quintvector.map(~A: Data, ~B: Data, ~f: A -> B, x: Quintvector<A>) -> Quintv
     case Quintvector{e234oi, e314oi, e124oi, e123oi, e1234o, e1234i}:
       Quintvector{f(e234oi), f(e314oi), f(e124oi), f(e123oi), f(e1234o), f(e1234i)}
 
+def Quintvector.raw(~T: Data, ~neg: T -> T, x: Quintvector<T>) -> S.MV(T, 6n):
+  match x:
+    case Quintvector{e234oi, e314oi, e124oi, e123oi, e1234o, e1234i}:
+      S.N{S.N{S.N{S.N{S.N{S.N{S.LZ{}, S.L{e1234o}}, S.N{S.L{e1234i}, S.LZ{}}}, S.N{S.N{S.L{e123oi}, S.LZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.L{e124oi}, S.LZ{}}, S.NZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.N{S.L{neg(e314oi)}, S.LZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}}, S.N{S.N{S.N{S.N{S.N{S.L{e234oi}, S.LZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}}
+
+def Quintvector.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Quintvector<T>:
+  Quintvector{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, True{}], False{}, t)}
+
+def Quintvector.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, True{}], t))))))
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e1234oi: T}
 
@@ -618,6 +768,18 @@ def Pseudoscalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Pseudoscalar<A>) -> Pseu
   match x:
     case Pseudoscalar{e1234oi}:
       Pseudoscalar{f(e1234oi)}
+
+def Pseudoscalar.raw(~T: Data, ~neg: T -> T, x: Pseudoscalar<T>) -> S.MV(T, 6n):
+  match x:
+    case Pseudoscalar{e1234oi}:
+      S.N{S.N{S.N{S.N{S.N{S.N{S.L{e1234oi}, S.LZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}, S.NZ{}}
+
+def Pseudoscalar.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Pseudoscalar<T>:
+  Pseudoscalar{
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, True{}, True{}], False{}, t)}
+
+def Pseudoscalar.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, True{}, True{}], t)
 
 type Motor<-T: Data> is Data:
   Motor{s: T, e23: T, e31: T, e12: T, e41: T, e42: T, e43: T, e1i: T, e2i: T, e3i: T, e4i: T, e234i: T, e314i: T, e124i: T, e123i: T, e1234: T}
@@ -735,6 +897,33 @@ def Motor.map(~A: Data, ~B: Data, ~f: A -> B, x: Motor<A>) -> Motor<B>:
   match x:
     case Motor{s, e23, e31, e12, e41, e42, e43, e1i, e2i, e3i, e4i, e234i, e314i, e124i, e123i, e1234}:
       Motor{f(s), f(e23), f(e31), f(e12), f(e41), f(e42), f(e43), f(e1i), f(e2i), f(e3i), f(e4i), f(e234i), f(e314i), f(e124i), f(e123i), f(e1234)}
+
+def Motor.raw(~T: Data, ~neg: T -> T, x: Motor<T>) -> S.MV(T, 6n):
+  match x:
+    case Motor{s, e23, e31, e12, e41, e42, e43, e1i, e2i, e3i, e4i, e234i, e314i, e124i, e123i, e1234}:
+      S.N{S.N{S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{e1234}}}, S.N{S.NZ{}, S.N{S.L{e123i}, S.LZ{}}}}, S.N{S.N{S.NZ{}, S.N{S.L{e124i}, S.LZ{}}}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e12}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.L{neg(e314i)}, S.LZ{}}}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e31)}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e41)}}}, S.N{S.NZ{}, S.N{S.L{e1i}, S.LZ{}}}}}}, S.N{S.N{S.N{S.N{S.NZ{}, S.N{S.L{e234i}, S.LZ{}}}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{e23}}}}, S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e42)}}}, S.N{S.NZ{}, S.N{S.L{e2i}, S.LZ{}}}}}, S.N{S.N{S.N{S.NZ{}, S.N{S.LZ{}, S.L{neg(e43)}}}, S.N{S.NZ{}, S.N{S.L{e3i}, S.LZ{}}}}, S.N{S.N{S.NZ{}, S.N{S.L{e4i}, S.LZ{}}}, S.N{S.NZ{}, S.N{S.LZ{}, S.L{s}}}}}}}
+
+def Motor.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Motor<T>:
+  Motor{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], False{}, t)}
+
+def Motor.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], t))))))))))))))))
 
 type Even<-T: Data> is Data:
   Even{s: T, e23: T, e31: T, e12: T, e41: T, e42: T, e43: T, e1o: T, e2o: T, e3o: T, e4o: T, e1i: T, e2i: T, e3i: T, e4i: T, eoi: T, e1234: T, e234o: T, e314o: T, e124o: T, e123o: T, e234i: T, e314i: T, e124i: T, e123i: T, e23oi: T, e31oi: T, e12oi: T, e41oi: T, e42oi: T, e43oi: T, e1234oi: T}
@@ -949,6 +1138,49 @@ def Even.map(~A: Data, ~B: Data, ~f: A -> B, x: Even<A>) -> Even<B>:
     case Even{s, e23, e31, e12, e41, e42, e43, e1o, e2o, e3o, e4o, e1i, e2i, e3i, e4i, eoi, e1234, e234o, e314o, e124o, e123o, e234i, e314i, e124i, e123i, e23oi, e31oi, e12oi, e41oi, e42oi, e43oi, e1234oi}:
       Even{f(s), f(e23), f(e31), f(e12), f(e41), f(e42), f(e43), f(e1o), f(e2o), f(e3o), f(e4o), f(e1i), f(e2i), f(e3i), f(e4i), f(eoi), f(e1234), f(e234o), f(e314o), f(e124o), f(e123o), f(e234i), f(e314i), f(e124i), f(e123i), f(e23oi), f(e31oi), f(e12oi), f(e41oi), f(e42oi), f(e43oi), f(e1234oi)}
 
+def Even.raw(~T: Data, ~neg: T -> T, x: Even<T>) -> S.MV(T, 6n):
+  match x:
+    case Even{s, e23, e31, e12, e41, e42, e43, e1o, e2o, e3o, e4o, e1i, e2i, e3i, e4i, eoi, e1234, e234o, e314o, e124o, e123o, e234i, e314i, e124i, e123i, e23oi, e31oi, e12oi, e41oi, e42oi, e43oi, e1234oi}:
+      S.N{S.N{S.N{S.N{S.N{S.N{S.L{e1234oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e1234}}}, S.N{S.N{S.LZ{}, S.L{e123o}}, S.N{S.L{e123i}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{e124o}}, S.N{S.L{e124i}, S.LZ{}}}, S.N{S.N{S.L{e12oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e12}}}}}, S.N{S.N{S.N{S.N{S.LZ{}, S.L{neg(e314o)}}, S.N{S.L{neg(e314i)}, S.LZ{}}}, S.N{S.N{S.L{neg(e31oi)}, S.LZ{}}, S.N{S.LZ{}, S.L{neg(e31)}}}}, S.N{S.N{S.N{S.L{neg(e41oi)}, S.LZ{}}, S.N{S.LZ{}, S.L{neg(e41)}}}, S.N{S.N{S.LZ{}, S.L{e1o}}, S.N{S.L{e1i}, S.LZ{}}}}}}, S.N{S.N{S.N{S.N{S.N{S.LZ{}, S.L{e234o}}, S.N{S.L{e234i}, S.LZ{}}}, S.N{S.N{S.L{e23oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e23}}}}, S.N{S.N{S.N{S.L{neg(e42oi)}, S.LZ{}}, S.N{S.LZ{}, S.L{neg(e42)}}}, S.N{S.N{S.LZ{}, S.L{e2o}}, S.N{S.L{e2i}, S.LZ{}}}}}, S.N{S.N{S.N{S.N{S.L{neg(e43oi)}, S.LZ{}}, S.N{S.LZ{}, S.L{neg(e43)}}}, S.N{S.N{S.LZ{}, S.L{e3o}}, S.N{S.L{e3i}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{e4o}}, S.N{S.L{e4i}, S.LZ{}}}, S.N{S.N{S.L{eoi}, S.LZ{}}, S.N{S.LZ{}, S.L{s}}}}}}}
+
+def Even.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Even<T>:
+  Even{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, True{}, True{}], False{}, t)}
+
+def Even.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, True{}, True{}], t))))))))))))))))))))))))))))))))
+
 type Odd<-T: Data> is Data:
   Odd{e1: T, e2: T, e3: T, e4: T, eo: T, ei: T, e234: T, e314: T, e124: T, e123: T, e23o: T, e31o: T, e12o: T, e41o: T, e42o: T, e43o: T, e23i: T, e31i: T, e12i: T, e41i: T, e42i: T, e43i: T, e1oi: T, e2oi: T, e3oi: T, e4oi: T, e234oi: T, e314oi: T, e124oi: T, e123oi: T, e1234o: T, e1234i: T}
 
@@ -1161,6 +1393,49 @@ def Odd.map(~A: Data, ~B: Data, ~f: A -> B, x: Odd<A>) -> Odd<B>:
   match x:
     case Odd{e1, e2, e3, e4, eo, ei, e234, e314, e124, e123, e23o, e31o, e12o, e41o, e42o, e43o, e23i, e31i, e12i, e41i, e42i, e43i, e1oi, e2oi, e3oi, e4oi, e234oi, e314oi, e124oi, e123oi, e1234o, e1234i}:
       Odd{f(e1), f(e2), f(e3), f(e4), f(eo), f(ei), f(e234), f(e314), f(e124), f(e123), f(e23o), f(e31o), f(e12o), f(e41o), f(e42o), f(e43o), f(e23i), f(e31i), f(e12i), f(e41i), f(e42i), f(e43i), f(e1oi), f(e2oi), f(e3oi), f(e4oi), f(e234oi), f(e314oi), f(e124oi), f(e123oi), f(e1234o), f(e1234i)}
+
+def Odd.raw(~T: Data, ~neg: T -> T, x: Odd<T>) -> S.MV(T, 6n):
+  match x:
+    case Odd{e1, e2, e3, e4, eo, ei, e234, e314, e124, e123, e23o, e31o, e12o, e41o, e42o, e43o, e23i, e31i, e12i, e41i, e42i, e43i, e1oi, e2oi, e3oi, e4oi, e234oi, e314oi, e124oi, e123oi, e1234o, e1234i}:
+      S.N{S.N{S.N{S.N{S.N{S.N{S.LZ{}, S.L{e1234o}}, S.N{S.L{e1234i}, S.LZ{}}}, S.N{S.N{S.L{e123oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e123}}}}, S.N{S.N{S.N{S.L{e124oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e124}}}, S.N{S.N{S.LZ{}, S.L{e12o}}, S.N{S.L{e12i}, S.LZ{}}}}}, S.N{S.N{S.N{S.N{S.L{neg(e314oi)}, S.LZ{}}, S.N{S.LZ{}, S.L{neg(e314)}}}, S.N{S.N{S.LZ{}, S.L{neg(e31o)}}, S.N{S.L{neg(e31i)}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{neg(e41o)}}, S.N{S.L{neg(e41i)}, S.LZ{}}}, S.N{S.N{S.L{e1oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e1}}}}}}, S.N{S.N{S.N{S.N{S.N{S.L{e234oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e234}}}, S.N{S.N{S.LZ{}, S.L{e23o}}, S.N{S.L{e23i}, S.LZ{}}}}, S.N{S.N{S.N{S.LZ{}, S.L{neg(e42o)}}, S.N{S.L{neg(e42i)}, S.LZ{}}}, S.N{S.N{S.L{e2oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e2}}}}}, S.N{S.N{S.N{S.N{S.LZ{}, S.L{neg(e43o)}}, S.N{S.L{neg(e43i)}, S.LZ{}}}, S.N{S.N{S.L{e3oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e3}}}}, S.N{S.N{S.N{S.L{e4oi}, S.LZ{}}, S.N{S.LZ{}, S.L{e4}}}, S.N{S.N{S.LZ{}, S.L{eo}}, S.N{S.L{ei}, S.LZ{}}}}}}}
+
+def Odd.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Odd<T>:
+  Odd{
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, True{}], False{}, t)}
+
+def Odd.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, True{}], t))))))))))))))))))))))))))))))))
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e1: T, e2: T, e3: T, e4: T, eo: T, ei: T, e23: T, e31: T, e12: T, e41: T, e42: T, e43: T, e1o: T, e2o: T, e3o: T, e4o: T, e1i: T, e2i: T, e3i: T, e4i: T, eoi: T, e234: T, e314: T, e124: T, e123: T, e23o: T, e31o: T, e12o: T, e41o: T, e42o: T, e43o: T, e23i: T, e31i: T, e12i: T, e41i: T, e42i: T, e43i: T, e1oi: T, e2oi: T, e3oi: T, e4oi: T, e1234: T, e234o: T, e314o: T, e124o: T, e123o: T, e234i: T, e314i: T, e124i: T, e123i: T, e23oi: T, e31oi: T, e12oi: T, e41oi: T, e42oi: T, e43oi: T, e234oi: T, e314oi: T, e124oi: T, e123oi: T, e1234o: T, e1234i: T, e1234oi: T}
@@ -1566,6 +1841,81 @@ def Multivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Multivector<A>) -> Multiv
   match x:
     case Multivector{s, e1, e2, e3, e4, eo, ei, e23, e31, e12, e41, e42, e43, e1o, e2o, e3o, e4o, e1i, e2i, e3i, e4i, eoi, e234, e314, e124, e123, e23o, e31o, e12o, e41o, e42o, e43o, e23i, e31i, e12i, e41i, e42i, e43i, e1oi, e2oi, e3oi, e4oi, e1234, e234o, e314o, e124o, e123o, e234i, e314i, e124i, e123i, e23oi, e31oi, e12oi, e41oi, e42oi, e43oi, e234oi, e314oi, e124oi, e123oi, e1234o, e1234i, e1234oi}:
       Multivector{f(s), f(e1), f(e2), f(e3), f(e4), f(eo), f(ei), f(e23), f(e31), f(e12), f(e41), f(e42), f(e43), f(e1o), f(e2o), f(e3o), f(e4o), f(e1i), f(e2i), f(e3i), f(e4i), f(eoi), f(e234), f(e314), f(e124), f(e123), f(e23o), f(e31o), f(e12o), f(e41o), f(e42o), f(e43o), f(e23i), f(e31i), f(e12i), f(e41i), f(e42i), f(e43i), f(e1oi), f(e2oi), f(e3oi), f(e4oi), f(e1234), f(e234o), f(e314o), f(e124o), f(e123o), f(e234i), f(e314i), f(e124i), f(e123i), f(e23oi), f(e31oi), f(e12oi), f(e41oi), f(e42oi), f(e43oi), f(e234oi), f(e314oi), f(e124oi), f(e123oi), f(e1234o), f(e1234i), f(e1234oi)}
+
+def Multivector.raw(~T: Data, ~neg: T -> T, x: Multivector<T>) -> S.MV(T, 6n):
+  match x:
+    case Multivector{s, e1, e2, e3, e4, eo, ei, e23, e31, e12, e41, e42, e43, e1o, e2o, e3o, e4o, e1i, e2i, e3i, e4i, eoi, e234, e314, e124, e123, e23o, e31o, e12o, e41o, e42o, e43o, e23i, e31i, e12i, e41i, e42i, e43i, e1oi, e2oi, e3oi, e4oi, e1234, e234o, e314o, e124o, e123o, e234i, e314i, e124i, e123i, e23oi, e31oi, e12oi, e41oi, e42oi, e43oi, e234oi, e314oi, e124oi, e123oi, e1234o, e1234i, e1234oi}:
+      S.N{S.N{S.N{S.N{S.N{S.N{S.L{e1234oi}, S.L{e1234o}}, S.N{S.L{e1234i}, S.L{e1234}}}, S.N{S.N{S.L{e123oi}, S.L{e123o}}, S.N{S.L{e123i}, S.L{e123}}}}, S.N{S.N{S.N{S.L{e124oi}, S.L{e124o}}, S.N{S.L{e124i}, S.L{e124}}}, S.N{S.N{S.L{e12oi}, S.L{e12o}}, S.N{S.L{e12i}, S.L{e12}}}}}, S.N{S.N{S.N{S.N{S.L{neg(e314oi)}, S.L{neg(e314o)}}, S.N{S.L{neg(e314i)}, S.L{neg(e314)}}}, S.N{S.N{S.L{neg(e31oi)}, S.L{neg(e31o)}}, S.N{S.L{neg(e31i)}, S.L{neg(e31)}}}}, S.N{S.N{S.N{S.L{neg(e41oi)}, S.L{neg(e41o)}}, S.N{S.L{neg(e41i)}, S.L{neg(e41)}}}, S.N{S.N{S.L{e1oi}, S.L{e1o}}, S.N{S.L{e1i}, S.L{e1}}}}}}, S.N{S.N{S.N{S.N{S.N{S.L{e234oi}, S.L{e234o}}, S.N{S.L{e234i}, S.L{e234}}}, S.N{S.N{S.L{e23oi}, S.L{e23o}}, S.N{S.L{e23i}, S.L{e23}}}}, S.N{S.N{S.N{S.L{neg(e42oi)}, S.L{neg(e42o)}}, S.N{S.L{neg(e42i)}, S.L{neg(e42)}}}, S.N{S.N{S.L{e2oi}, S.L{e2o}}, S.N{S.L{e2i}, S.L{e2}}}}}, S.N{S.N{S.N{S.N{S.L{neg(e43oi)}, S.L{neg(e43o)}}, S.N{S.L{neg(e43i)}, S.L{neg(e43)}}}, S.N{S.N{S.L{e3oi}, S.L{e3o}}, S.N{S.L{e3i}, S.L{e3}}}}, S.N{S.N{S.N{S.L{e4oi}, S.L{e4o}}, S.N{S.L{e4i}, S.L{e4}}}, S.N{S.N{S.L{eoi}, S.L{eo}}, S.N{S.L{ei}, S.L{s}}}}}}}
+
+def Multivector.of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 6n)) -> Multivector<T>:
+  Multivector{
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, False{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, True{}, False{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, False{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, False{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, False{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, False{}, True{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [False{}, True{}, True{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, False{}, True{}, True{}, True{}, True{}], True{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, False{}, True{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, False{}, True{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, True{}, False{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, False{}, True{}], False{}, t),
+    S.MV.at(~T, ~zero, ~neg, 6n, [True{}, True{}, True{}, True{}, True{}, True{}], False{}, t)}
+
+def Multivector.out(-T: Data, t: S.MV(T, 6n)) -> S.MV(T, 6n):
+  S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, True{}, False{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, False{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, False{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [False{}, True{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, False{}, True{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, False{}, True{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, False{}, True{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, True{}, False{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, False{}, True{}], S.MV.clear(T, 6n, [True{}, True{}, True{}, True{}, True{}, True{}], t))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 # Every kind widened to the full basis
 

@@ -38572,3 +38572,357 @@ def Odd.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_s, m29_0), add(mul(b_e23oi, m29_26), add(mul(b_e31oi, m29_27), add(mul(b_e12oi, m29_28), add(mul(b_e123o, m29_29), mul(b_e123i, m29_30)))))),
         add(mul(b_s, m30_0), add(mul(b_e23oi, m30_26), add(mul(b_e31oi, m30_27), add(mul(b_e12oi, m30_28), add(mul(b_e123o, m30_29), mul(b_e123i, m30_30)))))),
         add(mul(b_e1, m31_1), add(mul(b_e2, m31_2), add(mul(b_e3, m31_3), add(mul(b_eo, m31_4), add(mul(b_ei, m31_5), mul(b_e123oi, m31_31))))))}
+
+def Scalar.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Scalar<T>) -> K.Pseudoscalar<T>:
+  match a:
+    case K.Scalar{+a_s}:
+      K.Pseudoscalar{
+        a_s}
+
+def Vector.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Vector<T>) -> K.Quadvector<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2, +a_e3, +a_eo, +a_ei}:
+      K.Quadvector{
+        a_e1,
+        neg(neg(a_e2)),
+        a_e3,
+        a_ei,
+        neg(a_eo)}
+
+def Twist.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Twist<T>) -> K.Trivector<T>:
+  match a:
+    case K.Twist{+a_e23, +a_e31, +a_e12, +a_e1i, +a_e2i, +a_e3i}:
+      K.Trivector{
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        zero,
+        zero,
+        zero,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        zero}
+
+def Bivector.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Bivector<T>) -> K.Trivector<T>:
+  match a:
+    case K.Bivector{+a_e23, +a_e31, +a_e12, +a_e1o, +a_e2o, +a_e3o, +a_e1i, +a_e2i, +a_e3i, +a_eoi}:
+      K.Trivector{
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        a_e1o,
+        neg(neg(a_e2o)),
+        a_e3o,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        a_eoi}
+
+def Trivector.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Trivector<T>) -> K.Bivector<T>:
+  match a:
+    case K.Trivector{+a_e23o, +a_e31o, +a_e12o, +a_e23i, +a_e31i, +a_e12i, +a_e1oi, +a_e2oi, +a_e3oi, +a_e123}:
+      K.Bivector{
+        a_e1oi,
+        neg(neg(a_e2oi)),
+        a_e3oi,
+        a_e23i,
+        neg(neg(a_e31i)),
+        a_e12i,
+        neg(a_e23o),
+        neg(a_e31o),
+        neg(a_e12o),
+        a_e123}
+
+def Quadvector.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Quadvector<T>) -> K.Vector<T>:
+  match a:
+    case K.Quadvector{+a_e23oi, +a_e31oi, +a_e12oi, +a_e123o, +a_e123i}:
+      K.Vector{
+        a_e23oi,
+        neg(neg(a_e31oi)),
+        a_e12oi,
+        neg(a_e123i),
+        a_e123o}
+
+def Pseudoscalar.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a:
+    case K.Pseudoscalar{+a_e123oi}:
+      K.Scalar{
+        a_e123oi}
+
+def Motor.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Motor<T>) -> K.Odd<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e1i, +a_e2i, +a_e3i, +a_e123i}:
+      K.Odd{
+        zero,
+        zero,
+        zero,
+        neg(a_e123i),
+        zero,
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        zero,
+        zero,
+        zero,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        zero,
+        a_s}
+
+def Even.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Even<T>) -> K.Odd<T>:
+  match a:
+    case K.Even{+a_s, +a_e23, +a_e31, +a_e12, +a_e1o, +a_e2o, +a_e3o, +a_e1i, +a_e2i, +a_e3i, +a_eoi, +a_e23oi, +a_e31oi, +a_e12oi, +a_e123o, +a_e123i}:
+      K.Odd{
+        a_e23oi,
+        neg(neg(a_e31oi)),
+        a_e12oi,
+        neg(a_e123i),
+        a_e123o,
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        a_e1o,
+        neg(neg(a_e2o)),
+        a_e3o,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        a_eoi,
+        a_s}
+
+def Odd.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Odd<T>) -> K.Even<T>:
+  match a:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_eo, +a_ei, +a_e23o, +a_e31o, +a_e12o, +a_e23i, +a_e31i, +a_e12i, +a_e1oi, +a_e2oi, +a_e3oi, +a_e123, +a_e123oi}:
+      K.Even{
+        a_e123oi,
+        a_e1oi,
+        neg(neg(a_e2oi)),
+        a_e3oi,
+        a_e23i,
+        neg(neg(a_e31i)),
+        a_e12i,
+        neg(a_e23o),
+        neg(a_e31o),
+        neg(a_e12o),
+        a_e123,
+        a_e1,
+        neg(neg(a_e2)),
+        a_e3,
+        a_ei,
+        neg(a_eo)}
+
+def Multivector.dual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>) -> K.Multivector<T>:
+  match a:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_eo, +a_ei, +a_e23, +a_e31, +a_e12, +a_e1o, +a_e2o, +a_e3o, +a_e1i, +a_e2i, +a_e3i, +a_eoi, +a_e23o, +a_e31o, +a_e12o, +a_e23i, +a_e31i, +a_e12i, +a_e1oi, +a_e2oi, +a_e3oi, +a_e123, +a_e23oi, +a_e31oi, +a_e12oi, +a_e123o, +a_e123i, +a_e123oi}:
+      K.Multivector{
+        a_e123oi,
+        a_e23oi,
+        neg(neg(a_e31oi)),
+        a_e12oi,
+        neg(a_e123i),
+        a_e123o,
+        a_e1oi,
+        neg(neg(a_e2oi)),
+        a_e3oi,
+        a_e23i,
+        neg(neg(a_e31i)),
+        a_e12i,
+        neg(a_e23o),
+        neg(a_e31o),
+        neg(a_e12o),
+        a_e123,
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        a_e1o,
+        neg(neg(a_e2o)),
+        a_e3o,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        a_eoi,
+        a_e1,
+        neg(neg(a_e2)),
+        a_e3,
+        a_ei,
+        neg(a_eo),
+        a_s}
+
+def Scalar.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Scalar<T>) -> K.Pseudoscalar<T>:
+  match a:
+    case K.Scalar{+a_s}:
+      K.Pseudoscalar{
+        a_s}
+
+def Vector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Vector<T>) -> K.Quadvector<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2, +a_e3, +a_eo, +a_ei}:
+      K.Quadvector{
+        a_e1,
+        neg(neg(a_e2)),
+        a_e3,
+        a_ei,
+        neg(a_eo)}
+
+def Twist.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Twist<T>) -> K.Trivector<T>:
+  match a:
+    case K.Twist{+a_e23, +a_e31, +a_e12, +a_e1i, +a_e2i, +a_e3i}:
+      K.Trivector{
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        zero,
+        zero,
+        zero,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        zero}
+
+def Bivector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Bivector<T>) -> K.Trivector<T>:
+  match a:
+    case K.Bivector{+a_e23, +a_e31, +a_e12, +a_e1o, +a_e2o, +a_e3o, +a_e1i, +a_e2i, +a_e3i, +a_eoi}:
+      K.Trivector{
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        a_e1o,
+        neg(neg(a_e2o)),
+        a_e3o,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        a_eoi}
+
+def Trivector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Trivector<T>) -> K.Bivector<T>:
+  match a:
+    case K.Trivector{+a_e23o, +a_e31o, +a_e12o, +a_e23i, +a_e31i, +a_e12i, +a_e1oi, +a_e2oi, +a_e3oi, +a_e123}:
+      K.Bivector{
+        a_e1oi,
+        neg(neg(a_e2oi)),
+        a_e3oi,
+        a_e23i,
+        neg(neg(a_e31i)),
+        a_e12i,
+        neg(a_e23o),
+        neg(a_e31o),
+        neg(a_e12o),
+        a_e123}
+
+def Quadvector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Quadvector<T>) -> K.Vector<T>:
+  match a:
+    case K.Quadvector{+a_e23oi, +a_e31oi, +a_e12oi, +a_e123o, +a_e123i}:
+      K.Vector{
+        a_e23oi,
+        neg(neg(a_e31oi)),
+        a_e12oi,
+        neg(a_e123i),
+        a_e123o}
+
+def Pseudoscalar.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a:
+    case K.Pseudoscalar{+a_e123oi}:
+      K.Scalar{
+        a_e123oi}
+
+def Motor.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Motor<T>) -> K.Odd<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e1i, +a_e2i, +a_e3i, +a_e123i}:
+      K.Odd{
+        zero,
+        zero,
+        zero,
+        neg(a_e123i),
+        zero,
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        zero,
+        zero,
+        zero,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        zero,
+        a_s}
+
+def Even.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Even<T>) -> K.Odd<T>:
+  match a:
+    case K.Even{+a_s, +a_e23, +a_e31, +a_e12, +a_e1o, +a_e2o, +a_e3o, +a_e1i, +a_e2i, +a_e3i, +a_eoi, +a_e23oi, +a_e31oi, +a_e12oi, +a_e123o, +a_e123i}:
+      K.Odd{
+        a_e23oi,
+        neg(neg(a_e31oi)),
+        a_e12oi,
+        neg(a_e123i),
+        a_e123o,
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        a_e1o,
+        neg(neg(a_e2o)),
+        a_e3o,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        a_eoi,
+        a_s}
+
+def Odd.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Odd<T>) -> K.Even<T>:
+  match a:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_eo, +a_ei, +a_e23o, +a_e31o, +a_e12o, +a_e23i, +a_e31i, +a_e12i, +a_e1oi, +a_e2oi, +a_e3oi, +a_e123, +a_e123oi}:
+      K.Even{
+        a_e123oi,
+        a_e1oi,
+        neg(neg(a_e2oi)),
+        a_e3oi,
+        a_e23i,
+        neg(neg(a_e31i)),
+        a_e12i,
+        neg(a_e23o),
+        neg(a_e31o),
+        neg(a_e12o),
+        a_e123,
+        a_e1,
+        neg(neg(a_e2)),
+        a_e3,
+        a_ei,
+        neg(a_eo)}
+
+def Multivector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>) -> K.Multivector<T>:
+  match a:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_eo, +a_ei, +a_e23, +a_e31, +a_e12, +a_e1o, +a_e2o, +a_e3o, +a_e1i, +a_e2i, +a_e3i, +a_eoi, +a_e23o, +a_e31o, +a_e12o, +a_e23i, +a_e31i, +a_e12i, +a_e1oi, +a_e2oi, +a_e3oi, +a_e123, +a_e23oi, +a_e31oi, +a_e12oi, +a_e123o, +a_e123i, +a_e123oi}:
+      K.Multivector{
+        a_e123oi,
+        a_e23oi,
+        neg(neg(a_e31oi)),
+        a_e12oi,
+        neg(a_e123i),
+        a_e123o,
+        a_e1oi,
+        neg(neg(a_e2oi)),
+        a_e3oi,
+        a_e23i,
+        neg(neg(a_e31i)),
+        a_e12i,
+        neg(a_e23o),
+        neg(a_e31o),
+        neg(a_e12o),
+        a_e123,
+        neg(a_e1i),
+        neg(a_e2i),
+        neg(a_e3i),
+        a_e1o,
+        neg(neg(a_e2o)),
+        a_e3o,
+        a_e23,
+        neg(neg(a_e31)),
+        a_e12,
+        a_eoi,
+        a_e1,
+        neg(neg(a_e2)),
+        a_e3,
+        a_ei,
+        neg(a_eo),
+        a_s}

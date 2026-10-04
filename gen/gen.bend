@@ -459,6 +459,17 @@ def Kd.map(+n: String, +bls: List<&2, Bl>) -> String:
   String.concat(["def ", n, ".map(~A: Data, ~B: Data, ~f: A -> B, x: ", n, "<A>) -> ", n, "<B>:\n  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "", ""), ", "), "}:\n      ",
     n, "{", String.join(Kd.fields(bls, "f(", ")"), ", "), "}\n"])
 
+# a null kind's coefficients on the null basis's own blades, with no change
+# of basis: the layout of the metric-free operations (dual, undual)
+def Kd.raw(+d: Nat, +dn: String, +n: String, +bls: List<&2, Bl>) -> String:
+  String.concat([
+    "def ", n, ".raw(~T: Data, ~neg: T -> T, x: ", n, "<T>) -> S.MV(T, ", dn, "):\n",
+    "  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "", ""), ", "), "}:\n      ",
+    MV.print(d, Sym.tree(d, "", bls)), "\n\n",
+    "def ", n, ".of_raw(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, ", dn, ")) -> ", n, "<T>:\n",
+    "  ", n, "{\n    ", String.join(Kd.at(bls, dn), ",\n    "), "}\n\n",
+    "def ", n, ".out(-T: Data, t: S.MV(T, ", dn, ")) -> S.MV(T, ", dn, "):\n  ", Kd.clears(bls, dn), "\n"])
+
 # a kind's record, embedding, projection and support-clearing function
 def Kd.module(+d: Nat, +dn: String, k: Kd) -> String:
   match k:
@@ -667,12 +678,12 @@ def Op1.spec(o: Op1, +dn: String) -> String:
     case OUndual{}:
       "S.MV.lcomp(~T, ~neg, " ++ dn ++ ", "
 
-def Ker1.text(+dn: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker:
+def Ker1.text(+dn: String, +tr: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker:
   match ka kc:
     case Kd{+an, ar, +abs} Kd{+cn, cr, cbs}:
       +name = an ++ "." ++ Op1.name(o)
       +ops = {"~T: Data, ~zero: T, ~neg: T -> T" : String}
-      +spec = Op1.spec(o, dn) ++ "K." ++ an ++ ".tree(~T, ~neg, a))"
+      +spec = Op1.spec(o, dn) ++ "K." ++ an ++ "." ++ tr ++ "(~T, ~neg, a))"
       +pat = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "}"
       +es2 = es
       Ker{
@@ -682,7 +693,7 @@ def Ker1.text(+dn: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker
           "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
         String.concat([
           "def ", name, ".ok(", ops, ", a: K.", an, "<T>)\n",
-          "  -> {K.", cn, ".of_tree(~T, ~zero, ~neg, ", spec, ") == O.", name, "(~T, ~zero, ~neg, a) : K.", cn, "<T>}:\n",
+          "  -> {K.", cn, ".of_", tr, "(~T, ~zero, ~neg, ", spec, ") == O.", name, "(~T, ~zero, ~neg, a) : K.", cn, "<T>}:\n",
           "  match a:\n    case ", pat, ":\n      {==}\n\n",
           "def ", name, ".supp(~T: Data, ~neg: T -> T, a: K.", an, "<T>)\n",
           "  -> {K.", cn, ".out(T, ", spec, ") == S.MV.zero(T, ", dn, ") : S.MV(T, ", dn, ")}:\n",
@@ -693,31 +704,31 @@ def Ker1.text(+dn: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker
         "",
         Ker.muls(es2)}
 
-def Ker1.pick.go(+d: Nat, +dn: String, o: Op1, ka: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
+def Ker1.pick.go(+d: Nat, +dn: String, +tr: String, o: Op1, ka: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
   match kc:
     case Kd{cn, cr, +cbs}:
-      Some{Ker1.text(dn, o, ka, Kd{cn, cr, cbs}, Ker.fields(d, cbs, r))}
+      Some{Ker1.text(dn, tr, o, ka, Kd{cn, cr, cbs}, Ker.fields(d, cbs, r))}
 
-def Ker1.pick(+d: Nat, +dn: String, o: Op1, ka: Kd, b: Best, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
+def Ker1.pick(+d: Nat, +dn: String, +tr: String, o: Op1, ka: Kd, b: Best, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
   match b:
     case BNone{}:
       None{}
     case BSome{kc, a, s}:
-      Ker1.pick.go(d, dn, o, ka, kc, r)
+      Ker1.pick.go(d, dn, tr, o, ka, kc, r)
 
-def Ker1.make.go(+d: Nat, +dn: String, o: Op1, ka: Kd, supp: List<&2, List<&2, Bool>>, b: Best, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
+def Ker1.make.go(+d: Nat, +dn: String, +tr: String, o: Op1, ka: Kd, supp: List<&2, List<&2, Bool>>, b: Best, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
   match supp:
     case Nil{}:
       None{}
     case h <> t:
-      Ker1.pick(d, dn, o, ka, b, r)
+      Ker1.pick(d, dn, tr, o, ka, b, r)
 
-def Ker1.make(+d: Nat, +dn: String, +ks: List<&2, Kd>, +o: Op1, ka: Kd) -> Maybe<&2, Ker>:
+def Ker1.make(+d: Nat, +dn: String, +tr: String, +ks: List<&2, Kd>, +o: Op1, ka: Kd) -> Maybe<&2, Ker>:
   match ka:
     case Kd{an, ar, +abs}:
       +r = Op1.run(d, o, Sym.tree(d, "a_", abs))
       +supp = MV.leaves(E.Expr, d, Nil{}, r)
-      Ker1.make.go(d, dn, o, Kd{an, ar, abs}, supp, Best.scan(ks, supp, BNone{}), r)
+      Ker1.make.go(d, dn, tr, o, Kd{an, ar, abs}, supp, Best.scan(ks, supp, BNone{}), r)
 
 def Ker.push(m: Maybe<&2, Ker>, acc: List<&2, Ker>) -> List<&2, Ker>:
   match m:
@@ -1746,7 +1757,7 @@ def Nl.module(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, k: Kd) -> Strin
         "def ", n, ".of_tree(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~half: T, +t: S.MV(T, ", dn, ")) -> ", n, "<T>:\n",
         "  ", n, "{\n    ", String.join(Nl.ofs(nb, ng, dn, bls), ",\n    "), "}\n\n",
         String.join(Kd.getters(n, Kd.fields(bls, "", ""), bls), "\n"), "\n",
-        Kd.listing(n, bls), "\n", Kd.map(n, bls)])
+        Kd.listing(n, bls), "\n", Kd.map(n, bls), "\n", Kd.raw(d, dn, n, bls)])
 
 # the field of a Multivector blade from kind x's fields: the field with the
 # same key (negated if written with the other orientation), else zero
@@ -2332,19 +2343,21 @@ def Ker.ops(+d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd
     case o <> t:
       Ker.ops(d, dn, pre, sig, ks, t, Ker.table(d, dn, pre, sig, ks, o, ks, acc))
 
-def Ker1.row(+d: Nat, +dn: String, +ks: List<&2, Kd>, +o: Op1, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+def Ker1.row(+d: Nat, +dn: String, +tr: String, +ks: List<&2, Kd>, +o: Op1, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
   match kas:
     case Nil{}:
       acc
     case ka <> t:
-      Ker1.row(d, dn, ks, o, t, Ker.push(Ker1.make(d, dn, ks, o, ka), acc))
+      Ker1.row(d, dn, tr, ks, o, t, Ker.push(Ker1.make(d, dn, tr, ks, o, ka), acc))
 
-def Ker1.ops(+d: Nat, +dn: String, +ks: List<&2, Kd>, os: List<&2, Op1>, acc: List<&2, Ker>) -> List<&2, Ker>:
+# tr names the kinds' metric-free blade layout: "tree" in a diagonal
+# algebra, "raw" in a null one (where "tree" changes the basis)
+def Ker1.ops(+d: Nat, +dn: String, +tr: String, +ks: List<&2, Kd>, os: List<&2, Op1>, acc: List<&2, Ker>) -> List<&2, Ker>:
   match os:
     case Nil{}:
       acc
     case o <> t:
-      Ker1.ops(d, dn, ks, t, Ker1.row(d, dn, ks, o, ks, acc))
+      Ker1.ops(d, dn, tr, ks, t, Ker1.row(d, dn, tr, ks, o, ks, acc))
 
 def Ker.srcs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
@@ -2460,7 +2473,7 @@ def Nl.out(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: 
   +ks = Nl.kinds(d, gens, ng, kinds)
   +dn = Nat.show(d) ++ "n"
   +mv = Kd.find(ks, "Multivector")
-  +kers = List.reverse(&2, Ker, Nl.stable(nb, ng, d, dn, pre, sig, ks, mv, vs, ks, Nl.ops(nb, ng, d, dn, pre, sig, ks, mv, Nl.nks(), Nil{})))
+  +kers = List.reverse(&2, Ker, Ker1.ops(d, dn, "raw", ks, [ODual{}, OUndual{}], Nl.stable(nb, ng, d, dn, pre, sig, ks, mv, vs, ks, Nl.ops(nb, ng, d, dn, pre, sig, ks, mv, Nl.nks(), Nil{}))))
   Out{
     String.concat([Gen.header(name), "\ndef ", pre, ".sig() -> S.Sig(", dn, "):\n  ", Sig.show(d, sig), "\n\n",
       String.join(Nl.modules(nb, ng, d, dn, ks), "\n"), "\n# Every kind widened to the full basis\n\n", String.join(Nl.tomvs(Kd.name(mv), Kd.bls(mv), ks), "\n")]),
@@ -2479,7 +2492,7 @@ def Gen.out.diag(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, 
   Gen.out.go(name, pre, d, sig, ks,
     List.reverse(&2, Ker, Hf.table(d, dn, pre, gens, sig, ks, HAnti{}, ks, Hf.table(d, dn, pre, gens, sig, ks, HComm{}, ks,
       Sw.table(d, dn, pre, gens, sig, ks, vs, ks,
-        Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))))
+        Ker1.ops(d, dn, "tree", ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))))
 
 def Gen.out.nul(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: S.Sig(d), kinds: List<&2, GKind>, +vs: List<&2, String>, nul: Nul, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
   match nul:

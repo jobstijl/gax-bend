@@ -4,7 +4,8 @@
 #   2. algebras/ and the generated proofs/ modules are what the generators
 #      write (tools/regen.sh --check),
 #   3. every generated algebras/*/proofs.bend checks (kernel == spec), every
-#      algebras/*/err.bend checks (each kernel's rounding-error bound), and
+#      algebras/*/err.bend checks (each kernel's rounding-error bound), every
+#      algebras/*/equiv.bend checks (equivariance under versors), and
 #      every algebras/*/f32.bend checks,
 #   4. every tests/*.bend and examples/*.bend prints exactly the `#|` lines
 #      it ends with,
@@ -48,10 +49,10 @@ else
 fi
 
 skipped=0
-for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend; do
+for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend algebras/*/equiv.bend; do
   [ -e "$f" ] || continue
   case "$f" in
-    */err.bend) ;;
+    */err.bend|*/equiv.bend) ;;
     "$SLOW"*) if [ -z "$full" ]; then skipped=$((skipped + 1)); continue; fi ;;
     "$SLOWER"*) if [ -z "$csta" ]; then skipped=$((skipped + 1)); continue; fi ;;
   esac

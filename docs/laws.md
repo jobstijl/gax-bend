@@ -111,6 +111,33 @@ kernel proofs use `NormS`. Measured in the checker (bend-facts Q14):
 `tests/neg/norm_wrong.bend` claims (x + y)² = x² + y², and the checker
 reports the two xy monomials left over.
 
+## Equivariance (`algebras/<name>/equiv.bend`, gax family D)
+
+A versor's sandwich commutes with the products, up to a factor:
+  (m >> a) op (m >> b) = ‖m‖² · (m >> (a op b)),
+where ‖m‖² is the scalar part of m ~m. Each law is a generated per-kernel
+**proof**. Where m ~m can have another part (PGA3D motor: e0123; STA even:
+the pseudoscalar), the law takes that part being zero as its hypothesis:
+the condition that makes m a versor (gax's sym/ideal tag). The generator
+(`gen/equiv.bend`) divides the difference of the two sides by that part r.
+That gives l with lhs = rhs + l·r, a ring identity the normaliser checks
+(`proofs/equiv.bend`, `Rel.eqs`), and r = 0 closes it.
+
+| algebra | versor | laws (op: a, b → c) | condition | checked in |
+|---|---|---|---|---|
+| PGA3D | Motor | ∨: Point,Point→Line; ∨: Point,Line→Plane; ∧: Plane,Plane→Line; ∧: Plane,Line→Point; ⌋: Plane,Point→Line; ·: Line,Plane→Plane | e0123 of m ~m = 0 | 9 s |
+| PGA2D | Motor | ∨: Point,Point→Line; ∧: Line,Line→Point; ⌋: Line,Point→Line | none | 1 s |
+| VGA3D | Rotor | ∧: Vector,Vector→Bivector; ∨: Bivector,Bivector→Vector; ⌋: Vector,Bivector→Vector; ·: Bivector,Vector→Vector | none | 1 s |
+| STA | Even | ∧: Vector,Vector→Bivector; ⌋: Vector,Bivector→Vector; ∨: Trivector,Trivector→Bivector | e0123 of m ~m = 0 | 29 s |
+
+The set is curated: the joins, meets and contractions of the geometric
+kinds. Under even versors the factor is +‖m‖² throughout, matching gax's
+law-factors table. Negative controls: `tests/neg/equiv_factor.bend` (the
+PGA3D join without ‖m‖²) and `tests/neg/equiv_condition.bend` (the same
+law without its condition) both fail. Every kind pair, odd versors, and
+the null-basis algebras are not covered yet. gp equivariance holds in
+general at Layer S (`transform_gp`).
+
 ## Exact integers (`src/int.bend`)
 
 | law | statement | assumes | tag | proof |
@@ -192,9 +219,9 @@ that leaves 7189 laws. They check in under three minutes in total (CSTA:
 | PGA2D | 10 | 1023 | 60 | 32 | 3848 |
 | PGA3D | 11 | 1231 | 77 | 101 | 12277 |
 | STA | 9 | 849 | 27 | 84 | 11190 |
-| CGA3D (null basis) | 11 | 1219 | 44 | (in `.ok`) | 47041 |
+| CGA3D (null basis) | 11 | 1241 | 44 | (in `.ok`) | 47041 |
 | STAP | 9 | 814 | 27 | — | 27312 |
-| CSTA (null basis) | 12 | 1404 | 24 | (in `.ok`) | 150235 |
+| CSTA (null basis) | 12 | 1428 | 24 | (in `.ok`) | 150235 |
 
 The operations are gp, wedge, vee, lc, rc, dot, scalar_product,
 commutator, anticommutator, add, sub (any two kinds) and neg, reverse,
@@ -244,8 +271,10 @@ both tag **proof** given the normaliser's ring laws and h + h = 1:
 Result kinds equal gax's for all 954 pairs (gp, wedge, vee, lc, rc, dot,
 scalar product, commutator, anticommutator, sandwiches).
 `tests/cga3d.bend` checks values over exact integers. The vee is the
-negated diagonal one: e123oi = −e123₊₋. Dual and undual are not generated
-for CGA3D (ADR-004).
+negated diagonal one: e123oi = −e123₊₋. Dual and undual are the metric-free
+complements on the null blades themselves (gax's), proven against
+`S.MV.rcomp`/`lcomp` on each kind's `.raw` layout (ADR-004, point 6);
+`tests/cga3d_dual.bend` checks them against gax's generated code.
 
 **Sandwiches.** `V.transform.X(v, x)` is v x ~v (gax's `transform`), for
 every versor kind V and every kind X:

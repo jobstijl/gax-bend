@@ -324,6 +324,20 @@ modulo u~u = 1 and for optimised kernels.
 - **Integer coefficients with merge-sorted polynomials** (`spikes/q04b`):
   faster on large terms, but the soundness proof needs an integer-to-ring
   map and lemmas about its arithmetic.
+- **Unit kernels, simplified modulo u ~u = 1 and made homogeneous again**
+  (the brief's drift-tolerant kernels; gax ADR-020). In the quadratic
+  slice, the only homogeneous representatives of a unit sandwich are the
+  plain kernel plus multiples of the Study condition (gax's
+  performance.md). So the saving is small: gax's unit `Motor >> Point`
+  costs 33 multiplications, its plain one 38. Our plain quadratic-form
+  sandwich costs 35 and is already homogeneous of degree 2, so drift is
+  already a uniform scale. `tests/drift_pga3d.bend` checks that: a motor
+  drifted by 10⁻³ moves points to the same places after unitizing, within
+  10⁻⁵, where a non-homogeneous kernel distorts by about 2.6·10⁻³. The
+  remaining gain (about 6%) would need a relation-reducing simplifier in
+  the generator, and laws proven modulo the unit relations with explicit
+  multipliers. Revisit if a profile shows sandwiches dominate.
+  `renormalize_fast` (one Newton step) is in `api/pga3d.bend`.
 
 ---
 
@@ -365,9 +379,15 @@ e1∧e₋ + e1∧e₊), and the coefficients of eo carry ½.
 5. **vee carries a sign.** The regressive product depends only on the
    pseudoscalar. e123oi = −e123₊₋, so the spec of CGA's vee is
    `neg(vee)`. Checked against gax's `Vector.vee.Quadvector` term by term.
-6. **Not generated yet:** dual and undual. A complement depends on the
-   basis, not only on the pseudoscalar (J_diag(eo) = ½ e123∞, but J_null(eo)
-   = −e123∞), so the diagonal complements do not carry over.
+6. **Dual and undual are the null basis's own complements.** A complement
+   depends on the basis, not only on the pseudoscalar (J_diag(eo) =
+   ½ e123∞, but J_null(eo) = −e123∞), so the diagonal complements do not
+   carry over. gax's dual is the metric-free right complement on the null
+   blades. So each null kind also gets `.raw`/`.of_raw`/`.out`, its
+   coefficients on the null blades with no change of basis, and dual and
+   undual are proven against `S.MV.rcomp`/`lcomp` on that layout, by
+   `{==}` (amended 2026-10-05; `tests/cga3d_dual.bend` checks values
+   against gax's generated code).
 
 ### Numbers
 
@@ -394,7 +414,6 @@ e1∧e₋ + e1∧e₊), and the coefficients of eo carry ½.
   ("eval commutes with the spec"), proven once per operation, would remove
   one side.
 - Laws need ring with ½ (`~half`, `h + h = 1`); kernels do not.
-- No dual/undual for CGA3D yet.
 
 ### Measured, not adopted
 
