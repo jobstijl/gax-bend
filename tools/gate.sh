@@ -5,7 +5,8 @@
 #      write (tools/regen.sh --check),
 #   3. every generated algebras/*/proofs.bend checks (kernel == spec), and
 #      every algebras/*/f32.bend checks,
-#   4. every tests/*.bend prints exactly the `#|` lines it ends with,
+#   4. every tests/*.bend and examples/*.bend prints exactly the `#|` lines
+#      it ends with,
 #   5. every negative control tests/neg/*.bend fails to check.
 # Usage: tools/gate.sh [-q]    (-q: one line per failure only)
 set -u
@@ -48,7 +49,7 @@ for f in algebras/*/f32.bend; do
   fi
 done
 
-for f in tests/*.bend; do
+for f in tests/*.bend examples/*.bend; do
   want=$(sed -n 's/^#|//p' "$f")
   got=$(tools/cap.sh bend "$f" 2>&1)
   if [ "$want" = "$got" ]; then
