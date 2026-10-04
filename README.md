@@ -10,7 +10,7 @@ is the semantic reference.
 | layer | what | state |
 |---|---|---|
 | S, the spec | a multivector tree over any dimension, any diagonal signature, any scalar ring | **24 laws proven** ([docs/laws.md](docs/laws.md)); `LAWS.bend` approved |
-| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA and CGA3D (in gax's null basis, through a proven change of basis): 5283 kernels (products, inner products, commutators, sandwiches, unary operations), all proven (`algebras/`) |
+| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA, STAP, CGA3D and CSTA (the last two in gax's null basis, through a proven change of basis): 7501 kernels; all proven except CSTA's, whose proofs are generated but not yet checked in full (about 10 h; `algebras/`) |
 | A, the API | PGA2D/3D, VGA3D, CGA3D, STA with geometric nouns and batch APIs | PGA3D (`api/pga3d.bend`): constructors, exp/log, normalize, sqrt, motions between elements; CGA3D (`api/cga3d.bend`): points, spheres, planes, motions; VGA3D rotors and PGA2D motions (`api/vga3d.bend`, `api/pga2d.bend`) |
 | numbers | exact `Int` (done); dyadics, SoftF32, double-F32, posits | Phase 3 |
 
@@ -24,6 +24,7 @@ decisions in [docs/design.md](docs/design.md).
 . tools/env.sh          # bend 2.0.35 and the project's clang on PATH
 tools/gate.sh           # proofs, generated kernels, example tests, negative controls (CGA3D's proofs skipped)
 tools/gate.sh --full    # also CGA3D's kernel proofs (about an hour)
+tools/gate.sh --csta    # also CSTA's (estimated 10 hours; not yet run)
 tools/regen.sh          # regenerate algebras/ from gen/specs.bend (--check: compare)
 bend tests/spec_pga3d.bend
 ```

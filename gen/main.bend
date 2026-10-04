@@ -68,3 +68,5 @@ def main() -> IO(Unit):
     Gen.emit(out ++ "/pga3d", G.Gen.out(Sp.PGA3D(), Gen.ops(), Gen.unary()))
     Gen.emit(out ++ "/sta", G.Gen.out(Sp.STA(), Gen.ops(), Gen.unary()))
     Gen.emit(out ++ "/cga3d", G.Gen.out(Sp.CGA3D(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/stap", G.Gen.out(Sp.STAP(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/csta", G.Gen.out(Sp.CSTA(), Gen.ops(), Gen.unary()))

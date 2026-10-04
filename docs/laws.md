@@ -134,6 +134,8 @@ above, every algebraic law transfers to the kernels.
 | PGA3D | 11 | 1231 | 77 | 101 | 12277 |
 | STA | 9 | 849 | 27 | 84 | 11190 |
 | CGA3D (null basis) | 11 | 1219 | 44 | (in `.ok`) | 47041 |
+| STAP | 9 | 814 | 27 | — | 27312 |
+| CSTA (null basis) | 12 | 1404 | 24 | (in `.ok`) | 150235 |
 
 The operations are gp, wedge, vee, lc, rc, dot, scalar_product,
 commutator, anticommutator, add, sub (any two kinds) and neg, reverse,
@@ -154,6 +156,20 @@ kernel + kernel = the doubled spec, field by field by `Norm.eq`, plus zero
 laws as for sandwiches. Over a ring without 2-torsion that fixes the
 kernel. The negative control `commutator_not_halved.bend` drops the
 doubling.
+
+**STAP and CSTA** (added 2026-10-04). STAP, projective spacetime
+R(3,1,1), goes through the diagonal path; its proofs check in 43 s and are
+in the default gate. CSTA, conformal spacetime R(4,2), goes through the
+null-basis path as CGA3D does. Its proofs are generated but **not yet
+checked in full**: probes take 5 s (vector product), 12 s (motor on
+vector) and 133 s (the 64×64 Multivector product). That puts the whole set
+at about 10 hours, almost all of it in the normaliser (ADR-004, "What it
+costs"). `tools/gate.sh --csta` runs it. Until then CSTA's kernels count
+as **exact-sample**: tests/csta.bend checks values over exact integers. For
+STAP and CSTA, every result kind equals gax's (STAP 598 pairs, CSTA 1068).
+`tests/stap.bend` and `tests/csta.bend` check values. The five other
+algebras were compared again, all equal: VGA2D 200, VGA3D 505, PGA2D 763,
+PGA3D 754, STA 633, CGA3D 954.
 
 **CGA3D, in gax's null basis** (ADR-004). Kinds are written over e1, e2,
 e3, eo, e∞ (eo·e∞ = −1); the tree runs on e₊, e₋, with eo = ½(e₋ − e₊)
