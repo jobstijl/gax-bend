@@ -29,6 +29,9 @@ def Gen.emit(+dir: String, o: G.Out) -> IO(Unit):
 def Gen.ops() -> List<&2, G.Op>:
   [G.OGp{}, G.OWedge{}, G.OVee{}]
 
+def Gen.unary() -> List<&2, G.Op1>:
+  [G.ORev{}, G.OInv{}, G.OConj{}, G.ODual{}, G.OUndual{}]
+
 def Gen.outdir.go(args: List<String>) -> String:
   match args:
     case Nil{}:
@@ -47,4 +50,8 @@ def main() -> IO(Unit):
   do IO<Unit>:
     args : List<String> <- IO.args()
     +out : String = Gen.outdir(args)
-    Gen.emit(out ++ "/pga3d", G.Gen.out(Sp.PGA3D(), Gen.ops()))
+    Gen.emit(out ++ "/vga2d", G.Gen.out(Sp.VGA2D(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/vga3d", G.Gen.out(Sp.VGA3D(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/pga2d", G.Gen.out(Sp.PGA2D(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/pga3d", G.Gen.out(Sp.PGA3D(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/sta", G.Gen.out(Sp.STA(), Gen.ops(), Gen.unary()))

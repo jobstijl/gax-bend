@@ -450,6 +450,103 @@ def Ker.make(+d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, K
       +supp = MV.leaves(E.Expr, d, Nil{}, r)
       Ker.make.go(d, dn, pre, o, Kd{an, ar, abs}, Kd{bn, br, bbs}, supp, Best.scan(ks, supp, BNone{}), r)
 
+# Unary kernels
+# -------------
+
+type Op1 is Data:
+  ORev{}
+  OInv{}
+  OConj{}
+  ODual{}
+  OUndual{}
+
+def Op1.name(o: Op1) -> String:
+  match o:
+    case ORev{}:
+      "reverse"
+    case OInv{}:
+      "involute"
+    case OConj{}:
+      "conjugate"
+    case ODual{}:
+      "dual"
+    case OUndual{}:
+      "undual"
+
+def Op1.run(+d: Nat, o: Op1, x: S.MV(E.Expr, d)) -> S.MV(E.Expr, d):
+  match o:
+    case ORev{}:
+      S.MV.reverse(~E.Expr, ~E.Expr.neg, d, x)
+    case OInv{}:
+      S.MV.involute(~E.Expr, ~E.Expr.neg, d, x)
+    case OConj{}:
+      S.MV.conjugate(~E.Expr, ~E.Expr.neg, d, x)
+    case ODual{}:
+      S.MV.rcomp(~E.Expr, ~E.Expr.neg, d, x)
+    case OUndual{}:
+      S.MV.lcomp(~E.Expr, ~E.Expr.neg, d, x)
+
+def Op1.spec(o: Op1, +dn: String) -> String:
+  match o:
+    case ORev{}:
+      "S.MV.reverse(~T, ~neg, " ++ dn ++ ", "
+    case OInv{}:
+      "S.MV.involute(~T, ~neg, " ++ dn ++ ", "
+    case OConj{}:
+      "S.MV.conjugate(~T, ~neg, " ++ dn ++ ", "
+    case ODual{}:
+      "S.MV.rcomp(~T, ~neg, " ++ dn ++ ", "
+    case OUndual{}:
+      "S.MV.lcomp(~T, ~neg, " ++ dn ++ ", "
+
+def Ker1.text(+dn: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker:
+  match ka kc:
+    case Kd{+an, ar, +abs} Kd{+cn, cr, cbs}:
+      +name = an ++ "." ++ Op1.name(o)
+      +ops = {"~T: Data, ~zero: T, ~neg: T -> T" : String}
+      +spec = Op1.spec(o, dn) ++ "K." ++ an ++ ".tree(~T, ~neg, a))"
+      +pat = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "}"
+      +es2 = es
+      Ker{
+        String.concat([
+          "def ", name, "(", ops, ", a: K.", an, "<T>) -> K.", cn, "<T>:\n",
+          "  match a:\n    case K.", an, "{", String.join(Kd.fields(abs, "+a_", ""), ", "), "}:\n",
+          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
+        String.concat([
+          "def ", name, ".ok(", ops, ", a: K.", an, "<T>)\n",
+          "  -> {K.", cn, ".of_tree(~T, ~zero, ~neg, ", spec, ") == O.", name, "(~T, ~zero, ~neg, a) : K.", cn, "<T>}:\n",
+          "  match a:\n    case ", pat, ":\n      {==}\n\n",
+          "def ", name, ".supp(~T: Data, ~neg: T -> T, a: K.", an, "<T>)\n",
+          "  -> {K.", cn, ".out(T, ", spec, ") == S.MV.zero(T, ", dn, ") : S.MV(T, ", dn, ")}:\n",
+          "  match a:\n    case ", pat, ":\n      {==}\n"]),
+        Ker.muls(es2)}
+
+def Ker1.pick.go(+d: Nat, +dn: String, o: Op1, ka: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
+  match kc:
+    case Kd{cn, cr, +cbs}:
+      Some{Ker1.text(dn, o, ka, Kd{cn, cr, cbs}, Ker.fields(d, cbs, r))}
+
+def Ker1.pick(+d: Nat, +dn: String, o: Op1, ka: Kd, b: Best, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
+  match b:
+    case BNone{}:
+      None{}
+    case BSome{kc, a, s}:
+      Ker1.pick.go(d, dn, o, ka, kc, r)
+
+def Ker1.make.go(+d: Nat, +dn: String, o: Op1, ka: Kd, supp: List<&2, List<&2, Bool>>, b: Best, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
+  match supp:
+    case Nil{}:
+      None{}
+    case h <> t:
+      Ker1.pick(d, dn, o, ka, b, r)
+
+def Ker1.make(+d: Nat, +dn: String, +ks: List<&2, Kd>, +o: Op1, ka: Kd) -> Maybe<&2, Ker>:
+  match ka:
+    case Kd{an, ar, +abs}:
+      +r = Op1.run(d, o, Sym.tree(d, "a_", abs))
+      +supp = MV.leaves(E.Expr, d, Nil{}, r)
+      Ker1.make.go(d, dn, o, Kd{an, ar, abs}, supp, Best.scan(ks, supp, BNone{}), r)
+
 # Tables and files
 # ----------------
 
@@ -480,6 +577,20 @@ def Ker.ops(+d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd
       acc
     case o <> t:
       Ker.ops(d, dn, pre, sig, ks, t, Ker.table(d, dn, pre, sig, ks, o, ks, acc))
+
+def Ker1.row(+d: Nat, +dn: String, +ks: List<&2, Kd>, +o: Op1, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kas:
+    case Nil{}:
+      acc
+    case ka <> t:
+      Ker1.row(d, dn, ks, o, t, Ker.push(Ker1.make(d, dn, ks, o, ka), acc))
+
+def Ker1.ops(+d: Nat, +dn: String, +ks: List<&2, Kd>, os: List<&2, Op1>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match os:
+    case Nil{}:
+      acc
+    case o <> t:
+      Ker1.ops(d, dn, ks, t, Ker1.row(d, dn, ks, o, ks, acc))
 
 def Ker.srcs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
@@ -519,9 +630,10 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds, ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 
-def Gen.out(s: GSpec, os: List<&2, Op>) -> Out:
+def Gen.out(s: GSpec, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
   match s:
     case GSpec{+name, +pre, +d, +gens, +sig, kinds}:
       +ks = Gen.kinds(d, gens, kinds)
+      +dn = Nat.show(d) ++ "n"
       Gen.out.go(name, pre, d, sig, ks,
-        List.reverse(&2, Ker, Ker.ops(d, Nat.show(d) ++ "n", pre, sig, ks, os, Nil{})))
+        List.reverse(&2, Ker, Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{}))))

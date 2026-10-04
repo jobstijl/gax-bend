@@ -22,3 +22,56 @@ def PGA3D() -> G.GSpec:
       G.GKind{"Flector", True{}, [[1n], [2n], [3n], [0n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n], [1n, 2n, 3n]]},
       G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [3n], [0n, 1n], [0n, 2n], [0n, 3n], [1n, 2n], [3n, 1n], [2n, 3n],
         [0n, 2n, 1n], [0n, 1n, 3n], [0n, 3n, 2n], [1n, 2n, 3n], [0n, 1n, 2n, 3n]]} ]}
+
+# VGA2D (gax vga2d.gax): e1 e2 square to 1
+def VGA2D() -> G.GSpec:
+  G.GSpec{"VGA2D", "VGA2", 2n, ["1", "2"],
+    S.Gen{S.QP{}, S.Gen{S.QP{}, S.SigEnd{}}},
+    [ G.GKind{"Scalar", True{}, [[]]},
+      G.GKind{"Vector", True{}, [[0n], [1n]]},
+      G.GKind{"Pseudoscalar", True{}, [[0n, 1n]]},
+      G.GKind{"Rotor", True{}, [[], [0n, 1n]]},
+      G.GKind{"Multivector", True{}, [[], [0n], [1n], [0n, 1n]]} ]}
+
+# VGA3D (gax vga3d.gax): e1 e2 e3 square to 1
+def VGA3D() -> G.GSpec:
+  G.GSpec{"VGA3D", "VGA3", 3n, ["1", "2", "3"],
+    S.Gen{S.QP{}, S.Gen{S.QP{}, S.Gen{S.QP{}, S.SigEnd{}}}},
+    [ G.GKind{"Scalar", True{}, [[]]},
+      G.GKind{"Vector", True{}, [[0n], [1n], [2n]]},
+      G.GKind{"Bivector", True{}, [[1n, 2n], [2n, 0n], [0n, 1n]]},
+      G.GKind{"Pseudoscalar", True{}, [[0n, 1n, 2n]]},
+      G.GKind{"Paravector", False{}, [[], [0n], [1n], [2n]]},
+      G.GKind{"Rotor", True{}, [[], [1n, 2n], [2n, 0n], [0n, 1n]]},
+      G.GKind{"Odd", True{}, [[0n], [1n], [2n], [0n, 1n, 2n]]},
+      G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [1n, 2n], [2n, 0n], [0n, 1n], [0n, 1n, 2n]]} ]}
+
+# PGA2D (gax pga2d.gax): e0 squares to 0, e1 e2 to 1
+def PGA2D() -> G.GSpec:
+  G.GSpec{"PGA2D", "PGA2", 3n, ["0", "1", "2"],
+    S.Gen{S.QZ{}, S.Gen{S.QP{}, S.Gen{S.QP{}, S.SigEnd{}}}},
+    [ G.GKind{"Scalar", True{}, [[]]},
+      G.GKind{"Line", True{}, [[1n], [2n], [0n]]},
+      G.GKind{"Point", True{}, [[2n, 0n], [0n, 1n], [1n, 2n]]},
+      G.GKind{"Direction", False{}, [[2n, 0n], [0n, 1n]]},
+      G.GKind{"Pseudoscalar", True{}, [[0n, 1n, 2n]]},
+      G.GKind{"Rotor", True{}, [[], [1n, 2n]]},
+      G.GKind{"Translator", True{}, [[], [2n, 0n], [0n, 1n]]},
+      G.GKind{"Motor", True{}, [[], [1n, 2n], [2n, 0n], [0n, 1n]]},
+      G.GKind{"Flector", True{}, [[1n], [2n], [0n], [0n, 1n, 2n]]},
+      G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [0n, 1n], [2n, 0n], [1n, 2n], [0n, 1n, 2n]]} ]}
+
+# STA (gax sta.gax): e0 squares to 1, e1 e2 e3 to -1
+def STA() -> G.GSpec:
+  G.GSpec{"STA", "STA", 4n, ["0", "1", "2", "3"],
+    S.Gen{S.QP{}, S.Gen{S.QN{}, S.Gen{S.QN{}, S.Gen{S.QN{}, S.SigEnd{}}}}},
+    [ G.GKind{"Scalar", True{}, [[]]},
+      G.GKind{"Vector", True{}, [[0n], [1n], [2n], [3n]]},
+      G.GKind{"Bivector", True{}, [[1n, 0n], [2n, 0n], [3n, 0n], [2n, 3n], [3n, 1n], [1n, 2n]]},
+      G.GKind{"Trivector", True{}, [[1n, 2n, 3n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n]]},
+      G.GKind{"Pseudoscalar", True{}, [[0n, 1n, 2n, 3n]]},
+      G.GKind{"Phasor", True{}, [[], [0n, 1n, 2n, 3n]]},
+      G.GKind{"Even", True{}, [[], [1n, 0n], [2n, 0n], [3n, 0n], [2n, 3n], [3n, 1n], [1n, 2n], [0n, 1n, 2n, 3n]]},
+      G.GKind{"Odd", True{}, [[0n], [1n], [2n], [3n], [1n, 2n, 3n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n]]},
+      G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [3n], [1n, 0n], [2n, 0n], [3n, 0n], [2n, 3n], [3n, 1n], [1n, 2n],
+        [1n, 2n, 3n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n], [0n, 1n, 2n, 3n]]} ]}
