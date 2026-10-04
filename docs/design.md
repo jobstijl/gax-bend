@@ -132,16 +132,17 @@ Negative controls are required per law family.
 
 - **What it costs:** bend2 (TypeScript) is the only checker; there is no second, Lean-proven check. Upstream limits on the kernel are logged in [upstream-notes.md](upstream-notes.md) and not filed.
 
-**A3. Canonical zero: laws are stated up to `MV.canon`** (closes the open point in item 1).
-- **Decision:**
-  - The products stay exactly the Fuchs–Théry recursion, with raw `N{…}` and `Z{}`.
-  - One def, `MV.canon`, rewrites every `N{Z{}, Z{}}` to `Z{}`, bottom-up.
-  - Laws compare `MV.canon(lhs) == MV.canon(rhs)`.
-  - Supporting lemmas, proven once each: `canon` is idempotent, and `add`, `gp` and the involutions respect it, i.e. `canon(op(x, y)) == canon(op(canon x, canon y))`.
-  - Kind embeddings (`Flat.tree`) build canonical trees, so a kernel law reads `embed(kernel(x, y)) == MV.canon(spec(embed x, embed y))`.
-- **Why not the smart constructor:** it would put a case split into every level of every product. The mirror kernels unfold the spec by `{==}`, and every proof about a product would have to reason through the collapse. With `canon`, the cost is a single lemma family, and the spec stays readable.
-- A leaf `S1{x}` whose `x` happens to equal ring zero is *not* collapsed: rings need not have decidable equality. Such values are equal only up to the ring.
-- **What it costs:** every Layer-S law carries `canon` on both sides, plus the respect lemmas.
+**A3. Canonical zero: products build levels through a collapsing constructor** (closes the open point in item 1). Revised on 2026-10-04 before any proof was written. The first version stated every law up to an `MV.canon` function.
+
+- **Decision:** `MV.mk(d, e, r)` writes `N{zero, zero}` as zero.
+  - The operations that can drop terms build each level through it: the geometric and outer products (where a generator squares to 0) and grade projection.
+  - The sign operations (negation, involutions, complements) only permute and negate, so they keep the input's shape and need no collapse. Addition of canonical trees is canonical as it stands.
+  - So every product returns the canonical tree, and laws are plain equalities: `gp(gp(x,y),z) == gp(x,gp(y,z))`.
+- **What the proofs pay:** one transparency lemma per operation, for example `gpf(mk(a,b), y) == gpf(N{a,b}, y)` and `add(mk(a,b), mk(c,e)) == mk(add(a,c), add(b,e))` (`proofs/gp.bend`, `proofs/add.bend`).
+- **The cost of `canon` instead:** a `canon` on both sides of every law, plus a respect lemma per operation. That is the same work, with uglier statements.
+- **Mirror kernels:** they are unaffected. `mk` reduces as soon as its arguments are constructors, which they are on symbolic inputs.
+- **Hypotheses:** a law whose statement has a bare variable on one side, such as a unit law `gp(1, x) == x`, needs its input to be canonical. Such laws take a canonicity hypothesis. None of the current laws needs one.
+- **Ring zeros stay leaves:** a leaf `L{x}` whose `x` happens to be a ring zero is not collapsed, because rings need not have decidable equality.
 
 **A4. GPU numbers come from the upstream `hip` branch with ROCm** (replaces item 9).
 - **Setup:** your decision, no CUDA or Metal hardware here. The branch is Bend 2.0.24, 147 commits behind main, and is run with Bun 1.4.2. ROCm 7.2.4 is unpacked in `.vendor/rocm` (7.1 GB, no system install). `. tools/env-hip.sh` provides `bend-hip`.
