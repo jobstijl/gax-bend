@@ -1,6 +1,6 @@
 # Numerics: measuring, proving and tracking rounding error
 
-Status: plan (ADR-005), 2026-10-04. The survey behind it is summarised at
+Status: ADR-005, 2026-10-04. Step 1 (the theorem, no underflow) is proven: `proofs/err.bend`. The survey behind it is summarised at
 the end, with sources.
 
 ## Where we start

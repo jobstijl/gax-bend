@@ -111,6 +111,21 @@ kernel proofs use `NormS`. Measured in the checker (bend-facts Q14):
 `tests/neg/norm_wrong.bend` claims (x + y)² = x² + y², and the checker
 reports the two xy monomials left over.
 
+## Rounding error (`src/err.bend`, ADR-005)
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| `Err.bound` | for every term t: \|fl(t) − eval(t)\| ≤ h(k(t)) · absev(t), with h(k) = (1+ε)ᵏ − 1, k the roundings on the worst path (an add counts 1 + max, a product 1 + sum), absev the sign-stripped evaluation | the ring laws of `Norm.zero`; an order given by a positivity predicate closed under + and ×, with \|·\| nonnegative, the triangle inequality, \|ab\| = \|a\|\|b\|, \|−a\| = \|a\|, \|0\| = 0; a rounding function with \|rnd(x) − x\| ≤ ε\|x\| | proof | `proofs/err.bend` |
+| `Ev.le` | \|eval(t)\| ≤ absev(t) | as above | proof | `proofs/err.bend` |
+| `H.add` | h(a + b) = h(a) + h(b) + h(a)h(b) | ring laws | proof | `proofs/err.bend` |
+
+Every generated kernel field is a term, so the theorem bounds the rounded
+evaluation of every kernel at once. It holds for any rounding function
+satisfying the standard model (no underflow yet). Native F32 meets it by
+hypothesis; the software float is to meet it by proof (numerics.md, order
+of work). A negative control needs a concrete rounding, so it comes with
+the dyadic numbers.
+
 ## Generated kernels (Layer K)
 
 Every kernel in `algebras/<name>/ops.bend` comes with two generated
