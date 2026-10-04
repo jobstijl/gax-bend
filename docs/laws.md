@@ -122,6 +122,7 @@ above, every algebraic law transfers to the kernels.
 | PGA2D | 10 | 1023 | 60 | 32 | 3848 |
 | PGA3D | 11 | 1231 | 77 | 101 | 12277 |
 | STA | 9 | 849 | 27 | 84 | 11190 |
+| CGA3D (null basis) | 11 | 1219 | 44 | (in `.ok`) | 47041 |
 
 The operations are gp, wedge, vee, lc, rc, dot, scalar_product,
 commutator, anticommutator, add, sub (any two kinds) and neg, reverse,
@@ -142,6 +143,23 @@ kernel + kernel = the doubled spec, field by field by `Norm.eq`, plus zero
 laws as for sandwiches. Over a ring without 2-torsion that fixes the
 kernel. The negative control `commutator_not_halved.bend` drops the
 doubling.
+
+**CGA3D, in gax's null basis** (ADR-004). Kinds are written over e1, e2,
+e3, eo, e∞ (eo·e∞ = −1); the tree runs on e₊, e₋, with eo = ½(e₋ − e₊)
+and e∞ = e₋ + e₊. Kernels have integer coefficients. Two kinds of law,
+both tag **proof** given the normaliser's ring laws and h + h = 1:
+- **`.ok`, one per kernel:** every null-basis coefficient of the spec
+  (through the change of basis) equals the kernel's widened to the full
+  basis (`to_mv`), so it is the mirror law and the support law in one. It is
+  proven by one `NormSH.eqs`.
+- **`.basis`, one per kind:** `of_tree(tree x) = x`, the change of basis
+  itself.
+
+Result kinds equal gax's for all 954 pairs (gp, wedge, vee, lc, rc, dot,
+scalar product, commutator, anticommutator, sandwiches).
+`tests/cga3d.bend` checks values over exact integers. The vee is the
+negated diagonal one: e123oi = −e123₊₋. Dual and undual are not generated
+for CGA3D (ADR-004).
 
 **Sandwiches.** `V.transform.X(v, x)` is v x ~v (gax's `transform`), for
 every versor kind V and every kind X:
@@ -189,6 +207,15 @@ tag **f32-prop**, in `tests/pga3d_api.bend`:
 | `Motor.log` | exact on a pure translation | exact |
 | `Motor.normalized` | m ~m = 1, the e0123 part included | 1e-6 |
 | `Motor.sqrt` | sqrt(m)² = m | 1e-5 |
+
+The CGA3D API (`api/cga3d.bend`) is tested the same way in
+`tests/cga3d_api.bend` (f32-prop, rounded to 1e-4):
+- a right-handed quarter turn about z;
+- a translation;
+- the squared distance −2 P·Q of two points;
+- a point on a sphere has P·S = 0;
+- incidence survives a motion: P·S stays below 1e-4 after a turn and a
+  translation.
 
 `Normed<A>` (gax's `Unit<M>`; Base already has a `Unit`) is the
 certificate. Over F32 it is a trust boundary: only the API's constructors

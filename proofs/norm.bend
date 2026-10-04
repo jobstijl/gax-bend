@@ -771,3 +771,36 @@ def NormSH.eq(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T,
   ok: {N.NormSH.left(v, N.Tm.diff(a, b)) == Nil{} : List<&2, N.Mono>})
   -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b) : T}:
   Norm.eq.of(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, b, NormSH.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, N.Tm.diff(a, b), hh, ok))
+
+# Lists of identities
+# -------------------
+
+def List.empty_nil(-A: Data, l: List<&2, A>, e: {List.is_empty(&2, A, l) == True{} : Bool}) -> {l == Nil{} : List<&2, A>}:
+  match l:
+    case Nil{}:
+      {==}
+    case x <> t:
+      B.Bool.tf({x <> t == Nil{} : List<&2, A>}, Equal.sym(Bool, False{}, True{}, e))
+
+# the evaluations of two lists of terms are equal when every pair's
+# difference cancels after lifting, given h + h = 1
+def NormSH.eqs(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, as: List<&2, N.Tm>, bs: List<&2, N.Tm>, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T},
+  +ok: {N.NormSH.alls(v, as, bs) == True{} : Bool})
+  -> {N.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, as) == N.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, bs) : List<&2, T>}:
+  match as bs:
+    case Nil{} Nil{}:
+      {==}
+    case Nil{} b <> bt:
+      B.Bool.tf({Nil{} == N.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, b <> bt) : List<&2, T>}, Equal.sym(Bool, False{}, True{}, ok))
+    case a <> at Nil{}:
+      B.Bool.tf({N.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, a <> at) == Nil{} : List<&2, T>}, Equal.sym(Bool, False{}, True{}, ok))
+    case +a <> +at +b <> +bt:
+      B.Eq.cong2(T, List<&2, T>, List<&2, T>, x => y => x <> y, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+        N.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, at), N.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, bt),
+        NormSH.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, a, b, hh,
+          List.empty_nil(N.Mono, N.NormSH.left(v, N.Tm.diff(a, b)),
+            Bool.and_l(List.is_empty(&2, N.Mono, N.NormSH.left(v, N.Tm.diff(a, b))), N.NormSH.alls(v, at, bt), ok))),
+        NormSH.eqs(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, at, bt, hh,
+          Bool.and_r(List.is_empty(&2, N.Mono, N.NormSH.left(v, N.Tm.diff(a, b))), N.NormSH.alls(v, at, bt), ok)))

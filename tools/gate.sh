@@ -8,11 +8,22 @@
 #   4. every tests/*.bend and examples/*.bend prints exactly the `#|` lines
 #      it ends with,
 #   5. every negative control tests/neg/*.bend fails to check.
-# Usage: tools/gate.sh [-q]    (-q: one line per failure only)
+# Usage: tools/gate.sh [-q] [--full]
+#   -q      one line per failure only
+#   --full  also check the slow proof files (those under SLOW below: CGA3D's
+#           take about an hour). Without it they are counted as skipped.
 set -u
 cd "$(dirname "$0")/.."
 . tools/env.sh
-quiet=${1:-}
+quiet=""
+full=""
+for a in "$@"; do
+  case "$a" in
+    -q) quiet=-q ;;
+    --full) full=1 ;;
+  esac
+done
+SLOW="algebras/cga3d/"
 fail=0
 say() { [ "$quiet" = "-q" ] || echo "$@"; }
 
@@ -29,8 +40,12 @@ else
   echo "FAIL  generated sources are stale: run tools/regen.sh"; fail=1
 fi
 
-for f in algebras/*/proofs.bend; do
+skipped=0
+for f in algebras/*/proofs.bend algebras/*/proofs_*.bend; do
   [ -e "$f" ] || continue
+  case "$f" in
+    "$SLOW"*) if [ -z "$full" ]; then skipped=$((skipped + 1)); continue; fi ;;
+  esac
   out=$(tools/cap.sh bend "$f" 2>&1)
   if [ "$(printf '%s\n' "$out" | head -1)" = "ALL PROOFS CHECK" ]; then
     say "ok    $f"
@@ -38,6 +53,8 @@ for f in algebras/*/proofs.bend; do
     echo "FAIL  $f"; printf '%s\n' "$out" | head -20; fail=1
   fi
 done
+
+[ $skipped = 0 ] || echo "skip  $skipped proof files under $SLOW (slow: run tools/gate.sh --full)"
 
 for f in algebras/*/f32.bend; do
   [ -e "$f" ] || continue

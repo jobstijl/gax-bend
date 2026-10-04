@@ -20,10 +20,16 @@ import ../src/norm.bend as N
 type GKind is Data:
   GKind{name: String, res: Bool, blades: List<&2, List<&2, Nat>>}
 
-# an algebra: name, module prefix, generator names, signature, kinds, and
-# the names of the kinds that are versors (gax's `versor`)
+# whether kinds are written in a null basis: NoNul{}, or Nul{p, m} with e+
+# and e- the generators p and m, eo and ei the indices d and d + 1
+type Nul is Data:
+  NoNul{}
+  Nul{p: Nat, m: Nat}
+
+# an algebra: name, module prefix, generator names, signature, kinds, the
+# names of the kinds that are versors (gax's `versor`), and its null basis
 type GSpec is Data:
-  GSpec{name: String, pre: String, d: Nat, gens: List<&2, String>, sig: S.Sig(d), kinds: List<&2, GKind>, versors: List<&2, String>}
+  GSpec{name: String, pre: String, d: Nat, gens: List<&2, String>, sig: S.Sig(d), kinds: List<&2, GKind>, versors: List<&2, String>, nul: Nul}
 
 # a blade after processing: field name, path, orientation sign, grade
 type Bl is Data:
@@ -1370,6 +1376,802 @@ def Hf.table(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig:
     case ka <> t:
       Hf.table(d, dn, pre, names, sig, ks, o, t, Hf.row(d, dn, pre, names, sig, ks, o, ka, ks, acc))
 
+# Null-basis algebras
+# -------------------
+# CGA's kinds are written in the null basis e1, e2, e3, eo, ei with
+# eo . ei = -1, which Layer S's diagonal metric does not have. The tree
+# runs on e+ and e- (squaring to +1 and -1), with eo = h (e- - e+) and
+# ei = e- + e+, h being 1/2. A kind's tree embeds its fields through these;
+# its projection reads each field back through the inverse (e+ = h ei - eo,
+# e- = h ei + eo). Every product has integer coefficients again: the
+# generator reads them off NormSH's normal form (all monomials at one power
+# h^N, so each count is a multiple of 2^N), and each kernel field is proven
+# equal to the spec's through the change of basis by NormSH.eq, given
+# h + h = 1. Each kind also gets the law of_tree(tree(x)) = x.
+
+# a component of a change of basis: ± h^k times the coefficient at path
+type Cb is Data:
+  Cb{path: List<&2, Bool>, s: Bool, k: Nat}
+
+# one choice when substituting a generator: a generator, a sign, a power of h
+type Ch is Data:
+  Ch{g: Nat, s: Bool, k: Nat}
+
+# a partial expansion: the generators so far (last first), sign, power of h
+type Px is Data:
+  Px{gs: List<&2, Nat>, s: Bool, k: Nat}
+
+# the diagonal generators e+ (p) and e- (m) among d; eo is d, ei is d + 1
+type Nb is Data:
+  Nb{d: Nat, p: Nat, m: Nat}
+
+# eo -> h e- - h e+, ei -> e- + e+
+def Nb.todiag(+d: Nat, +p: Nat, +m: Nat, +g: Nat) -> List<&2, Ch>:
+  Bool.pick(List<&2, Ch>, Nat.is_eq(g, d), [Ch{m, False{}, 1n}, Ch{p, True{}, 1n}],
+    Bool.pick(List<&2, Ch>, Nat.is_eq(g, 1n+d), [Ch{m, False{}, 0n}, Ch{p, False{}, 0n}], [Ch{g, False{}, 0n}]))
+
+# e+ -> h ei - eo, e- -> h ei + eo
+def Nb.tonull(+d: Nat, +p: Nat, +m: Nat, +g: Nat) -> List<&2, Ch>:
+  Bool.pick(List<&2, Ch>, Nat.is_eq(g, p), [Ch{1n+d, False{}, 1n}, Ch{d, True{}, 0n}],
+    Bool.pick(List<&2, Ch>, Nat.is_eq(g, m), [Ch{1n+d, False{}, 1n}, Ch{d, False{}, 0n}], [Ch{g, False{}, 0n}]))
+
+def Nb.sub(nb: Nb, todiag: Bool, +g: Nat) -> List<&2, Ch>:
+  match nb:
+    case Nb{d, p, m}:
+      match todiag:
+        case True{}:
+          Nb.todiag(d, p, m, g)
+        case False{}:
+          Nb.tonull(d, p, m, g)
+
+def Px.ext(+gs: List<&2, Nat>, +s: Bool, +k: Nat, chs: List<&2, Ch>) -> List<&2, Px>:
+  match chs:
+    case Nil{}:
+      Nil{}
+    case Ch{g, cs, ck} <> t:
+      Px{g <> gs, Bool.xor(s, cs), Nat.add(k, ck)} <> Px.ext(gs, s, k, t)
+
+def Px.step(pxs: List<&2, Px>, +chs: List<&2, Ch>) -> List<&2, Px>:
+  match pxs:
+    case Nil{}:
+      Nil{}
+    case Px{gs, s, k} <> t:
+      List.append(&2, Px, Px.ext(gs, s, k, chs), Px.step(t, chs))
+
+def Nb.expand.go(+nb: Nb, +todiag: Bool, gs: List<&2, Nat>, pxs: List<&2, Px>) -> List<&2, Px>:
+  match gs:
+    case Nil{}:
+      pxs
+    case g <> t:
+      Nb.expand.go(nb, todiag, t, Px.step(pxs, Nb.sub(nb, todiag, g)))
+
+# a written blade expanded by substitution: written blades, last first
+def Nb.expand(+nb: Nb, +todiag: Bool, gs: List<&2, Nat>) -> List<&2, Px>:
+  Nb.expand.go(nb, todiag, gs, [Px{Nil{}, False{}, 0n}])
+
+def Gen.dup(gs: List<&2, Nat>) -> Bool:
+  match gs:
+    case Nil{}:
+      False{}
+    case +g <> +t:
+      Bool.or(Gen.has(g, t), Gen.dup(t))
+
+def Nb.keep(+p: Nat, +m: Nat, gs: List<&2, Nat>) -> List<&2, Nat>:
+  match gs:
+    case Nil{}:
+      Nil{}
+    case +g <> t:
+      +r = Nb.keep(p, m, t)
+      Bool.pick(List<&2, Nat>, Bool.or(Nat.is_eq(g, p), Nat.is_eq(g, m)), r, g <> r)
+
+# the null generators in order: e1 .. (without e+, e-), then eo, ei
+def Nb.ng(nb: Nb) -> List<&2, Nat>:
+  match nb:
+    case Nb{+d, p, m}:
+      List.append(&2, Nat, Nb.keep(p, m, List.range(d)), [d, 1n+d])
+
+# a null blade's key: which null generators it holds
+def Nb.key(ng: List<&2, Nat>, +gs: List<&2, Nat>) -> List<&2, Bool>:
+  match ng:
+    case Nil{}:
+      Nil{}
+    case g <> t:
+      Gen.has(g, gs) <> Nb.key(t, gs)
+
+def Nb.sorted.put(b: Bool, g: Nat, rest: List<&2, Nat>) -> List<&2, Nat>:
+  match b:
+    case True{}:
+      g <> rest
+    case False{}:
+      rest
+
+def Nb.sorted(key: List<&2, Bool>, ng: List<&2, Nat>) -> List<&2, Nat>:
+  match key ng:
+    case Nil{} n2:
+      Nil{}
+    case b <> kt Nil{}:
+      Nil{}
+    case b <> kt g <> gt:
+      Nb.sorted.put(b, g, Nb.sorted(kt, gt))
+
+def Nb.emb.cmp(+d: Nat, +pi: Bool, px: Px, +acc: List<&2, Cb>) -> List<&2, Cb>:
+  match px:
+    case Px{gs, s, k}:
+      +w = List.reverse(&2, Nat, gs)
+      Bool.pick(List<&2, Cb>, Gen.dup(w), acc, Cb{Gen.path(d, 0n, w), Bool.xor(Bool.xor(s, Gen.parity(w)), pi), k} <> acc)
+
+def Nb.emb.go(+d: Nat, +pi: Bool, pxs: List<&2, Px>) -> List<&2, Cb>:
+  match pxs:
+    case Nil{}:
+      Nil{}
+    case x <> t:
+      Nb.emb.cmp(d, pi, x, Nb.emb.go(d, pi, t))
+
+# a null blade (its key, written with parity pi) in the diagonal tree
+def Nb.emb(+nb: Nb, +ng: List<&2, Nat>, key: List<&2, Bool>, +pi: Bool) -> List<&2, Cb>:
+  match nb:
+    case Nb{+d, p, m}:
+      Nb.emb.go(d, pi, Nb.expand(nb, True{}, Nb.sorted(key, ng)))
+
+def Nb.prefix(+i: Nat, xss: List<&2, List<&2, Nat>>) -> List<&2, List<&2, Nat>>:
+  match xss:
+    case Nil{}:
+      Nil{}
+    case xs <> t:
+      (i <> xs) <> Nb.prefix(i, t)
+
+# every sorted subset of i .. i + c - 1
+def Nb.subsets(c: Nat, +i: Nat) -> List<&2, List<&2, Nat>>:
+  match c:
+    case 0n:
+      [Nil{}]
+    case 1n+c2:
+      +rest = Nb.subsets(c2, 1n+i)
+      List.append(&2, List<&2, Nat>, rest, Nb.prefix(i, rest))
+
+def Nb.fun.cmp(+d: Nat, +ng: List<&2, Nat>, +key: List<&2, Bool>, +pi: Bool, +dg: List<&2, Nat>, px: Px, +acc: List<&2, Cb>) -> List<&2, Cb>:
+  match px:
+    case Px{gs, s, k}:
+      +w = List.reverse(&2, Nat, gs)
+      Bool.pick(List<&2, Cb>, Bool.and(Bool.not(Gen.dup(w)), Path.eq(Nb.key(ng, w), key)),
+        Cb{Gen.path(d, 0n, dg), Bool.xor(Bool.xor(s, Gen.parity(w)), pi), k} <> acc, acc)
+
+def Nb.fun.px(+d: Nat, +ng: List<&2, Nat>, +key: List<&2, Bool>, +pi: Bool, +dg: List<&2, Nat>, pxs: List<&2, Px>) -> List<&2, Cb>:
+  match pxs:
+    case Nil{}:
+      Nil{}
+    case x <> t:
+      Nb.fun.cmp(d, ng, key, pi, dg, x, Nb.fun.px(d, ng, key, pi, dg, t))
+
+def Nb.fun.go(+nb: Nb, +d: Nat, +ng: List<&2, Nat>, +key: List<&2, Bool>, +pi: Bool, dgs: List<&2, List<&2, Nat>>) -> List<&2, Cb>:
+  match dgs:
+    case Nil{}:
+      Nil{}
+    case +dg <> t:
+      List.append(&2, Cb, Nb.fun.px(d, ng, key, pi, dg, Nb.expand(nb, False{}, dg)), Nb.fun.go(nb, d, ng, key, pi, t))
+
+# how to read a null blade's coefficient (key, written with parity pi) off
+# the diagonal tree
+def Nb.fun(+nb: Nb, +ng: List<&2, Nat>, +key: List<&2, Bool>, +pi: Bool) -> List<&2, Cb>:
+  match nb:
+    case Nb{+d, p, m}:
+      Nb.fun.go(nb, d, ng, key, pi, Nb.subsets(d, 0n))
+
+# Printing null kinds
+# -------------------
+
+def Nl.hp(k: Nat, +h: E.Expr, e: E.Expr) -> E.Expr:
+  match k:
+    case 0n:
+      e
+    case 1n+j:
+      E.EMul{h, Nl.hp(j, h, e)}
+
+def Nl.emb.tree(+d: Nat, cs: List<&2, Cb>, +x: E.Expr) -> S.MV(E.Expr, d):
+  match cs:
+    case Nil{}:
+      S.MV.zero(E.Expr, d)
+    case Cb{path, s, k} <> t:
+      S.MV.add(~E.Expr, ~E.Expr.add, d, S.MV.blade(E.Expr, d, path, S.Ring.negf(~E.Expr, ~E.Expr.neg, s, Nl.hp(k, E.EVar{"half"}, x))),
+        Nl.emb.tree(d, t, x))
+
+# a null kind's general element, variables named prefix ++ field
+def Nl.sym(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +pre: String, bls: List<&2, Bl>) -> S.MV(E.Expr, d):
+  match bls:
+    case Nil{}:
+      S.MV.zero(E.Expr, d)
+    case Bl{name, key, pi, g} <> t:
+      S.MV.add(~E.Expr, ~E.Expr.add, d, Nl.emb.tree(d, Nb.emb(nb, ng, key, pi), E.EVar{pre ++ name}), Nl.sym(nb, ng, d, pre, t))
+
+# a functional as a sum over coefficients of the tree t (source text)
+def Nl.fun.term(+dn: String, c: Cb) -> E.Expr:
+  match c:
+    case Cb{path, s, k}:
+      Qf.signed(s, Nl.hp(k, E.EVar{"half"}, E.EVar{"S.MV.at(~T, ~zero, ~neg, " ++ dn ++ ", " ++ Path.show(path) ++ ", False{}, t)"}))
+
+def Nl.fun.go(+dn: String, cs: List<&2, Cb>, acc: E.Expr) -> E.Expr:
+  match cs:
+    case Nil{}:
+      acc
+    case c <> t:
+      Nl.fun.go(dn, t, E.EAdd{acc, Nl.fun.term(dn, c)})
+
+def Nl.fun.src(+dn: String, cs: List<&2, Cb>) -> String:
+  match cs:
+    case Nil{}:
+      "zero"
+    case c <> t:
+      E.Expr.show(Nl.fun.go(dn, t, Nl.fun.term(dn, c)))
+
+def Nl.ofs(+nb: Nb, +ng: List<&2, Nat>, +dn: String, bls: List<&2, Bl>) -> List<&2, String>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case Bl{n, key, pi, g} <> t:
+      Nl.fun.src(dn, Nb.fun(nb, ng, key, pi)) <> Nl.ofs(nb, ng, dn, t)
+
+# a null kind's record, embedding, projection, getters and congruence
+def Nl.module(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, k: Kd) -> String:
+  match k:
+    case Kd{+n, r, +bls}:
+      String.concat([
+        "type ", n, "<-T: Data> is Data:\n  ", n, "{", String.join(Kd.fields(bls, "", ": T"), ", "), "}\n\n",
+        "def ", n, ".tree(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~half: T, x: ", n, "<T>) -> S.MV(T, ", dn, "):\n",
+        "  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "+", ""), ", "), "}:\n      ",
+        MV.print(d, Nl.sym(nb, ng, d, "", bls)), "\n\n",
+        "def ", n, ".of_tree(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~half: T, +t: S.MV(T, ", dn, ")) -> ", n, "<T>:\n",
+        "  ", n, "{\n    ", String.join(Nl.ofs(nb, ng, dn, bls), ",\n    "), "}\n\n",
+        String.join(Kd.getters(n, Kd.fields(bls, "", ""), bls), "\n"), "\n",
+        "def ", n, ".fields(-T: Data, x: ", n, "<T>) -> List<&2, T>:\n  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "", ""), ", "), "}:\n      [",
+        String.join(Kd.fields(bls, "", ""), ", "), "]\n"])
+
+# the field of a Multivector blade from kind x's fields: the field with the
+# same key (negated if written with the other orientation), else zero
+def Nl.mvfield(+key: List<&2, Bool>, +pi: Bool, bls: List<&2, Bl>) -> String:
+  match bls:
+    case Nil{}:
+      "zero"
+    case Bl{+f, k, p, g} <> t:
+      Bool.pick(String, Path.eq(key, k), Bool.pick(String, Bool.xor(pi, p), "neg(" ++ f ++ ")", f), Nl.mvfield(key, pi, t))
+
+def Nl.mvfields(mbs: List<&2, Bl>, +bls: List<&2, Bl>) -> List<&2, String>:
+  match mbs:
+    case Nil{}:
+      Nil{}
+    case Bl{f, key, pi, g} <> t:
+      Nl.mvfield(key, pi, bls) <> Nl.mvfields(t, bls)
+
+# a kind widened to the full basis
+def Nl.tomv(+mn: String, +mbs: List<&2, Bl>, k: Kd) -> String:
+  match k:
+    case Kd{+n, r, +bls}:
+      String.concat([
+        "def ", n, ".to_mv(~T: Data, ~zero: T, ~neg: T -> T, x: ", n, "<T>) -> ", mn, "<T>:\n  match x:\n    case ", n, "{",
+        String.join(Kd.fields(bls, "+", ""), ", "), "}:\n      ", mn, "{", String.join(Nl.mvfields(mbs, bls), ", "), "}\n"])
+
+def Nl.tomvs(+mn: String, +mbs: List<&2, Bl>, ks: List<&2, Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case k <> t:
+      Nl.tomv(mn, mbs, k) <> Nl.tomvs(mn, mbs, t)
+
+def Nl.modules(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, ks: List<&2, Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case k <> t:
+      Nl.module(nb, ng, d, dn, k) <> Nl.modules(nb, ng, d, dn, t)
+
+# The symbolic machinery over Tm
+# ------------------------------
+
+def Nl.hpT(k: Nat, +h: N.Tm, e: N.Tm) -> N.Tm:
+  match k:
+    case 0n:
+      e
+    case 1n+j:
+      N.TMul{h, Nl.hpT(j, h, e)}
+
+def Nl.embT(+d: Nat, cs: List<&2, Cb>, +x: N.Tm, +h: N.Tm) -> S.MV(N.Tm, d):
+  match cs:
+    case Nil{}:
+      S.MV.zero(N.Tm, d)
+    case Cb{path, s, k} <> t:
+      S.MV.add(~N.Tm, ~N.Tm.add, d, S.MV.blade(N.Tm, d, path, S.Ring.negf(~N.Tm, ~N.Tm.neg, s, Nl.hpT(k, h, x))), Nl.embT(d, t, x, h))
+
+# a null kind's general element over Tm, variables numbered from i
+def Nl.symT(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, bls: List<&2, Bl>, +i: Nat, +h: N.Tm) -> S.MV(N.Tm, d):
+  match bls:
+    case Nil{}:
+      S.MV.zero(N.Tm, d)
+    case Bl{name, key, pi, g} <> t:
+      S.MV.add(~N.Tm, ~N.Tm.add, d, Nl.embT(d, Nb.emb(nb, ng, key, pi), N.TVar{i}, h), Nl.symT(nb, ng, d, t, 1n+i, h))
+
+# a functional applied to a tree over Tm
+def Nl.funT(+d: Nat, cs: List<&2, Cb>, +r: S.MV(N.Tm, d), +h: N.Tm) -> N.Tm:
+  match cs:
+    case Nil{}:
+      N.TZero{}
+    case Cb{path, s, k} <> t:
+      N.TAdd{S.Ring.negf(~N.Tm, ~N.Tm.neg, s, Nl.hpT(k, h, S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, path, False{}, r))), Nl.funT(d, t, r, h)}
+
+def Vs.drop(+v: Nat, vs: List<&2, Nat>) -> List<&2, Nat>:
+  match vs:
+    case Nil{}:
+      Nil{}
+    case +w <> t:
+      +r = Vs.drop(v, t)
+      Bool.pick(List<&2, Nat>, Nat.is_eq(v, w), r, w <> r)
+
+def Ms.strip(+v: Nat, ms: List<&2, N.Mono>) -> List<&2, N.Mono>:
+  match ms:
+    case Nil{}:
+      Nil{}
+    case N.Mono{s, vs} <> t:
+      N.Mono{s, Vs.drop(v, vs)} <> Ms.strip(v, t)
+
+def Ms.halve(n: Nat, ms: List<&2, N.Mono>) -> List<&2, N.Mono>:
+  match n:
+    case 0n:
+      ms
+    case 1n+k:
+      Ms.halve(k, Ms.half(ms))
+
+# the integer monomials of a term over Z[1/2], divided by 2^extra
+def Nl.ints(+v: Nat, +extra: Nat, +t: N.Tm) -> List<&2, N.Mono>:
+  Ms.strip(v, Ms.halve(Nat.add(N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), extra), N.NormSH.left(v, t)))
+
+def Nl.mexpr(vs: List<&2, Nat>, +names: List<&2, String>, acc: E.Expr) -> E.Expr:
+  match vs:
+    case Nil{}:
+      acc
+    case v <> t:
+      Nl.mexpr(t, names, E.EMul{acc, E.EVar{Gen.nth(names, v)}})
+
+def Nl.mono(m: N.Mono, +names: List<&2, String>) -> E.Expr:
+  match m:
+    case N.Mono{s, vs}:
+      match vs:
+        case Nil{}:
+          E.EZero{}
+        case v <> t:
+          Qf.signed(s, Nl.mexpr(t, names, E.EVar{Gen.nth(names, v)}))
+
+def Nl.sum(ms: List<&2, N.Mono>, +names: List<&2, String>, acc: E.Expr) -> E.Expr:
+  match ms:
+    case Nil{}:
+      acc
+    case m <> t:
+      Nl.sum(t, names, E.EAdd{acc, Nl.mono(m, names)})
+
+# a kernel field: the sum of the integer monomials
+def Nl.field(ms: List<&2, N.Mono>, +names: List<&2, String>) -> E.Expr:
+  match ms:
+    case Nil{}:
+      E.EZero{}
+    case m <> t:
+      Nl.sum(t, names, Nl.mono(m, names))
+
+# Null kernels
+# ------------
+
+# an operation of a null algebra: a product, a halved product, a unary
+# operation, or the sandwich
+type NK is Data:
+  NKB{o: Op}
+  NKH{o: HOp}
+  NKU{o: Op1}
+  NKS{}
+
+def NK.unary(nk: NK) -> Bool:
+  match nk:
+    case NKB{o}:
+      False{}
+    case NKH{o}:
+      False{}
+    case NKU{o}:
+      True{}
+    case NKS{}:
+      False{}
+
+def NK.name(nk: NK, +an: String, +bn: String) -> String:
+  match nk:
+    case NKB{o}:
+      an ++ "." ++ Op.name(o) ++ "." ++ bn
+    case NKH{o}:
+      an ++ "." ++ HOp.name(o) ++ "." ++ bn
+    case NKU{o}:
+      an ++ "." ++ Op1.name(o)
+    case NKS{}:
+      an ++ ".transform." ++ bn
+
+def NK.extra(nk: NK) -> Nat:
+  match nk:
+    case NKB{o}:
+      0n
+    case NKH{o}:
+      1n
+    case NKU{o}:
+      0n
+    case NKS{}:
+      0n
+
+def NK.tmb(+d: Nat, +sig: S.Sig(d), o: Op, +x: S.MV(N.Tm, d), +y: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  match o:
+    case OGp{}:
+      S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+    case OWedge{}:
+      S.MV.wedge(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, x, y)
+    case OVee{}:
+      S.MV.neg(~N.Tm, ~N.Tm.neg, d, S.MV.vee(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, x, y))
+    case OAdd{}:
+      S.MV.add(~N.Tm, ~N.Tm.add, d, x, y)
+    case OSub{}:
+      S.MV.add(~N.Tm, ~N.Tm.add, d, x, S.MV.neg(~N.Tm, ~N.Tm.neg, d, y))
+    case OLc{}:
+      S.MV.lc(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+    case ORc{}:
+      S.MV.rc(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+    case ODot{}:
+      S.MV.dot(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+    case OScalar{}:
+      S.MV.scalar_product(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+
+def NK.tmu(+d: Nat, o: Op1, +x: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  match o:
+    case ONeg{}:
+      S.MV.neg(~N.Tm, ~N.Tm.neg, d, x)
+    case ORev{}:
+      S.MV.reverse(~N.Tm, ~N.Tm.neg, d, x)
+    case OInv{}:
+      S.MV.involute(~N.Tm, ~N.Tm.neg, d, x)
+    case OConj{}:
+      S.MV.conjugate(~N.Tm, ~N.Tm.neg, d, x)
+    case ODual{}:
+      x
+    case OUndual{}:
+      x
+
+def NK.tm(+d: Nat, +sig: S.Sig(d), nk: NK, +x: S.MV(N.Tm, d), +y: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  match nk:
+    case NKB{o}:
+      NK.tmb(d, sig, o, x, y)
+    case NKH{o}:
+      HOp.tm(d, sig, o, x, y)
+    case NKU{o}:
+      NK.tmu(d, o, x)
+    case NKS{}:
+      Sw.tm(d, sig, x, y)
+
+# the spec as source, with ring "~T, ~add, ~mul, ~neg", negs "~T, ~neg" and
+# adds "~T, ~add" (or their Tm forms)
+def NK.specb(o: Op, +dn: String, +sg: String, +ring: String, +negs: String, +adds: String, +x: String, +y: String) -> String:
+  match o:
+    case OGp{}:
+      String.concat(["S.MV.gp(", ring, ", ", dn, ", ", sg, ", ", x, ", ", y, ")"])
+    case OWedge{}:
+      String.concat(["S.MV.wedge(", ring, ", ", dn, ", ", x, ", ", y, ")"])
+    case OVee{}:
+      String.concat(["S.MV.neg(", negs, ", ", dn, ", S.MV.vee(", ring, ", ", dn, ", ", x, ", ", y, "))"])
+    case OAdd{}:
+      String.concat(["S.MV.add(", adds, ", ", dn, ", ", x, ", ", y, ")"])
+    case OSub{}:
+      String.concat(["S.MV.add(", adds, ", ", dn, ", ", x, ", S.MV.neg(", negs, ", ", dn, ", ", y, "))"])
+    case OLc{}:
+      String.concat(["S.MV.lc(", ring, ", ", dn, ", ", sg, ", ", x, ", ", y, ")"])
+    case ORc{}:
+      String.concat(["S.MV.rc(", ring, ", ", dn, ", ", sg, ", ", x, ", ", y, ")"])
+    case ODot{}:
+      String.concat(["S.MV.dot(", ring, ", ", dn, ", ", sg, ", ", x, ", ", y, ")"])
+    case OScalar{}:
+      String.concat(["S.MV.scalar_product(", ring, ", ", dn, ", ", sg, ", ", x, ", ", y, ")"])
+
+def NK.specu(o: Op1, +dn: String, +negs: String, +x: String) -> String:
+  match o:
+    case ONeg{}:
+      String.concat(["S.MV.neg(", negs, ", ", dn, ", ", x, ")"])
+    case ORev{}:
+      String.concat(["S.MV.reverse(", negs, ", ", dn, ", ", x, ")"])
+    case OInv{}:
+      String.concat(["S.MV.involute(", negs, ", ", dn, ", ", x, ")"])
+    case OConj{}:
+      String.concat(["S.MV.conjugate(", negs, ", ", dn, ", ", x, ")"])
+    case ODual{}:
+      x
+    case OUndual{}:
+      x
+
+def NK.spec(nk: NK, +dn: String, +pre: String, +ring: String, +negs: String, +adds: String, +x: String, +y: String) -> String:
+  match nk:
+    case NKB{o}:
+      NK.specb(o, dn, "K." ++ pre ++ ".sig()", ring, negs, adds, x, y)
+    case NKH{o}:
+      String.concat([HOp.fn(o), "(", ring, ", ", dn, ", K.", pre, ".sig(), ", x, ", ", y, ")"])
+    case NKU{o}:
+      NK.specu(o, dn, negs, x)
+    case NKS{}:
+      Sw.spec(dn, pre, ring, negs, x, y)
+
+# the blades of the full basis whose coefficient in the result survives
+def Nl.supp.put(+key: List<&2, Bool>, +t: N.Tm, +hv: Nat, +live: List<&2, List<&2, Bool>>) -> List<&2, List<&2, Bool>>:
+  Bool.pick(List<&2, List<&2, Bool>>, List.is_empty(&2, N.Mono, N.NormSH.left(hv, t)), live, key <> live)
+
+def Nl.supp(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, bls: List<&2, Bl>, +rt: S.MV(N.Tm, d), +h: N.Tm, +hv: Nat) -> List<&2, List<&2, Bool>>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case Bl{n, +key, +pi, g} <> t:
+      Nl.supp.put(key, Nl.funT(d, Nb.fun(nb, ng, key, pi), rt, h), hv, Nl.supp(nb, ng, d, t, rt, h, hv))
+
+# the integer monomials of each field of the result kind
+def Nl.fms(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, bls: List<&2, Bl>, +rt: S.MV(N.Tm, d), +h: N.Tm, +hv: Nat, +extra: Nat) -> List<&2, List<&2, N.Mono>>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case Bl{n, key, pi, g} <> t:
+      Nl.ints(hv, extra, Nl.funT(d, Nb.fun(nb, ng, key, pi), rt, h)) <> Nl.fms(nb, ng, d, t, rt, h, hv, extra)
+
+def Nl.fields(fms: List<&2, List<&2, N.Mono>>, +names: List<&2, String>) -> List<&2, E.Expr>:
+  match fms:
+    case Nil{}:
+      Nil{}
+    case ms <> t:
+      Nl.field(ms, names) <> Nl.fields(t, names)
+
+def Nl.qrows(fms: List<&2, List<&2, N.Mono>>, +nv: Nat, +js: List<&2, Nat>) -> List<&2, List<&2, List<&2, Term>>>:
+  match fms:
+    case Nil{}:
+      Nil{}
+    case ms <> t:
+      Qf.row(ms, nv, js) <> Nl.qrows(t, nv, js)
+
+# the kernel's lets, fields and cost: a quadratic form for a sandwich
+def Nl.fs(nk: NK, fms: List<&2, List<&2, N.Mono>>, +an: List<&2, String>, +bn: List<&2, String>) -> Fs:
+  match nk:
+    case NKS{}:
+      +rows = Nl.qrows(fms, List.length(&2, String, an), List.range(List.length(&2, String, bn)))
+      +ps = Pr.rows(rows, Nil{})
+      Sw.fs(Qf.plets(ps, an), List.length(&2, Pr, ps), Qf.fields(rows, 0n, bn))
+    case NKB{o}:
+      +es = Nl.fields(fms, List.append(&2, String, an, bn))
+      Fs{Nil{}, es, Ker.muls(es)}
+    case NKH{o}:
+      +es = Nl.fields(fms, List.append(&2, String, an, bn))
+      Fs{Nil{}, es, Ker.muls(es)}
+    case NKU{o}:
+      +es = Nl.fields(fms, an)
+      Fs{Nil{}, es, Ker.muls(es)}
+
+# Null kernel texts
+# -----------------
+
+def Nl.hyps() -> String:
+  "~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,\n  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),\n  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),\n  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),\n  ~half: T, ~hh: {add(half, half) == one : T}"
+
+def Nl.hargs() -> String:
+  "~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn"
+
+def Nl.treeT(+k: String, +x: String) -> String:
+  "K." ++ k ++ ".tree(~T, ~add, ~mul, ~neg, ~half, " ++ x ++ ")"
+
+def Nl.treeTm(+k: String, +hvn: String, +x: String) -> String:
+  "K." ++ k ++ ".tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{" ++ hvn ++ "}, " ++ x ++ ")"
+
+def Nl.ofT(+k: String, +x: String) -> String:
+  "K." ++ k ++ ".of_tree(~T, ~zero, ~add, ~mul, ~neg, ~half, " ++ x ++ ")"
+
+def Nl.ofTm(+k: String, +hvn: String, +x: String) -> String:
+  "K." ++ k ++ ".of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{" ++ hvn ++ "}, " ++ x ++ ")"
+
+# the kernel applied, doubled for a halved product (whose law is k + k)
+def Nl.rhs(nk: NK, +cn: String, +ops: String, +k: String) -> String:
+  match nk:
+    case NKH{o}:
+      "O." ++ cn ++ ".add." ++ cn ++ "(" ++ ops ++ ", " ++ k ++ ", " ++ k ++ ")"
+    case NKB{o}:
+      k
+    case NKU{o}:
+      k
+    case NKS{}:
+      k
+
+def Nl.text(+dn: String, +pre: String, +nk: NK, ka: Kd, kb: Kd, kc: Kd, +mn: String, fs: Fs) -> Ker:
+  match ka kb kc fs:
+    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, +cbs} Fs{ls, es, muls}:
+      +un = NK.unary(nk)
+      +name = NK.name(nk, an, bn)
+      +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
+      +afs = Kd.fields(abs, "a_", "")
+      +bfs = Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "b_", ""))
+      +na = List.length(&2, Bl, abs)
+      +hvn = Nat.show(Nat.add(na, List.length(&2, String, bfs))) ++ "n"
+      +args = Bool.pick(String, un, "a: K." ++ an ++ "<T>", "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>")
+      +mh = Bool.pick(String, un, "a", "a b")
+      +ra = "K." ++ an ++ "{" ++ String.join(afs, ", ") ++ "}"
+      +rb = "K." ++ bn ++ "{" ++ String.join(bfs, ", ") ++ "}"
+      +pat = Bool.pick(String, un, ra, ra ++ " " ++ rb)
+      +pa = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "+a_", ""), ", ") ++ "}"
+      +ppat = Bool.pick(String, un, pa, pa ++ " K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "+b_", ""), ", ") ++ "}")
+      +env = "[" ++ String.join(List.append(&2, String, afs, List.append(&2, String, bfs, ["half"])), ", ") ++ "]"
+      +rg = {"~T, ~add, ~mul, ~neg" : String}
+      +spec = NK.spec(nk, dn, pre, rg, "~T, ~neg", "~T, ~add", Nl.treeT(an, "a"), Nl.treeT(bn, "b"))
+      +specr = NK.spec(nk, dn, pre, rg, "~T, ~neg", "~T, ~add", Nl.treeT(an, ra), Nl.treeT(bn, rb))
+      +ta = "K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "}"
+      +tb = "K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "}"
+      +spect = NK.spec(nk, dn, pre, "~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg", "~N.Tm, ~N.Tm.neg", "~N.Tm, ~N.Tm.add",
+        Nl.treeTm(an, hvn, ta), Nl.treeTm(bn, hvn, tb))
+      +opsT = {"~T, ~zero, ~add, ~mul, ~neg" : String}
+      +opsTm = {"~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg" : String}
+      +recs = Bool.pick(String, un, ra, ra ++ ", " ++ rb)
+      +recst = Bool.pick(String, un, ta, ta ++ ", " ++ tb)
+      +argn = Bool.pick(String, un, "a", "a, b")
+      +rhs = Nl.rhs(nk, cn, opsT, "O." ++ name ++ "(" ++ opsT ++ ", " ++ argn ++ ")")
+      +rhsr = Nl.rhs(nk, cn, opsT, "O." ++ name ++ "(" ++ opsT ++ ", " ++ recs ++ ")")
+      +rhst = Nl.rhs(nk, cn, opsTm, "O." ++ name ++ "(" ++ opsTm ++ ", " ++ recst ++ ")")
+      +hd = Nl.hyps() ++ ", " ++ args
+      +es2 = es
+      Ker{
+        String.concat([
+          "def ", name, "(", ops, ", ", args, ") -> K.", cn, "<T>:\n",
+          "  match ", mh, ":\n    case ", ppat, ":\n",
+          Let.srcs(ls),
+          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
+        String.concat([
+          "def ", name, ".ok(", hd, ")\n",
+          "  -> {K.", mn, ".fields(T, ", Nl.ofT(mn, spec), ")\n      == K.", mn, ".fields(T, K.", cn, ".to_mv(~T, ~zero, ~neg, ", rhs, ")) : List<&2, T>}:\n",
+          "  match ", mh, ":\n    case ", ppat, ":\n",
+          "      NP.NormSH.eqs(", Nl.hargs(), ", ", env, ", ", hvn, ",\n        K.", mn, ".fields(N.Tm, ", Nl.ofTm(mn, hvn, spect), "),\n",
+          "        K.", mn, ".fields(N.Tm, K.", cn, ".to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, ", rhst, ")),\n        hh, {==})\n"]),
+        String.concat([
+          "def ", name, "(", Bool.pick(String, un, "a: K." ++ an ++ "<F32>", "a: K." ++ an ++ "<F32>, b: K." ++ bn ++ "<F32>"),
+          ") -> K.", cn, "<F32>:\n",
+          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, ", argn, ")\n"]),
+        muls}
+
+# the law that a kind's projection inverts its embedding: the change of
+# basis is proven
+def Nl.basis(k: Kd) -> String:
+  match k:
+    case Kd{+n, r, +bls}:
+      +xfs = Kd.fields(bls, "x_", "")
+      +hvn = Nat.show(List.length(&2, Bl, bls)) ++ "n"
+      +env = "[" ++ String.join(List.append(&2, String, xfs, ["half"]), ", ") ++ "]"
+      +tv = "K." ++ n ++ "{" ++ String.join(Kd.tvars(bls, 0n), ", ") ++ "}"
+      String.concat([
+        "def ", n, ".basis(", Nl.hyps(), ", x: K.", n, "<T>)\n",
+        "  -> {K.", n, ".fields(T, ", Nl.ofT(n, Nl.treeT(n, "x")), ") == K.", n, ".fields(T, x) : List<&2, T>}:\n",
+        "  match x:\n    case K.", n, "{", String.join(Kd.fields(bls, "+x_", ""), ", "), "}:\n",
+        "      NP.NormSH.eqs(", Nl.hargs(), ", ", env, ", ", hvn, ",\n        K.", n, ".fields(N.Tm, ", Nl.ofTm(n, hvn, Nl.treeTm(n, hvn, tv)), "),\n",
+        "        K.", n, ".fields(N.Tm, ", tv, "),\n        hh, {==})\n"])
+
+def Nl.bases(ks: List<&2, Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case k <> t:
+      Nl.basis(k) <> Nl.bases(t)
+
+# Null kernels: choosing the result
+# ---------------------------------
+
+def Nl.pick.go(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +mn: String, +nk: NK, ka: Kd, kb: Kd, kc: Kd,
+  +rt: S.MV(N.Tm, d), +h: N.Tm, +hv: Nat) -> Maybe<&2, Ker>:
+  match ka kb kc:
+    case Kd{an, ar, +abs} Kd{bn, br, +bbs} Kd{cn, cr, +cbs}:
+      +un = NK.unary(nk)
+      +afs = Kd.fields(abs, "a_", "")
+      +bfs = Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "b_", ""))
+      +fms = Nl.fms(nb, ng, d, cbs, rt, h, hv, NK.extra(nk))
+      Some{Nl.text(dn, pre, nk, Kd{an, ar, abs}, Kd{bn, br, bbs}, Kd{cn, cr, cbs}, mn, Nl.fs(nk, fms, afs, bfs))}
+
+def Nl.pick(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +mn: String, +nk: NK, ka: Kd, kb: Kd, b: Best,
+  +rt: S.MV(N.Tm, d), +h: N.Tm, +hv: Nat) -> Maybe<&2, Ker>:
+  match b:
+    case BNone{}:
+      None{}
+    case BSome{kc, a, s}:
+      Nl.pick.go(nb, ng, d, dn, pre, mn, nk, ka, kb, kc, rt, h, hv)
+
+def Nl.make.go(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +ks: List<&2, Kd>, +mn: String, +nk: NK, ka: Kd, kb: Kd,
+  +rt: S.MV(N.Tm, d), +h: N.Tm, +hv: Nat, live: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match live:
+    case Nil{}:
+      None{}
+    case +l <> +lt:
+      Nl.pick(nb, ng, d, dn, pre, mn, nk, ka, kb, Best.scan(ks, l <> lt, BNone{}), rt, h, hv)
+
+# the kernel of nk on ka (and kb), if not identically zero
+def Nl.make(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, +nk: NK, ka: Kd, kb: Kd) -> Maybe<&2, Ker>:
+  match mv ka kb:
+    case Kd{mn, mr, mbs} Kd{an, ar, +abs} Kd{bn, br, +bbs}:
+      +un = NK.unary(nk)
+      +na = List.length(&2, Bl, abs)
+      +hv = Nat.add(na, Bool.pick(Nat, un, 0n, List.length(&2, Bl, bbs)))
+      +h = {N.TVar{hv} : N.Tm}
+      +rt = NK.tm(d, sig, nk, Nl.symT(nb, ng, d, abs, 0n, h), Nl.symT(nb, ng, d, bbs, na, h))
+      Nl.make.go(nb, ng, d, dn, pre, ks, mn, nk, Kd{an, ar, abs}, Kd{bn, br, bbs}, rt, h, hv, Nl.supp(nb, ng, d, mbs, rt, h, hv))
+
+# Null kernels: tables
+# --------------------
+
+def Nl.row(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, +nk: NK, +ka: Kd, kbs: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kbs:
+    case Nil{}:
+      acc
+    case kb <> t:
+      Nl.row(nb, ng, d, dn, pre, sig, ks, mv, nk, ka, t, Ker.push(Nl.make(nb, ng, d, dn, pre, sig, ks, mv, nk, ka, kb), acc))
+
+def Nl.table(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, +nk: NK, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kas:
+    case Nil{}:
+      acc
+    case ka <> t:
+      Nl.table(nb, ng, d, dn, pre, sig, ks, mv, nk, t, Nl.row(nb, ng, d, dn, pre, sig, ks, mv, nk, ka, ks, acc))
+
+def Nl.utable(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, +nk: NK, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kas:
+    case Nil{}:
+      acc
+    case +ka <> t:
+      Nl.utable(nb, ng, d, dn, pre, sig, ks, mv, nk, t, Ker.push(Nl.make(nb, ng, d, dn, pre, sig, ks, mv, nk, ka, ka), acc))
+
+def Nl.stable.if(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, ka: Kd, versor: Bool, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match versor:
+    case False{}:
+      acc
+    case True{}:
+      Nl.row(nb, ng, d, dn, pre, sig, ks, mv, NKS{}, ka, ks, acc)
+
+def Nl.stable(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, +vs: List<&2, String>, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kas:
+    case Nil{}:
+      acc
+    case Kd{+n, r, bls} <> t:
+      Nl.stable(nb, ng, d, dn, pre, sig, ks, mv, vs, t, Nl.stable.if(nb, ng, d, dn, pre, sig, ks, mv, Kd{n, r, bls}, Kd.named(n, vs), acc))
+
+def Nl.ops.one(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, un: Bool, +nk: NK, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match un:
+    case True{}:
+      Nl.utable(nb, ng, d, dn, pre, sig, ks, mv, nk, ks, acc)
+    case False{}:
+      Nl.table(nb, ng, d, dn, pre, sig, ks, mv, nk, ks, acc)
+
+def Nl.ops(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +mv: Kd, nks: List<&2, NK>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match nks:
+    case Nil{}:
+      acc
+    case +nk <> t:
+      Nl.ops(nb, ng, d, dn, pre, sig, ks, mv, t, Nl.ops.one(nb, ng, d, dn, pre, sig, ks, mv, NK.unary(nk), nk, acc))
+
+def Nl.blade(+d: Nat, +names: List<&2, String>, +ng: List<&2, Nat>, +gs: List<&2, Nat>) -> Bl:
+  Bl{Gen.bname(gs, names), Nb.key(ng, gs), Gen.parity(gs), List.length(&2, Nat, gs)}
+
+def Nl.blades(+d: Nat, +names: List<&2, String>, +ng: List<&2, Nat>, bs: List<&2, List<&2, Nat>>) -> List<&2, Bl>:
+  match bs:
+    case Nil{}:
+      Nil{}
+    case b <> t:
+      Nl.blade(d, names, ng, b) <> Nl.blades(d, names, ng, t)
+
+def Nl.kinds(+d: Nat, +names: List<&2, String>, +ng: List<&2, Nat>, ks: List<&2, GKind>) -> List<&2, Kd>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case GKind{n, r, bs} <> t:
+      Kd{n, r, Nl.blades(d, names, ng, bs)} <> Nl.kinds(d, names, ng, t)
+
+def Kd.find(ks: List<&2, Kd>, +n: String) -> Kd:
+  match ks:
+    case Nil{}:
+      Kd{n, False{}, Nil{}}
+    case Kd{+m, +r, +bls} <> t:
+      Bool.pick(Kd, String.eq(m, n), Kd{m, r, bls}, Kd.find(t, n))
+
+def Nl.nks() -> List<&2, NK>:
+  [NKB{OGp{}}, NKB{OWedge{}}, NKB{OVee{}}, NKB{OLc{}}, NKB{ORc{}}, NKB{ODot{}}, NKB{OScalar{}}, NKB{OAdd{}}, NKB{OSub{}},
+   NKH{HComm{}}, NKH{HAnti{}}, NKU{ONeg{}}, NKU{ORev{}}, NKU{OInv{}}, NKU{OConj{}}]
+
 # Tables and files
 # ----------------
 
@@ -1437,8 +2239,29 @@ def Ker.total(ks: List<&2, Ker>) -> Nat:
       Nat.add(m, Ker.total(t))
 
 # the generated modules of one algebra, and a summary line
+# the generated modules of one algebra: kinds, kernels, proofs (more proof
+# modules, proofs_2.bend and on, when the proofs are split), F32, summary
 type Out is Data:
-  Out{kinds: String, ops: String, proofs: String, f32: String, summary: String}
+  Out{kinds: String, ops: String, proofs: String, more: List<&2, String>, f32: String, summary: String}
+
+# the kernels in groups of n (a large algebra's proofs, checked part by part)
+def Ker.chunks(f: Nat, ks: List<&2, Ker>, +n: Nat) -> List<&2, List<&2, Ker>>:
+  match f:
+    case 0n:
+      Nil{}
+    case 1n+g:
+      match ks:
+        case Nil{}:
+          Nil{}
+        case +k <> +t:
+          List.take(&2, Ker, k <> t, n) <> Ker.chunks(g, List.drop(&2, Ker, k <> t, n), n)
+
+def Ker.chunk.srcs(+hdr: String, cs: List<&2, List<&2, Ker>>) -> List<&2, String>:
+  match cs:
+    case Nil{}:
+      Nil{}
+    case c <> t:
+      (hdr ++ String.join(Ker.prfs(c), "\n")) <> Ker.chunk.srcs(hdr, t)
 
 def Gen.header(name: String) -> String:
   "# Generated by gen/main.bend from the " ++ name ++ " spec (gen/specs.bend).\n# Do not edit: run tools/regen.sh.\n\nimport Base\nimport ../../src/spec.bend as S\n"
@@ -1450,17 +2273,60 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
       String.join(Kd.modules(d, dn, ks), "\n")]),
     String.concat([Gen.header(name), "import ./kinds.bend as K\n\n", String.join(Ker.srcs(kers), "\n")]),
     String.concat([Gen.header(name), "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../proofs/norm.bend as NP\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n", String.join(Ker.prfs(kers), "\n")]),
+    Nil{},
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
       "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds, ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 
+def Kd.name(k: Kd) -> String:
+  match k:
+    case Kd{n, r, bls}:
+      n
+
+def Kd.bls(k: Kd) -> List<&2, Bl>:
+  match k:
+    case Kd{n, r, bls}:
+      bls
+
+def Nl.phdr(name: String) -> String:
+  Gen.header(name) ++ "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../proofs/norm.bend as NP\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n"
+
+# a null algebra's modules: every kernel through NormSH, and each kind's
+# change-of-basis law
+def Nl.out(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: S.Sig(d), kinds: List<&2, GKind>, +vs: List<&2, String>, +nb: Nb) -> Out:
+  +ng = Nb.ng(nb)
+  +ks = Nl.kinds(d, gens, ng, kinds)
+  +dn = Nat.show(d) ++ "n"
+  +mv = Kd.find(ks, "Multivector")
+  +kers = List.reverse(&2, Ker, Nl.stable(nb, ng, d, dn, pre, sig, ks, mv, vs, ks, Nl.ops(nb, ng, d, dn, pre, sig, ks, mv, Nl.nks(), Nil{})))
+  Out{
+    String.concat([Gen.header(name), "\ndef ", pre, ".sig() -> S.Sig(", dn, "):\n  ", Sig.show(d, sig), "\n\n",
+      String.join(Nl.modules(nb, ng, d, dn, ks), "\n"), "\n# Every kind widened to the full basis\n\n", String.join(Nl.tomvs(Kd.name(mv), Kd.bls(mv), ks), "\n")]),
+    String.concat([Gen.header(name), "import ./kinds.bend as K\n\n", String.join(Ker.srcs(kers), "\n")]),
+    String.concat([Nl.phdr(name), "# The change of basis: of_tree inverts tree, kind by kind\n\n", String.join(Nl.bases(ks), "\n")]),
+    Ker.chunk.srcs(Nl.phdr(name), Ker.chunks(List.length(&2, Ker, kers), kers, 60n)),
+    String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
+      "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
+    String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds (null basis), ", Nat.show(List.length(&2, Ker, kers)),
+      " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
+
+def Gen.out.diag(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: S.Sig(d), kinds: List<&2, GKind>, +vs: List<&2, String>, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
+  +ks = Gen.kinds(d, gens, kinds)
+  +dn = Nat.show(d) ++ "n"
+  Gen.out.go(name, pre, d, sig, ks,
+    List.reverse(&2, Ker, Hf.table(d, dn, pre, gens, sig, ks, HAnti{}, ks, Hf.table(d, dn, pre, gens, sig, ks, HComm{}, ks,
+      Sw.table(d, dn, pre, gens, sig, ks, vs, ks,
+        Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))))
+
+def Gen.out.nul(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: S.Sig(d), kinds: List<&2, GKind>, +vs: List<&2, String>, nul: Nul, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
+  match nul:
+    case NoNul{}:
+      Gen.out.diag(name, pre, d, gens, sig, kinds, vs, os, us)
+    case Nul{p, m}:
+      Nl.out(name, pre, d, gens, sig, kinds, vs, Nb{d, p, m})
+
 def Gen.out(s: GSpec, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
   match s:
-    case GSpec{+name, +pre, +d, +gens, +sig, kinds, vs}:
-      +ks = Gen.kinds(d, gens, kinds)
-      +dn = Nat.show(d) ++ "n"
-      Gen.out.go(name, pre, d, sig, ks,
-        List.reverse(&2, Ker, Hf.table(d, dn, pre, gens, sig, ks, HAnti{}, ks, Hf.table(d, dn, pre, gens, sig, ks, HComm{}, ks,
-          Sw.table(d, dn, pre, gens, sig, ks, vs, ks,
-            Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))))
+    case GSpec{+name, +pre, +d, +gens, +sig, kinds, vs, nul}:
+      Gen.out.nul(name, pre, d, gens, sig, kinds, vs, nul, os, us)

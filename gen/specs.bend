@@ -22,7 +22,7 @@ def PGA3D() -> G.GSpec:
       G.GKind{"Flector", True{}, [[1n], [2n], [3n], [0n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n], [1n, 2n, 3n]]},
       G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [3n], [0n, 1n], [0n, 2n], [0n, 3n], [1n, 2n], [3n, 1n], [2n, 3n],
         [0n, 2n, 1n], [0n, 1n, 3n], [0n, 3n, 2n], [1n, 2n, 3n], [0n, 1n, 2n, 3n]]} ],
-    ["Plane", "Line", "Point", "Rotor", "Translator", "Motor", "Flector"]}
+    ["Plane", "Line", "Point", "Rotor", "Translator", "Motor", "Flector"], G.NoNul{}}
 
 # VGA2D (gax vga2d.gax): e1 e2 square to 1
 def VGA2D() -> G.GSpec:
@@ -33,7 +33,7 @@ def VGA2D() -> G.GSpec:
       G.GKind{"Pseudoscalar", True{}, [[0n, 1n]]},
       G.GKind{"Rotor", True{}, [[], [0n, 1n]]},
       G.GKind{"Multivector", True{}, [[], [0n], [1n], [0n, 1n]]} ],
-    ["Vector", "Rotor"]}
+    ["Vector", "Rotor"], G.NoNul{}}
 
 # VGA3D (gax vga3d.gax): e1 e2 e3 square to 1
 def VGA3D() -> G.GSpec:
@@ -47,7 +47,7 @@ def VGA3D() -> G.GSpec:
       G.GKind{"Rotor", True{}, [[], [1n, 2n], [2n, 0n], [0n, 1n]]},
       G.GKind{"Odd", True{}, [[0n], [1n], [2n], [0n, 1n, 2n]]},
       G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [1n, 2n], [2n, 0n], [0n, 1n], [0n, 1n, 2n]]} ],
-    ["Vector", "Rotor", "Odd"]}
+    ["Vector", "Rotor", "Odd"], G.NoNul{}}
 
 # PGA2D (gax pga2d.gax): e0 squares to 0, e1 e2 to 1
 def PGA2D() -> G.GSpec:
@@ -63,7 +63,7 @@ def PGA2D() -> G.GSpec:
       G.GKind{"Motor", True{}, [[], [1n, 2n], [2n, 0n], [0n, 1n]]},
       G.GKind{"Flector", True{}, [[1n], [2n], [0n], [0n, 1n, 2n]]},
       G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [0n, 1n], [2n, 0n], [1n, 2n], [0n, 1n, 2n]]} ],
-    ["Line", "Point", "Rotor", "Translator", "Motor", "Flector"]}
+    ["Line", "Point", "Rotor", "Translator", "Motor", "Flector"], G.NoNul{}}
 
 # STA (gax sta.gax): e0 squares to 1, e1 e2 e3 to -1
 def STA() -> G.GSpec:
@@ -79,4 +79,28 @@ def STA() -> G.GSpec:
       G.GKind{"Odd", True{}, [[0n], [1n], [2n], [3n], [1n, 2n, 3n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n]]},
       G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [3n], [1n, 0n], [2n, 0n], [3n, 0n], [2n, 3n], [3n, 1n], [1n, 2n],
         [1n, 2n, 3n], [0n, 3n, 2n], [0n, 1n, 3n], [0n, 2n, 1n], [0n, 1n, 2n, 3n]]} ],
-    ["Vector", "Even", "Odd"]}
+    ["Vector", "Even", "Odd"], G.NoNul{}}
+
+# CGA3D (gax cga3d.gax): R(4,1) in the null basis e1 e2 e3 eo ei, eo . ei =
+# -1. The tree runs on e+ (generator 3) and e- (4), eo = (e- - e+)/2 and
+# ei = e- + e+; blades are written with eo as 5 and ei as 6.
+def CGA3D() -> G.GSpec:
+  G.GSpec{"CGA3D", "CGA3", 5n, ["1", "2", "3", "p", "m", "o", "i"],
+    S.Gen{S.QP{}, S.Gen{S.QP{}, S.Gen{S.QP{}, S.Gen{S.QP{}, S.Gen{S.QN{}, S.SigEnd{}}}}}},
+    [ G.GKind{"Scalar", True{}, [[]]},
+      G.GKind{"Vector", True{}, [[0n], [1n], [2n], [5n], [6n]]},
+      G.GKind{"Twist", True{}, [[1n, 2n], [2n, 0n], [0n, 1n], [0n, 6n], [1n, 6n], [2n, 6n]]},
+      G.GKind{"Bivector", True{}, [[1n, 2n], [2n, 0n], [0n, 1n], [0n, 5n], [1n, 5n], [2n, 5n], [0n, 6n], [1n, 6n], [2n, 6n], [5n, 6n]]},
+      G.GKind{"Trivector", True{}, [[1n, 2n, 5n], [2n, 0n, 5n], [0n, 1n, 5n], [1n, 2n, 6n], [2n, 0n, 6n], [0n, 1n, 6n], [0n, 5n, 6n], [1n, 5n, 6n], [2n, 5n, 6n], [0n, 1n, 2n]]},
+      G.GKind{"Quadvector", True{}, [[1n, 2n, 5n, 6n], [2n, 0n, 5n, 6n], [0n, 1n, 5n, 6n], [0n, 1n, 2n, 5n], [0n, 1n, 2n, 6n]]},
+      G.GKind{"Pseudoscalar", True{}, [[0n, 1n, 2n, 5n, 6n]]},
+      G.GKind{"Motor", True{}, [[], [1n, 2n], [2n, 0n], [0n, 1n], [0n, 6n], [1n, 6n], [2n, 6n], [0n, 1n, 2n, 6n]]},
+      G.GKind{"Even", True{}, [[], [1n, 2n], [2n, 0n], [0n, 1n], [0n, 5n], [1n, 5n], [2n, 5n], [0n, 6n], [1n, 6n], [2n, 6n], [5n, 6n],
+        [1n, 2n, 5n, 6n], [2n, 0n, 5n, 6n], [0n, 1n, 5n, 6n], [0n, 1n, 2n, 5n], [0n, 1n, 2n, 6n]]},
+      G.GKind{"Odd", True{}, [[0n], [1n], [2n], [5n], [6n], [1n, 2n, 5n], [2n, 0n, 5n], [0n, 1n, 5n], [1n, 2n, 6n], [2n, 0n, 6n], [0n, 1n, 6n],
+        [0n, 5n, 6n], [1n, 5n, 6n], [2n, 5n, 6n], [0n, 1n, 2n], [0n, 1n, 2n, 5n, 6n]]},
+      G.GKind{"Multivector", True{}, [[], [0n], [1n], [2n], [5n], [6n], [1n, 2n], [2n, 0n], [0n, 1n], [0n, 5n], [1n, 5n], [2n, 5n],
+        [0n, 6n], [1n, 6n], [2n, 6n], [5n, 6n], [1n, 2n, 5n], [2n, 0n, 5n], [0n, 1n, 5n], [1n, 2n, 6n], [2n, 0n, 6n], [0n, 1n, 6n],
+        [0n, 5n, 6n], [1n, 5n, 6n], [2n, 5n, 6n], [0n, 1n, 2n], [1n, 2n, 5n, 6n], [2n, 0n, 5n, 6n], [0n, 1n, 5n, 6n], [0n, 1n, 2n, 5n],
+        [0n, 1n, 2n, 6n], [0n, 1n, 2n, 5n, 6n]]} ],
+    ["Vector", "Motor", "Even", "Odd"], G.Nul{3n, 4n}}

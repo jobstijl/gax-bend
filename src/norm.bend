@@ -385,3 +385,26 @@ def NormS.left(t: Tm) -> List<&2, Mono>:
 def NormSH.left(+v: Nat, t: Tm) -> List<&2, Mono>:
   +ms = Tm.flatx(t, False{}, Nil{})
   Cs.go(Ms.sort(Ms.lift(v, Ms.maxh(v, ms), ms)), Nil{})
+
+# Lists of identities
+# -------------------
+# A kernel's law compares all coefficients at once: the evaluations of two
+# lists of terms are equal when each pair's difference cancels.
+
+def Tm.evals(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, +env: List<&2, T>, ts: List<&2, Tm>) -> List<&2, T>:
+  match ts:
+    case Nil{}:
+      Nil{}
+    case t <> rest:
+      Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) <> Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, rest)
+
+def NormSH.alls(+v: Nat, as: List<&2, Tm>, bs: List<&2, Tm>) -> Bool:
+  match as bs:
+    case Nil{} Nil{}:
+      True{}
+    case Nil{} b <> bt:
+      False{}
+    case a <> at Nil{}:
+      False{}
+    case a <> at b <> bt:
+      Bool.and(List.is_empty(&2, Mono, NormSH.left(v, Tm.diff(a, b))), NormSH.alls(v, at, bt))

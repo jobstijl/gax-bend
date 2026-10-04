@@ -16,14 +16,25 @@ def Gen.put(path: String, text: String) -> IO(Unit):
     r : File & Result<&1, &1, U32 & String, Unit> <- File.write(f, text)
     Gen.put.fin(r)
 
+# proofs_2.bend, proofs_3.bend, ...
+def Gen.more(+dir: String, ms: List<&2, String>, +i: Nat) -> IO(Unit):
+  match ms:
+    case Nil{}:
+      IO.pure(Unit, Unit{})
+    case m <> t:
+      do IO<Unit>:
+        Gen.put(dir ++ "/proofs_" ++ Nat.show(i) ++ ".bend", m)
+        Gen.more(dir, t, 1n+i)
+
 def Gen.emit(+dir: String, o: G.Out) -> IO(Unit):
   match o:
-    case G.Out{k, p, f, a, s}:
+    case G.Out{k, p, f, ms, a, s}:
       do IO<Unit>:
         r : U32 & (String & String) <- IO.try(U32 & (String & String), Process.run("mkdir", ["-p", dir], "", 4096, 10000))
         Gen.put(dir ++ "/kinds.bend", k)
         Gen.put(dir ++ "/ops.bend", p)
         Gen.put(dir ++ "/proofs.bend", f)
+        Gen.more(dir, ms, 2n)
         Gen.put(dir ++ "/f32.bend", a)
         IO.print(s)
 
@@ -56,3 +67,4 @@ def main() -> IO(Unit):
     Gen.emit(out ++ "/pga2d", G.Gen.out(Sp.PGA2D(), Gen.ops(), Gen.unary()))
     Gen.emit(out ++ "/pga3d", G.Gen.out(Sp.PGA3D(), Gen.ops(), Gen.unary()))
     Gen.emit(out ++ "/sta", G.Gen.out(Sp.STA(), Gen.ops(), Gen.unary()))
+    Gen.emit(out ++ "/cga3d", G.Gen.out(Sp.CGA3D(), Gen.ops(), Gen.unary()))

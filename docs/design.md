@@ -324,3 +324,79 @@ modulo u~u = 1 and for optimised kernels.
 - **Integer coefficients with merge-sorted polynomials** (`spikes/q04b`):
   faster on large terms, but the soundness proof needs an integer-to-ring
   map and lemmas about its arithmetic.
+
+---
+
+## ADR-004: CGA3D in gax's null basis, through a proven change of basis
+
+**Status:** accepted, 2026-10-04. Built: `algebras/cga3d` (11 kinds, 1219
+kernels), every kernel and every kind's change of basis proven.
+
+### Context
+
+gax writes CGA3D in the null basis e1, e2, e3, eo, e∞ with eo·e∞ = −1,
+eo² = e∞² = 0 (`cga3d.gax`). Its kinds are sparse there: a motor has 8
+fields, a twist 6. Layer S's metric is diagonal (ADR-001 item 1), and the
+brief asks for the null basis "via change of basis, proven". In the
+diagonal basis e₊, e₋ the same subspaces need more fields (e1∧e∞ is
+e1∧e₋ + e1∧e₊), and the coefficients of eo carry ½.
+
+### Decision
+
+1. **The tree runs on e₊, e₋; kinds stay in the null basis.** The spec
+   names e₊ and e₋ as generators 3 and 4 (squares +1, −1) and writes blades
+   with eo and e∞ as indices 5 and 6. A kind's `tree` embeds each field
+   through eo = h(e₋ − e₊), e∞ = e₋ + e₊, with h = ½ a template constant
+   (`~half`). Its `of_tree` reads each field back through the inverse,
+   e₊ = h e∞ − eo, e₋ = h e∞ + eo. The generator derives both maps by
+   expanding blades multilinearly (`Nb.emb`, `Nb.fun`).
+2. **Kernels have integer coefficients.** For each result field the
+   generator runs the spec at `T = Tm` through the change of basis,
+   normalises with `NormSH` (every monomial lifted to one power hᴺ), keeps
+   one in 2ᴺ copies, and drops h. The null-basis structure constants are
+   integers, so this is exact. No kernel contains ½.
+3. **One law per kernel.** `K.Multivector.fields(of_tree(spec(tree a,
+   tree b))) == K.Multivector.fields(to_mv(kernel(a, b)))`. Every null-basis
+   coefficient of the spec equals the kernel's, and the ones outside the
+   result kind are zero. It is proven by one call to `NormSH.eqs`, given
+   `h + h = 1`. It covers what `.ok` and the support laws cover elsewhere.
+4. **The change of basis is a law per kind:** `of_tree(tree x) = x`
+   (`K.<kind>.basis`).
+5. **vee carries a sign.** The regressive product depends only on the
+   pseudoscalar. e123oi = −e123₊₋, so the spec of CGA's vee is
+   `neg(vee)`. Checked against gax's `Vector.vee.Quadvector` term by term.
+6. **Not generated yet:** dual and undual. A complement depends on the
+   basis, not only on the pseudoscalar (J_diag(eo) = ½ e123∞, but J_null(eo)
+   = −e123∞), so the diagonal complements do not carry over.
+
+### Numbers
+
+- Result kinds equal gax's generated types for all 954 pairs: gp 121,
+  wedge 100, vee 92, lc 98, rc 98, dot 121, scalar product 57, commutator
+  81, anticommutator 121, sandwiches 44.
+- `tests/cga3d.bend`, over exact integers: eo e∞ = −1 + eo∧e∞; a conformal
+  point squares to 0; a translator moves (1, 1, 0) to (3, 1, 0); P·Q is
+  −½|p − q|².
+- Generation of all six algebras: 13 s. The CGA3D proofs are 3.2 MB (per-field laws in
+  the earlier form were 47.6 MB), split into `proofs.bend` (the
+  change-of-basis laws) and 21 files of 60 kernels (`proofs_2.bend` and
+  on), so a failure points at a part.
+- **Checking takes 4136 s** (the whole set as one file, 3.7 GB peak). A
+  32×32 Multivector product alone takes 17 s. So `tools/gate.sh` skips
+  CGA3D's proofs and says so; `tools/gate.sh --full` checks them.
+
+### What it costs
+
+- An hour of checking for CGA3D, outside the default gate. The cost is in
+  normalising both sides of each law in the checker. A homomorphism lemma
+  ("eval commutes with the spec"), proven once per operation, would remove
+  one side.
+- Laws need ring with ½ (`~half`, `h + h = 1`); kernels do not.
+- No dual/undual for CGA3D yet.
+
+### Measured, not adopted
+
+- **Kinds in the diagonal basis e₊, e₋:** every operation would be a plain
+  mirror kernel, but a motor needs 12 fields instead of 8 and the kinds no
+  longer match gax's.
+- **One law per field** (as for the diagonal sandwiches): 47.6 MB of proofs.
