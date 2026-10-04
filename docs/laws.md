@@ -210,6 +210,18 @@ Exponents are unbounded, so there is no overflow or underflow. IEEE
 binary32 adds the exponent range (subnormals: the η term of `Err.bound_u`)
 and the bit encoding; that is the software float (numerics.md, step 4).
 
+## Dual numbers (`src/dual.bend`, ADR-006)
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| Dual ring | every law `src/ring.bend` names that the normaliser takes, for T[ε]/(ε²) (`Dual.r.*`) | T a commutative ring (the same laws) | proof | `proofs/dual.bend` |
+
+Each law is two identities over T, one per part, proven by the
+normaliser. `tests/dual_map.bend` runs the normaliser at T = Dual⟨Int⟩. It
+also extracts the 4×4 matrix of a PGA3D motor's action on points by
+running the kernel with ε on each coordinate, and checks that the matrix
+times a point equals the kernel on it.
+
 ## Rounding error (`src/err.bend`, ADR-005)
 
 | law | statement | assumes | tag | proof |

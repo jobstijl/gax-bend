@@ -107,6 +107,7 @@ src/ring.bend     the ring laws a theorem may assume
 src/int.bend      exact integers
 src/dyadic.bend   dyadic rationals, one spelling per value
 src/round.bend    rounding a dyadic to p significant bits
+src/dual.bend     dual numbers: linear maps and derivatives from any kernel (ADR-006)
 src/show.bend     printing multivectors as blade sums
 src/expr.bend     the symbolic ring the generator runs Layer S on
 src/err.bend      the rounding-error model: computed operations, absev, k, h

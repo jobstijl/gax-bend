@@ -468,3 +468,46 @@ sources are in [numerics.md](numerics.md).
   checker.
 - **Per-kernel tools (FPTaylor, Gappa) as the evidence:** one run per
   kernel, outside Bend. Kept as cross-checks.
+
+---
+
+## ADR-006: Linear maps come from the dual-number coefficient ring, not from typed slot lists
+
+**Status:** accepted, 2026-10-05. Partial answer to the brief's extensor
+layer (gax law families A–C); the multicategory structure is not typed.
+
+### Decision
+
+gax makes values, linear maps and multilinear forms one type family:
+`Point<(Point,)>` is a point-valued map of a point, and products of
+`A<S1>` and `B<S2>` are `C<S1 ++ S2>`. That needs every kernel templated
+over a bilinear coefficient pairing, A × B → C, and in Bend also a Layer S
+over pairings, so that the mirror proofs still apply.
+
+Here kernels keep one coefficient ring, and maps come from a ring instead:
+dual numbers T[ε]/(ε²) (`src/dual.bend`), proven a commutative ring over
+any commutative ring T (`proofs/dual.bend`). Running a kernel with ε on
+input coefficient j puts column j of the kernel's matrix (for a kernel
+linear in that operand) in the outputs' ε parts. In general it puts the
+derivative along that coefficient there: forward-mode differentiation.
+Every kernel, mirror law, error law and API function runs on duals
+unchanged, because they are generic in T.
+
+### What it costs
+
+- A matrix takes n kernel runs, one per input coefficient, where gax gets
+  it in one pass. The prepared sandwich maps (`V.prepare.X`) stay the fast
+  path for versors.
+- Slot lists are not types: there is no `B<(A,)>` kind, no typed
+  composition, and the multicategory laws (gax family A) are not stated.
+  Linearity (family B) is checked on values (`tests/dual_map.bend`: matrix
+  times point equals the kernel), not yet proven per kernel.
+- Lifting (family C) holds by construction: the dual-number instance of a
+  kernel is the same code.
+
+### Measured, not adopted
+
+- **Typed slot lists with pairing-templated kernels:** every kernel's
+  signature, the generator and Layer S would change, with the mirror
+  proofs redone over pairings. Revisit if typed maps prove necessary for
+  the API.
