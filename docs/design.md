@@ -402,3 +402,43 @@ e1∧e₋ + e1∧e₊), and the coefficients of eo carry ½.
   mirror kernel, but a motor needs 12 fields instead of 8 and the kinds no
   longer match gax's.
 - **One law per field** (as for the diagonal sandwiches): 47.6 MB of proofs.
+
+---
+
+## ADR-005: Rounding error is proven once for every kernel, measured against an exact oracle, tracked optionally
+
+**Status:** accepted, 2026-10-04; work in progress. The plan, the survey and the
+sources are in [numerics.md](numerics.md).
+
+### Decision
+
+1. **Prove** one theorem by induction on the reified term (`Tm`):
+   |fl(e) − ⟦e⟧| ≤ h(k(e))·|e|abs, with h(k) = (1+u)ᵏ − 1. It holds over
+   any ordered ring and any rounding function satisfying the standard
+   model |rnd(x) − x| ≤ u|x| (+ η for underflow). Each kernel's bound
+   follows from its depth and its sign-stripped twin.
+2. **Measure** against the same kernel run at T = dyadic (exact), reporting
+   ulps, error over bound, and the condition ratio.
+3. **Track** (optional): running bounds (the ⊛ kernel, about 2×), and an
+   `Approx(b)` type in the absolute metric.
+4. **Native F32** gets the theorem under the hypothesis that it rounds by
+   the model (proof-modulo). The software float discharges that hypothesis
+   by proof, faithful rounding first.
+
+### What it costs
+
+- An ordered-ring hypothesis set beside the ring one.
+- The bound is the worst case: about k·u where measurements show about
+  √k·u.
+- The software float's rounding proof is the largest single piece of work
+  in the plan.
+
+### Measured, not adopted
+
+- **NumFuzz's relative-precision metric:** not defined across sign
+  changes, and GA sums cancel.
+- **Probabilistic bounds as theorems:** false under round-to-nearest
+  (deterministic rounding), and they would need probability theory in the
+  checker.
+- **Per-kernel tools (FPTaylor, Gappa) as the evidence:** one run per
+  kernel, outside Bend. Kept as cross-checks.
