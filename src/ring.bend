@@ -43,3 +43,11 @@ def Ring.UnitL(T: Data, mul: T -> T -> T, one: T) -> Type:
 # a * 1 = a
 def Ring.UnitR(T: Data, mul: T -> T -> T, one: T) -> Type:
   @a: T -> {mul(a, one) == a : T}
+
+# 0 + a = a
+def Ring.ZeroL(T: Data, add: T -> T -> T, zero: T) -> Type:
+  @a: T -> {add(zero, a) == a : T}
+
+# a + (-a) = 0
+def Ring.AddInv(T: Data, add: T -> T -> T, neg: T -> T, zero: T) -> Type:
+  @a: T -> {add(a, neg(a)) == zero : T}

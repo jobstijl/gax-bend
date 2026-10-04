@@ -27,6 +27,8 @@ The hypothesis names come from `src/ring.bend`:
 | `neg_neg` | −(−a) = a |
 | `neg_mul_l`, `neg_mul_r` | (−a)b = −(ab), a(−b) = −(ab) |
 | `one_one` | 1·1 = 1 |
+| `zero_l`, `add_inv` | 0 + a = a, a + (−a) = 0 (the normaliser only) |
+| `unit_r` | a·1 = a (the normaliser only) |
 
 Commutativity of multiplication is assumed only where a law needs it:
 `reverse_gp` and `gp_scale_right`. So `gp_assoc`, distributivity,
@@ -71,6 +73,25 @@ with every flag false.
   (−1)^{m+n} inv^a(rev y) · inv^{a⊕f}(rev x).
 - **`Comp.rl`:** J_R and J_L with flags between them compose to a grade
   sign that depends on the parity of d.
+
+## Ring identities by cancellation (`src/norm.bend`)
+
+A term over `add`, `mul`, `neg` and `zero` is reified as a `Tm` whose
+variables index an environment list. `Tm.flat` expands it into signed
+monomials with sorted variables, and `Norm.left` cancels opposite monomials
+in pairs. All of it is structural and runs in the checker on closed terms.
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| `Norm.zero` | `Norm.left(t) == []` ⇒ eval(t) = 0 | add_assoc, add_comm, zero_l, add_inv, mul_assoc, mul_comm, unit_r, dist_l, neg_add, neg_mul_l, neg_neg | proof | `proofs/norm.bend` |
+| `Norm.eq` | `Norm.left(a − b) == []` ⇒ eval(a) = eval(b) | as `Norm.zero` | proof | `proofs/norm.bend` |
+
+The method is complete for identities whose expanded monomials cancel
+with coefficients ±1, which covers every polynomial identity: a
+coefficient c is c copies of a monomial. Its cost is quadratic in the
+number of monomials. Uses: `tests/norm_identities.bend` (positive);
+`tests/neg/norm_wrong.bend` claims (x + y)² = x² + y², and the checker
+reports the two xy monomials left over.
 
 ## Generated kernels (Layer K)
 
@@ -119,6 +140,7 @@ Each one must fail to check. The gate fails if any passes.
 | `metric_sign.bend` | e1 e1 = +1 when e1 squares to −1 | metric |
 | `wedge_grade_off.bend` | e1 ∧ e2 is a 3-vector | grades |
 | `kernel_sign.bend` | a PGA3D kernel with one sign flipped equals the spec | kernels |
+| `norm_wrong.bend` | (x + y)² = x² + y² over any commutative ring | normaliser |
 
 ## Examples (`tests/`)
 
