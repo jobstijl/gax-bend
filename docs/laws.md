@@ -178,6 +178,27 @@ instantiates the normaliser at T = Dy, and a generated kernel error law at
 T = Dy for any ε ≥ 0. So binary floating point's exact values form a
 concrete ordered ring for every theorem stated over one.
 
+## Rounding (`src/round.bend`)
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| `Round.rel` | for every dyadic z and p ≥ 1: \|trunc_p(z) − z\| ≤ 2^(1−p) \|z\| (truncation to p significant bits, toward zero) | nothing | proof | `proofs/round.bend` |
+
+Truncation halves the magnitude n until it is below 2^p, keeping n = q 2^s
++ r, 2^s = r + 1 + w_r and, once shifted, q = 2^(p−1) + w_q (`Inv`, true
+for any fuel). From these, n = r 2^(p−1) + c for an explicit c, an
+identity the normaliser checks at T = Int. So the rounding error r is at
+most 2^(1−p) of n.
+
+With `Round.rel`, p-bit truncating arithmetic on dyadics satisfies the
+standard model, so every theorem above holds for it with no hypothesis
+left. `tests/round_err.bend` instantiates VGA2D's vector-product error law
+with it for every p. It also checks that ε cannot be halved: at p = 2,
+z = 11 truncates to 8, an error of 3/11 of |z|, more than 2⁻².
+Exponents are unbounded, so there is no overflow or underflow. IEEE
+binary32 adds round-to-nearest (ε = 2⁻²⁴), the exponent range and the
+bit encoding; that is the software float (numerics.md, step 4).
+
 ## Rounding error (`src/err.bend`, ADR-005)
 
 | law | statement | assumes | tag | proof |

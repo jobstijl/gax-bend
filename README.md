@@ -13,7 +13,7 @@ is the semantic reference.
 | K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA, STAP, CGA3D and CSTA (the last two in gax's null basis, through a proven change of basis): 7547 kernels; all proven except CSTA's, whose proofs are generated but not yet checked in full (about 10 h; `algebras/`) |
 | A, the API | PGA2D/3D, VGA3D, CGA3D, STA with geometric nouns and batch APIs | PGA3D (`api/pga3d.bend`): constructors, exp/log, normalize, sqrt, motions between elements; CGA3D (`api/cga3d.bend`): points, spheres, planes, motions; VGA3D rotors and PGA2D motions (`api/vga3d.bend`, `api/pga2d.bend`); STA (`api/sta.bend`): the Lorentz group, with boosts, rotations, and exp/log through complex Study numbers (`api/cx.bend`) |
 | rounding error | one theorem for every term, with and without underflow, and per kernel a law that each output is within h(k)·(kernel on \|inputs\|) of exact | **proven** (`proofs/err.bend`, `algebras/*/err.bend`: 7189 kernel laws, all checked); F32 measured within the bound ([docs/numerics.md](docs/numerics.md)); a proven run-time bound from computed quantities (`Err.track`, `api/track.bend`) |
-| numbers | exact `Int` and dyadic rationals, both proven ordered commutative rings (`proofs/int.bend`, `proofs/dyadic.bend`); double-F32 (`num/df32.bend`, reference arithmetic); proven rounding, SoftF32, posits to come | Phase 3 |
+| numbers | exact `Int` and dyadic rationals, both proven ordered commutative rings (`proofs/int.bend`, `proofs/dyadic.bend`); double-F32 (`num/df32.bend`, reference arithmetic); truncation to p bits proven to meet the rounding model, so the error theorems hold outright for p-bit arithmetic (`proofs/round.bend`); round-to-nearest, SoftF32, posits to come | Phase 3 |
 
 The Phase 0 measurements behind the design (checker cost, kernel speed
 against C, GPU) are in [docs/bend-facts.md](docs/bend-facts.md), and the
@@ -106,6 +106,7 @@ src/spec.bend     Layer S: MV(T, d), Sig(d), products, signs, complements, grade
 src/ring.bend     the ring laws a theorem may assume
 src/int.bend      exact integers
 src/dyadic.bend   dyadic rationals, one spelling per value
+src/round.bend    rounding a dyadic to p significant bits
 src/show.bend     printing multivectors as blade sums
 src/expr.bend     the symbolic ring the generator runs Layer S on
 src/err.bend      the rounding-error model: computed operations, absev, k, h

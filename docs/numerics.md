@@ -207,7 +207,12 @@ and it does.
    The oracle is not: run-time Nat is capped at 2⁴⁸ (bend-facts Q16), so
    exact F32 sums need limbs. The double-F32 reference stays meanwhile.
 4. The software float: faithful rounding proven against the model, then
-   correct rounding. The largest piece; recent Lean work (TorchLean's
+   correct rounding. **Started:** truncation to p bits on dyadics is
+   proven to meet the model with ε = 2^(1−p) (`proofs/round.bend`). So the
+   theorems hold outright for p-bit truncating arithmetic
+   (`tests/round_err.bend`). Still to do: round to nearest (ε = 2^−p), the
+   binary32 exponent range, and the bit-level implementation proven equal
+   to it. The largest piece; recent Lean work (TorchLean's
    IEEE32Exec, FloatLib, Tunnell's FP) is the closest reference.
 5. Running bounds (**done**: `Err.track`, `api/track.bend`) and `Approx`;
    compensated and exact-accumulator kernels.
