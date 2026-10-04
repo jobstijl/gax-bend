@@ -521,6 +521,636 @@ def Multivector.vee.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F
 def Multivector.vee.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Multivector.vee.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Scalar.lc.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Vector(a: K.Scalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Scalar.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Bivector(a: K.Scalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Scalar.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Pseudoscalar(a: K.Scalar<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Paravector(a: K.Scalar<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Scalar.lc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Rotor(a: K.Scalar<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Scalar.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Odd(a: K.Scalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Scalar.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Scalar.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Vector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Bivector<F32>:
+  O.Vector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Paravector(a: K.Vector<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Vector.lc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Rotor(a: K.Vector<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Vector.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Vector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Pseudoscalar(a: K.Bivector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Bivector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Rotor(a: K.Bivector<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Bivector.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Bivector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Scalar(a: K.Paravector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Paravector.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Vector(a: K.Paravector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Bivector(a: K.Paravector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Pseudoscalar(a: K.Paravector<F32>, b: K.Pseudoscalar<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Paravector(a: K.Paravector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Rotor(a: K.Paravector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Odd(a: K.Paravector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.lc.Multivector(a: K.Paravector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Paravector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Rotor.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Vector(a: K.Rotor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Rotor.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Bivector(a: K.Rotor<F32>, b: K.Bivector<F32>) -> K.Rotor<F32>:
+  O.Rotor.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Pseudoscalar(a: K.Rotor<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Rotor.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Paravector(a: K.Rotor<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Rotor.lc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Rotor.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Odd(a: K.Rotor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Rotor.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.lc.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Rotor.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Odd.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Odd.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Rotor<F32>:
+  O.Odd.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Paravector(a: K.Odd<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Odd.lc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Rotor(a: K.Odd<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Odd.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Odd.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Paravector(a: K.Multivector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Rotor(a: K.Multivector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Paravector(a: K.Scalar<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Rotor(a: K.Scalar<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Vector<F32>:
+  O.Vector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Paravector(a: K.Vector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Vector.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Rotor(a: K.Vector<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Vector.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Vector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Scalar(a: K.Bivector<F32>, b: K.Scalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Vector(a: K.Bivector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Bivector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Paravector(a: K.Bivector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Bivector.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Rotor(a: K.Bivector<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Bivector.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Bivector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Scalar(a: K.Pseudoscalar<F32>, b: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Pseudoscalar.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Vector(a: K.Pseudoscalar<F32>, b: K.Vector<F32>) -> K.Bivector<F32>:
+  O.Pseudoscalar.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Bivector(a: K.Pseudoscalar<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Paravector(a: K.Pseudoscalar<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Pseudoscalar.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Rotor(a: K.Pseudoscalar<F32>, b: K.Rotor<F32>) -> K.Odd<F32>:
+  O.Pseudoscalar.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Pseudoscalar.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Pseudoscalar.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.rc.Scalar(a: K.Paravector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Paravector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.rc.Vector(a: K.Paravector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Paravector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.rc.Paravector(a: K.Paravector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Paravector.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.rc.Rotor(a: K.Paravector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Paravector.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.rc.Odd(a: K.Paravector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Paravector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.rc.Multivector(a: K.Paravector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Paravector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Rotor<F32>:
+  O.Rotor.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Vector(a: K.Rotor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Rotor.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Bivector(a: K.Rotor<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Rotor.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Paravector(a: K.Rotor<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Rotor.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Rotor.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Odd(a: K.Rotor<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Rotor.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.rc.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Rotor.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Odd<F32>:
+  O.Odd.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Rotor<F32>:
+  O.Odd.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Odd.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Odd.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Paravector(a: K.Odd<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Odd.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Rotor(a: K.Odd<F32>, b: K.Rotor<F32>) -> K.Odd<F32>:
+  O.Odd.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Odd.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Paravector(a: K.Multivector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Rotor(a: K.Multivector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Vector(a: K.Scalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Scalar.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Bivector(a: K.Scalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Scalar.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Pseudoscalar(a: K.Scalar<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Paravector(a: K.Scalar<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Scalar.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Rotor(a: K.Scalar<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Scalar.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Odd(a: K.Scalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Scalar.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Scalar.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Vector<F32>:
+  O.Vector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Vector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Bivector<F32>:
+  O.Vector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Paravector(a: K.Vector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Vector.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Rotor(a: K.Vector<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Vector.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Vector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Scalar(a: K.Bivector<F32>, b: K.Scalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Vector(a: K.Bivector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Bivector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Pseudoscalar(a: K.Bivector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Bivector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Paravector(a: K.Bivector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Bivector.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Rotor(a: K.Bivector<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Bivector.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Bivector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Scalar(a: K.Pseudoscalar<F32>, b: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Pseudoscalar.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Vector(a: K.Pseudoscalar<F32>, b: K.Vector<F32>) -> K.Bivector<F32>:
+  O.Pseudoscalar.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Bivector(a: K.Pseudoscalar<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Paravector(a: K.Pseudoscalar<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Pseudoscalar.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Rotor(a: K.Pseudoscalar<F32>, b: K.Rotor<F32>) -> K.Odd<F32>:
+  O.Pseudoscalar.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Pseudoscalar.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Pseudoscalar.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Scalar(a: K.Paravector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Vector(a: K.Paravector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Bivector(a: K.Paravector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Pseudoscalar(a: K.Paravector<F32>, b: K.Pseudoscalar<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Paravector(a: K.Paravector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Rotor(a: K.Paravector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Odd(a: K.Paravector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.dot.Multivector(a: K.Paravector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Paravector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Rotor<F32>:
+  O.Rotor.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Vector(a: K.Rotor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Rotor.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Bivector(a: K.Rotor<F32>, b: K.Bivector<F32>) -> K.Rotor<F32>:
+  O.Rotor.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Pseudoscalar(a: K.Rotor<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Rotor.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Paravector(a: K.Rotor<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Rotor.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Rotor.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Odd(a: K.Rotor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Rotor.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.dot.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Rotor.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Odd<F32>:
+  O.Odd.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Rotor<F32>:
+  O.Odd.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Odd.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Rotor<F32>:
+  O.Odd.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Paravector(a: K.Odd<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Odd.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Rotor(a: K.Odd<F32>, b: K.Rotor<F32>) -> K.Odd<F32>:
+  O.Odd.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Rotor<F32>:
+  O.Odd.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Paravector(a: K.Multivector<F32>, b: K.Paravector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Rotor(a: K.Multivector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Paravector(a: K.Scalar<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Rotor(a: K.Scalar<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Paravector(a: K.Vector<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.scalar_product.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.scalar_product.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.scalar_product.Rotor(a: K.Bivector<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Bivector.scalar_product.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.scalar_product.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.scalar_product.Scalar(a: K.Paravector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Paravector.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.scalar_product.Vector(a: K.Paravector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Paravector.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.scalar_product.Paravector(a: K.Paravector<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Paravector.scalar_product.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.scalar_product.Rotor(a: K.Paravector<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Paravector.scalar_product.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.scalar_product.Odd(a: K.Paravector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Paravector.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Paravector.scalar_product.Multivector(a: K.Paravector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Paravector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.scalar_product.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Rotor.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.scalar_product.Bivector(a: K.Rotor<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Rotor.scalar_product.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.scalar_product.Paravector(a: K.Rotor<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Rotor.scalar_product.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.scalar_product.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Rotor.scalar_product.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.scalar_product.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Rotor.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Paravector(a: K.Odd<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Paravector(a: K.Multivector<F32>, b: K.Paravector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Paravector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Rotor(a: K.Multivector<F32>, b: K.Rotor<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
 def Scalar.add.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Scalar.add.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 

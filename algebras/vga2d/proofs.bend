@@ -837,6 +837,1038 @@ def Multivector.vee.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       {==}
 
+def Scalar.lc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Scalar.lc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.lc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.lc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Scalar.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Scalar.lc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Scalar.lc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Scalar.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Scalar.lc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Scalar.lc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Scalar.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.lc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.lc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Scalar.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.lc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.lc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Vector.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.lc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.lc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Vector.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Vector.lc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Vector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Vector.lc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Vector.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Vector.lc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>)
+  -> {K.Vector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Vector.lc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Vector.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.lc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.lc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Pseudoscalar.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.lc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.lc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Pseudoscalar.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.lc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.lc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Pseudoscalar.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.lc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.lc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Rotor.lc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.lc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.lc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Rotor.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Rotor.lc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Rotor.lc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Rotor.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.lc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Rotor.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.lc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Rotor.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.lc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.lc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Rotor.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.lc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.lc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Multivector.lc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.lc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.lc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Multivector.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.lc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.lc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Multivector.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.lc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.lc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Multivector.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.lc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.lc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Multivector.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.lc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.lc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.rc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Scalar.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.rc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.rc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Scalar.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.rc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.rc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Scalar.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.rc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.rc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Vector.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      {==}
+
+def Vector.rc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>)
+  -> {K.Vector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      {==}
+
+def Vector.rc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Vector.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.rc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.rc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Vector.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Vector.rc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>)
+  -> {K.Vector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Vector.rc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Vector.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.rc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.rc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Pseudoscalar.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      {==}
+
+def Pseudoscalar.rc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> {K.Pseudoscalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      {==}
+
+def Pseudoscalar.rc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Pseudoscalar.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Pseudoscalar.rc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Pseudoscalar.rc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Pseudoscalar.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.rc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.rc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Pseudoscalar.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.rc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.rc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Pseudoscalar.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.rc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.rc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Rotor.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.rc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Rotor.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.rc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Rotor.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Rotor.rc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Rotor.rc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Rotor.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.rc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.rc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Rotor.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.rc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.rc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Rotor.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.rc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.rc.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Multivector.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.rc.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.rc.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Multivector.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.rc.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.rc.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Multivector.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.rc.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.rc.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Multivector.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.rc.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.rc.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Multivector.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.rc.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.rc(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.dot.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Scalar.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.dot.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.dot.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Scalar.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Scalar.dot.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Scalar.dot.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Scalar.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Scalar.dot.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Scalar.dot.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Scalar.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.dot.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.dot.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Scalar.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.dot.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.dot.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Vector.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      {==}
+
+def Vector.dot.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>)
+  -> {K.Vector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      {==}
+
+def Vector.dot.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Vector.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.dot.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.dot.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Vector.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Vector.dot.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Vector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Vector.dot.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Vector.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Vector.dot.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>)
+  -> {K.Vector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Vector.dot.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Vector.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.dot.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.dot.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Pseudoscalar.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      {==}
+
+def Pseudoscalar.dot.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> {K.Pseudoscalar.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      {==}
+
+def Pseudoscalar.dot.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Pseudoscalar.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Pseudoscalar.dot.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Pseudoscalar.dot.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Pseudoscalar.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.dot.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.dot.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Pseudoscalar.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.dot.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.dot.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Pseudoscalar.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.dot.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.dot.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Rotor.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.dot.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Rotor.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.dot.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>)
+  -> {K.Vector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Rotor.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Vector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Rotor.dot.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>)
+  -> {K.Vector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Rotor.dot.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Rotor.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.dot.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Rotor.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.dot.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Rotor.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.dot.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.dot.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Rotor.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.dot.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.dot.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Multivector.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.dot.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.dot.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Multivector.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.dot.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.dot.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Multivector.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.dot.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.dot.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Multivector.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.dot.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.dot.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Multivector.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.dot.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.out(T, S.MV.dot(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.scalar_product.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Scalar.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.scalar_product.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      {==}
+
+def Scalar.scalar_product.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Scalar.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.scalar_product.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Scalar.scalar_product.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Scalar.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Scalar.scalar_product.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.scalar_product.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Vector.scalar_product.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.scalar_product.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Vector.scalar_product.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Vector.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Vector.scalar_product.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.scalar_product.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Pseudoscalar.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.scalar_product.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Pseudoscalar.scalar_product.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Pseudoscalar.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.scalar_product.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Pseudoscalar.scalar_product.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Pseudoscalar.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Pseudoscalar.scalar_product.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.scalar_product.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Rotor.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.scalar_product.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Rotor.scalar_product.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Rotor.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.scalar_product.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Rotor.scalar_product.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Rotor.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.scalar_product.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.scalar_product.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Rotor.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Rotor.scalar_product.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.scalar_product.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Multivector.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.scalar_product.Scalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      {==}
+
+def Multivector.scalar_product.Vector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == O.Multivector.scalar_product.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.scalar_product.Vector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      {==}
+
+def Multivector.scalar_product.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == O.Multivector.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.scalar_product.Pseudoscalar.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      {==}
+
+def Multivector.scalar_product.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == O.Multivector.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.scalar_product.Rotor.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Multivector.scalar_product.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == O.Multivector.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
+def Multivector.scalar_product.Multivector.supp(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>)
+  -> {K.Scalar.out(T, S.MV.scalar_product(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == S.MV.zero(T, 2n) : S.MV(T, 2n)}:
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      {==}
+
 def Scalar.add.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>)
   -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.add(~T, ~add, 2n, K.Scalar.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b))) == O.Scalar.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
   match a b:

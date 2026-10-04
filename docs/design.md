@@ -186,6 +186,8 @@ Negative controls are required per law family.
 
 **Status:** accepted, 2026-10-04. Built for VGA2D, VGA3D, PGA2D, PGA3D and STA: 2083 kernels (gp, wedge, vee, add, sub, neg, reverse, involute, conjugate, dual, undual), each with a mirror law and a support law, plus field getters and an F32 module per algebra. The gate checks them all in about 10 s. Mirror kernels run as fast as gax's optimised sandwich in the Q5 harness (bend-facts Q11).
 
+*Amended 2026-10-04:* the inner products (lc, rc, dot, scalar_product) and the sandwiches (ADR-003) bring it to 3455 kernels.
+
 ### Context
 
 Layer S is proven, but it is a tree walk: no use as runtime code. Speed
@@ -294,8 +296,8 @@ modulo u~u = 1 and for optimised kernels.
 
 ### What it costs
 
-- Proofs of zero laws assume commutativity, so sandwich support is not
-  claimed over noncommutative rings. It is false there.
+- Zero laws assume a commutative ring, so sandwich support is claimed
+  only there. The other kernel certificates need no ring law.
 - Cancellation is quadratic in the number of monomials. That is fine for
   degree-3 sandwich terms; degree-4 or larger identities may need sorting
   first.

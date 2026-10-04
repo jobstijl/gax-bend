@@ -1696,6 +1696,1926 @@ def Multivector.vee.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         add(mul(a_e12, b_e123), mul(a_e123, b_e12)),
         mul(a_e123, b_e123)}
 
+def Scalar.lc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.lc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3)}
+
+def Scalar.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Scalar.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Pseudoscalar{+b_e123}:
+      K.Pseudoscalar{
+        mul(a_s, b_e123)}
+
+def Scalar.lc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Scalar.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        mul(a_s, b_s),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Scalar.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Odd{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e123)}
+
+def Scalar.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        mul(a_s, b_e123)}
+
+def Vector.lc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23))}
+
+def Vector.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e123}:
+      K.Bivector{
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Vector.lc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23))}
+
+def Vector.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Vector.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        zero}
+
+def Bivector.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Bivector.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Pseudoscalar<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Pseudoscalar{+b_e123}:
+      K.Vector{
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123))}
+
+def Bivector.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Bivector.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Odd<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Vector{
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123))}
+
+def Bivector.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123)),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Pseudoscalar.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Pseudoscalar.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Pseudoscalar.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Paravector.lc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Paravector.lc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Paravector.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e123}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Paravector.lc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        mul(a_s, b_s),
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Paravector.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Paravector.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_s, b_e1)),
+        add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_s, b_e2)),
+        add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_s, b_e3)),
+        add(mul(a_e1, b_e123), mul(a_s, b_e23)),
+        neg(add(neg(mul(a_e2, b_e123)), mul(a_s, neg(b_e31)))),
+        add(mul(a_e3, b_e123), mul(a_s, b_e12)),
+        mul(a_s, b_e123)}
+
+def Rotor.lc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Rotor.lc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3)}
+
+def Rotor.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Bivector<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Rotor.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Pseudoscalar{+b_e123}:
+      K.Odd{
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123)),
+        mul(a_s, b_e123)}
+
+def Rotor.lc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Rotor.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Rotor.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Odd{
+        add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1)),
+        add(mul(neg(a_e31), b_e123), mul(a_s, b_e2)),
+        add(neg(mul(a_e12, b_e123)), mul(a_s, b_e3)),
+        mul(a_s, b_e123)}
+
+def Rotor.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1)),
+        add(mul(neg(a_e31), b_e123), mul(a_s, b_e2)),
+        add(neg(mul(a_e12, b_e123)), mul(a_s, b_e3)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        mul(a_s, b_e123)}
+
+def Odd.lc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Odd.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23))}
+
+def Odd.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Rotor{
+        neg(mul(a_e123, b_e123)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Odd.lc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Odd.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Rotor<T>) -> K.Vector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23))}
+
+def Odd.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Odd.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        zero}
+
+def Multivector.lc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Multivector.lc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Multivector.lc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Multivector.lc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Multivector{
+        neg(mul(a_e123, b_e123)),
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Multivector.lc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Multivector.lc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Multivector.lc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1)),
+        add(mul(neg(a_e31), b_e123), mul(a_s, b_e2)),
+        add(neg(mul(a_e12, b_e123)), mul(a_s, b_e3)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Multivector.lc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)))),
+        add(neg(mul(a_e23, b_e123)), add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_s, b_e1))),
+        add(mul(neg(a_e31), b_e123), add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_s, b_e2))),
+        add(neg(mul(a_e12, b_e123)), add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_s, b_e3))),
+        add(mul(a_e1, b_e123), mul(a_s, b_e23)),
+        neg(add(neg(mul(a_e2, b_e123)), mul(a_s, neg(b_e31)))),
+        add(mul(a_e3, b_e123), mul(a_s, b_e12)),
+        mul(a_s, b_e123)}
+
+def Scalar.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Vector.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Vector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s)}
+
+def Vector.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Vector.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s)}
+
+def Vector.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Bivector.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Scalar<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Bivector{
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Bivector.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))}
+
+def Bivector.rc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Bivector.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        zero,
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Bivector.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Bivector.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Odd<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Vector{
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))}
+
+def Bivector.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Pseudoscalar.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Scalar{+b_s}:
+      K.Pseudoscalar{
+        mul(a_e123, b_s)}
+
+def Pseudoscalar.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Bivector{
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Pseudoscalar.rc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12))}
+
+def Pseudoscalar.rc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Pseudoscalar.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Pseudoscalar.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Odd{
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12)),
+        mul(a_e123, b_s)}
+
+def Pseudoscalar.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        neg(mul(a_e123, b_e123)),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Pseudoscalar.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        neg(mul(a_e123, b_e123)),
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12)),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Paravector.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Paravector.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Paravector.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Rotor.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Rotor{
+        mul(a_s, b_s),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Rotor.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))}
+
+def Rotor.rc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Rotor.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        mul(a_s, b_s),
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Rotor.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Rotor.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Odd<T>) -> K.Vector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Vector{
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))}
+
+def Rotor.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Odd.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Scalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Scalar{+b_s}:
+      K.Odd{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e123, b_s)}
+
+def Odd.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Rotor{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Odd.rc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12))}
+
+def Odd.rc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Odd.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Odd.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Rotor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Odd{
+        add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)),
+        add(mul(a_e123, neg(b_e31)), mul(a_e2, b_s)),
+        add(neg(mul(a_e123, b_e12)), mul(a_e3, b_s)),
+        mul(a_e123, b_s)}
+
+def Odd.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Odd.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)),
+        add(mul(a_e123, neg(b_e31)), mul(a_e2, b_s)),
+        add(neg(mul(a_e123, b_e12)), mul(a_e3, b_s)),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Multivector.rc.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Scalar{+b_s}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        mul(a_e123, b_s)}
+
+def Multivector.rc.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        zero}
+
+def Multivector.rc.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12)),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Multivector.rc.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Multivector.rc.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_e1, b_s)),
+        add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_e2, b_s)),
+        add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_e3, b_s)),
+        add(mul(a_e123, b_e1), mul(a_e23, b_s)),
+        neg(add(neg(mul(a_e123, b_e2)), mul(neg(a_e31), b_s))),
+        add(mul(a_e123, b_e3), mul(a_e12, b_s)),
+        mul(a_e123, b_s)}
+
+def Multivector.rc.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)),
+        add(mul(a_e123, neg(b_e31)), mul(a_e2, b_s)),
+        add(neg(mul(a_e123, b_e12)), mul(a_e3, b_s)),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        mul(a_e123, b_s)}
+
+def Multivector.rc.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        zero}
+
+def Multivector.rc.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)))),
+        add(neg(mul(a_e123, b_e23)), add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_e1, b_s))),
+        add(mul(a_e123, neg(b_e31)), add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_e2, b_s))),
+        add(neg(mul(a_e123, b_e12)), add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_e3, b_s))),
+        add(mul(a_e123, b_e1), mul(a_e23, b_s)),
+        neg(add(neg(mul(a_e123, b_e2)), mul(neg(a_e31), b_s))),
+        add(mul(a_e123, b_e3), mul(a_e12, b_s)),
+        mul(a_e123, b_s)}
+
+def Scalar.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3)}
+
+def Scalar.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Scalar.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Pseudoscalar{+b_e123}:
+      K.Pseudoscalar{
+        mul(a_s, b_e123)}
+
+def Scalar.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Scalar.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        mul(a_s, b_s),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Scalar.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Odd{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e123)}
+
+def Scalar.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        mul(a_s, b_e123)}
+
+def Vector.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Vector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s)}
+
+def Vector.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23))}
+
+def Vector.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e123}:
+      K.Bivector{
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Vector.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Vector.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Rotor<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_e1, b_s)),
+        add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_e2, b_s)),
+        add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_e3, b_s))}
+
+def Vector.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Vector.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_e1, b_s)),
+        add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_e2, b_s)),
+        add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_e3, b_s)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        zero}
+
+def Bivector.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Scalar<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Bivector{
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Bivector.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))}
+
+def Bivector.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Bivector.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Pseudoscalar<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Pseudoscalar{+b_e123}:
+      K.Vector{
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123))}
+
+def Bivector.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        zero,
+        add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)),
+        add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)),
+        add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Bivector.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Bivector.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Odd<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Vector{
+        add(neg(mul(a_e23, b_e123)), add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3))),
+        add(mul(neg(a_e31), b_e123), add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3))),
+        add(neg(mul(a_e12, b_e123)), add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))))}
+
+def Bivector.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        add(neg(mul(a_e23, b_e123)), add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3))),
+        add(mul(neg(a_e31), b_e123), add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3))),
+        add(neg(mul(a_e12, b_e123)), add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Pseudoscalar.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Scalar{+b_s}:
+      K.Pseudoscalar{
+        mul(a_e123, b_s)}
+
+def Pseudoscalar.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Bivector{
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Pseudoscalar.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12))}
+
+def Pseudoscalar.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Pseudoscalar.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Pseudoscalar.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Odd{
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12)),
+        mul(a_e123, b_s)}
+
+def Pseudoscalar.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        neg(mul(a_e123, b_e123)),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Pseudoscalar.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        neg(mul(a_e123, b_e123)),
+        neg(mul(a_e123, b_e23)),
+        mul(a_e123, neg(b_e31)),
+        neg(mul(a_e123, b_e12)),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Paravector.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))),
+        add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))),
+        add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Paravector.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e123}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Paravector.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        add(mul(a_s, b_e1), mul(a_e1, b_s)),
+        add(mul(a_s, b_e2), mul(a_e2, b_s)),
+        add(mul(a_s, b_e3), mul(a_e3, b_s)),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Paravector.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        mul(a_s, b_s),
+        add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_e1, b_s)),
+        add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_e2, b_s)),
+        add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_e3, b_s)),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Paravector.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Paravector.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), add(mul(a_s, b_e1), mul(a_e1, b_s))),
+        add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), add(mul(a_s, b_e2), mul(a_e2, b_s))),
+        add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), add(mul(a_s, b_e3), mul(a_e3, b_s))),
+        add(mul(a_e1, b_e123), mul(a_s, b_e23)),
+        neg(add(neg(mul(a_e2, b_e123)), mul(a_s, neg(b_e31)))),
+        add(mul(a_e3, b_e123), mul(a_s, b_e12)),
+        mul(a_s, b_e123)}
+
+def Rotor.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Rotor{
+        mul(a_s, b_s),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s)}
+
+def Rotor.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_s, b_e1)),
+        add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_s, b_e2)),
+        add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_s, b_e3))}
+
+def Rotor.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Bivector<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12)}
+
+def Rotor.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Pseudoscalar{+b_e123}:
+      K.Odd{
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123)),
+        mul(a_s, b_e123)}
+
+def Rotor.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        mul(a_s, b_s),
+        add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_s, b_e1)),
+        add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_s, b_e2)),
+        add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_s, b_e3)),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        zero}
+
+def Rotor.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(mul(a_s, b_e23), mul(a_e23, b_s)),
+        neg(add(mul(a_s, neg(b_e31)), mul(neg(a_e31), b_s))),
+        add(mul(a_s, b_e12), mul(a_e12, b_s))}
+
+def Rotor.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Odd{
+        add(neg(mul(a_e23, b_e123)), add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_s, b_e1))),
+        add(mul(neg(a_e31), b_e123), add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_s, b_e2))),
+        add(neg(mul(a_e12, b_e123)), add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_s, b_e3))),
+        mul(a_s, b_e123)}
+
+def Rotor.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(neg(mul(a_e23, b_e123)), add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_s, b_e1))),
+        add(mul(neg(a_e31), b_e123), add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_s, b_e2))),
+        add(neg(mul(a_e12, b_e123)), add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_s, b_e3))),
+        add(mul(a_s, b_e23), mul(a_e23, b_s)),
+        neg(add(mul(a_s, neg(b_e31)), mul(neg(a_e31), b_s))),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        mul(a_s, b_e123)}
+
+def Odd.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Scalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Scalar{+b_s}:
+      K.Odd{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e123, b_s)}
+
+def Odd.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Rotor{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3)}
+
+def Odd.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(neg(mul(a_e123, b_e23)), add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31))))),
+        add(mul(a_e123, neg(b_e31)), add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23)))),
+        add(neg(mul(a_e123, b_e12)), add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)))}
+
+def Odd.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Rotor{
+        neg(mul(a_e123, b_e123)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123)}
+
+def Odd.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        mul(a_e123, b_s)}
+
+def Odd.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Rotor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Odd{
+        add(neg(mul(a_e123, b_e23)), add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_e1, b_s))),
+        add(mul(a_e123, neg(b_e31)), add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_e2, b_s))),
+        add(neg(mul(a_e123, b_e12)), add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_e3, b_s))),
+        mul(a_e123, b_s)}
+
+def Odd.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Rotor{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(mul(a_e1, b_e123), mul(a_e123, b_e1)),
+        neg(add(neg(mul(a_e2, b_e123)), neg(mul(a_e123, b_e2)))),
+        add(mul(a_e3, b_e123), mul(a_e123, b_e3))}
+
+def Odd.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(neg(mul(a_e123, b_e23)), add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_e1, b_s))),
+        add(mul(a_e123, neg(b_e31)), add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_e2, b_s))),
+        add(neg(mul(a_e123, b_e12)), add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_e3, b_s))),
+        add(mul(a_e1, b_e123), mul(a_e123, b_e1)),
+        neg(add(neg(mul(a_e2, b_e123)), neg(mul(a_e123, b_e2)))),
+        add(mul(a_e3, b_e123), mul(a_e123, b_e3)),
+        mul(a_e123, b_s)}
+
+def Multivector.dot.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Scalar{+b_s}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e23, b_s),
+        neg(mul(neg(a_e31), b_s)),
+        mul(a_e12, b_s),
+        mul(a_e123, b_s)}
+
+def Multivector.dot.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))),
+        add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_s, b_e1)),
+        add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_s, b_e2)),
+        add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_s, b_e3)),
+        mul(a_e123, b_e1),
+        neg(neg(mul(a_e123, b_e2))),
+        mul(a_e123, b_e3),
+        zero}
+
+def Multivector.dot.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))),
+        add(neg(mul(a_e123, b_e23)), add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31))))),
+        add(mul(a_e123, neg(b_e31)), add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23)))),
+        add(neg(mul(a_e123, b_e12)), add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23))),
+        mul(a_s, b_e23),
+        neg(mul(a_s, neg(b_e31))),
+        mul(a_s, b_e12),
+        zero}
+
+def Multivector.dot.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Multivector{
+        neg(mul(a_e123, b_e123)),
+        neg(mul(a_e23, b_e123)),
+        mul(neg(a_e31), b_e123),
+        neg(mul(a_e12, b_e123)),
+        mul(a_e1, b_e123),
+        neg(neg(mul(a_e2, b_e123))),
+        mul(a_e3, b_e123),
+        mul(a_s, b_e123)}
+
+def Multivector.dot.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Paravector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)),
+        add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), add(mul(a_s, b_e1), mul(a_e1, b_s))),
+        add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), add(mul(a_s, b_e2), mul(a_e2, b_s))),
+        add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), add(mul(a_s, b_e3), mul(a_e3, b_s))),
+        add(mul(a_e123, b_e1), mul(a_e23, b_s)),
+        neg(add(neg(mul(a_e123, b_e2)), mul(neg(a_e31), b_s))),
+        add(mul(a_e123, b_e3), mul(a_e12, b_s)),
+        mul(a_e123, b_s)}
+
+def Multivector.dot.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(neg(mul(a_e123, b_e23)), add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), mul(a_e1, b_s))),
+        add(mul(a_e123, neg(b_e31)), add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), mul(a_e2, b_s))),
+        add(neg(mul(a_e123, b_e12)), add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), mul(a_e3, b_s))),
+        add(mul(a_s, b_e23), mul(a_e23, b_s)),
+        neg(add(mul(a_s, neg(b_e31)), mul(neg(a_e31), b_s))),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        mul(a_e123, b_s)}
+
+def Multivector.dot.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))),
+        add(neg(mul(a_e23, b_e123)), add(add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3)), mul(a_s, b_e1))),
+        add(mul(neg(a_e31), b_e123), add(add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3)), mul(a_s, b_e2))),
+        add(neg(mul(a_e12, b_e123)), add(add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2))), mul(a_s, b_e3))),
+        add(mul(a_e1, b_e123), mul(a_e123, b_e1)),
+        neg(add(neg(mul(a_e2, b_e123)), neg(mul(a_e123, b_e2)))),
+        add(mul(a_e3, b_e123), mul(a_e123, b_e3)),
+        mul(a_s, b_e123)}
+
+def Multivector.dot.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Multivector{
+        add(neg(mul(a_e123, b_e123)), add(add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))), add(add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3))), mul(a_s, b_s)))),
+        add(add(neg(mul(a_e23, b_e123)), neg(mul(a_e123, b_e23))), add(add(add(neg(mul(a_e2, b_e12)), neg(mul(a_e3, neg(b_e31)))), add(mul(a_e12, b_e2), mul(neg(a_e31), b_e3))), add(mul(a_s, b_e1), mul(a_e1, b_s)))),
+        add(add(mul(neg(a_e31), b_e123), mul(a_e123, neg(b_e31))), add(add(add(mul(a_e1, b_e12), neg(mul(a_e3, b_e23))), add(neg(mul(a_e12, b_e1)), mul(a_e23, b_e3))), add(mul(a_s, b_e2), mul(a_e2, b_s)))),
+        add(add(neg(mul(a_e12, b_e123)), neg(mul(a_e123, b_e12))), add(add(add(mul(a_e1, neg(b_e31)), mul(a_e2, b_e23)), add(neg(mul(neg(a_e31), b_e1)), neg(mul(a_e23, b_e2)))), add(mul(a_s, b_e3), mul(a_e3, b_s)))),
+        add(add(mul(a_e1, b_e123), mul(a_e123, b_e1)), add(mul(a_s, b_e23), mul(a_e23, b_s))),
+        neg(add(add(neg(mul(a_e2, b_e123)), neg(mul(a_e123, b_e2))), add(mul(a_s, neg(b_e31)), mul(neg(a_e31), b_s)))),
+        add(add(mul(a_e3, b_e123), mul(a_e123, b_e3)), add(mul(a_s, b_e12), mul(a_e12, b_s))),
+        add(mul(a_s, b_e123), mul(a_e123, b_s))}
+
+def Scalar.scalar_product.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.scalar_product.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.scalar_product.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Vector.scalar_product.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.scalar_product.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.scalar_product.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Vector.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Bivector.scalar_product.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Bivector.scalar_product.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Bivector.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Bivector{+a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Pseudoscalar.scalar_product.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Pseudoscalar.scalar_product.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Pseudoscalar.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Paravector.scalar_product.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Paravector.scalar_product.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Paravector.scalar_product.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), add(mul(a_e3, b_e3), mul(a_s, b_s))))}
+
+def Paravector.scalar_product.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Paravector.scalar_product.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Paravector.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Paravector<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Paravector{+a_s, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), add(mul(a_e3, b_e3), mul(a_s, b_s))))}
+
+def Rotor.scalar_product.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Rotor.scalar_product.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Rotor.scalar_product.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Rotor.scalar_product.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s)))}
+
+def Rotor.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s)))}
+
+def Odd.scalar_product.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Odd.scalar_product.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Odd.scalar_product.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Odd.scalar_product.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        add(add(neg(mul(a_e123, b_e123)), mul(a_e1, b_e1)), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Odd.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Odd{+a_e1, +a_e2, +a_e3, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        add(add(neg(mul(a_e123, b_e123)), mul(a_e1, b_e1)), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Multivector.scalar_product.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Multivector.scalar_product.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Vector{+b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Multivector.scalar_product.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Bivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Bivector{+b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23)))}
+
+def Multivector.scalar_product.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Pseudoscalar{+b_e123}:
+      K.Scalar{
+        neg(mul(a_e123, b_e123))}
+
+def Multivector.scalar_product.Paravector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Paravector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Paravector{+b_s, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), add(mul(a_e2, b_e2), add(mul(a_e3, b_e3), mul(a_s, b_s))))}
+
+def Multivector.scalar_product.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Scalar{
+        add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s)))}
+
+def Multivector.scalar_product.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Odd<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Odd{+b_e1, +b_e2, +b_e3, +b_e123}:
+      K.Scalar{
+        add(add(neg(mul(a_e123, b_e123)), mul(a_e1, b_e1)), add(mul(a_e2, b_e2), mul(a_e3, b_e3)))}
+
+def Multivector.scalar_product.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e1, +a_e2, +a_e3, +a_e23, +a_e31, +a_e12, +a_e123} K.Multivector{+b_s, +b_e1, +b_e2, +b_e3, +b_e23, +b_e31, +b_e12, +b_e123}:
+      K.Scalar{
+        add(add(add(neg(mul(a_e123, b_e123)), neg(mul(a_e12, b_e12))), add(neg(mul(neg(a_e31), neg(b_e31))), mul(a_e1, b_e1))), add(add(neg(mul(a_e23, b_e23)), mul(a_e2, b_e2)), add(mul(a_e3, b_e3), mul(a_s, b_s))))}
+
 def Scalar.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
   match a b:
     case K.Scalar{+a_s} K.Scalar{+b_s}:

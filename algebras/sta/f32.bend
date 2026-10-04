@@ -665,6 +665,786 @@ def Multivector.vee.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F
 def Multivector.vee.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Multivector.vee.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Scalar.lc.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Vector(a: K.Scalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Scalar.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Bivector(a: K.Scalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Scalar.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Trivector(a: K.Scalar<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Scalar.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Pseudoscalar(a: K.Scalar<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Phasor(a: K.Scalar<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Scalar.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Even(a: K.Scalar<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Scalar.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Odd(a: K.Scalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Scalar.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.lc.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Scalar.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Vector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Trivector(a: K.Vector<F32>, b: K.Trivector<F32>) -> K.Bivector<F32>:
+  O.Vector.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Trivector<F32>:
+  O.Vector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Phasor(a: K.Vector<F32>, b: K.Phasor<F32>) -> K.Trivector<F32>:
+  O.Vector.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Vector.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Vector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.lc.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Trivector(a: K.Bivector<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Bivector.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Pseudoscalar(a: K.Bivector<F32>, b: K.Pseudoscalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Phasor(a: K.Bivector<F32>, b: K.Phasor<F32>) -> K.Bivector<F32>:
+  O.Bivector.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Even(a: K.Bivector<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Bivector.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Bivector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.lc.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.lc.Trivector(a: K.Trivector<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Trivector.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.lc.Pseudoscalar(a: K.Trivector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Trivector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.lc.Phasor(a: K.Trivector<F32>, b: K.Phasor<F32>) -> K.Vector<F32>:
+  O.Trivector.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.lc.Even(a: K.Trivector<F32>, b: K.Even<F32>) -> K.Vector<F32>:
+  O.Trivector.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.lc.Odd(a: K.Trivector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Trivector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.lc.Multivector(a: K.Trivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Trivector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Phasor(a: K.Pseudoscalar<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Even(a: K.Pseudoscalar<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.lc.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Scalar(a: K.Phasor<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Phasor.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Vector(a: K.Phasor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Phasor.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Bivector(a: K.Phasor<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Phasor.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Trivector(a: K.Phasor<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Phasor.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Pseudoscalar(a: K.Phasor<F32>, b: K.Pseudoscalar<F32>) -> K.Phasor<F32>:
+  O.Phasor.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Phasor(a: K.Phasor<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Phasor.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Even(a: K.Phasor<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Phasor.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Odd(a: K.Phasor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Phasor.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.lc.Multivector(a: K.Phasor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Phasor.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Even.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Even.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Even<F32>:
+  O.Even.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Odd<F32>:
+  O.Even.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Even<F32>:
+  O.Even.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Phasor(a: K.Even<F32>, b: K.Phasor<F32>) -> K.Even<F32>:
+  O.Even.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Even.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.lc.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Odd.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Odd.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Even<F32>:
+  O.Odd.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Odd.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Phasor(a: K.Odd<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Odd.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Odd.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.lc.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.lc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Trivector(a: K.Multivector<F32>, b: K.Trivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Phasor(a: K.Multivector<F32>, b: K.Phasor<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Even(a: K.Multivector<F32>, b: K.Even<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.lc.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.lc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Phasor(a: K.Scalar<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Even(a: K.Scalar<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.rc.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Scalar.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Vector<F32>:
+  O.Vector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Phasor(a: K.Vector<F32>, b: K.Phasor<F32>) -> K.Vector<F32>:
+  O.Vector.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Vector<F32>:
+  O.Vector.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Vector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.rc.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Scalar(a: K.Bivector<F32>, b: K.Scalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Vector(a: K.Bivector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Bivector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Phasor(a: K.Bivector<F32>, b: K.Phasor<F32>) -> K.Bivector<F32>:
+  O.Bivector.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Even(a: K.Bivector<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Bivector.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Bivector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.rc.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Scalar(a: K.Trivector<F32>, b: K.Scalar<F32>) -> K.Trivector<F32>:
+  O.Trivector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Vector(a: K.Trivector<F32>, b: K.Vector<F32>) -> K.Bivector<F32>:
+  O.Trivector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Bivector(a: K.Trivector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Trivector.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Trivector(a: K.Trivector<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Trivector.rc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Phasor(a: K.Trivector<F32>, b: K.Phasor<F32>) -> K.Trivector<F32>:
+  O.Trivector.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Even(a: K.Trivector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Trivector.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Odd(a: K.Trivector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Trivector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.rc.Multivector(a: K.Trivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Trivector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Scalar(a: K.Pseudoscalar<F32>, b: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Pseudoscalar.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Vector(a: K.Pseudoscalar<F32>, b: K.Vector<F32>) -> K.Trivector<F32>:
+  O.Pseudoscalar.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Bivector(a: K.Pseudoscalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Pseudoscalar.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Trivector(a: K.Pseudoscalar<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.rc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Phasor(a: K.Pseudoscalar<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Pseudoscalar.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Even(a: K.Pseudoscalar<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Pseudoscalar.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Pseudoscalar.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.rc.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Pseudoscalar.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Scalar(a: K.Phasor<F32>, b: K.Scalar<F32>) -> K.Phasor<F32>:
+  O.Phasor.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Vector(a: K.Phasor<F32>, b: K.Vector<F32>) -> K.Trivector<F32>:
+  O.Phasor.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Bivector(a: K.Phasor<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Phasor.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Trivector(a: K.Phasor<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Phasor.rc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Pseudoscalar(a: K.Phasor<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Phasor.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Phasor(a: K.Phasor<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Phasor.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Even(a: K.Phasor<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Phasor.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Odd(a: K.Phasor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Phasor.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.rc.Multivector(a: K.Phasor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Phasor.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
+  O.Even.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Even.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Even<F32>:
+  O.Even.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Even.rc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Even.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Phasor(a: K.Even<F32>, b: K.Phasor<F32>) -> K.Even<F32>:
+  O.Even.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Even.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.rc.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Odd<F32>:
+  O.Odd.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Even<F32>:
+  O.Odd.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Odd.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Odd.rc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Phasor(a: K.Odd<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Odd.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Odd.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.rc.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Trivector(a: K.Multivector<F32>, b: K.Trivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.rc.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Phasor(a: K.Multivector<F32>, b: K.Phasor<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Even(a: K.Multivector<F32>, b: K.Even<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.rc.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.rc.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Vector(a: K.Scalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Scalar.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Bivector(a: K.Scalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Scalar.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Trivector(a: K.Scalar<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Scalar.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Pseudoscalar(a: K.Scalar<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Phasor(a: K.Scalar<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Scalar.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Even(a: K.Scalar<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Scalar.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Odd(a: K.Scalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Scalar.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.dot.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Scalar.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Vector<F32>:
+  O.Vector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Vector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Trivector(a: K.Vector<F32>, b: K.Trivector<F32>) -> K.Bivector<F32>:
+  O.Vector.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Trivector<F32>:
+  O.Vector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Phasor(a: K.Vector<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Vector.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Vector.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Vector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.dot.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Scalar(a: K.Bivector<F32>, b: K.Scalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Vector(a: K.Bivector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Bivector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Trivector(a: K.Bivector<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Bivector.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Pseudoscalar(a: K.Bivector<F32>, b: K.Pseudoscalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Phasor(a: K.Bivector<F32>, b: K.Phasor<F32>) -> K.Bivector<F32>:
+  O.Bivector.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Even(a: K.Bivector<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Bivector.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Vector<F32>:
+  O.Bivector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.dot.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Scalar(a: K.Trivector<F32>, b: K.Scalar<F32>) -> K.Trivector<F32>:
+  O.Trivector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Vector(a: K.Trivector<F32>, b: K.Vector<F32>) -> K.Bivector<F32>:
+  O.Trivector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Bivector(a: K.Trivector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Trivector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Trivector(a: K.Trivector<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Trivector.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Pseudoscalar(a: K.Trivector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Trivector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Phasor(a: K.Trivector<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Trivector.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Even(a: K.Trivector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Trivector.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Odd(a: K.Trivector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Trivector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.dot.Multivector(a: K.Trivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Trivector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Scalar(a: K.Pseudoscalar<F32>, b: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Pseudoscalar.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Vector(a: K.Pseudoscalar<F32>, b: K.Vector<F32>) -> K.Trivector<F32>:
+  O.Pseudoscalar.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Bivector(a: K.Pseudoscalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Pseudoscalar.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Trivector(a: K.Pseudoscalar<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Phasor(a: K.Pseudoscalar<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Pseudoscalar.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Even(a: K.Pseudoscalar<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Pseudoscalar.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Pseudoscalar.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.dot.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Pseudoscalar.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Scalar(a: K.Phasor<F32>, b: K.Scalar<F32>) -> K.Phasor<F32>:
+  O.Phasor.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Vector(a: K.Phasor<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Phasor.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Bivector(a: K.Phasor<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Phasor.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Trivector(a: K.Phasor<F32>, b: K.Trivector<F32>) -> K.Odd<F32>:
+  O.Phasor.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Pseudoscalar(a: K.Phasor<F32>, b: K.Pseudoscalar<F32>) -> K.Phasor<F32>:
+  O.Phasor.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Phasor(a: K.Phasor<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Phasor.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Even(a: K.Phasor<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Phasor.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Odd(a: K.Phasor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Phasor.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.dot.Multivector(a: K.Phasor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Phasor.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
+  O.Even.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Even.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Even<F32>:
+  O.Even.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Odd<F32>:
+  O.Even.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Even<F32>:
+  O.Even.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Phasor(a: K.Even<F32>, b: K.Phasor<F32>) -> K.Even<F32>:
+  O.Even.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Even.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.dot.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Odd<F32>:
+  O.Odd.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Even<F32>:
+  O.Odd.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Odd.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Even<F32>:
+  O.Odd.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Odd.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Phasor(a: K.Odd<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Odd.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Odd.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.dot.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Trivector(a: K.Multivector<F32>, b: K.Trivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Phasor(a: K.Multivector<F32>, b: K.Phasor<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Even(a: K.Multivector<F32>, b: K.Even<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.dot.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.dot.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Phasor(a: K.Scalar<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Even(a: K.Scalar<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.scalar_product.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Scalar.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.scalar_product.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Vector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.scalar_product.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.scalar_product.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.scalar_product.Even(a: K.Bivector<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Bivector.scalar_product.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.scalar_product.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Bivector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.scalar_product.Trivector(a: K.Trivector<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Trivector.scalar_product.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.scalar_product.Odd(a: K.Trivector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Trivector.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.scalar_product.Multivector(a: K.Trivector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Trivector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Phasor(a: K.Pseudoscalar<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Even(a: K.Pseudoscalar<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.scalar_product.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.scalar_product.Scalar(a: K.Phasor<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Phasor.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.scalar_product.Pseudoscalar(a: K.Phasor<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Phasor.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.scalar_product.Phasor(a: K.Phasor<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Phasor.scalar_product.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.scalar_product.Even(a: K.Phasor<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Phasor.scalar_product.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.scalar_product.Multivector(a: K.Phasor<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Phasor.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.scalar_product.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Even.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.scalar_product.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Even.scalar_product.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.scalar_product.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Even.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.scalar_product.Phasor(a: K.Even<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Even.scalar_product.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.scalar_product.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Even.scalar_product.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.scalar_product.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Even.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.scalar_product.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Odd.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Trivector(a: K.Multivector<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Phasor(a: K.Multivector<F32>, b: K.Phasor<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Even(a: K.Multivector<F32>, b: K.Even<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.scalar_product.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Scalar<F32>:
+  O.Multivector.scalar_product.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
 def Scalar.add.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Scalar.add.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 

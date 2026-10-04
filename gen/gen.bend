@@ -192,6 +192,10 @@ type Op is Data:
   OVee{}
   OAdd{}
   OSub{}
+  OLc{}
+  ORc{}
+  ODot{}
+  OScalar{}
 
 def Op.name(o: Op) -> String:
   match o:
@@ -205,6 +209,14 @@ def Op.name(o: Op) -> String:
       "add"
     case OSub{}:
       "sub"
+    case OLc{}:
+      "lc"
+    case ORc{}:
+      "rc"
+    case ODot{}:
+      "dot"
+    case OScalar{}:
+      "scalar_product"
 
 def Op.run(+d: Nat, sig: S.Sig(d), o: Op, x: S.MV(E.Expr, d), y: S.MV(E.Expr, d)) -> S.MV(E.Expr, d):
   match o:
@@ -218,6 +230,14 @@ def Op.run(+d: Nat, sig: S.Sig(d), o: Op, x: S.MV(E.Expr, d), y: S.MV(E.Expr, d)
       S.MV.add(~E.Expr, ~E.Expr.add, d, x, y)
     case OSub{}:
       S.MV.add(~E.Expr, ~E.Expr.add, d, x, S.MV.neg(~E.Expr, ~E.Expr.neg, d, y))
+    case OLc{}:
+      S.MV.lc(~E.Expr, ~E.Expr.add, ~E.Expr.mul, ~E.Expr.neg, d, sig, x, y)
+    case ORc{}:
+      S.MV.rc(~E.Expr, ~E.Expr.add, ~E.Expr.mul, ~E.Expr.neg, d, sig, x, y)
+    case ODot{}:
+      S.MV.dot(~E.Expr, ~E.Expr.add, ~E.Expr.mul, ~E.Expr.neg, d, sig, x, y)
+    case OScalar{}:
+      S.MV.scalar_product(~E.Expr, ~E.Expr.add, ~E.Expr.mul, ~E.Expr.neg, d, sig, x, y)
 
 # the spec term the proofs evaluate, as Bend source, around the operands
 def Op.spec(o: Op, +dn: String, +pre: String, x: String, y: String) -> String:
@@ -232,6 +252,14 @@ def Op.spec(o: Op, +dn: String, +pre: String, x: String, y: String) -> String:
       "S.MV.add(~T, ~add, " ++ dn ++ ", " ++ x ++ ", " ++ y ++ ")"
     case OSub{}:
       "S.MV.add(~T, ~add, " ++ dn ++ ", " ++ x ++ ", S.MV.neg(~T, ~neg, " ++ dn ++ ", " ++ y ++ "))"
+    case OLc{}:
+      "S.MV.lc(~T, ~add, ~mul, ~neg, " ++ dn ++ ", K." ++ pre ++ ".sig(), " ++ x ++ ", " ++ y ++ ")"
+    case ORc{}:
+      "S.MV.rc(~T, ~add, ~mul, ~neg, " ++ dn ++ ", K." ++ pre ++ ".sig(), " ++ x ++ ", " ++ y ++ ")"
+    case ODot{}:
+      "S.MV.dot(~T, ~add, ~mul, ~neg, " ++ dn ++ ", K." ++ pre ++ ".sig(), " ++ x ++ ", " ++ y ++ ")"
+    case OScalar{}:
+      "S.MV.scalar_product(~T, ~add, ~mul, ~neg, " ++ dn ++ ", K." ++ pre ++ ".sig(), " ++ x ++ ", " ++ y ++ ")"
 
 # Result kinds
 # ------------

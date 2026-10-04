@@ -110,14 +110,22 @@ above, every algebraic law transfers to the kernels.
 
 | algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
 |---|---|---|---|---|---|
-| VGA2D | 5 | 159 | 10 | 4 | 298 |
-| VGA3D | 8 | 371 | 24 | 24 | 2102 |
-| PGA2D | 10 | 588 | 60 | 32 | 2404 |
-| PGA3D | 11 | 701 | 77 | 101 | 8373 |
-| STA | 9 | 462 | 27 | 84 | 6200 |
+| VGA2D | 5 | 245 | 10 | 4 | 534 |
+| VGA3D | 8 | 581 | 24 | 24 | 3426 |
+| PGA2D | 10 | 870 | 60 | 32 | 3496 |
+| PGA3D | 11 | 1037 | 77 | 101 | 11341 |
+| STA | 9 | 722 | 27 | 84 | 9536 |
 
-The operations are gp, wedge, vee, add, sub (any two kinds) and neg,
-reverse, involute, conjugate, dual (J_R) and undual (J_L).
+The operations are gp, wedge, vee, lc, rc, dot, scalar_product, add, sub
+(any two kinds) and neg, reverse, involute, conjugate, dual (J_R) and
+undual (J_L). The inner products follow gax's blade-pair definitions
+(`src/spec.bend`, "Inner products"): per pair of grades r and s, lc keeps
+grade s − r (r ≤ s), rc grade r − s, dot grade |r − s|, the scalar product
+grade 0. For PGA3D every result kind of gp, wedge, vee, lc, rc, dot and
+scalar_product equals gax's generated type (117, 102, 97, 88, 88, 115 and
+45 pairs); `tests/inner_pga3d.bend` checks values on blades. The
+commutator and anticommutator are not generated yet: gax's are halved,
+and a ring without ½ needs a different definition.
 
 **Sandwiches.** `V.transform.X(v, x)` is v x ~v (gax's `transform`), for
 every versor kind V and every kind X:

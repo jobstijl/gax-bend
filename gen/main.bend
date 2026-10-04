@@ -28,7 +28,7 @@ def Gen.emit(+dir: String, o: G.Out) -> IO(Unit):
         IO.print(s)
 
 def Gen.ops() -> List<&2, G.Op>:
-  [G.OGp{}, G.OWedge{}, G.OVee{}, G.OAdd{}, G.OSub{}]
+  [G.OGp{}, G.OWedge{}, G.OVee{}, G.OLc{}, G.ORc{}, G.ODot{}, G.OScalar{}, G.OAdd{}, G.OSub{}]
 
 def Gen.unary() -> List<&2, G.Op1>:
   [G.ONeg{}, G.ORev{}, G.OInv{}, G.OConj{}, G.ODual{}, G.OUndual{}]

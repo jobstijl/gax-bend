@@ -393,6 +393,94 @@ def MV.grade(-T: Data, +d: Nat, +k: Nat, x: MV(T, d)) -> MV(T, d):
 def MV.Homog(-T: Data, d: Nat, k: Nat, x: MV(T, d)) -> Data:
   {MV.grade(T, d, k, x) == x : MV(T, d)}
 
+# Inner products
+# --------------
+# On a pair of blades of grades r and s, gax's inner products each keep one
+# grade of the geometric product: the left contraction grade s - r when
+# r <= s, the right contraction grade r - s when s <= r, the symmetric
+# ("fat") dot grade |r - s|, and the scalar product grade 0. By bilinearity
+# each is a sum over pairs of grade parts, which is how they are written
+# here. The mirror kernels print only the terms that survive.
+
+# grade j of (grade a of x) (grade b of y)
+def MV.gpg(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), a: Nat, b: Nat, j: Nat, +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.grade(T, d, j, MV.gp(~T, ~add, ~mul, ~neg, d, sig, MV.grade(T, d, a, x), MV.grade(T, d, b, y)))
+
+# the pair (r, r + j) when left, else (r + j, r), kept at grade j
+def MV.gpg.side(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), left: Bool, +r: Nat, +j: Nat, +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  match left:
+    case True{}:
+      MV.gpg(~T, ~add, ~mul, ~neg, d, sig, r, Nat.add(r, j), j, x, y)
+    case False{}:
+      MV.gpg(~T, ~add, ~mul, ~neg, d, sig, Nat.add(r, j), r, j, x, y)
+
+# the sum over j = 1 .. n of the side terms
+def MV.inner.row(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +left: Bool, +r: Nat, +n: Nat, +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  match n:
+    case 0n:
+      MV.zero(T, d)
+    case 1n+m:
+      MV.add(~T, ~add, d, MV.gpg.side(~T, ~add, ~mul, ~neg, d, sig, left, r, 1n+m, x, y),
+        MV.inner.row(~T, ~add, ~mul, ~neg, d, sig, left, r, m, x, y))
+
+type Inner is Data:
+  ILc{}
+  IRc{}
+  IDot{}
+
+# the off-diagonal terms of grade r on the left (r, r + j) or right side
+def MV.inner.off(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  op: Inner, +d: Nat, +sig: Sig(d), +r: Nat, +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  match op:
+    case ILc{}:
+      MV.inner.row(~T, ~add, ~mul, ~neg, d, sig, True{}, r, Nat.sub(d, r), x, y)
+    case IRc{}:
+      MV.inner.row(~T, ~add, ~mul, ~neg, d, sig, False{}, r, Nat.sub(d, r), x, y)
+    case IDot{}:
+      MV.add(~T, ~add, d, MV.inner.row(~T, ~add, ~mul, ~neg, d, sig, True{}, r, Nat.sub(d, r), x, y),
+        MV.inner.row(~T, ~add, ~mul, ~neg, d, sig, False{}, r, Nat.sub(d, r), x, y))
+
+# the sum over r = 0 .. n of the diagonal term (r, r) at grade 0 and the
+# off-diagonal terms
+def MV.inner.go(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +op: Inner, +d: Nat, +sig: Sig(d), +n: Nat, +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  match n:
+    case 0n:
+      MV.add(~T, ~add, d, MV.gpg(~T, ~add, ~mul, ~neg, d, sig, 0n, 0n, 0n, x, y),
+        MV.inner.off(~T, ~add, ~mul, ~neg, op, d, sig, 0n, x, y))
+    case 1n+m:
+      MV.add(~T, ~add, d,
+        MV.add(~T, ~add, d, MV.gpg(~T, ~add, ~mul, ~neg, d, sig, 1n+m, 1n+m, 0n, x, y),
+          MV.inner.off(~T, ~add, ~mul, ~neg, op, d, sig, 1n+m, x, y)),
+        MV.inner.go(~T, ~add, ~mul, ~neg, op, d, sig, m, x, y))
+
+def MV.inner(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +op: Inner, +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.inner.go(~T, ~add, ~mul, ~neg, op, d, sig, d, x, y)
+
+# the left contraction x ⌋ y
+def MV.lc(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.inner(~T, ~add, ~mul, ~neg, ILc{}, d, sig, x, y)
+
+# the right contraction x ⌊ y
+def MV.rc(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.inner(~T, ~add, ~mul, ~neg, IRc{}, d, sig, x, y)
+
+# the symmetric inner product x | y
+def MV.dot(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.inner(~T, ~add, ~mul, ~neg, IDot{}, d, sig, x, y)
+
+# the scalar product <x y>_0
+def MV.scalar_product(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), x: MV(T, d), y: MV(T, d)) -> MV(T, d):
+  MV.grade(T, d, 0n, MV.gp(~T, ~add, ~mul, ~neg, d, sig, x, y))
+
 # The metric as multivectors
 # --------------------------
 
