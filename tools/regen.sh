@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Regenerate the generated sources with the Bend generators:
 #   algebras/          from gen/main.bend (kernels, kinds, mirror proofs)
-#   proofs/<generated> from gen/proofs/main.bend (the Layer-S proof modules;
+#   proofs/<generated> from gen/proofs/main.bend (the Layer-S proof modules
+#                      and the rounding-error theorem, err.bend;
 #                      proofs/base, leaf, add and sgn are hand-written)
 #   tools/regen.sh           write both
 #   tools/regen.sh --check   regenerate into temporary directories and fail

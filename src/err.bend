@@ -88,3 +88,47 @@ def Ord.AbsNeg(T: Data, neg: T -> T, abs: T -> T) -> Type:
 # the standard model: |rnd(x) - x| <= eps |x|
 def Ord.Rnd(T: Data, add: T -> T -> T, mul: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool, eps: T, rnd: T -> T) -> Type:
   @x: T -> {pos(add(mul(eps, abs(x)), neg(abs(add(rnd(x), neg(x)))))) == True{} : Bool}
+
+# With underflow (docs/numerics.md §1): additions and multiplications round
+# by separate functions, each within eps |x| + eta. IEEE binary32 with
+# gradual underflow has eta = 0 for sums (Hauser 1996) and 2^-150 for
+# products; flushing subnormals to zero makes both 2^-126.
+def Ord.RndU(T: Data, add: T -> T -> T, mul: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool, eps: T, eta: T, rnd: T -> T) -> Type:
+  @x: T -> {pos(add(add(mul(eps, abs(x)), eta), neg(abs(add(rnd(x), neg(x)))))) == True{} : Bool}
+
+# the evaluation with rnda after each addition, rndm after each product
+def Tm.flu(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~rnda: T -> T, ~rndm: T -> T, +env: List<&2, T>, t: N.Tm) -> T:
+  match t:
+    case N.TVar{i}:
+      N.Env.at(~T, ~zero, env, i)
+    case N.TZero{}:
+      zero
+    case N.TAdd{a, b}:
+      rnda(add(Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, a), Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, b)))
+    case N.TMul{a, b}:
+      rndm(mul(Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, a), Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, b)))
+    case N.TNeg{a}:
+      neg(Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, a))
+
+# The absolute part of the bound: zero when eta_a = eta_m = 0.
+#   D(a + b) = eta_a + (1 + eps)(D(a) + D(b))
+#   D(a b)   = eta_m + (1 + eps)(F(a) D(b) + D(a) F(b) + D(a) D(b)),
+# with F(x) = (1 + h(k(x))) absev(x) the bound on |fl(x)| without eta.
+def Err.D(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~abs: T -> T, ~eps: T, ~eta_a: T, ~eta_m: T, +env: List<&2, T>, t: N.Tm) -> T:
+  match t:
+    case N.TVar{i}:
+      zero
+    case N.TZero{}:
+      zero
+    case N.TAdd{a, b}:
+      +s = add(Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, a), Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, b))
+      add(eta_a, add(s, mul(eps, s)))
+    case N.TMul{+a, +b}:
+      +da = Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, a)
+      +db = Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, b)
+      +fa = add(mul(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, Tm.k(a)), Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, a)), Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, a))
+      +fb = add(mul(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, Tm.k(b)), Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, b)), Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, b))
+      +x = add(add(mul(fa, db), mul(da, fb)), mul(da, db))
+      add(eta_m, add(x, mul(eps, x)))
+    case N.TNeg{a}:
+      Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, a)

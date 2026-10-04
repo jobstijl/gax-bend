@@ -1,7 +1,8 @@
 # Numerics: measuring, proving and tracking rounding error
 
-Status: ADR-005, 2026-10-04. Step 1 (the theorem, no underflow) is
-proven: `proofs/err.bend`. A first measurement against it, with a
+Status: ADR-005, 2026-10-04. Step 1 is proven, without and with
+underflow (`Err.bound`, `Err.bound_u` in `proofs/err.bend`, written by
+`gen/proofs/err.bend`). A first measurement against it, with a
 double-F32 reference, is in "Measured so far" and checked by
 `tests/err_measure.bend`. The survey behind it is summarised at the end,
 with sources.
@@ -67,6 +68,22 @@ model. It applies to native F32 under the hypothesis that the hardware
 rounds that way (proof-modulo, ADR-001 A2, backed by agreement tests). It
 applies outright once the software float's rounding is proven to satisfy
 the model. Faithful rounding (u = 2⁻²³) is the easier first target.
+
+**With underflow, as proven** (`Err.bound_u`): additions round by
+rnda within ε|x| + η_a and products by rndm within ε|x| + η_m. Separate
+functions let one theorem cover both gradual underflow (η_a = 0, Hauser)
+and flush-to-zero GPUs (η_a = η_m = 2⁻¹²⁶). The bound becomes
+  |fl(e) − ⟦e⟧| ≤ h(k(e)) · |e|abs + D(e),
+  D(a + b) = η_a + (1 + u)(D(a) + D(b)),
+  D(a · b) = η_m + (1 + u)(F(a) D(b) + D(a) F(b) + D(a) D(b)),
+with F(x) = (1 + h(k(x))) |x|abs, the bound on |fl(x)| without η. D is
+computed from the term, like k, and is 0 when η_a = η_m = 0. Its
+D(a)D(b) term is second order in η, negligible in practice but kept
+because it makes the statement exact.
+
+**Overflow** is outside the model. `rnd` satisfies it only for results
+within the format's range, so the theorems describe overflow-free
+executions, as LAProof's finiteness hypotheses do.
 
 **Later tightenings, not first:** k·u instead of h(k) (Jeannerod–Rump
 2013); tree depth instead of operation count.
@@ -169,7 +186,7 @@ and it does.
 ## Order of work
 
 1. `Tm.fl`, `Tm.abs`, k and h, and the theorem over an ordered ring with
-   an abstract `rnd` (no underflow), then the η term.
+   an abstract `rnd` (no underflow), then the η term. **Done.**
 2. Per-kernel corollaries from the generator (dₖ, the ⊛ kernel).
 3. Dyadic numbers and the exact oracle; a measurement report per algebra.
 4. The software float: faithful rounding proven against the model, then

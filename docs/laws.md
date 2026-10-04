@@ -116,15 +116,23 @@ reports the two xy monomials left over.
 | law | statement | assumes | tag | proof |
 |---|---|---|---|---|
 | `Err.bound` | for every term t: \|fl(t) − eval(t)\| ≤ h(k(t)) · absev(t), with h(k) = (1+ε)ᵏ − 1, k the roundings on the worst path (an add counts 1 + max, a product 1 + sum), absev the sign-stripped evaluation | the ring laws of `Norm.zero`; an order given by a positivity predicate closed under + and ×, with \|·\| nonnegative, the triangle inequality, \|ab\| = \|a\|\|b\|, \|−a\| = \|a\|, \|0\| = 0; a rounding function with \|rnd(x) − x\| ≤ ε\|x\| | proof | `proofs/err.bend` |
+| `Err.bound_u` | with underflow: \|fl(t) − eval(t)\| ≤ h(k(t)) · absev(t) + D(t), where additions round by rnda and products by rndm, and D (`Err.D`) adds η_a or η_m at each rounding and carries the children's D through (1+ε) | as `Err.bound`, but \|rnda(x) − x\| ≤ ε\|x\| + η_a and \|rndm(x) − x\| ≤ ε\|x\| + η_m, with η_a, η_m ≥ 0 | proof | `proofs/err.bend` |
+| `D.pos` | D(t) ≥ 0 | as above | proof | `proofs/err.bend` |
 | `Ev.le` | \|eval(t)\| ≤ absev(t) | as above | proof | `proofs/err.bend` |
 | `H.add` | h(a + b) = h(a) + h(b) + h(a)h(b) | ring laws | proof | `proofs/err.bend` |
 
 Every generated kernel field is a term, so the theorem bounds the rounded
-evaluation of every kernel at once. It holds for any rounding function
-satisfying the standard model (no underflow yet). Native F32 meets it by
-hypothesis; the software float is to meet it by proof (numerics.md, order
-of work). A negative control needs a concrete rounding, so it comes with
-the dyadic numbers.
+evaluation of every kernel at once. It holds for any rounding functions
+satisfying the model. For binary32, η_a = 0 with gradual underflow and
+2⁻¹²⁶ with subnormals flushed; η_m is 2⁻¹⁵⁰ or 2⁻¹²⁶ respectively. With
+η_a = η_m = 0, D(t) is 0. The model holds only for results within the
+format's range, so both theorems describe executions without overflow.
+Native F32 meets the model by hypothesis, which `tests/err_measure.bend`
+samples. The software float is to meet it by proof (numerics.md, order of
+work). The proof writer is `gen/proofs/err.bend`. Breaking `Err.D` (η_a
+in place of η_m in the product case) makes the check fail. A negative
+control in the gate needs a concrete rounding, so it comes with the
+dyadic numbers.
 
 ## Generated kernels (Layer K)
 

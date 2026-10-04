@@ -11,6 +11,7 @@ import ./inv.bend as IN
 import ./rev.bend as RE
 import ./gen.bend as GE
 import ./grade.bend as GR
+import ./err.bend as ER
 
 def put.fin(r: File & Result<&1, &1, U32 & String, Unit>) -> IO(Unit):
   (f, res) = r
@@ -54,4 +55,5 @@ def main() -> IO(Unit):
     put(out ++ "/rev.bend", RE.V.text())
     put(out ++ "/gen.bend", GE.N.text())
     put(out ++ "/grade.bend", GR.Q.text())
+    put(out ++ "/err.bend", ER.Er.text())
     put(out ++ "/flags.bend", D.flag.module(flags()))
