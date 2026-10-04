@@ -137,3 +137,44 @@ def Rel.many(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, 
     Equal.trans(T, add(ev, el), add(ev, zero), ev,
       Equal.cong(T, T, w => add(ev, w), el, zero, Lin.zero(~T, ~zero, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~dl, env, ls, rs, hz)),
       NP.Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, ev)))
+
+# relations used with coefficient 1: their sum
+def Tm.sum(us: List<&2, N.Tm>) -> N.Tm:
+  match us:
+    case Nil{}:
+      N.TZero{}
+    case u <> ut:
+      N.TAdd{u, Tm.sum(ut)}
+
+def Sum.zero(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~z: R.Ring.ZeroL(T, add, zero), +env: List<&2, T>, us: List<&2, N.Tm>, hz: Zs(~T, ~zero, ~add, ~mul, ~neg, env, us))
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, Tm.sum(us)) == zero : T}:
+  match us:
+    case Nil{}:
+      {==}
+    case +u <> +ut:
+      (h, ht) = hz
+      +rest = N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, Tm.sum(ut))
+      Equal.trans(T, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, u), rest), add(zero, rest), zero,
+        Equal.cong(T, T, w => add(w, rest), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, u), zero, h),
+        Equal.trans(T, add(zero, rest), rest, zero, z(rest), Sum.zero(~T, ~zero, ~add, ~mul, ~neg, ~z, env, ut, ht)))
+
+# t = v + sum l_i r_i + sum u_j, every r_i = 0 and u_j = 0: t = v
+def Rel.many2(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +t: N.Tm, +v: N.Tm, +ls: List<&2, N.Tm>, +rs: List<&2, N.Tm>, +us: List<&2, N.Tm>,
+  ok: {N.NormS.left(N.Tm.diff(t, N.TAdd{v, N.TAdd{Tm.lin(ls, rs), Tm.sum(us)}})) == Nil{} : List<&2, N.Mono>},
+  hz: Zs(~T, ~zero, ~add, ~mul, ~neg, env, rs), hu: Zs(~T, ~zero, ~add, ~mul, ~neg, env, us))
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, v) : T}:
+  +ev = N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, v)
+  +el = N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, Tm.lin(ls, rs))
+  +es = N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, Tm.sum(us))
+  Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), add(ev, add(el, es)), ev,
+    NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t, N.TAdd{v, N.TAdd{Tm.lin(ls, rs), Tm.sum(us)}}, ok),
+    Equal.trans(T, add(ev, add(el, es)), add(ev, add(zero, zero)), ev,
+      Equal.cong(T, T, w => add(ev, w), add(el, es), add(zero, zero),
+        Equal.trans(T, add(el, es), add(zero, es), add(zero, zero),
+          Equal.cong(T, T, w => add(w, es), el, zero, Lin.zero(~T, ~zero, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~dl, env, ls, rs, hz)),
+          Equal.cong(T, T, w => add(zero, w), es, zero, Sum.zero(~T, ~zero, ~add, ~mul, ~neg, ~z, env, us, hu)))),
+      Equal.trans(T, add(ev, add(zero, zero)), add(ev, zero), ev,
+        Equal.cong(T, T, w => add(ev, w), add(zero, zero), zero, z(zero)),
+        NP.Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, ev))))

@@ -101,3 +101,24 @@ def Dy.radd(p: Nat, x: D.Dy, y: D.Dy) -> D.Dy:
 
 def Dy.rmul(p: Nat, x: D.Dy, y: D.Dy) -> D.Dy:
   Dy.trunc(p, D.Dy.mul(x, y))
+
+# Round to nearest, ties to even: from the truncation n = q 2^s + r, round
+# up when 2r > 2^s, or 2r = 2^s and q is odd. proofs/round.bend proves
+# |rne(x) - x| <= 2^-p |x| (the standard model with eps = 2^-p, IEEE's u).
+def Tr.rup(t: Tr) -> Bool:
+  match t:
+    case Tr{+s, q, +r, wr, wq}:
+      Bool.and(Bool.not(Nat.lt(Nat.double(r), Nat.pow2(s))), Bool.or(Nat.lt(Nat.pow2(s), Nat.double(r)), Bool.not(D.Nat.even(q))))
+
+# the rounded magnitude: q 2^s, or (q + 1) 2^s
+def Tr.near(+t: Tr) -> Nat:
+  Bool.pick(Nat, Tr.rup(t), Nat.mul(1n+Tr.q(t), Nat.pow2(Tr.s(t))), Nat.mul(Tr.q(t), Nat.pow2(Tr.s(t))))
+
+def Dy.rne(+p: Nat, +x: D.Dy) -> D.Dy:
+  D.Dy.of(D.Dy.den(x), Int.signed(D.Dy.num(x), Tr.near(Tr.of(p, Int.mag(D.Dy.num(x))))))
+
+def Dy.nadd(p: Nat, x: D.Dy, y: D.Dy) -> D.Dy:
+  Dy.rne(p, D.Dy.add(x, y))
+
+def Dy.nmul(p: Nat, x: D.Dy, y: D.Dy) -> D.Dy:
+  Dy.rne(p, D.Dy.mul(x, y))
