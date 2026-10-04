@@ -22,6 +22,11 @@ def Scalar.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Scalar<
 def Scalar.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [False{}, False{}, False{}, False{}], t)
 
+def Scalar.s(-T: Data, x: Scalar<T>) -> T:
+  match x:
+    case Scalar{s}:
+      s
+
 type Vector<-T: Data> is Data:
   Vector{e0: T, e1: T, e2: T, e3: T}
 
@@ -39,6 +44,26 @@ def Vector.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Vector<
 
 def Vector.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [True{}, False{}, False{}, False{}], S.MV.clear(T, 4n, [False{}, True{}, False{}, False{}], S.MV.clear(T, 4n, [False{}, False{}, True{}, False{}], S.MV.clear(T, 4n, [False{}, False{}, False{}, True{}], t))))
+
+def Vector.e0(-T: Data, x: Vector<T>) -> T:
+  match x:
+    case Vector{e0, e1, e2, e3}:
+      e0
+
+def Vector.e1(-T: Data, x: Vector<T>) -> T:
+  match x:
+    case Vector{e0, e1, e2, e3}:
+      e1
+
+def Vector.e2(-T: Data, x: Vector<T>) -> T:
+  match x:
+    case Vector{e0, e1, e2, e3}:
+      e2
+
+def Vector.e3(-T: Data, x: Vector<T>) -> T:
+  match x:
+    case Vector{e0, e1, e2, e3}:
+      e3
 
 type Bivector<-T: Data> is Data:
   Bivector{e10: T, e20: T, e30: T, e23: T, e31: T, e12: T}
@@ -60,6 +85,36 @@ def Bivector.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Bivec
 def Bivector.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [True{}, True{}, False{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, True{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, False{}, True{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, True{}, False{}], t))))))
 
+def Bivector.e10(-T: Data, x: Bivector<T>) -> T:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      e10
+
+def Bivector.e20(-T: Data, x: Bivector<T>) -> T:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      e20
+
+def Bivector.e30(-T: Data, x: Bivector<T>) -> T:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      e30
+
+def Bivector.e23(-T: Data, x: Bivector<T>) -> T:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      e23
+
+def Bivector.e31(-T: Data, x: Bivector<T>) -> T:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      e31
+
+def Bivector.e12(-T: Data, x: Bivector<T>) -> T:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      e12
+
 type Trivector<-T: Data> is Data:
   Trivector{e123: T, e032: T, e013: T, e021: T}
 
@@ -78,6 +133,26 @@ def Trivector.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Triv
 def Trivector.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [False{}, True{}, True{}, True{}], S.MV.clear(T, 4n, [True{}, False{}, True{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, False{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, True{}, False{}], t))))
 
+def Trivector.e123(-T: Data, x: Trivector<T>) -> T:
+  match x:
+    case Trivector{e123, e032, e013, e021}:
+      e123
+
+def Trivector.e032(-T: Data, x: Trivector<T>) -> T:
+  match x:
+    case Trivector{e123, e032, e013, e021}:
+      e032
+
+def Trivector.e013(-T: Data, x: Trivector<T>) -> T:
+  match x:
+    case Trivector{e123, e032, e013, e021}:
+      e013
+
+def Trivector.e021(-T: Data, x: Trivector<T>) -> T:
+  match x:
+    case Trivector{e123, e032, e013, e021}:
+      e021
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e0123: T}
 
@@ -92,6 +167,11 @@ def Pseudoscalar.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> P
 
 def Pseudoscalar.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [True{}, True{}, True{}, True{}], t)
+
+def Pseudoscalar.e0123(-T: Data, x: Pseudoscalar<T>) -> T:
+  match x:
+    case Pseudoscalar{e0123}:
+      e0123
 
 type Phasor<-T: Data> is Data:
   Phasor{s: T, e0123: T}
@@ -108,6 +188,16 @@ def Phasor.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Phasor<
 
 def Phasor.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [False{}, False{}, False{}, False{}], S.MV.clear(T, 4n, [True{}, True{}, True{}, True{}], t))
+
+def Phasor.s(-T: Data, x: Phasor<T>) -> T:
+  match x:
+    case Phasor{s, e0123}:
+      s
+
+def Phasor.e0123(-T: Data, x: Phasor<T>) -> T:
+  match x:
+    case Phasor{s, e0123}:
+      e0123
 
 type Even<-T: Data> is Data:
   Even{s: T, e10: T, e20: T, e30: T, e23: T, e31: T, e12: T, e0123: T}
@@ -131,6 +221,46 @@ def Even.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Even<T>:
 def Even.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [False{}, False{}, False{}, False{}], S.MV.clear(T, 4n, [True{}, True{}, False{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, True{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, False{}, True{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, True{}, False{}], S.MV.clear(T, 4n, [True{}, True{}, True{}, True{}], t))))))))
 
+def Even.s(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      s
+
+def Even.e10(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e10
+
+def Even.e20(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e20
+
+def Even.e30(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e30
+
+def Even.e23(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e23
+
+def Even.e31(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e31
+
+def Even.e12(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e12
+
+def Even.e0123(-T: Data, x: Even<T>) -> T:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      e0123
+
 type Odd<-T: Data> is Data:
   Odd{e0: T, e1: T, e2: T, e3: T, e123: T, e032: T, e013: T, e021: T}
 
@@ -152,6 +282,46 @@ def Odd.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Odd<T>:
 
 def Odd.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [True{}, False{}, False{}, False{}], S.MV.clear(T, 4n, [False{}, True{}, False{}, False{}], S.MV.clear(T, 4n, [False{}, False{}, True{}, False{}], S.MV.clear(T, 4n, [False{}, False{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, True{}, True{}], S.MV.clear(T, 4n, [True{}, False{}, True{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, False{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, True{}, False{}], t))))))))
+
+def Odd.e0(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e0
+
+def Odd.e1(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e1
+
+def Odd.e2(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e2
+
+def Odd.e3(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e3
+
+def Odd.e123(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e123
+
+def Odd.e032(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e032
+
+def Odd.e013(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e013
+
+def Odd.e021(-T: Data, x: Odd<T>) -> T:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      e021
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e0: T, e1: T, e2: T, e3: T, e10: T, e20: T, e30: T, e23: T, e31: T, e12: T, e123: T, e032: T, e013: T, e021: T, e0123: T}
@@ -182,3 +352,83 @@ def Multivector.of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, 4n)) -> Mu
 
 def Multivector.out(-T: Data, t: S.MV(T, 4n)) -> S.MV(T, 4n):
   S.MV.clear(T, 4n, [False{}, False{}, False{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, False{}, False{}], S.MV.clear(T, 4n, [False{}, True{}, False{}, False{}], S.MV.clear(T, 4n, [False{}, False{}, True{}, False{}], S.MV.clear(T, 4n, [False{}, False{}, False{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, False{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, True{}, False{}], S.MV.clear(T, 4n, [True{}, False{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, False{}, True{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, False{}, True{}], S.MV.clear(T, 4n, [False{}, True{}, True{}, False{}], S.MV.clear(T, 4n, [False{}, True{}, True{}, True{}], S.MV.clear(T, 4n, [True{}, False{}, True{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, False{}, True{}], S.MV.clear(T, 4n, [True{}, True{}, True{}, False{}], S.MV.clear(T, 4n, [True{}, True{}, True{}, True{}], t))))))))))))))))
+
+def Multivector.s(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      s
+
+def Multivector.e0(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e0
+
+def Multivector.e1(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e1
+
+def Multivector.e2(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e2
+
+def Multivector.e3(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e3
+
+def Multivector.e10(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e10
+
+def Multivector.e20(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e20
+
+def Multivector.e30(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e30
+
+def Multivector.e23(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e23
+
+def Multivector.e31(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e31
+
+def Multivector.e12(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e12
+
+def Multivector.e123(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e123
+
+def Multivector.e032(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e032
+
+def Multivector.e013(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e013
+
+def Multivector.e021(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e021
+
+def Multivector.e0123(-T: Data, x: Multivector<T>) -> T:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      e0123

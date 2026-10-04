@@ -2397,6 +2397,2280 @@ def Multivector.vee.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         add(mul(a_e12, b_e012), mul(a_e012, b_e12)),
         mul(a_e012, b_e012)}
 
+def Scalar.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        add(a_s, b_s)}
+
+def Scalar.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Scalar.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        b_e12,
+        neg(neg(b_e20)),
+        b_e01}
+
+def Scalar.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Direction<T>) -> K.Translator<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Direction{+b_e20, +b_e01}:
+      K.Translator{
+        a_s,
+        neg(neg(b_e20)),
+        b_e01}
+
+def Scalar.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        b_e012}
+
+def Scalar.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e12}:
+      K.Rotor{
+        add(a_s, b_s),
+        b_e12}
+
+def Scalar.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        add(a_s, b_s),
+        neg(neg(b_e20)),
+        b_e01}
+
+def Scalar.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, b_s),
+        b_e12,
+        neg(neg(b_e20)),
+        b_e01}
+
+def Scalar.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        zero,
+        zero,
+        zero,
+        b_e012}
+
+def Scalar.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, b_s),
+        b_e0,
+        b_e1,
+        b_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        b_e012}
+
+def Line.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Scalar{+b_s}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Line.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        add(a_e0, b_e0)}
+
+def Line.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        zero}
+
+def Line.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        zero,
+        zero}
+
+def Line.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Pseudoscalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Pseudoscalar{+b_e012}:
+      K.Flector{
+        a_e1,
+        a_e2,
+        a_e0,
+        b_e012}
+
+def Line.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        b_e12,
+        zero}
+
+def Line.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        zero,
+        zero}
+
+def Line.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        zero}
+
+def Line.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        add(a_e0, b_e0),
+        b_e012}
+
+def Line.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        b_s,
+        add(a_e0, b_e0),
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        b_e012}
+
+def Point.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Scalar{+b_s}:
+      K.Motor{
+        b_s,
+        a_e12,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Point.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        zero,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        zero}
+
+def Point.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01),
+        add(a_e12, b_e12)}
+
+def Point.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01),
+        a_e12}
+
+def Point.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        b_e012}
+
+def Point.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        b_s,
+        add(a_e12, b_e12),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Point.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        b_s,
+        a_e12,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Point.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        b_s,
+        add(a_e12, b_e12),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Point.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        zero,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        b_e012}
+
+def Point.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        b_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e12, b_e12),
+        b_e012}
+
+def Direction.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Scalar<T>) -> K.Translator<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Translator{
+        b_s,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Direction.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        zero,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        zero}
+
+def Direction.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01),
+        b_e12}
+
+def Direction.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01),
+        zero}
+
+def Direction.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        b_e012}
+
+def Direction.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        b_s,
+        b_e12,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Direction.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        b_s,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Direction.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        b_s,
+        b_e12,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Direction.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        zero,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        b_e012}
+
+def Direction.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        b_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        b_e12,
+        b_e012}
+
+def Pseudoscalar.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        b_s,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e012}
+
+def Pseudoscalar.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        b_e1,
+        b_e2,
+        b_e0,
+        a_e012}
+
+def Pseudoscalar.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        a_e012}
+
+def Pseudoscalar.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        b_e01,
+        neg(neg(b_e20)),
+        zero,
+        a_e012}
+
+def Pseudoscalar.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Pseudoscalar{+b_e012}:
+      K.Pseudoscalar{
+        add(a_e012, b_e012)}
+
+def Pseudoscalar.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        b_s,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        b_e12,
+        a_e012}
+
+def Pseudoscalar.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        b_s,
+        zero,
+        zero,
+        zero,
+        b_e01,
+        neg(neg(b_e20)),
+        zero,
+        a_e012}
+
+def Pseudoscalar.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        b_s,
+        zero,
+        zero,
+        zero,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        a_e012}
+
+def Pseudoscalar.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        b_e1,
+        b_e2,
+        b_e0,
+        add(a_e012, b_e012)}
+
+def Pseudoscalar.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        b_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        add(a_e012, b_e012)}
+
+def Rotor.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Scalar{+b_s}:
+      K.Rotor{
+        add(a_s, b_s),
+        a_e12}
+
+def Rotor.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        zero,
+        zero,
+        a_e12,
+        zero}
+
+def Rotor.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        add(a_e12, b_e12),
+        neg(neg(b_e20)),
+        b_e01}
+
+def Rotor.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Direction<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Motor{
+        a_s,
+        a_e12,
+        neg(neg(b_e20)),
+        b_e01}
+
+def Rotor.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e12,
+        b_e012}
+
+def Rotor.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Rotor{
+        add(a_s, b_s),
+        add(a_e12, b_e12)}
+
+def Rotor.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, b_s),
+        a_e12,
+        neg(neg(b_e20)),
+        b_e01}
+
+def Rotor.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, b_s),
+        add(a_e12, b_e12),
+        neg(neg(b_e20)),
+        b_e01}
+
+def Rotor.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        zero,
+        zero,
+        a_e12,
+        b_e012}
+
+def Rotor.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, b_s),
+        b_e0,
+        b_e1,
+        b_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        add(a_e12, b_e12),
+        b_e012}
+
+def Translator.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Scalar<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Translator{
+        add(a_s, b_s),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Translator.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        zero}
+
+def Translator.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        b_e12,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Translator.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Direction<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Translator{
+        a_s,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Translator.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        b_e012}
+
+def Translator.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        add(a_s, b_s),
+        b_e12,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Translator.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        add(a_s, b_s),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Translator.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, b_s),
+        b_e12,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Translator.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        b_e012}
+
+def Translator.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, b_s),
+        b_e0,
+        b_e1,
+        b_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        b_e12,
+        b_e012}
+
+def Motor.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Motor{
+        add(a_s, b_s),
+        a_e12,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Motor.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        zero}
+
+def Motor.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        add(a_e12, b_e12),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Motor.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Direction<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Motor{
+        a_s,
+        a_e12,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Motor.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        b_e012}
+
+def Motor.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        add(a_s, b_s),
+        add(a_e12, b_e12),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Motor.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, b_s),
+        a_e12,
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Motor.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, b_s),
+        add(a_e12, b_e12),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e01, b_e01)}
+
+def Motor.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        b_e0,
+        b_e1,
+        b_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        b_e012}
+
+def Motor.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, b_s),
+        b_e0,
+        b_e1,
+        b_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e12, b_e12),
+        b_e012}
+
+def Flector.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        zero,
+        a_e012}
+
+def Flector.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        add(a_e0, b_e0),
+        a_e012}
+
+def Flector.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        a_e012}
+
+def Flector.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        zero,
+        a_e012}
+
+def Flector.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Pseudoscalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Pseudoscalar{+b_e012}:
+      K.Flector{
+        a_e1,
+        a_e2,
+        a_e0,
+        add(a_e012, b_e012)}
+
+def Flector.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        b_e12,
+        a_e012}
+
+def Flector.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        zero,
+        a_e012}
+
+def Flector.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        b_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        a_e012}
+
+def Flector.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        add(a_e0, b_e0),
+        add(a_e012, b_e012)}
+
+def Flector.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        b_s,
+        add(a_e0, b_e0),
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        b_e01,
+        neg(neg(b_e20)),
+        b_e12,
+        add(a_e012, b_e012)}
+
+def Multivector.add.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        add(a_s, b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        a_e012}
+
+def Multivector.add.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        add(a_e0, b_e0),
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        a_e012}
+
+def Multivector.add.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        a_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e12, b_e12),
+        a_e012}
+
+def Multivector.add.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        a_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        a_e12,
+        a_e012}
+
+def Multivector.add.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        add(a_e012, b_e012)}
+
+def Multivector.add.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        add(a_s, b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        add(a_e12, b_e12),
+        a_e012}
+
+def Multivector.add.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        add(a_s, b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        a_e12,
+        a_e012}
+
+def Multivector.add.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        add(a_s, b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e12, b_e12),
+        a_e012}
+
+def Multivector.add.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        add(a_e0, b_e0),
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        add(a_e012, b_e012)}
+
+def Multivector.add.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, b_s),
+        add(a_e0, b_e0),
+        add(a_e1, b_e1),
+        add(a_e2, b_e2),
+        add(a_e01, b_e01),
+        neg(add(neg(a_e20), neg(b_e20))),
+        add(a_e12, b_e12),
+        add(a_e012, b_e012)}
+
+def Scalar.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        add(a_s, neg(b_s))}
+
+def Scalar.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Scalar.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        neg(b_e12),
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Scalar.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Direction<T>) -> K.Translator<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Direction{+b_e20, +b_e01}:
+      K.Translator{
+        a_s,
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Scalar.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        neg(b_e012)}
+
+def Scalar.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e12}:
+      K.Rotor{
+        add(a_s, neg(b_s)),
+        neg(b_e12)}
+
+def Scalar.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        add(a_s, neg(b_s)),
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Scalar.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        neg(b_e12),
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Scalar.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        zero,
+        zero,
+        zero,
+        neg(b_e012)}
+
+def Scalar.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        neg(b_e012)}
+
+def Line.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Scalar{+b_s}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        zero,
+        zero}
+
+def Line.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        add(a_e0, neg(b_e0))}
+
+def Line.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        zero}
+
+def Line.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        zero,
+        zero}
+
+def Line.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Pseudoscalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Pseudoscalar{+b_e012}:
+      K.Flector{
+        a_e1,
+        a_e2,
+        a_e0,
+        neg(b_e012)}
+
+def Line.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        neg(b_e12),
+        zero}
+
+def Line.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        zero,
+        zero}
+
+def Line.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        zero}
+
+def Line.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        add(a_e0, neg(b_e0)),
+        neg(b_e012)}
+
+def Line.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        neg(b_s),
+        add(a_e0, neg(b_e0)),
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        neg(b_e012)}
+
+def Point.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Scalar{+b_s}:
+      K.Motor{
+        neg(b_s),
+        a_e12,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Point.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        zero,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        zero}
+
+def Point.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01)),
+        add(a_e12, neg(b_e12))}
+
+def Point.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01)),
+        a_e12}
+
+def Point.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        neg(b_e012)}
+
+def Point.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        neg(b_s),
+        add(a_e12, neg(b_e12)),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Point.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        neg(b_s),
+        a_e12,
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Point.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        neg(b_s),
+        add(a_e12, neg(b_e12)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Point.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        zero,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        neg(b_e012)}
+
+def Point.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        neg(b_s),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e12, neg(b_e12)),
+        neg(b_e012)}
+
+def Direction.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Scalar<T>) -> K.Translator<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Translator{
+        neg(b_s),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Direction.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        zero,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        zero}
+
+def Direction.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01)),
+        neg(b_e12)}
+
+def Direction.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01)),
+        zero}
+
+def Direction.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        neg(b_e012)}
+
+def Direction.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        neg(b_s),
+        neg(b_e12),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Direction.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        neg(b_s),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Direction.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        neg(b_s),
+        neg(b_e12),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Direction.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        zero,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        neg(b_e012)}
+
+def Direction.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        neg(b_s),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        neg(b_e12),
+        neg(b_e012)}
+
+def Pseudoscalar.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        neg(b_s),
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e012}
+
+def Pseudoscalar.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        neg(b_e1),
+        neg(b_e2),
+        neg(b_e0),
+        a_e012}
+
+def Pseudoscalar.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        a_e012}
+
+def Pseudoscalar.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        zero,
+        a_e012}
+
+def Pseudoscalar.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Pseudoscalar{+b_e012}:
+      K.Pseudoscalar{
+        add(a_e012, neg(b_e012))}
+
+def Pseudoscalar.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        neg(b_s),
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        neg(b_e12),
+        a_e012}
+
+def Pseudoscalar.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        neg(b_s),
+        zero,
+        zero,
+        zero,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        zero,
+        a_e012}
+
+def Pseudoscalar.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        neg(b_s),
+        zero,
+        zero,
+        zero,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        a_e012}
+
+def Pseudoscalar.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        neg(b_e1),
+        neg(b_e2),
+        neg(b_e0),
+        add(a_e012, neg(b_e012))}
+
+def Pseudoscalar.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        neg(b_s),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        add(a_e012, neg(b_e012))}
+
+def Rotor.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Scalar{+b_s}:
+      K.Rotor{
+        add(a_s, neg(b_s)),
+        a_e12}
+
+def Rotor.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        zero,
+        zero,
+        a_e12,
+        zero}
+
+def Rotor.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        add(a_e12, neg(b_e12)),
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Rotor.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Direction<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Motor{
+        a_s,
+        a_e12,
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Rotor.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        a_e12,
+        neg(b_e012)}
+
+def Rotor.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Rotor{
+        add(a_s, neg(b_s)),
+        add(a_e12, neg(b_e12))}
+
+def Rotor.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        a_e12,
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Rotor.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        add(a_e12, neg(b_e12)),
+        neg(neg(neg(b_e20))),
+        neg(b_e01)}
+
+def Rotor.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        zero,
+        zero,
+        a_e12,
+        neg(b_e012)}
+
+def Rotor.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        add(a_e12, neg(b_e12)),
+        neg(b_e012)}
+
+def Translator.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Scalar<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Translator{
+        add(a_s, neg(b_s)),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Translator.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        zero}
+
+def Translator.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        neg(b_e12),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Translator.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Direction<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Translator{
+        a_s,
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Translator.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        neg(b_e012)}
+
+def Translator.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        neg(b_e12),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Translator.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        add(a_s, neg(b_s)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Translator.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        neg(b_e12),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Translator.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        zero,
+        neg(b_e012)}
+
+def Translator.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        neg(b_e12),
+        neg(b_e012)}
+
+def Motor.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        a_e12,
+        neg(neg(a_e20)),
+        a_e01}
+
+def Motor.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        zero}
+
+def Motor.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        a_s,
+        add(a_e12, neg(b_e12)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Motor.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Direction<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Motor{
+        a_s,
+        a_e12,
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Motor.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        zero,
+        zero,
+        zero,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        neg(b_e012)}
+
+def Motor.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        add(a_e12, neg(b_e12)),
+        neg(neg(a_e20)),
+        a_e01}
+
+def Motor.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        a_e12,
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Motor.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(a_s, neg(b_s)),
+        add(a_e12, neg(b_e12)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e01, neg(b_e01))}
+
+def Motor.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        neg(b_e012)}
+
+def Motor.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        neg(b_e0),
+        neg(b_e1),
+        neg(b_e2),
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e12, neg(b_e12)),
+        neg(b_e012)}
+
+def Flector.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        zero,
+        a_e012}
+
+def Flector.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        add(a_e0, neg(b_e0)),
+        a_e012}
+
+def Flector.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        a_e012}
+
+def Flector.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        zero,
+        a_e012}
+
+def Flector.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Pseudoscalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Pseudoscalar{+b_e012}:
+      K.Flector{
+        a_e1,
+        a_e2,
+        a_e0,
+        add(a_e012, neg(b_e012))}
+
+def Flector.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        zero,
+        zero,
+        neg(b_e12),
+        a_e012}
+
+def Flector.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        zero,
+        a_e012}
+
+def Flector.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        neg(b_s),
+        a_e0,
+        a_e1,
+        a_e2,
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        a_e012}
+
+def Flector.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        add(a_e0, neg(b_e0)),
+        add(a_e012, neg(b_e012))}
+
+def Flector.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        neg(b_s),
+        add(a_e0, neg(b_e0)),
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        neg(b_e01),
+        neg(neg(neg(b_e20))),
+        neg(b_e12),
+        add(a_e012, neg(b_e012))}
+
+def Multivector.sub.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        a_e0,
+        a_e1,
+        a_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        a_e012}
+
+def Multivector.sub.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        a_s,
+        add(a_e0, neg(b_e0)),
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        a_e012}
+
+def Multivector.sub.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        a_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e12, neg(b_e12)),
+        a_e012}
+
+def Multivector.sub.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        a_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        a_e12,
+        a_e012}
+
+def Multivector.sub.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        a_s,
+        a_e0,
+        a_e1,
+        a_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        add(a_e012, neg(b_e012))}
+
+def Multivector.sub.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        a_e0,
+        a_e1,
+        a_e2,
+        a_e01,
+        neg(neg(a_e20)),
+        add(a_e12, neg(b_e12)),
+        a_e012}
+
+def Multivector.sub.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        a_e12,
+        a_e012}
+
+def Multivector.sub.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        a_e0,
+        a_e1,
+        a_e2,
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e12, neg(b_e12)),
+        a_e012}
+
+def Multivector.sub.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        a_s,
+        add(a_e0, neg(b_e0)),
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        a_e01,
+        neg(neg(a_e20)),
+        a_e12,
+        add(a_e012, neg(b_e012))}
+
+def Multivector.sub.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(a_s, neg(b_s)),
+        add(a_e0, neg(b_e0)),
+        add(a_e1, neg(b_e1)),
+        add(a_e2, neg(b_e2)),
+        add(a_e01, neg(b_e01)),
+        neg(add(neg(a_e20), neg(neg(b_e20)))),
+        add(a_e12, neg(b_e12)),
+        add(a_e012, neg(b_e012))}
+
+def Scalar.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Scalar<T>) -> K.Scalar<T>:
+  match a:
+    case K.Scalar{+a_s}:
+      K.Scalar{
+        neg(a_s)}
+
+def Line.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Line<T>) -> K.Line<T>:
+  match a:
+    case K.Line{+a_e1, +a_e2, +a_e0}:
+      K.Line{
+        neg(a_e1),
+        neg(a_e2),
+        neg(a_e0)}
+
+def Point.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Point<T>) -> K.Point<T>:
+  match a:
+    case K.Point{+a_e20, +a_e01, +a_e12}:
+      K.Point{
+        neg(neg(neg(a_e20))),
+        neg(a_e01),
+        neg(a_e12)}
+
+def Direction.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Direction<T>) -> K.Point<T>:
+  match a:
+    case K.Direction{+a_e20, +a_e01}:
+      K.Point{
+        neg(neg(neg(a_e20))),
+        neg(a_e01),
+        zero}
+
+def Pseudoscalar.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a:
+    case K.Pseudoscalar{+a_e012}:
+      K.Pseudoscalar{
+        neg(a_e012)}
+
+def Rotor.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Rotor<T>) -> K.Rotor<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e12}:
+      K.Rotor{
+        neg(a_s),
+        neg(a_e12)}
+
+def Translator.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Translator<T>) -> K.Translator<T>:
+  match a:
+    case K.Translator{+a_s, +a_e20, +a_e01}:
+      K.Translator{
+        neg(a_s),
+        neg(neg(neg(a_e20))),
+        neg(a_e01)}
+
+def Motor.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Motor<T>) -> K.Motor<T>:
+  match a:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01}:
+      K.Motor{
+        neg(a_s),
+        neg(a_e12),
+        neg(neg(neg(a_e20))),
+        neg(a_e01)}
+
+def Flector.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Flector<T>) -> K.Flector<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012}:
+      K.Flector{
+        neg(a_e1),
+        neg(a_e2),
+        neg(a_e0),
+        neg(a_e012)}
+
+def Multivector.neg(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>) -> K.Multivector<T>:
+  match a:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012}:
+      K.Multivector{
+        neg(a_s),
+        neg(a_e0),
+        neg(a_e1),
+        neg(a_e2),
+        neg(a_e01),
+        neg(neg(neg(a_e20))),
+        neg(a_e12),
+        neg(a_e012)}
+
 def Scalar.reverse(~T: Data, ~zero: T, ~neg: T -> T, a: K.Scalar<T>) -> K.Scalar<T>:
   match a:
     case K.Scalar{+a_s}:

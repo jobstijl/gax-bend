@@ -244,3 +244,14 @@ Nothing is filed; per your decision the notes live in [upstream-notes.md](upstre
 
 - zsh does not word-split an unquoted `$o`, so `./x $o` with `o="--gpu off"` passes one argument, which the runtime ignores. Write the flag out in full.
 - A computation whose inputs are all literals may be folded at compile time. Take a seed from `IO.now()`.
+
+## Q11. What generated mirror kernels cost (Phase 2)
+
+`bench/q11_mirror_sandwich.bend` runs the Q5 workload: 2²⁶ points, 2¹⁴ leaves × 2¹² points. The motor sandwich is composed from generated, proven mirror kernels: `Flector.gp.Motor(Motor.gp.Point(m, p), Motor.reverse(m))`, 32 + 64 multiplies, no CSE, with the spec's sign noise such as `neg(mul(a, neg(b)))`.
+
+| run | mirror sandwich (96 mul) | gax unit kernel (33 mul, Q5) |
+|---|---|---|
+| 1 thread | 349–365 ms | 296–432 ms |
+| 16 threads | 56–60 ms | 52–80 ms |
+
+In this harness the mirror kernels are as fast as gax's optimised kernel: the multiplications are not the bottleneck, and clang folds the sign noise. The checksums differ in the last digits (74445530000 against 74445520000) because the two compute different expressions: the mirror one is not drift-tolerant. Optimised kernels (Phase 3) matter for exactness and drift more than for speed here.

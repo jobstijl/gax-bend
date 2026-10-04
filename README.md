@@ -10,8 +10,8 @@ is the semantic reference.
 | layer | what | state |
 |---|---|---|
 | S, the spec | a multivector tree over any dimension, any diagonal signature, any scalar ring | **22 laws proven** ([docs/laws.md](docs/laws.md)); `LAWS.bend` is a draft under review |
-| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | next (Phase 2) |
-| A, the API | PGA2D/3D, VGA3D, CGA3D, STA with geometric nouns and batch APIs | later |
+| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA: 2083 kernels, all proven (`algebras/`) |
+| A, the API | PGA2D/3D, VGA3D, CGA3D, STA with geometric nouns and batch APIs | started: `algebras/<name>/f32.bend` (every kernel at F32) |
 | numbers | exact `Int` (done); dyadics, SoftF32, double-F32, posits | Phase 3 |
 
 The Phase 0 measurements behind the design (checker cost, kernel speed
@@ -22,7 +22,8 @@ decisions in [docs/design.md](docs/design.md).
 
 ```sh
 . tools/env.sh          # bend 2.0.35 and the project's clang on PATH
-tools/gate.sh           # proofs, example tests, negative controls
+tools/gate.sh           # proofs, generated kernels, example tests, negative controls
+tools/regen.sh          # regenerate algebras/ from gen/specs.bend (--check: compare)
 bend tests/spec_pga3d.bend
 ```
 
@@ -43,6 +44,9 @@ src/spec.bend     Layer S: MV(T, d), Sig(d), products, signs, complements, grade
 src/ring.bend     the ring laws a theorem may assume
 src/int.bend      exact integers
 src/show.bend     printing multivectors as blade sums
+src/expr.bend     the symbolic ring the generator runs Layer S on
+gen/              the kernel generator (Bend): specs, symbolic evaluation, printers
+algebras/         generated: kinds, kernels, proofs, F32 module per algebra
 proofs/           the lemmas behind PROOF.bend
 tests/            example tests (`#|` expected output) and negative controls
 bench/            benchmarks (Bend against C)

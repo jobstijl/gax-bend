@@ -188,6 +188,8 @@ type Op is Data:
   OGp{}
   OWedge{}
   OVee{}
+  OAdd{}
+  OSub{}
 
 def Op.name(o: Op) -> String:
   match o:
@@ -197,6 +199,10 @@ def Op.name(o: Op) -> String:
       "wedge"
     case OVee{}:
       "vee"
+    case OAdd{}:
+      "add"
+    case OSub{}:
+      "sub"
 
 def Op.run(+d: Nat, sig: S.Sig(d), o: Op, x: S.MV(E.Expr, d), y: S.MV(E.Expr, d)) -> S.MV(E.Expr, d):
   match o:
@@ -206,16 +212,24 @@ def Op.run(+d: Nat, sig: S.Sig(d), o: Op, x: S.MV(E.Expr, d), y: S.MV(E.Expr, d)
       S.MV.wedge(~E.Expr, ~E.Expr.add, ~E.Expr.mul, ~E.Expr.neg, d, x, y)
     case OVee{}:
       S.MV.vee(~E.Expr, ~E.Expr.add, ~E.Expr.mul, ~E.Expr.neg, d, x, y)
+    case OAdd{}:
+      S.MV.add(~E.Expr, ~E.Expr.add, d, x, y)
+    case OSub{}:
+      S.MV.add(~E.Expr, ~E.Expr.add, d, x, S.MV.neg(~E.Expr, ~E.Expr.neg, d, y))
 
-# the spec term the proofs evaluate, as Bend source
-def Op.spec(o: Op, +dn: String, +pre: String) -> String:
+# the spec term the proofs evaluate, as Bend source, around the operands
+def Op.spec(o: Op, +dn: String, +pre: String, x: String, y: String) -> String:
   match o:
     case OGp{}:
-      "S.MV.gp(~T, ~add, ~mul, ~neg, " ++ dn ++ ", K." ++ pre ++ ".sig(), "
+      "S.MV.gp(~T, ~add, ~mul, ~neg, " ++ dn ++ ", K." ++ pre ++ ".sig(), " ++ x ++ ", " ++ y ++ ")"
     case OWedge{}:
-      "S.MV.wedge(~T, ~add, ~mul, ~neg, " ++ dn ++ ", "
+      "S.MV.wedge(~T, ~add, ~mul, ~neg, " ++ dn ++ ", " ++ x ++ ", " ++ y ++ ")"
     case OVee{}:
-      "S.MV.vee(~T, ~add, ~mul, ~neg, " ++ dn ++ ", "
+      "S.MV.vee(~T, ~add, ~mul, ~neg, " ++ dn ++ ", " ++ x ++ ", " ++ y ++ ")"
+    case OAdd{}:
+      "S.MV.add(~T, ~add, " ++ dn ++ ", " ++ x ++ ", " ++ y ++ ")"
+    case OSub{}:
+      "S.MV.add(~T, ~add, " ++ dn ++ ", " ++ x ++ ", S.MV.neg(~T, ~neg, " ++ dn ++ ", " ++ y ++ "))"
 
 # Result kinds
 # ------------
@@ -343,6 +357,15 @@ def Kd.at(bls: List<&2, Bl>, +dn: String) -> List<&2, String>:
     case Bl{n, q, s, g} <> t:
       ("S.MV.at(~T, ~zero, ~neg, " ++ dn ++ ", " ++ Path.show(q) ++ ", " ++ Bool.show.ctor(s) ++ ", t)") <> Kd.at(t, dn)
 
+def Kd.getters(+n: String, +fs: List<&2, String>, bls: List<&2, Bl>) -> List<&2, String>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case Bl{f, q, s, g} <> t:
+      +f2 = f
+      String.concat(["def ", n, ".", f2, "(-T: Data, x: ", n, "<T>) -> T:\n  match x:\n    case ", n, "{",
+        String.join(fs, ", "), "}:\n      ", f2, "\n"]) <> Kd.getters(n, fs, t)
+
 def Kd.clears(bls: List<&2, Bl>, +dn: String) -> String:
   match bls:
     case Nil{}:
@@ -361,7 +384,8 @@ def Kd.module(+d: Nat, +dn: String, k: Kd) -> String:
         MV.print(d, Sym.tree(d, "", bls)), "\n\n",
         "def ", n, ".of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, ", dn, ")) -> ", n, "<T>:\n",
         "  ", n, "{\n    ", String.join(Kd.at(bls, dn), ",\n    "), "}\n\n",
-        "def ", n, ".out(-T: Data, t: S.MV(T, ", dn, ")) -> S.MV(T, ", dn, "):\n  ", Kd.clears(bls, dn), "\n"])
+        "def ", n, ".out(-T: Data, t: S.MV(T, ", dn, ")) -> S.MV(T, ", dn, "):\n  ", Kd.clears(bls, dn), "\n\n",
+        String.join(Kd.getters(n, Kd.fields(bls, "", ""), bls), "\n")])
 
 def Kd.modules(+d: Nat, +dn: String, ks: List<&2, Kd>) -> List<&2, String>:
   match ks:
@@ -375,7 +399,7 @@ def Kd.modules(+d: Nat, +dn: String, ks: List<&2, Kd>) -> List<&2, String>:
 
 # one generated kernel: its source, its proofs, and its multiplication count
 type Ker is Data:
-  Ker{src: String, prf: String, muls: Nat}
+  Ker{src: String, prf: String, api: String, muls: Nat}
 
 def Ker.fields(+d: Nat, bls: List<&2, Bl>, +r: S.MV(E.Expr, d)) -> List<&2, E.Expr>:
   match bls:
@@ -405,7 +429,7 @@ def Ker.text(+dn: String, +pre: String, +o: Op, ka: Kd, kb: Kd, kc: Kd, es: List
       +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
       +args = "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>"
       +pat = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "} K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "}"
-      +spec = Op.spec(o, dn, pre) ++ "K." ++ an ++ ".tree(~T, ~neg, a), K." ++ bn ++ ".tree(~T, ~neg, b))"
+      +spec = Op.spec(o, dn, pre, "K." ++ an ++ ".tree(~T, ~neg, a)", "K." ++ bn ++ ".tree(~T, ~neg, b)")
       +es2 = es
       Ker{
         String.concat([
@@ -420,6 +444,9 @@ def Ker.text(+dn: String, +pre: String, +o: Op, ka: Kd, kb: Kd, kc: Kd, es: List
           "def ", name, ".supp(", ops, ", ", args, ")\n",
           "  -> {K.", cn, ".out(T, ", spec, ") == S.MV.zero(T, ", dn, ") : S.MV(T, ", dn, ")}:\n",
           "  match a b:\n    case ", pat, ":\n      {==}\n"]),
+        String.concat([
+          "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
+          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
         Ker.muls(es2)}
 
 def Ker.pick.go(+d: Nat, +dn: String, +pre: String, o: Op, ka: Kd, kb: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
@@ -454,6 +481,7 @@ def Ker.make(+d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, K
 # -------------
 
 type Op1 is Data:
+  ONeg{}
   ORev{}
   OInv{}
   OConj{}
@@ -462,6 +490,8 @@ type Op1 is Data:
 
 def Op1.name(o: Op1) -> String:
   match o:
+    case ONeg{}:
+      "neg"
     case ORev{}:
       "reverse"
     case OInv{}:
@@ -475,6 +505,8 @@ def Op1.name(o: Op1) -> String:
 
 def Op1.run(+d: Nat, o: Op1, x: S.MV(E.Expr, d)) -> S.MV(E.Expr, d):
   match o:
+    case ONeg{}:
+      S.MV.neg(~E.Expr, ~E.Expr.neg, d, x)
     case ORev{}:
       S.MV.reverse(~E.Expr, ~E.Expr.neg, d, x)
     case OInv{}:
@@ -488,6 +520,8 @@ def Op1.run(+d: Nat, o: Op1, x: S.MV(E.Expr, d)) -> S.MV(E.Expr, d):
 
 def Op1.spec(o: Op1, +dn: String) -> String:
   match o:
+    case ONeg{}:
+      "S.MV.neg(~T, ~neg, " ++ dn ++ ", "
     case ORev{}:
       "S.MV.reverse(~T, ~neg, " ++ dn ++ ", "
     case OInv{}:
@@ -519,6 +553,9 @@ def Ker1.text(+dn: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker
           "def ", name, ".supp(~T: Data, ~neg: T -> T, a: K.", an, "<T>)\n",
           "  -> {K.", cn, ".out(T, ", spec, ") == S.MV.zero(T, ", dn, ") : S.MV(T, ", dn, ")}:\n",
           "  match a:\n    case ", pat, ":\n      {==}\n"]),
+        String.concat([
+          "def ", name, "(a: K.", an, "<F32>) -> K.", cn, "<F32>:\n",
+          "  O.", name, "(~F32, ~0.0, ~F32.neg, a)\n"]),
         Ker.muls(es2)}
 
 def Ker1.pick.go(+d: Nat, +dn: String, o: Op1, ka: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
@@ -596,26 +633,33 @@ def Ker.srcs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, m} <> t:
+    case Ker{s, p, a, m} <> t:
       s <> Ker.srcs(t)
 
 def Ker.prfs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, m} <> t:
+    case Ker{s, p, a, m} <> t:
       p <> Ker.prfs(t)
+
+def Ker.apis(ks: List<&2, Ker>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case Ker{s, p, a, m} <> t:
+      a <> Ker.apis(t)
 
 def Ker.total(ks: List<&2, Ker>) -> Nat:
   match ks:
     case Nil{}:
       0n
-    case Ker{s, p, m} <> t:
+    case Ker{s, p, a, m} <> t:
       Nat.add(m, Ker.total(t))
 
 # the generated modules of one algebra, and a summary line
 type Out is Data:
-  Out{kinds: String, ops: String, proofs: String, summary: String}
+  Out{kinds: String, ops: String, proofs: String, f32: String, summary: String}
 
 def Gen.header(name: String) -> String:
   "# Generated by gen/main.bend from the " ++ name ++ " spec (gen/specs.bend).\n# Do not edit: run tools/regen.sh.\n\nimport Base\nimport ../../src/spec.bend as S\n"
@@ -627,6 +671,8 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
       String.join(Kd.modules(d, dn, ks), "\n")]),
     String.concat([Gen.header(name), "import ./kinds.bend as K\n\n", String.join(Ker.srcs(kers), "\n")]),
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n", String.join(Ker.prfs(kers), "\n")]),
+    String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
+      "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds, ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 

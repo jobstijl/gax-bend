@@ -184,7 +184,7 @@ Negative controls are required per law family.
 
 ## ADR-002: Layer K: generated kind records and mirror kernels, proven by `{==}`
 
-**Status:** proposed, 2026-10-04 (Phase 2 start).
+**Status:** accepted, 2026-10-04. Built for VGA2D, VGA3D, PGA2D, PGA3D and STA: 2083 kernels (gp, wedge, vee, add, sub, neg, reverse, involute, conjugate, dual, undual), each with a mirror law and a support law, plus field getters and an F32 module per algebra. The gate checks them all in about 10 s. Mirror kernels run as fast as gax's optimised sandwich in the Q5 harness (bend-facts Q11).
 
 ### Context
 
