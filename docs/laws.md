@@ -72,6 +72,39 @@ with every flag false.
 - **`Comp.rl`:** J_R and J_L with flags between them compose to a grade
   sign that depends on the parity of d.
 
+## Generated kernels (Layer K)
+
+Every kernel in `algebras/<name>/ops.bend` comes with two generated
+certificates in `algebras/<name>/proofs.bend`, both tagged **proof**:
+
+- **Mirror law** `K.ok`: `C.of_tree(spec(A.tree a, B.tree b)) == kernel(a, b)`.
+  The kernel is the Layer-S operation, field by field, including the
+  orientation signs of the kind layouts.
+- **Support law** `K.supp`: the spec's result is zero outside the result
+  kind, so no coefficient is dropped by the choice of result kind.
+
+Both are proven by matching the operand records and `{==}`, over any `T`
+and any operations: no ring law is used. Combined with the Layer-S laws
+above, every algebraic law transfers to the kernels.
+
+| algebra | kinds | kernels | multiplications |
+|---|---|---|---|
+| VGA2D | 5 | 149 | 218 |
+| VGA3D | 8 | 347 | 1445 |
+| PGA2D | 10 | 528 | 1519 |
+| PGA3D | 11 | 624 | 4787 |
+| STA | 9 | 435 | 4168 |
+
+The operations are gp, wedge, vee, add, sub (any two kinds) and neg,
+reverse, involute, conjugate, dual (J_R) and undual (J_L).
+
+What the certificates do not cover, per ADR-001 item 5:
+- that the chosen result kind is the smallest one;
+- that a missing kernel's product really is identically zero.
+
+The generator decides both from the same symbolic run, but no proof backs
+them yet.
+
 ## Negative controls (`tests/neg/`)
 
 Each one must fail to check. The gate fails if any passes.
@@ -85,6 +118,7 @@ Each one must fail to check. The gate fails if any passes.
 | `rcomp_not_involution.bend` | J_R(J_R e1) = e1 in the plane | complements |
 | `metric_sign.bend` | e1 e1 = +1 when e1 squares to −1 | metric |
 | `wedge_grade_off.bend` | e1 ∧ e2 is a 3-vector | grades |
+| `kernel_sign.bend` | a PGA3D kernel with one sign flipped equals the spec | kernels |
 
 ## Examples (`tests/`)
 
