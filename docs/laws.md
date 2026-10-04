@@ -151,6 +151,27 @@ What the certificates do not cover, per ADR-001 item 5:
 The generator decides both from the same symbolic run, but no proof backs
 them yet.
 
+## The PGA3D API (Layer A, `api/pga3d.bend`)
+
+Over F32 nothing is provable (ADR-001 item 7), so these are property tests,
+tag **f32-prop**, in `tests/pga3d_api.bend`:
+
+| function | property | tolerance |
+|---|---|---|
+| `Motor.rotation(axis, θ)` | a quarter turn about the x axis moves (0, 1, 0) to (0, 0, 1) (right-handed) | 1e-4 |
+| `Motor.translation` | moves the origin to (dx, dy, dz) | 1e-4 |
+| `Motor.between.points` | carries the first point to the second | 1e-4 |
+| `Motor.between.lines` | carries the first line to the second (both normalized) | exact here |
+| `Line.exp`, `Motor.log` | log(exp B) = B for a screw; also at a half-angle of 1e-4 | 1e-5; 1e-7 |
+| `Line.exp` | exp(B) = exp(B/2)² on both sides of the series boundary, and at 1e-4 | 1e-6 |
+| `Motor.log` | exact on a pure translation | exact |
+| `Motor.normalized` | m ~m = 1, the e0123 part included | 1e-6 |
+| `Motor.sqrt` | sqrt(m)² = m | 1e-5 |
+
+`Normed<A>` (gax's `Unit<M>`; Base already has a `Unit`) is the
+certificate. Over F32 it is a trust boundary: only the API's constructors
+make one.
+
 ## Negative controls (`tests/neg/`)
 
 Each one must fail to check. The gate fails if any passes.
