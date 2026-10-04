@@ -9023,6 +9023,25 @@ def Vector.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       K.Scalar{
         mul(b_s, m0_0)}
 
+type VectorScalarMap<-T: Data> is Data:
+  VectorScalarMap{m0_0: T}
+
+def Vector.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorScalarMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      VectorScalarMap{m0_0}
+
+def Vector.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case VectorScalarMap{+m0_0} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(b_s, m0_0)}
+
 def Vector.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Vector<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
@@ -9052,6 +9071,49 @@ def Vector.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +m3_1 = add(neg(q1_3), neg(q1_3))
       +m3_2 = add(neg(q2_3), neg(q2_3))
       +m3_3 = add(add(add(neg(q3_3), q2_2), q1_1), neg(q0_0))
+      K.Vector{
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3))))}
+
+type VectorVectorMap<-T: Data> is Data:
+  VectorVectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Vector.prepare.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorVectorMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(add(q3_3, q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(neg(q1_2), neg(q1_2))
+      +m1_3 = add(neg(q1_3), neg(q1_3))
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(neg(q1_2), neg(q1_2))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), q1_1), neg(q0_0))
+      +m2_3 = add(neg(q2_3), neg(q2_3))
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(neg(q1_3), neg(q1_3))
+      +m3_2 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = add(add(add(neg(q3_3), q2_2), q1_1), neg(q0_0))
+      VectorVectorMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3}
+
+def Vector.Vector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorVectorMap<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match m b:
+    case VectorVectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
       K.Vector{
         add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
         add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
@@ -9109,6 +9171,65 @@ def Vector.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         add(mul(b_e10, m4_0), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5))))),
         add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5)))))}
 
+type VectorBivectorMap<-T: Data> is Data:
+  VectorBivectorMap{m0_0: T, m0_1: T, m0_2: T, m0_4: T, m0_5: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m1_5: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Vector.prepare.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorBivectorMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_3 = mul(a_e0, a_e3)
+      +q0_2 = mul(a_e0, a_e2)
+      +q2_3 = mul(a_e2, a_e3)
+      +q0_1 = mul(a_e0, a_e1)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), neg(q0_0))
+      +m0_1 = add(q1_2, q1_2)
+      +m0_2 = add(q1_3, q1_3)
+      +m0_4 = add(neg(q0_3), neg(q0_3))
+      +m0_5 = add(q0_2, q0_2)
+      +m1_0 = add(q1_2, q1_2)
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(q2_3, q2_3)
+      +m1_3 = add(q0_3, q0_3)
+      +m1_5 = add(neg(q0_1), neg(q0_1))
+      +m2_0 = add(q1_3, q1_3)
+      +m2_1 = add(q2_3, q2_3)
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m2_3 = add(neg(q0_2), neg(q0_2))
+      +m2_4 = add(q0_1, q0_1)
+      +m3_1 = add(neg(q0_3), neg(q0_3))
+      +m3_2 = add(q0_2, q0_2)
+      +m3_3 = add(add(add(q3_3, q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(neg(q1_2), neg(q1_2))
+      +m3_5 = add(neg(q1_3), neg(q1_3))
+      +m4_0 = add(q0_3, q0_3)
+      +m4_2 = add(neg(q0_1), neg(q0_1))
+      +m4_3 = add(neg(q1_2), neg(q1_2))
+      +m4_4 = add(add(add(q3_3, neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(neg(q2_3), neg(q2_3))
+      +m5_0 = add(neg(q0_2), neg(q0_2))
+      +m5_1 = add(q0_1, q0_1)
+      +m5_3 = add(neg(q1_3), neg(q1_3))
+      +m5_4 = add(neg(q2_3), neg(q2_3))
+      +m5_5 = add(add(add(neg(q3_3), q2_2), q1_1), q0_0)
+      VectorBivectorMap{m0_0, m0_1, m0_2, m0_4, m0_5, m1_0, m1_1, m1_2, m1_3, m1_5, m2_0, m2_1, m2_2, m2_3, m2_4, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_3, m5_4, m5_5}
+
+def Vector.Bivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorBivectorMap<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match m b:
+    case VectorBivectorMap{+m0_0, +m0_1, +m0_2, +m0_4, +m0_5, +m1_0, +m1_1, +m1_2, +m1_3, +m1_5, +m2_0, +m2_1, +m2_2, +m2_3, +m2_4, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_3, +m5_4, +m5_5} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        add(mul(b_e10, m0_0), add(mul(b_e20, m0_1), add(mul(b_e30, m0_2), add(mul(b_e31, m0_4), mul(b_e12, m0_5))))),
+        add(mul(b_e10, m1_0), add(mul(b_e20, m1_1), add(mul(b_e30, m1_2), add(mul(b_e23, m1_3), mul(b_e12, m1_5))))),
+        add(mul(b_e10, m2_0), add(mul(b_e20, m2_1), add(mul(b_e30, m2_2), add(mul(b_e23, m2_3), mul(b_e31, m2_4))))),
+        add(mul(b_e20, m3_1), add(mul(b_e30, m3_2), add(mul(b_e23, m3_3), add(mul(b_e31, m3_4), mul(b_e12, m3_5))))),
+        add(mul(b_e10, m4_0), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5))))),
+        add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5)))))}
+
 def Vector.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Trivector<T>) -> K.Trivector<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
@@ -9144,6 +9265,49 @@ def Vector.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
         add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
         add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
 
+type VectorTrivectorMap<-T: Data> is Data:
+  VectorTrivectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Vector.prepare.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorTrivectorMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(q1_2, q1_2)
+      +m1_3 = add(q1_3, q1_3)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(q2_3, q2_3)
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(q1_3, q1_3)
+      +m3_2 = add(q2_3, q2_3)
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      VectorTrivectorMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3}
+
+def Vector.Trivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorTrivectorMap<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match m b:
+    case VectorTrivectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Trivector{
+        add(mul(b_e123, m0_0), add(mul(b_e032, m0_1), add(mul(b_e013, m0_2), mul(b_e021, m0_3)))),
+        add(mul(b_e123, m1_0), add(mul(b_e032, m1_1), add(mul(b_e013, m1_2), mul(b_e021, m1_3)))),
+        add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
+        add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
+
 def Vector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e0123}:
@@ -9152,6 +9316,25 @@ def Vector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T
       +q1_1 = mul(a_e1, a_e1)
       +q0_0 = mul(a_e0, a_e0)
       +m0_0 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type VectorPseudoscalarMap<-T: Data> is Data:
+  VectorPseudoscalarMap{m0_0: T}
+
+def Vector.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorPseudoscalarMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
+      VectorPseudoscalarMap{m0_0}
+
+def Vector.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case VectorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -9164,6 +9347,27 @@ def Vector.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +q0_0 = mul(a_e0, a_e0)
       +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), q0_0)
       +m1_1 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
+      K.Phasor{
+        mul(b_s, m0_0),
+        mul(b_e0123, m1_1)}
+
+type VectorPhasorMap<-T: Data> is Data:
+  VectorPhasorMap{m0_0: T, m1_1: T}
+
+def Vector.prepare.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorPhasorMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_1 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
+      VectorPhasorMap{m0_0, m1_1}
+
+def Vector.Phasor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorPhasorMap<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match m b:
+    case VectorPhasorMap{+m0_0, +m1_1} K.Phasor{+b_s, +b_e0123}:
       K.Phasor{
         mul(b_s, m0_0),
         mul(b_e0123, m1_1)}
@@ -9223,6 +9427,69 @@ def Vector.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6))))),
         mul(b_e0123, m7_7)}
 
+type VectorEvenMap<-T: Data> is Data:
+  VectorEvenMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_5: T, m1_6: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m2_6: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_4: T, m6_5: T, m6_6: T, m7_7: T}
+
+def Vector.prepare.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorEvenMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_3 = mul(a_e0, a_e3)
+      +q0_2 = mul(a_e0, a_e2)
+      +q2_3 = mul(a_e2, a_e3)
+      +q0_1 = mul(a_e0, a_e1)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m1_3 = add(q1_3, q1_3)
+      +m1_5 = add(neg(q0_3), neg(q0_3))
+      +m1_6 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), neg(q0_0))
+      +m2_3 = add(q2_3, q2_3)
+      +m2_4 = add(q0_3, q0_3)
+      +m2_6 = add(neg(q0_1), neg(q0_1))
+      +m3_1 = add(q1_3, q1_3)
+      +m3_2 = add(q2_3, q2_3)
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m3_4 = add(neg(q0_2), neg(q0_2))
+      +m3_5 = add(q0_1, q0_1)
+      +m4_2 = add(neg(q0_3), neg(q0_3))
+      +m4_3 = add(q0_2, q0_2)
+      +m4_4 = add(add(add(q3_3, q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(neg(q1_2), neg(q1_2))
+      +m4_6 = add(neg(q1_3), neg(q1_3))
+      +m5_1 = add(q0_3, q0_3)
+      +m5_3 = add(neg(q0_1), neg(q0_1))
+      +m5_4 = add(neg(q1_2), neg(q1_2))
+      +m5_5 = add(add(add(q3_3, neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(neg(q2_3), neg(q2_3))
+      +m6_1 = add(neg(q0_2), neg(q0_2))
+      +m6_2 = add(q0_1, q0_1)
+      +m6_4 = add(neg(q1_3), neg(q1_3))
+      +m6_5 = add(neg(q2_3), neg(q2_3))
+      +m6_6 = add(add(add(neg(q3_3), q2_2), q1_1), q0_0)
+      +m7_7 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
+      VectorEvenMap{m0_0, m1_1, m1_2, m1_3, m1_5, m1_6, m2_1, m2_2, m2_3, m2_4, m2_6, m3_1, m3_2, m3_3, m3_4, m3_5, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_4, m6_5, m6_6, m7_7}
+
+def Vector.Even.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorEvenMap<T>, b: K.Even<T>) -> K.Even<T>:
+  match m b:
+    case VectorEvenMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_5, +m1_6, +m2_1, +m2_2, +m2_3, +m2_4, +m2_6, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_4, +m6_5, +m6_6, +m7_7} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        mul(b_s, m0_0),
+        add(mul(b_e10, m1_1), add(mul(b_e20, m1_2), add(mul(b_e30, m1_3), add(mul(b_e31, m1_5), mul(b_e12, m1_6))))),
+        add(mul(b_e10, m2_1), add(mul(b_e20, m2_2), add(mul(b_e30, m2_3), add(mul(b_e23, m2_4), mul(b_e12, m2_6))))),
+        add(mul(b_e10, m3_1), add(mul(b_e20, m3_2), add(mul(b_e30, m3_3), add(mul(b_e23, m3_4), mul(b_e31, m3_5))))),
+        add(mul(b_e20, m4_2), add(mul(b_e30, m4_3), add(mul(b_e23, m4_4), add(mul(b_e31, m4_5), mul(b_e12, m4_6))))),
+        add(mul(b_e10, m5_1), add(mul(b_e30, m5_3), add(mul(b_e23, m5_4), add(mul(b_e31, m5_5), mul(b_e12, m5_6))))),
+        add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6))))),
+        mul(b_e0123, m7_7)}
+
 def Vector.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Odd<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
@@ -9268,6 +9535,69 @@ def Vector.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
       +m7_5 = add(q1_3, q1_3)
       +m7_6 = add(q2_3, q2_3)
       +m7_7 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      K.Odd{
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3)))),
+        add(mul(b_e123, m4_4), add(mul(b_e032, m4_5), add(mul(b_e013, m4_6), mul(b_e021, m4_7)))),
+        add(mul(b_e123, m5_4), add(mul(b_e032, m5_5), add(mul(b_e013, m5_6), mul(b_e021, m5_7)))),
+        add(mul(b_e123, m6_4), add(mul(b_e032, m6_5), add(mul(b_e013, m6_6), mul(b_e021, m6_7)))),
+        add(mul(b_e123, m7_4), add(mul(b_e032, m7_5), add(mul(b_e013, m7_6), mul(b_e021, m7_7))))}
+
+type VectorOddMap<-T: Data> is Data:
+  VectorOddMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_4: T, m7_5: T, m7_6: T, m7_7: T}
+
+def Vector.prepare.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorOddMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(add(q3_3, q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(neg(q1_2), neg(q1_2))
+      +m1_3 = add(neg(q1_3), neg(q1_3))
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(neg(q1_2), neg(q1_2))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), q1_1), neg(q0_0))
+      +m2_3 = add(neg(q2_3), neg(q2_3))
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(neg(q1_3), neg(q1_3))
+      +m3_2 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = add(add(add(neg(q3_3), q2_2), q1_1), neg(q0_0))
+      +m4_4 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m4_5 = add(neg(q0_1), neg(q0_1))
+      +m4_6 = add(neg(q0_2), neg(q0_2))
+      +m4_7 = add(neg(q0_3), neg(q0_3))
+      +m5_4 = add(q0_1, q0_1)
+      +m5_5 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(q1_2, q1_2)
+      +m5_7 = add(q1_3, q1_3)
+      +m6_4 = add(q0_2, q0_2)
+      +m6_5 = add(q1_2, q1_2)
+      +m6_6 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m6_7 = add(q2_3, q2_3)
+      +m7_4 = add(q0_3, q0_3)
+      +m7_5 = add(q1_3, q1_3)
+      +m7_6 = add(q2_3, q2_3)
+      +m7_7 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      VectorOddMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_4, m7_5, m7_6, m7_7}
+
+def Vector.Odd.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorOddMap<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match m b:
+    case VectorOddMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_4, +m7_5, +m7_6, +m7_7} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
       K.Odd{
         add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
         add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
@@ -9373,6 +9703,109 @@ def Vector.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
         add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
         mul(b_e0123, m15_15)}
 
+type VectorMultivectorMap<-T: Data> is Data:
+  VectorMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_9: T, m5_10: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_8: T, m7_9: T, m8_6: T, m8_7: T, m8_8: T, m8_9: T, m8_10: T, m9_5: T, m9_7: T, m9_8: T, m9_9: T, m9_10: T, m10_5: T, m10_6: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_11: T, m14_12: T, m14_13: T, m14_14: T, m15_15: T}
+
+def Vector.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorMultivectorMap<T>:
+  match a:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3}:
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_1 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_2 = add(neg(q0_1), neg(q0_1))
+      +m1_3 = add(neg(q0_2), neg(q0_2))
+      +m1_4 = add(neg(q0_3), neg(q0_3))
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(add(add(q3_3, q2_2), neg(q1_1)), neg(q0_0))
+      +m2_3 = add(neg(q1_2), neg(q1_2))
+      +m2_4 = add(neg(q1_3), neg(q1_3))
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(neg(q1_2), neg(q1_2))
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), q1_1), neg(q0_0))
+      +m3_4 = add(neg(q2_3), neg(q2_3))
+      +m4_1 = add(q0_3, q0_3)
+      +m4_2 = add(neg(q1_3), neg(q1_3))
+      +m4_3 = add(neg(q2_3), neg(q2_3))
+      +m4_4 = add(add(add(neg(q3_3), q2_2), q1_1), neg(q0_0))
+      +m5_5 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), neg(q0_0))
+      +m5_6 = add(q1_2, q1_2)
+      +m5_7 = add(q1_3, q1_3)
+      +m5_9 = add(neg(q0_3), neg(q0_3))
+      +m5_10 = add(q0_2, q0_2)
+      +m6_5 = add(q1_2, q1_2)
+      +m6_6 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), neg(q0_0))
+      +m6_7 = add(q2_3, q2_3)
+      +m6_8 = add(q0_3, q0_3)
+      +m6_10 = add(neg(q0_1), neg(q0_1))
+      +m7_5 = add(q1_3, q1_3)
+      +m7_6 = add(q2_3, q2_3)
+      +m7_7 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m7_8 = add(neg(q0_2), neg(q0_2))
+      +m7_9 = add(q0_1, q0_1)
+      +m8_6 = add(neg(q0_3), neg(q0_3))
+      +m8_7 = add(q0_2, q0_2)
+      +m8_8 = add(add(add(q3_3, q2_2), neg(q1_1)), q0_0)
+      +m8_9 = add(neg(q1_2), neg(q1_2))
+      +m8_10 = add(neg(q1_3), neg(q1_3))
+      +m9_5 = add(q0_3, q0_3)
+      +m9_7 = add(neg(q0_1), neg(q0_1))
+      +m9_8 = add(neg(q1_2), neg(q1_2))
+      +m9_9 = add(add(add(q3_3, neg(q2_2)), q1_1), q0_0)
+      +m9_10 = add(neg(q2_3), neg(q2_3))
+      +m10_5 = add(neg(q0_2), neg(q0_2))
+      +m10_6 = add(q0_1, q0_1)
+      +m10_8 = add(neg(q1_3), neg(q1_3))
+      +m10_9 = add(neg(q2_3), neg(q2_3))
+      +m10_10 = add(add(add(neg(q3_3), q2_2), q1_1), q0_0)
+      +m11_11 = add(add(add(neg(q3_3), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m11_12 = add(neg(q0_1), neg(q0_1))
+      +m11_13 = add(neg(q0_2), neg(q0_2))
+      +m11_14 = add(neg(q0_3), neg(q0_3))
+      +m12_11 = add(q0_1, q0_1)
+      +m12_12 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m12_13 = add(q1_2, q1_2)
+      +m12_14 = add(q1_3, q1_3)
+      +m13_11 = add(q0_2, q0_2)
+      +m13_12 = add(q1_2, q1_2)
+      +m13_13 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m13_14 = add(q2_3, q2_3)
+      +m14_11 = add(q0_3, q0_3)
+      +m14_12 = add(q1_3, q1_3)
+      +m14_13 = add(q2_3, q2_3)
+      +m14_14 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m15_15 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
+      VectorMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_1, m2_2, m2_3, m2_4, m3_1, m3_2, m3_3, m3_4, m4_1, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_9, m5_10, m6_5, m6_6, m6_7, m6_8, m6_10, m7_5, m7_6, m7_7, m7_8, m7_9, m8_6, m8_7, m8_8, m8_9, m8_10, m9_5, m9_7, m9_8, m9_9, m9_10, m10_5, m10_6, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_11, m14_12, m14_13, m14_14, m15_15}
+
+def Vector.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case VectorMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_1, +m2_2, +m2_3, +m2_4, +m3_1, +m3_2, +m3_3, +m3_4, +m4_1, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_9, +m5_10, +m6_5, +m6_6, +m6_7, +m6_8, +m6_10, +m7_5, +m7_6, +m7_7, +m7_8, +m7_9, +m8_6, +m8_7, +m8_8, +m8_9, +m8_10, +m9_5, +m9_7, +m9_8, +m9_9, +m9_10, +m10_5, +m10_6, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_11, +m14_12, +m14_13, +m14_14, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e0, m2_1), add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4)))),
+        add(mul(b_e0, m3_1), add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4)))),
+        add(mul(b_e0, m4_1), add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4)))),
+        add(mul(b_e10, m5_5), add(mul(b_e20, m5_6), add(mul(b_e30, m5_7), add(mul(b_e31, m5_9), mul(b_e12, m5_10))))),
+        add(mul(b_e10, m6_5), add(mul(b_e20, m6_6), add(mul(b_e30, m6_7), add(mul(b_e23, m6_8), mul(b_e12, m6_10))))),
+        add(mul(b_e10, m7_5), add(mul(b_e20, m7_6), add(mul(b_e30, m7_7), add(mul(b_e23, m7_8), mul(b_e31, m7_9))))),
+        add(mul(b_e20, m8_6), add(mul(b_e30, m8_7), add(mul(b_e23, m8_8), add(mul(b_e31, m8_9), mul(b_e12, m8_10))))),
+        add(mul(b_e10, m9_5), add(mul(b_e30, m9_7), add(mul(b_e23, m9_8), add(mul(b_e31, m9_9), mul(b_e12, m9_10))))),
+        add(mul(b_e10, m10_5), add(mul(b_e20, m10_6), add(mul(b_e23, m10_8), add(mul(b_e31, m10_9), mul(b_e12, m10_10))))),
+        add(mul(b_e123, m11_11), add(mul(b_e032, m11_12), add(mul(b_e013, m11_13), mul(b_e021, m11_14)))),
+        add(mul(b_e123, m12_11), add(mul(b_e032, m12_12), add(mul(b_e013, m12_13), mul(b_e021, m12_14)))),
+        add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
+        add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
+        mul(b_e0123, m15_15)}
+
 def Even.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Scalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Scalar{+b_s}:
@@ -9390,6 +9823,35 @@ def Even.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +q0_7 = mul(a_s, a_e0123)
       +m0_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
       +m1_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), q1_4), q1_4), q0_7), q0_7)
+      K.Phasor{
+        mul(b_s, m0_0),
+        mul(b_s, m1_0)}
+
+type EvenScalarMap<-T: Data> is Data:
+  EvenScalarMap{m0_0: T, m1_0: T}
+
+def Even.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenScalarMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), q1_4), q1_4), q0_7), q0_7)
+      EvenScalarMap{m0_0, m1_0}
+
+def Even.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenScalarMap<T>, b: K.Scalar<T>) -> K.Phasor<T>:
+  match m b:
+    case EvenScalarMap{+m0_0, +m1_0} K.Scalar{+b_s}:
       K.Phasor{
         mul(b_s, m0_0),
         mul(b_s, m1_0)}
@@ -9445,6 +9907,71 @@ def Even.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m3_1 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
       +m3_2 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
       +m3_3 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      K.Vector{
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3))))}
+
+type EvenVectorMap<-T: Data> is Data:
+  EvenVectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Even.prepare.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenVectorMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q1_6 = mul(a_e10, a_e12)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q0_3 = mul(a_s, a_e30)
+      +q4_5 = mul(a_e23, a_e31)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q1_2 = mul(a_e10, a_e20)
+      +q0_6 = mul(a_s, a_e12)
+      +q4_6 = mul(a_e23, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q0_5 = mul(a_s, a_e31)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q3_5)), neg(q3_5)), q2_6), q2_6), q0_1), q0_1)
+      +m0_2 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q3_4), q3_4), neg(q1_6)), neg(q1_6)), q0_2), q0_2)
+      +m0_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_3), q0_3)
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q3_5), q3_5), neg(q2_6)), neg(q2_6)), q0_1), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), q1_2), q1_2), neg(q0_6)), neg(q0_6))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), q1_3), q1_3), q0_5), q0_5)
+      +m2_0 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q3_4)), neg(q3_4)), q1_6), q1_6), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), q1_2), q1_2), q0_6), q0_6)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_4), q2_4), neg(q1_5)), neg(q1_5)), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
+      +m3_2 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenVectorMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3}
+
+def Even.Vector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenVectorMap<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match m b:
+    case EvenVectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
       K.Vector{
         add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
         add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
@@ -9534,6 +10061,97 @@ def Even.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
         add(mul(b_e10, m4_0), add(mul(b_e20, m4_1), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5)))))),
         add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e30, m5_2), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5))))))}
 
+type EvenBivectorMap<-T: Data> is Data:
+  EvenBivectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m0_4: T, m0_5: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m1_5: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m2_5: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Even.prepare.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenBivectorMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q4_5 = mul(a_e23, a_e31)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q1_2 = mul(a_e10, a_e20)
+      +q0_6 = mul(a_s, a_e12)
+      +q4_6 = mul(a_e23, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q0_5 = mul(a_s, a_e31)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q0_3 = mul(a_s, a_e30)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q1_6 = mul(a_e10, a_e12)
+      +q0_2 = mul(a_s, a_e20)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), neg(q1_2)), neg(q1_2)), neg(q0_6)), neg(q0_6))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), neg(q1_3)), neg(q1_3)), q0_5), q0_5)
+      +m0_3 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), q0_7), q0_7)
+      +m0_4 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_4), q2_4), q1_5), q1_5), neg(q0_3)), neg(q0_3))
+      +m0_5 = add(add(add(add(add(add(add(q5_7, q5_7), q3_4), q3_4), q1_6), q1_6), q0_2), q0_2)
+      +m1_0 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), neg(q1_2)), neg(q1_2)), q0_6), q0_6)
+      +m1_1 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m1_3 = add(add(add(add(add(add(add(q6_7, q6_7), q2_4), q2_4), q1_5), q1_5), q0_3), q0_3)
+      +m1_4 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m1_5 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q3_5), q3_5), q2_6), q2_6), neg(q0_1)), neg(q0_1))
+      +m2_0 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), neg(q1_3)), neg(q1_3)), neg(q0_5)), neg(q0_5))
+      +m2_1 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m2_2 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q3_4), q3_4), q1_6), q1_6), neg(q0_2)), neg(q0_2))
+      +m2_4 = add(add(add(add(add(add(add(q4_7, q4_7), q3_5), q3_5), q2_6), q2_6), q0_1), q0_1)
+      +m2_5 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m3_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m3_1 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_4)), neg(q2_4)), neg(q1_5)), neg(q1_5)), q0_3), q0_3)
+      +m3_2 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q3_4)), neg(q3_4)), neg(q1_6)), neg(q1_6)), neg(q0_2)), neg(q0_2))
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), neg(q1_2)), neg(q1_2)), neg(q0_6)), neg(q0_6))
+      +m3_5 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), neg(q1_3)), neg(q1_3)), q0_5), q0_5)
+      +m4_0 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_4)), neg(q2_4)), neg(q1_5)), neg(q1_5)), neg(q0_3)), neg(q0_3))
+      +m4_1 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m4_2 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q3_5)), neg(q3_5)), neg(q2_6)), neg(q2_6)), q0_1), q0_1)
+      +m4_3 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), neg(q1_2)), neg(q1_2)), q0_6), q0_6)
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m5_0 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q3_4)), neg(q3_4)), neg(q1_6)), neg(q1_6)), q0_2), q0_2)
+      +m5_1 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q3_5)), neg(q3_5)), neg(q2_6)), neg(q2_6)), neg(q0_1)), neg(q0_1))
+      +m5_2 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m5_3 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), neg(q1_3)), neg(q1_3)), neg(q0_5)), neg(q0_5))
+      +m5_4 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m5_5 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      EvenBivectorMap{m0_0, m0_1, m0_2, m0_3, m0_4, m0_5, m1_0, m1_1, m1_2, m1_3, m1_4, m1_5, m2_0, m2_1, m2_2, m2_3, m2_4, m2_5, m3_0, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_1, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_2, m5_3, m5_4, m5_5}
+
+def Even.Bivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenBivectorMap<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match m b:
+    case EvenBivectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m0_4, +m0_5, +m1_0, +m1_1, +m1_2, +m1_3, +m1_4, +m1_5, +m2_0, +m2_1, +m2_2, +m2_3, +m2_4, +m2_5, +m3_0, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        add(mul(b_e10, m0_0), add(mul(b_e20, m0_1), add(mul(b_e30, m0_2), add(mul(b_e23, m0_3), add(mul(b_e31, m0_4), mul(b_e12, m0_5)))))),
+        add(mul(b_e10, m1_0), add(mul(b_e20, m1_1), add(mul(b_e30, m1_2), add(mul(b_e23, m1_3), add(mul(b_e31, m1_4), mul(b_e12, m1_5)))))),
+        add(mul(b_e10, m2_0), add(mul(b_e20, m2_1), add(mul(b_e30, m2_2), add(mul(b_e23, m2_3), add(mul(b_e31, m2_4), mul(b_e12, m2_5)))))),
+        add(mul(b_e10, m3_0), add(mul(b_e20, m3_1), add(mul(b_e30, m3_2), add(mul(b_e23, m3_3), add(mul(b_e31, m3_4), mul(b_e12, m3_5)))))),
+        add(mul(b_e10, m4_0), add(mul(b_e20, m4_1), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5)))))),
+        add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e30, m5_2), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5))))))}
+
 def Even.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Trivector<T>) -> K.Trivector<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
@@ -9591,6 +10209,71 @@ def Even.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T
         add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
         add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
 
+type EvenTrivectorMap<-T: Data> is Data:
+  EvenTrivectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Even.prepare.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenTrivectorMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q1_6 = mul(a_e10, a_e12)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q0_3 = mul(a_s, a_e30)
+      +q4_5 = mul(a_e23, a_e31)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q1_2 = mul(a_e10, a_e20)
+      +q0_6 = mul(a_s, a_e12)
+      +q4_6 = mul(a_e23, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q0_5 = mul(a_s, a_e31)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(q4_7, q4_7), q3_5), q3_5), neg(q2_6)), neg(q2_6)), neg(q0_1)), neg(q0_1))
+      +m0_2 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q3_4)), neg(q3_4)), q1_6), q1_6), neg(q0_2)), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q6_7, q6_7), q2_4), q2_4), neg(q1_5)), neg(q1_5)), neg(q0_3)), neg(q0_3))
+      +m1_0 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q3_5)), neg(q3_5)), q2_6), q2_6), neg(q0_1)), neg(q0_1))
+      +m1_1 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), q1_2), q1_2), neg(q0_6)), neg(q0_6))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), q1_3), q1_3), q0_5), q0_5)
+      +m2_0 = add(add(add(add(add(add(add(q5_7, q5_7), q3_4), q3_4), neg(q1_6)), neg(q1_6)), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), q1_2), q1_2), q0_6), q0_6)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_3)), neg(q0_3))
+      +m3_1 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
+      +m3_2 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenTrivectorMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3}
+
+def Even.Trivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenTrivectorMap<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match m b:
+    case EvenTrivectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Trivector{
+        add(mul(b_e123, m0_0), add(mul(b_e032, m0_1), add(mul(b_e013, m0_2), mul(b_e021, m0_3)))),
+        add(mul(b_e123, m1_0), add(mul(b_e032, m1_1), add(mul(b_e013, m1_2), mul(b_e021, m1_3)))),
+        add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
+        add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
+
 def Even.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Pseudoscalar{+b_e0123}:
@@ -9608,6 +10291,35 @@ def Even.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
       +m1_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      K.Phasor{
+        mul(b_e0123, m0_0),
+        mul(b_e0123, m1_0)}
+
+type EvenPseudoscalarMap<-T: Data> is Data:
+  EvenPseudoscalarMap{m0_0: T, m1_0: T}
+
+def Even.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenPseudoscalarMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m1_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenPseudoscalarMap{m0_0, m1_0}
+
+def Even.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
+  match m b:
+    case EvenPseudoscalarMap{+m0_0, +m1_0} K.Pseudoscalar{+b_e0123}:
       K.Phasor{
         mul(b_e0123, m0_0),
         mul(b_e0123, m1_0)}
@@ -9631,6 +10343,37 @@ def Even.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m0_1 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
       +m1_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), q1_4), q1_4), q0_7), q0_7)
       +m1_1 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      K.Phasor{
+        add(mul(b_s, m0_0), mul(b_e0123, m0_1)),
+        add(mul(b_s, m1_0), mul(b_e0123, m1_1))}
+
+type EvenPhasorMap<-T: Data> is Data:
+  EvenPhasorMap{m0_0: T, m0_1: T, m1_0: T, m1_1: T}
+
+def Even.prepare.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenPhasorMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m1_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), q1_4), q1_4), q0_7), q0_7)
+      +m1_1 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenPhasorMap{m0_0, m0_1, m1_0, m1_1}
+
+def Even.Phasor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenPhasorMap<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match m b:
+    case EvenPhasorMap{+m0_0, +m0_1, +m1_0, +m1_1} K.Phasor{+b_s, +b_e0123}:
       K.Phasor{
         add(mul(b_s, m0_0), mul(b_e0123, m0_1)),
         add(mul(b_s, m1_0), mul(b_e0123, m1_1))}
@@ -9724,6 +10467,103 @@ def Even.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T
         add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e30, m6_3), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6)))))),
         add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
+type EvenEvenMap<-T: Data> is Data:
+  EvenEvenMap{m0_0: T, m0_7: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m1_5: T, m1_6: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m2_5: T, m2_6: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m3_6: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_3: T, m6_4: T, m6_5: T, m6_6: T, m7_0: T, m7_7: T}
+
+def Even.prepare.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenEvenMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +q4_5 = mul(a_e23, a_e31)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q1_2 = mul(a_e10, a_e20)
+      +q0_6 = mul(a_s, a_e12)
+      +q4_6 = mul(a_e23, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q0_5 = mul(a_s, a_e31)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q0_3 = mul(a_s, a_e30)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q1_6 = mul(a_e10, a_e12)
+      +q0_2 = mul(a_s, a_e20)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_7 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m1_1 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), neg(q1_2)), neg(q1_2)), neg(q0_6)), neg(q0_6))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), neg(q1_3)), neg(q1_3)), q0_5), q0_5)
+      +m1_4 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), q0_7), q0_7)
+      +m1_5 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_4), q2_4), q1_5), q1_5), neg(q0_3)), neg(q0_3))
+      +m1_6 = add(add(add(add(add(add(add(q5_7, q5_7), q3_4), q3_4), q1_6), q1_6), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), neg(q1_2)), neg(q1_2)), q0_6), q0_6)
+      +m2_2 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m2_4 = add(add(add(add(add(add(add(q6_7, q6_7), q2_4), q2_4), q1_5), q1_5), q0_3), q0_3)
+      +m2_5 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m2_6 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q3_5), q3_5), q2_6), q2_6), neg(q0_1)), neg(q0_1))
+      +m3_1 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), neg(q1_3)), neg(q1_3)), neg(q0_5)), neg(q0_5))
+      +m3_2 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m3_4 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q3_4), q3_4), q1_6), q1_6), neg(q0_2)), neg(q0_2))
+      +m3_5 = add(add(add(add(add(add(add(q4_7, q4_7), q3_5), q3_5), q2_6), q2_6), q0_1), q0_1)
+      +m3_6 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m4_1 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m4_2 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_4)), neg(q2_4)), neg(q1_5)), neg(q1_5)), q0_3), q0_3)
+      +m4_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q3_4)), neg(q3_4)), neg(q1_6)), neg(q1_6)), neg(q0_2)), neg(q0_2))
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), neg(q1_2)), neg(q1_2)), neg(q0_6)), neg(q0_6))
+      +m4_6 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), neg(q1_3)), neg(q1_3)), q0_5), q0_5)
+      +m5_1 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_4)), neg(q2_4)), neg(q1_5)), neg(q1_5)), neg(q0_3)), neg(q0_3))
+      +m5_2 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m5_3 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q3_5)), neg(q3_5)), neg(q2_6)), neg(q2_6)), q0_1), q0_1)
+      +m5_4 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), neg(q1_2)), neg(q1_2)), q0_6), q0_6)
+      +m5_5 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m6_1 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q3_4)), neg(q3_4)), neg(q1_6)), neg(q1_6)), q0_2), q0_2)
+      +m6_2 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q3_5)), neg(q3_5)), neg(q2_6)), neg(q2_6)), neg(q0_1)), neg(q0_1))
+      +m6_3 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m6_4 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), neg(q1_3)), neg(q1_3)), neg(q0_5)), neg(q0_5))
+      +m6_5 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m6_6 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), q1_4), q1_4), q0_7), q0_7)
+      +m7_7 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenEvenMap{m0_0, m0_7, m1_1, m1_2, m1_3, m1_4, m1_5, m1_6, m2_1, m2_2, m2_3, m2_4, m2_5, m2_6, m3_1, m3_2, m3_3, m3_4, m3_5, m3_6, m4_1, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_2, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_3, m6_4, m6_5, m6_6, m7_0, m7_7}
+
+def Even.Even.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenEvenMap<T>, b: K.Even<T>) -> K.Even<T>:
+  match m b:
+    case EvenEvenMap{+m0_0, +m0_7, +m1_1, +m1_2, +m1_3, +m1_4, +m1_5, +m1_6, +m2_1, +m2_2, +m2_3, +m2_4, +m2_5, +m2_6, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m3_6, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_3, +m6_4, +m6_5, +m6_6, +m7_0, +m7_7} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        add(mul(b_s, m0_0), mul(b_e0123, m0_7)),
+        add(mul(b_e10, m1_1), add(mul(b_e20, m1_2), add(mul(b_e30, m1_3), add(mul(b_e23, m1_4), add(mul(b_e31, m1_5), mul(b_e12, m1_6)))))),
+        add(mul(b_e10, m2_1), add(mul(b_e20, m2_2), add(mul(b_e30, m2_3), add(mul(b_e23, m2_4), add(mul(b_e31, m2_5), mul(b_e12, m2_6)))))),
+        add(mul(b_e10, m3_1), add(mul(b_e20, m3_2), add(mul(b_e30, m3_3), add(mul(b_e23, m3_4), add(mul(b_e31, m3_5), mul(b_e12, m3_6)))))),
+        add(mul(b_e10, m4_1), add(mul(b_e20, m4_2), add(mul(b_e30, m4_3), add(mul(b_e23, m4_4), add(mul(b_e31, m4_5), mul(b_e12, m4_6)))))),
+        add(mul(b_e10, m5_1), add(mul(b_e20, m5_2), add(mul(b_e30, m5_3), add(mul(b_e23, m5_4), add(mul(b_e31, m5_5), mul(b_e12, m5_6)))))),
+        add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e30, m6_3), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
+
 def Even.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Odd<T>) -> K.Odd<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
@@ -9791,6 +10631,91 @@ def Even.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T,
       +m7_5 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
       +m7_6 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
       +m7_7 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      K.Odd{
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3)))),
+        add(mul(b_e123, m4_4), add(mul(b_e032, m4_5), add(mul(b_e013, m4_6), mul(b_e021, m4_7)))),
+        add(mul(b_e123, m5_4), add(mul(b_e032, m5_5), add(mul(b_e013, m5_6), mul(b_e021, m5_7)))),
+        add(mul(b_e123, m6_4), add(mul(b_e032, m6_5), add(mul(b_e013, m6_6), mul(b_e021, m6_7)))),
+        add(mul(b_e123, m7_4), add(mul(b_e032, m7_5), add(mul(b_e013, m7_6), mul(b_e021, m7_7))))}
+
+type EvenOddMap<-T: Data> is Data:
+  EvenOddMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_4: T, m7_5: T, m7_6: T, m7_7: T}
+
+def Even.prepare.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenOddMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q1_6 = mul(a_e10, a_e12)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q0_3 = mul(a_s, a_e30)
+      +q4_5 = mul(a_e23, a_e31)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q1_2 = mul(a_e10, a_e20)
+      +q0_6 = mul(a_s, a_e12)
+      +q4_6 = mul(a_e23, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q0_5 = mul(a_s, a_e31)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q3_5)), neg(q3_5)), q2_6), q2_6), q0_1), q0_1)
+      +m0_2 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q3_4), q3_4), neg(q1_6)), neg(q1_6)), q0_2), q0_2)
+      +m0_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_3), q0_3)
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q3_5), q3_5), neg(q2_6)), neg(q2_6)), q0_1), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), q1_2), q1_2), neg(q0_6)), neg(q0_6))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), q1_3), q1_3), q0_5), q0_5)
+      +m2_0 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q3_4)), neg(q3_4)), q1_6), q1_6), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), q1_2), q1_2), q0_6), q0_6)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_4), q2_4), neg(q1_5)), neg(q1_5)), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
+      +m3_2 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m4_4 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m4_5 = add(add(add(add(add(add(add(q4_7, q4_7), q3_5), q3_5), neg(q2_6)), neg(q2_6)), neg(q0_1)), neg(q0_1))
+      +m4_6 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q3_4)), neg(q3_4)), q1_6), q1_6), neg(q0_2)), neg(q0_2))
+      +m4_7 = add(add(add(add(add(add(add(q6_7, q6_7), q2_4), q2_4), neg(q1_5)), neg(q1_5)), neg(q0_3)), neg(q0_3))
+      +m5_4 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q3_5)), neg(q3_5)), q2_6), q2_6), neg(q0_1)), neg(q0_1))
+      +m5_5 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), q1_2), q1_2), neg(q0_6)), neg(q0_6))
+      +m5_7 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), q1_3), q1_3), q0_5), q0_5)
+      +m6_4 = add(add(add(add(add(add(add(q5_7, q5_7), q3_4), q3_4), neg(q1_6)), neg(q1_6)), neg(q0_2)), neg(q0_2))
+      +m6_5 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), q1_2), q1_2), q0_6), q0_6)
+      +m6_6 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m6_7 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m7_4 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_3)), neg(q0_3))
+      +m7_5 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
+      +m7_6 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
+      +m7_7 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenOddMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_4, m7_5, m7_6, m7_7}
+
+def Even.Odd.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenOddMap<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match m b:
+    case EvenOddMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_4, +m7_5, +m7_6, +m7_7} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
       K.Odd{
         add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
         add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
@@ -9930,6 +10855,143 @@ def Even.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
         add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
         add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
 
+type EvenMultivectorMap<-T: Data> is Data:
+  EvenMultivectorMap{m0_0: T, m0_15: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_8: T, m5_9: T, m5_10: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_9: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_8: T, m7_9: T, m7_10: T, m8_5: T, m8_6: T, m8_7: T, m8_8: T, m8_9: T, m8_10: T, m9_5: T, m9_6: T, m9_7: T, m9_8: T, m9_9: T, m9_10: T, m10_5: T, m10_6: T, m10_7: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_11: T, m14_12: T, m14_13: T, m14_14: T, m15_0: T, m15_15: T}
+
+def Even.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>) -> EvenMultivectorMap<T>:
+  match a:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123}:
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q0_0 = mul(a_s, a_s)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q1_6 = mul(a_e10, a_e12)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q0_3 = mul(a_s, a_e30)
+      +q4_5 = mul(a_e23, a_e31)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q1_2 = mul(a_e10, a_e20)
+      +q0_6 = mul(a_s, a_e12)
+      +q4_6 = mul(a_e23, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q0_5 = mul(a_s, a_e31)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_15 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m1_1 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q3_5)), neg(q3_5)), q2_6), q2_6), q0_1), q0_1)
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q3_4), q3_4), neg(q1_6)), neg(q1_6)), q0_2), q0_2)
+      +m1_4 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_3), q0_3)
+      +m2_1 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q3_5), q3_5), neg(q2_6)), neg(q2_6)), q0_1), q0_1)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), q1_2), q1_2), neg(q0_6)), neg(q0_6))
+      +m2_4 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), q1_3), q1_3), q0_5), q0_5)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q3_4)), neg(q3_4)), q1_6), q1_6), q0_2), q0_2)
+      +m3_2 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), q1_2), q1_2), q0_6), q0_6)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m4_1 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_4), q2_4), neg(q1_5)), neg(q1_5)), q0_3), q0_3)
+      +m4_2 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
+      +m4_3 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
+      +m4_4 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m5_5 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), neg(q1_2)), neg(q1_2)), neg(q0_6)), neg(q0_6))
+      +m5_7 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), neg(q1_3)), neg(q1_3)), q0_5), q0_5)
+      +m5_8 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), q0_7), q0_7)
+      +m5_9 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_4), q2_4), q1_5), q1_5), neg(q0_3)), neg(q0_3))
+      +m5_10 = add(add(add(add(add(add(add(q5_7, q5_7), q3_4), q3_4), q1_6), q1_6), q0_2), q0_2)
+      +m6_5 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), neg(q1_2)), neg(q1_2)), q0_6), q0_6)
+      +m6_6 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m6_7 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m6_8 = add(add(add(add(add(add(add(q6_7, q6_7), q2_4), q2_4), q1_5), q1_5), q0_3), q0_3)
+      +m6_9 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m6_10 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q3_5), q3_5), q2_6), q2_6), neg(q0_1)), neg(q0_1))
+      +m7_5 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), neg(q1_3)), neg(q1_3)), neg(q0_5)), neg(q0_5))
+      +m7_6 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m7_7 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m7_8 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q3_4), q3_4), q1_6), q1_6), neg(q0_2)), neg(q0_2))
+      +m7_9 = add(add(add(add(add(add(add(q4_7, q4_7), q3_5), q3_5), q2_6), q2_6), q0_1), q0_1)
+      +m7_10 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m8_5 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m8_6 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_4)), neg(q2_4)), neg(q1_5)), neg(q1_5)), q0_3), q0_3)
+      +m8_7 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q3_4)), neg(q3_4)), neg(q1_6)), neg(q1_6)), neg(q0_2)), neg(q0_2))
+      +m8_8 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m8_9 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), neg(q1_2)), neg(q1_2)), neg(q0_6)), neg(q0_6))
+      +m8_10 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), neg(q1_3)), neg(q1_3)), q0_5), q0_5)
+      +m9_5 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_4)), neg(q2_4)), neg(q1_5)), neg(q1_5)), neg(q0_3)), neg(q0_3))
+      +m9_6 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m9_7 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q3_5)), neg(q3_5)), neg(q2_6)), neg(q2_6)), q0_1), q0_1)
+      +m9_8 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), neg(q1_2)), neg(q1_2)), q0_6), q0_6)
+      +m9_9 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m9_10 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m10_5 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q3_4)), neg(q3_4)), neg(q1_6)), neg(q1_6)), q0_2), q0_2)
+      +m10_6 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q3_5)), neg(q3_5)), neg(q2_6)), neg(q2_6)), neg(q0_1)), neg(q0_1))
+      +m10_7 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m10_8 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), neg(q1_3)), neg(q1_3)), neg(q0_5)), neg(q0_5))
+      +m10_9 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q2_3)), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m10_10 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m11_11 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m11_12 = add(add(add(add(add(add(add(q4_7, q4_7), q3_5), q3_5), neg(q2_6)), neg(q2_6)), neg(q0_1)), neg(q0_1))
+      +m11_13 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q3_4)), neg(q3_4)), q1_6), q1_6), neg(q0_2)), neg(q0_2))
+      +m11_14 = add(add(add(add(add(add(add(q6_7, q6_7), q2_4), q2_4), neg(q1_5)), neg(q1_5)), neg(q0_3)), neg(q0_3))
+      +m12_11 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q3_5)), neg(q3_5)), q2_6), q2_6), neg(q0_1)), neg(q0_1))
+      +m12_12 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m12_13 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_7)), neg(q3_7)), q1_2), q1_2), neg(q0_6)), neg(q0_6))
+      +m12_14 = add(add(add(add(add(add(add(q4_6, q4_6), q2_7), q2_7), q1_3), q1_3), q0_5), q0_5)
+      +m13_11 = add(add(add(add(add(add(add(q5_7, q5_7), q3_4), q3_4), neg(q1_6)), neg(q1_6)), neg(q0_2)), neg(q0_2))
+      +m13_12 = add(add(add(add(add(add(add(q4_5, q4_5), q3_7), q3_7), q1_2), q1_2), q0_6), q0_6)
+      +m13_13 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m13_14 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m14_11 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_3)), neg(q0_3))
+      +m14_12 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q2_7)), neg(q2_7)), q1_3), q1_3), neg(q0_5)), neg(q0_5))
+      +m14_13 = add(add(add(add(add(add(add(q5_6, q5_6), q2_3), q2_3), q1_7), q1_7), q0_4), q0_4)
+      +m14_14 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m15_0 = add(add(add(add(add(add(add(q3_6, q3_6), q2_5), q2_5), q1_4), q1_4), q0_7), q0_7)
+      +m15_15 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      EvenMultivectorMap{m0_0, m0_15, m1_1, m1_2, m1_3, m1_4, m2_1, m2_2, m2_3, m2_4, m3_1, m3_2, m3_3, m3_4, m4_1, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_8, m5_9, m5_10, m6_5, m6_6, m6_7, m6_8, m6_9, m6_10, m7_5, m7_6, m7_7, m7_8, m7_9, m7_10, m8_5, m8_6, m8_7, m8_8, m8_9, m8_10, m9_5, m9_6, m9_7, m9_8, m9_9, m9_10, m10_5, m10_6, m10_7, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_11, m14_12, m14_13, m14_14, m15_0, m15_15}
+
+def Even.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: EvenMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case EvenMultivectorMap{+m0_0, +m0_15, +m1_1, +m1_2, +m1_3, +m1_4, +m2_1, +m2_2, +m2_3, +m2_4, +m3_1, +m3_2, +m3_3, +m3_4, +m4_1, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_8, +m5_9, +m5_10, +m6_5, +m6_6, +m6_7, +m6_8, +m6_9, +m6_10, +m7_5, +m7_6, +m7_7, +m7_8, +m7_9, +m7_10, +m8_5, +m8_6, +m8_7, +m8_8, +m8_9, +m8_10, +m9_5, +m9_6, +m9_7, +m9_8, +m9_9, +m9_10, +m10_5, +m10_6, +m10_7, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_11, +m14_12, +m14_13, +m14_14, +m15_0, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(mul(b_s, m0_0), mul(b_e0123, m0_15)),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e0, m2_1), add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4)))),
+        add(mul(b_e0, m3_1), add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4)))),
+        add(mul(b_e0, m4_1), add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4)))),
+        add(mul(b_e10, m5_5), add(mul(b_e20, m5_6), add(mul(b_e30, m5_7), add(mul(b_e23, m5_8), add(mul(b_e31, m5_9), mul(b_e12, m5_10)))))),
+        add(mul(b_e10, m6_5), add(mul(b_e20, m6_6), add(mul(b_e30, m6_7), add(mul(b_e23, m6_8), add(mul(b_e31, m6_9), mul(b_e12, m6_10)))))),
+        add(mul(b_e10, m7_5), add(mul(b_e20, m7_6), add(mul(b_e30, m7_7), add(mul(b_e23, m7_8), add(mul(b_e31, m7_9), mul(b_e12, m7_10)))))),
+        add(mul(b_e10, m8_5), add(mul(b_e20, m8_6), add(mul(b_e30, m8_7), add(mul(b_e23, m8_8), add(mul(b_e31, m8_9), mul(b_e12, m8_10)))))),
+        add(mul(b_e10, m9_5), add(mul(b_e20, m9_6), add(mul(b_e30, m9_7), add(mul(b_e23, m9_8), add(mul(b_e31, m9_9), mul(b_e12, m9_10)))))),
+        add(mul(b_e10, m10_5), add(mul(b_e20, m10_6), add(mul(b_e30, m10_7), add(mul(b_e23, m10_8), add(mul(b_e31, m10_9), mul(b_e12, m10_10)))))),
+        add(mul(b_e123, m11_11), add(mul(b_e032, m11_12), add(mul(b_e013, m11_13), mul(b_e021, m11_14)))),
+        add(mul(b_e123, m12_11), add(mul(b_e032, m12_12), add(mul(b_e013, m12_13), mul(b_e021, m12_14)))),
+        add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
+        add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
+
 def Odd.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Scalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Scalar{+b_s}:
@@ -9947,6 +11009,35 @@ def Odd.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
       +q0_4 = mul(a_e0, a_e123)
       +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
       +m1_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      K.Phasor{
+        mul(b_s, m0_0),
+        mul(b_s, m1_0)}
+
+type OddScalarMap<-T: Data> is Data:
+  OddScalarMap{m0_0: T, m1_0: T}
+
+def Odd.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddScalarMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      OddScalarMap{m0_0, m1_0}
+
+def Odd.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddScalarMap<T>, b: K.Scalar<T>) -> K.Phasor<T>:
+  match m b:
+    case OddScalarMap{+m0_0, +m1_0} K.Scalar{+b_s}:
       K.Phasor{
         mul(b_s, m0_0),
         mul(b_s, m1_0)}
@@ -10002,6 +11093,71 @@ def Odd.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
       +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
       +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
       +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q4_4)), neg(q3_3)), q2_2), q1_1), neg(q0_0))
+      K.Vector{
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3))))}
+
+type OddVectorMap<-T: Data> is Data:
+  OddVectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Odd.prepare.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddVectorMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_6 = mul(a_e123, a_e013)
+      +q3_5 = mul(a_e3, a_e032)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q4_7 = mul(a_e123, a_e021)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q3_4 = mul(a_e3, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q0_7 = mul(a_e0, a_e021)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_6 = mul(a_e0, a_e013)
+      +q6_7 = mul(a_e013, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), q2_7), q2_7), neg(q0_1)), neg(q0_1))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, q4_6), q3_5), q3_5), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), q2_7), q2_7), q0_1), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), neg(q3_4)), neg(q3_4)), neg(q1_2)), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m2_0 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), q3_5), q3_5), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), q3_4), q3_4), neg(q1_2)), neg(q1_2)), q0_7), q0_7)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), neg(q0_0))
+      +m2_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q4_4)), neg(q3_3)), q2_2), q1_1), neg(q0_0))
+      OddVectorMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3}
+
+def Odd.Vector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddVectorMap<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match m b:
+    case OddVectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
       K.Vector{
         add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
         add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
@@ -10091,6 +11247,97 @@ def Odd.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
         add(mul(b_e10, m4_0), add(mul(b_e20, m4_1), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5)))))),
         add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e30, m5_2), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5))))))}
 
+type OddBivectorMap<-T: Data> is Data:
+  OddBivectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m0_4: T, m0_5: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m1_5: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m2_5: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Odd.prepare.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddBivectorMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q5_6 = mul(a_e032, a_e013)
+      +q3_4 = mul(a_e3, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q0_7 = mul(a_e0, a_e021)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_6 = mul(a_e0, a_e013)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q4_7 = mul(a_e123, a_e021)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_3 = mul(a_e0, a_e3)
+      +q4_6 = mul(a_e123, a_e013)
+      +q3_5 = mul(a_e3, a_e032)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q6_7 = mul(a_e013, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_1 = mul(a_e0, a_e1)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), neg(q0_0))
+      +m0_1 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), q3_4), q3_4), q1_2), q1_2), neg(q0_7)), neg(q0_7))
+      +m0_2 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), q1_3), q1_3), q0_6), q0_6)
+      +m0_3 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m0_4 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), neg(q0_3)), neg(q0_3))
+      +m0_5 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m1_0 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), neg(q3_4)), neg(q3_4)), q1_2), q1_2), q0_7), q0_7)
+      +m1_1 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), q4_4), neg(q3_3)), q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), q1_4), q1_4), neg(q0_5)), neg(q0_5))
+      +m1_3 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), q0_3), q0_3)
+      +m1_4 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m1_5 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m2_0 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m2_1 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m2_2 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), q3_3), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m2_3 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m2_4 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), q0_1), q0_1)
+      +m2_5 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_6), q2_6), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m3_1 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), neg(q0_3)), neg(q0_3))
+      +m3_2 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q3_4)), neg(q3_4)), neg(q1_2)), neg(q1_2)), q0_7), q0_7)
+      +m3_5 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m4_0 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), q0_3), q0_3)
+      +m4_1 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m4_2 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m4_3 = add(add(add(add(add(add(add(q5_6, q5_6), q3_4), q3_4), neg(q1_2)), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m5_0 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m5_1 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), q0_1), q0_1)
+      +m5_2 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_6), q2_6), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m5_3 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m5_4 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), q1_4), q1_4), neg(q0_5)), neg(q0_5))
+      +m5_5 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      OddBivectorMap{m0_0, m0_1, m0_2, m0_3, m0_4, m0_5, m1_0, m1_1, m1_2, m1_3, m1_4, m1_5, m2_0, m2_1, m2_2, m2_3, m2_4, m2_5, m3_0, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_1, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_2, m5_3, m5_4, m5_5}
+
+def Odd.Bivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddBivectorMap<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match m b:
+    case OddBivectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m0_4, +m0_5, +m1_0, +m1_1, +m1_2, +m1_3, +m1_4, +m1_5, +m2_0, +m2_1, +m2_2, +m2_3, +m2_4, +m2_5, +m3_0, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        add(mul(b_e10, m0_0), add(mul(b_e20, m0_1), add(mul(b_e30, m0_2), add(mul(b_e23, m0_3), add(mul(b_e31, m0_4), mul(b_e12, m0_5)))))),
+        add(mul(b_e10, m1_0), add(mul(b_e20, m1_1), add(mul(b_e30, m1_2), add(mul(b_e23, m1_3), add(mul(b_e31, m1_4), mul(b_e12, m1_5)))))),
+        add(mul(b_e10, m2_0), add(mul(b_e20, m2_1), add(mul(b_e30, m2_2), add(mul(b_e23, m2_3), add(mul(b_e31, m2_4), mul(b_e12, m2_5)))))),
+        add(mul(b_e10, m3_0), add(mul(b_e20, m3_1), add(mul(b_e30, m3_2), add(mul(b_e23, m3_3), add(mul(b_e31, m3_4), mul(b_e12, m3_5)))))),
+        add(mul(b_e10, m4_0), add(mul(b_e20, m4_1), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5)))))),
+        add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e30, m5_2), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5))))))}
+
 def Odd.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Trivector<T>) -> K.Trivector<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
@@ -10148,6 +11395,71 @@ def Odd.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
         add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
         add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
 
+type OddTrivectorMap<-T: Data> is Data:
+  OddTrivectorMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Odd.prepare.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddTrivectorMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_6 = mul(a_e123, a_e013)
+      +q3_5 = mul(a_e3, a_e032)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q4_7 = mul(a_e123, a_e021)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q3_4 = mul(a_e3, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q0_7 = mul(a_e0, a_e021)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_6 = mul(a_e0, a_e013)
+      +q6_7 = mul(a_e013, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m0_1 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), q2_7), q2_7), neg(q0_1)), neg(q0_1))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, q4_6), q3_5), q3_5), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), q2_7), q2_7), q0_1), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q5_6, q5_6), q3_4), q3_4), q1_2), q1_2), q0_7), q0_7)
+      +m1_3 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q2_4)), neg(q2_4)), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m2_0 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), q3_5), q3_5), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q3_4)), neg(q3_4)), q1_2), q1_2), neg(q0_7)), neg(q0_7))
+      +m2_2 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), q4_4), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m3_2 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
+      +m3_3 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      OddTrivectorMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3}
+
+def Odd.Trivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddTrivectorMap<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match m b:
+    case OddTrivectorMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Trivector{
+        add(mul(b_e123, m0_0), add(mul(b_e032, m0_1), add(mul(b_e013, m0_2), mul(b_e021, m0_3)))),
+        add(mul(b_e123, m1_0), add(mul(b_e032, m1_1), add(mul(b_e013, m1_2), mul(b_e021, m1_3)))),
+        add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
+        add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
+
 def Odd.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Pseudoscalar{+b_e0123}:
@@ -10165,6 +11477,35 @@ def Odd.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
       +q0_0 = mul(a_e0, a_e0)
       +m0_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
       +m1_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      K.Phasor{
+        mul(b_e0123, m0_0),
+        mul(b_e0123, m1_0)}
+
+type OddPseudoscalarMap<-T: Data> is Data:
+  OddPseudoscalarMap{m0_0: T, m1_0: T}
+
+def Odd.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddPseudoscalarMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +m0_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m1_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      OddPseudoscalarMap{m0_0, m1_0}
+
+def Odd.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
+  match m b:
+    case OddPseudoscalarMap{+m0_0, +m1_0} K.Pseudoscalar{+b_e0123}:
       K.Phasor{
         mul(b_e0123, m0_0),
         mul(b_e0123, m1_0)}
@@ -10188,6 +11529,37 @@ def Odd.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
       +m0_1 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
       +m1_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
       +m1_1 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      K.Phasor{
+        add(mul(b_s, m0_0), mul(b_e0123, m0_1)),
+        add(mul(b_s, m1_0), mul(b_e0123, m1_1))}
+
+type OddPhasorMap<-T: Data> is Data:
+  OddPhasorMap{m0_0: T, m0_1: T, m1_0: T, m1_1: T}
+
+def Odd.prepare.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddPhasorMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m1_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m1_1 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      OddPhasorMap{m0_0, m0_1, m1_0, m1_1}
+
+def Odd.Phasor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddPhasorMap<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match m b:
+    case OddPhasorMap{+m0_0, +m0_1, +m1_0, +m1_1} K.Phasor{+b_s, +b_e0123}:
       K.Phasor{
         add(mul(b_s, m0_0), mul(b_e0123, m0_1)),
         add(mul(b_s, m1_0), mul(b_e0123, m1_1))}
@@ -10281,6 +11653,103 @@ def Odd.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T,
         add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e30, m6_3), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6)))))),
         add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
+type OddEvenMap<-T: Data> is Data:
+  OddEvenMap{m0_0: T, m0_7: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m1_5: T, m1_6: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m2_5: T, m2_6: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m3_6: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_3: T, m6_4: T, m6_5: T, m6_6: T, m7_0: T, m7_7: T}
+
+def Odd.prepare.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddEvenMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q5_6 = mul(a_e032, a_e013)
+      +q3_4 = mul(a_e3, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q0_7 = mul(a_e0, a_e021)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_6 = mul(a_e0, a_e013)
+      +q4_7 = mul(a_e123, a_e021)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_3 = mul(a_e0, a_e3)
+      +q4_6 = mul(a_e123, a_e013)
+      +q3_5 = mul(a_e3, a_e032)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q6_7 = mul(a_e013, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_1 = mul(a_e0, a_e1)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_7 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m1_1 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), neg(q0_0))
+      +m1_2 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), q3_4), q3_4), q1_2), q1_2), neg(q0_7)), neg(q0_7))
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), q1_3), q1_3), q0_6), q0_6)
+      +m1_4 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m1_5 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), neg(q0_3)), neg(q0_3))
+      +m1_6 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), neg(q3_4)), neg(q3_4)), q1_2), q1_2), q0_7), q0_7)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), q4_4), neg(q3_3)), q2_2), neg(q1_1)), neg(q0_0))
+      +m2_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), q1_4), q1_4), neg(q0_5)), neg(q0_5))
+      +m2_4 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), q0_3), q0_3)
+      +m2_5 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m2_6 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), q3_3), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m3_4 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m3_5 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), q0_1), q0_1)
+      +m3_6 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_6), q2_6), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m4_1 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m4_2 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), neg(q0_3)), neg(q0_3))
+      +m4_3 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q3_4)), neg(q3_4)), neg(q1_2)), neg(q1_2)), q0_7), q0_7)
+      +m4_6 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m5_1 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), q0_3), q0_3)
+      +m5_2 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m5_3 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m5_4 = add(add(add(add(add(add(add(q5_6, q5_6), q3_4), q3_4), neg(q1_2)), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m5_5 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m6_1 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m6_2 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), q0_1), q0_1)
+      +m6_3 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_6), q2_6), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m6_4 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m6_5 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), q1_4), q1_4), neg(q0_5)), neg(q0_5))
+      +m6_6 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m7_7 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      OddEvenMap{m0_0, m0_7, m1_1, m1_2, m1_3, m1_4, m1_5, m1_6, m2_1, m2_2, m2_3, m2_4, m2_5, m2_6, m3_1, m3_2, m3_3, m3_4, m3_5, m3_6, m4_1, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_2, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_3, m6_4, m6_5, m6_6, m7_0, m7_7}
+
+def Odd.Even.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddEvenMap<T>, b: K.Even<T>) -> K.Even<T>:
+  match m b:
+    case OddEvenMap{+m0_0, +m0_7, +m1_1, +m1_2, +m1_3, +m1_4, +m1_5, +m1_6, +m2_1, +m2_2, +m2_3, +m2_4, +m2_5, +m2_6, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m3_6, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_3, +m6_4, +m6_5, +m6_6, +m7_0, +m7_7} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        add(mul(b_s, m0_0), mul(b_e0123, m0_7)),
+        add(mul(b_e10, m1_1), add(mul(b_e20, m1_2), add(mul(b_e30, m1_3), add(mul(b_e23, m1_4), add(mul(b_e31, m1_5), mul(b_e12, m1_6)))))),
+        add(mul(b_e10, m2_1), add(mul(b_e20, m2_2), add(mul(b_e30, m2_3), add(mul(b_e23, m2_4), add(mul(b_e31, m2_5), mul(b_e12, m2_6)))))),
+        add(mul(b_e10, m3_1), add(mul(b_e20, m3_2), add(mul(b_e30, m3_3), add(mul(b_e23, m3_4), add(mul(b_e31, m3_5), mul(b_e12, m3_6)))))),
+        add(mul(b_e10, m4_1), add(mul(b_e20, m4_2), add(mul(b_e30, m4_3), add(mul(b_e23, m4_4), add(mul(b_e31, m4_5), mul(b_e12, m4_6)))))),
+        add(mul(b_e10, m5_1), add(mul(b_e20, m5_2), add(mul(b_e30, m5_3), add(mul(b_e23, m5_4), add(mul(b_e31, m5_5), mul(b_e12, m5_6)))))),
+        add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e30, m6_3), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
+
 def Odd.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Odd<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
@@ -10348,6 +11817,91 @@ def Odd.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, 
       +m7_5 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
       +m7_6 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
       +m7_7 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      K.Odd{
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3)))),
+        add(mul(b_e123, m4_4), add(mul(b_e032, m4_5), add(mul(b_e013, m4_6), mul(b_e021, m4_7)))),
+        add(mul(b_e123, m5_4), add(mul(b_e032, m5_5), add(mul(b_e013, m5_6), mul(b_e021, m5_7)))),
+        add(mul(b_e123, m6_4), add(mul(b_e032, m6_5), add(mul(b_e013, m6_6), mul(b_e021, m6_7)))),
+        add(mul(b_e123, m7_4), add(mul(b_e032, m7_5), add(mul(b_e013, m7_6), mul(b_e021, m7_7))))}
+
+type OddOddMap<-T: Data> is Data:
+  OddOddMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_4: T, m7_5: T, m7_6: T, m7_7: T}
+
+def Odd.prepare.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddOddMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_6 = mul(a_e123, a_e013)
+      +q3_5 = mul(a_e3, a_e032)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q4_7 = mul(a_e123, a_e021)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q3_4 = mul(a_e3, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q0_7 = mul(a_e0, a_e021)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_6 = mul(a_e0, a_e013)
+      +q6_7 = mul(a_e013, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), q2_7), q2_7), neg(q0_1)), neg(q0_1))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, q4_6), q3_5), q3_5), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), q2_7), q2_7), q0_1), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), neg(q3_4)), neg(q3_4)), neg(q1_2)), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m2_0 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), q3_5), q3_5), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), q3_4), q3_4), neg(q1_2)), neg(q1_2)), q0_7), q0_7)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), neg(q0_0))
+      +m2_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q4_4)), neg(q3_3)), q2_2), q1_1), neg(q0_0))
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m4_5 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), q2_7), q2_7), neg(q0_1)), neg(q0_1))
+      +m4_6 = add(add(add(add(add(add(add(q4_6, q4_6), q3_5), q3_5), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m4_7 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m5_4 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), q2_7), q2_7), q0_1), q0_1)
+      +m5_5 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(add(add(add(add(add(add(q5_6, q5_6), q3_4), q3_4), q1_2), q1_2), q0_7), q0_7)
+      +m5_7 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q2_4)), neg(q2_4)), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m6_4 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), q3_5), q3_5), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m6_5 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q3_4)), neg(q3_4)), q1_2), q1_2), neg(q0_7)), neg(q0_7))
+      +m6_6 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), q4_4), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m6_7 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m7_4 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m7_5 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m7_6 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
+      +m7_7 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      OddOddMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_4, m7_5, m7_6, m7_7}
+
+def Odd.Odd.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddOddMap<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match m b:
+    case OddOddMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_4, +m7_5, +m7_6, +m7_7} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
       K.Odd{
         add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
         add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
@@ -10469,6 +12023,143 @@ def Odd.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
       +m14_14 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
       +m15_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
       +m15_15 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      K.Multivector{
+        add(mul(b_s, m0_0), mul(b_e0123, m0_15)),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e0, m2_1), add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4)))),
+        add(mul(b_e0, m3_1), add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4)))),
+        add(mul(b_e0, m4_1), add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4)))),
+        add(mul(b_e10, m5_5), add(mul(b_e20, m5_6), add(mul(b_e30, m5_7), add(mul(b_e23, m5_8), add(mul(b_e31, m5_9), mul(b_e12, m5_10)))))),
+        add(mul(b_e10, m6_5), add(mul(b_e20, m6_6), add(mul(b_e30, m6_7), add(mul(b_e23, m6_8), add(mul(b_e31, m6_9), mul(b_e12, m6_10)))))),
+        add(mul(b_e10, m7_5), add(mul(b_e20, m7_6), add(mul(b_e30, m7_7), add(mul(b_e23, m7_8), add(mul(b_e31, m7_9), mul(b_e12, m7_10)))))),
+        add(mul(b_e10, m8_5), add(mul(b_e20, m8_6), add(mul(b_e30, m8_7), add(mul(b_e23, m8_8), add(mul(b_e31, m8_9), mul(b_e12, m8_10)))))),
+        add(mul(b_e10, m9_5), add(mul(b_e20, m9_6), add(mul(b_e30, m9_7), add(mul(b_e23, m9_8), add(mul(b_e31, m9_9), mul(b_e12, m9_10)))))),
+        add(mul(b_e10, m10_5), add(mul(b_e20, m10_6), add(mul(b_e30, m10_7), add(mul(b_e23, m10_8), add(mul(b_e31, m10_9), mul(b_e12, m10_10)))))),
+        add(mul(b_e123, m11_11), add(mul(b_e032, m11_12), add(mul(b_e013, m11_13), mul(b_e021, m11_14)))),
+        add(mul(b_e123, m12_11), add(mul(b_e032, m12_12), add(mul(b_e013, m12_13), mul(b_e021, m12_14)))),
+        add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
+        add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
+
+type OddMultivectorMap<-T: Data> is Data:
+  OddMultivectorMap{m0_0: T, m0_15: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_1: T, m2_2: T, m2_3: T, m2_4: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_8: T, m5_9: T, m5_10: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_9: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_8: T, m7_9: T, m7_10: T, m8_5: T, m8_6: T, m8_7: T, m8_8: T, m8_9: T, m8_10: T, m9_5: T, m9_6: T, m9_7: T, m9_8: T, m9_9: T, m9_10: T, m10_5: T, m10_6: T, m10_7: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_11: T, m14_12: T, m14_13: T, m14_14: T, m15_0: T, m15_15: T}
+
+def Odd.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>) -> OddMultivectorMap<T>:
+  match a:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021}:
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q4_4 = mul(a_e123, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_6 = mul(a_e123, a_e013)
+      +q3_5 = mul(a_e3, a_e032)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q4_7 = mul(a_e123, a_e021)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q3_4 = mul(a_e3, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q0_7 = mul(a_e0, a_e021)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_6 = mul(a_e0, a_e013)
+      +q6_7 = mul(a_e013, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_15 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m1_1 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q4_4), q3_3), q2_2), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), q2_7), q2_7), neg(q0_1)), neg(q0_1))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, q4_6), q3_5), q3_5), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m1_4 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m2_1 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), q2_7), q2_7), q0_1), q0_1)
+      +m2_2 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), neg(q4_4)), q3_3), q2_2), neg(q1_1)), neg(q0_0))
+      +m2_3 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), neg(q3_4)), neg(q3_4)), neg(q1_2)), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m2_4 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m3_1 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), q3_5), q3_5), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m3_2 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), q3_4), q3_4), neg(q1_2)), neg(q1_2)), q0_7), q0_7)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), neg(q4_4)), q3_3), neg(q2_2)), q1_1), neg(q0_0))
+      +m3_4 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
+      +m4_1 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m4_2 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m4_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q4_4)), neg(q3_3)), q2_2), q1_1), neg(q0_0))
+      +m5_5 = add(add(add(add(add(add(add(q7_7, q6_6), neg(q5_5)), q4_4), neg(q3_3)), neg(q2_2)), q1_1), neg(q0_0))
+      +m5_6 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), q3_4), q3_4), q1_2), q1_2), neg(q0_7)), neg(q0_7))
+      +m5_7 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), neg(q2_4)), neg(q2_4)), q1_3), q1_3), q0_6), q0_6)
+      +m5_8 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m5_9 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), neg(q0_3)), neg(q0_3))
+      +m5_10 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m6_5 = add(add(add(add(add(add(add(neg(q5_6), neg(q5_6)), neg(q3_4)), neg(q3_4)), q1_2), q1_2), q0_7), q0_7)
+      +m6_6 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), q5_5), q4_4), neg(q3_3)), q2_2), neg(q1_1)), neg(q0_0))
+      +m6_7 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), q1_4), q1_4), neg(q0_5)), neg(q0_5))
+      +m6_8 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), q0_3), q0_3)
+      +m6_9 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m6_10 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m7_5 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m7_6 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m7_7 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), q4_4), q3_3), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m7_8 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m7_9 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), q0_1), q0_1)
+      +m7_10 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_6), q2_6), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m8_5 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m8_6 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), neg(q0_3)), neg(q0_3))
+      +m8_7 = add(add(add(add(add(add(add(q4_6, q4_6), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m8_8 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), neg(q4_4)), q3_3), q2_2), neg(q1_1)), q0_0)
+      +m8_9 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q3_4)), neg(q3_4)), neg(q1_2)), neg(q1_2)), q0_7), q0_7)
+      +m8_10 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m9_5 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), neg(q1_6)), neg(q1_6)), q0_3), q0_3)
+      +m9_6 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m9_7 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m9_8 = add(add(add(add(add(add(add(q5_6, q5_6), q3_4), q3_4), neg(q1_2)), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m9_9 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), neg(q4_4)), q3_3), neg(q2_2)), q1_1), q0_0)
+      +m9_10 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m10_5 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), neg(q3_5)), neg(q3_5)), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m10_6 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), neg(q2_7)), neg(q2_7)), q0_1), q0_1)
+      +m10_7 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_6), q2_6), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m10_8 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q2_4)), neg(q2_4)), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m10_9 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), q1_4), q1_4), neg(q0_5)), neg(q0_5))
+      +m10_10 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), neg(q4_4)), neg(q3_3)), q2_2), q1_1), q0_0)
+      +m11_11 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), neg(q4_4)), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m11_12 = add(add(add(add(add(add(add(q4_5, q4_5), neg(q3_6)), neg(q3_6)), q2_7), q2_7), neg(q0_1)), neg(q0_1))
+      +m11_13 = add(add(add(add(add(add(add(q4_6, q4_6), q3_5), q3_5), neg(q1_7)), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m11_14 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m12_11 = add(add(add(add(add(add(add(neg(q4_5), neg(q4_5)), neg(q3_6)), neg(q3_6)), q2_7), q2_7), q0_1), q0_1)
+      +m12_12 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), q5_5), q4_4), neg(q3_3)), neg(q2_2)), q1_1), q0_0)
+      +m12_13 = add(add(add(add(add(add(add(q5_6, q5_6), q3_4), q3_4), q1_2), q1_2), q0_7), q0_7)
+      +m12_14 = add(add(add(add(add(add(add(q5_7, q5_7), neg(q2_4)), neg(q2_4)), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m13_11 = add(add(add(add(add(add(add(neg(q4_6), neg(q4_6)), q3_5), q3_5), neg(q1_7)), neg(q1_7)), q0_2), q0_2)
+      +m13_12 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q3_4)), neg(q3_4)), q1_2), q1_2), neg(q0_7)), neg(q0_7))
+      +m13_13 = add(add(add(add(add(add(add(neg(q7_7), q6_6), neg(q5_5)), q4_4), neg(q3_3)), q2_2), neg(q1_1)), q0_0)
+      +m13_14 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m14_11 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m14_12 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m14_13 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5))
+      +m14_14 = add(add(add(add(add(add(add(q7_7, neg(q6_6)), neg(q5_5)), q4_4), q3_3), neg(q2_2)), neg(q1_1)), q0_0)
+      +m15_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m15_15 = add(add(add(add(add(add(add(neg(q7_7), neg(q6_6)), neg(q5_5)), q4_4), q3_3), q2_2), q1_1), neg(q0_0))
+      OddMultivectorMap{m0_0, m0_15, m1_1, m1_2, m1_3, m1_4, m2_1, m2_2, m2_3, m2_4, m3_1, m3_2, m3_3, m3_4, m4_1, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_8, m5_9, m5_10, m6_5, m6_6, m6_7, m6_8, m6_9, m6_10, m7_5, m7_6, m7_7, m7_8, m7_9, m7_10, m8_5, m8_6, m8_7, m8_8, m8_9, m8_10, m9_5, m9_6, m9_7, m9_8, m9_9, m9_10, m10_5, m10_6, m10_7, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_11, m14_12, m14_13, m14_14, m15_0, m15_15}
+
+def Odd.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: OddMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case OddMultivectorMap{+m0_0, +m0_15, +m1_1, +m1_2, +m1_3, +m1_4, +m2_1, +m2_2, +m2_3, +m2_4, +m3_1, +m3_2, +m3_3, +m3_4, +m4_1, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_8, +m5_9, +m5_10, +m6_5, +m6_6, +m6_7, +m6_8, +m6_9, +m6_10, +m7_5, +m7_6, +m7_7, +m7_8, +m7_9, +m7_10, +m8_5, +m8_6, +m8_7, +m8_8, +m8_9, +m8_10, +m9_5, +m9_6, +m9_7, +m9_8, +m9_9, +m9_10, +m10_5, +m10_6, +m10_7, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_11, +m14_12, +m14_13, +m14_14, +m15_0, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
       K.Multivector{
         add(mul(b_s, m0_0), mul(b_e0123, m0_15)),
         add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),

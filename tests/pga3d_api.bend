@@ -11,7 +11,9 @@
 # - exp(B) = exp(B/2)² within 1e-6 on both sides of the series boundary
 #   |B²| = 1/4 (half-angles 0.4999 and 0.5001) and at a half-angle of 1e-4;
 # - log(exp(B)) = B within 1e-7 at a half-angle of 1e-4;
-# - log of a pure translation is exact.
+# - log of a pure translation is exact;
+# - renormalize_fast squares the drift: a unit screw motor scaled by 1.001
+#   (m ~m off by 2e-3) comes back within 1e-5, and its Study part p with it.
 import Base
 import ../api/pga3d.bend as P
 import ../api/normed.bend as U
@@ -78,6 +80,8 @@ def main() -> IO(Unit):
     IO.print(Bool.show(F32.is_lt(halving.err(screw.at(1.0e-4)), 1.0e-6)))
     IO.print(Bool.show(F32.is_lt(Line.err(P.Motor.log(P.Line.exp(screw.at(1.0e-4))), screw.at(1.0e-4)), 1.0e-7)))
     IO.print(F32.show(Line.err(P.Motor.log(P.Motor.translation(3.0, F32.neg(2.0), 7.5)), K.Line{0.0, 0.0, 0.0, F32.neg(1.5), 1.0, F32.neg(3.75)})))
+    +dm : K.Motor<F32> = M(P.Line.exp(screw()))
+    IO.print(Bool.show(F32.is_lt(Study.err(P.Motor.study(M(P.Motor.renormalize_fast(U.Normed{G.Scalar.gp.Motor(K.Scalar{1.001}, dm)})))), 1.0e-5)))
 #|(0, 0, 1)
 #|(1, 2, 3)
 #|(-4, 5, 0.5)
@@ -90,3 +94,4 @@ def main() -> IO(Unit):
 #|True
 #|True
 #|0
+#|True

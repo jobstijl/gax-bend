@@ -179,6 +179,11 @@ every versor kind V and every kind X:
   Tag: **proof**, assuming the normaliser's ring laws.
 - **Result kind:** gax's rule applied to the support that survives
   cancellation. For PGA3D all 77 pairs agree with gax's generated types.
+- **Prepared form:** `V.prepare.X(v)` is the matrix Q (one record per
+  pair, `MotorPointMap`), and `V.X.apply(Q, x)` applies it: 13
+  multiplications per point for a PGA3D motor. The law `.prepared` states
+  `apply(prepare(v), x) = transform(v, x)`, by `{==}`, for every sandwich
+  of every algebra (263 laws).
 - **Example:** `tests/transform_pga3d.bend`, over exact integers, checks
   a translation, a half turn, a reflection and a moved plane.
 - **Negative control:** `tests/neg/transform_support.bend` claims that the
@@ -207,6 +212,7 @@ tag **f32-prop**, in `tests/pga3d_api.bend`:
 | `Motor.log` | exact on a pure translation | exact |
 | `Motor.normalized` | m ~m = 1, the e0123 part included | 1e-6 |
 | `Motor.sqrt` | sqrt(m)² = m | 1e-5 |
+| `Motor.renormalize_fast` | one Newton step (3 − m~m)m/2: a unit motor scaled by 1.001 returns to m~m = 1 | 1e-5 |
 
 The CGA3D API (`api/cga3d.bend`) is tested the same way in
 `tests/cga3d_api.bend` (f32-prop, rounded to 1e-4):

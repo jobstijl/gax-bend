@@ -513,6 +513,12 @@ def Vector.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
         K.Multivector.fields(N.Tm, K.Scalar.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Scalar{N.TVar{5n}}))),
         hh, {==})
 
+def Vector.Scalar.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>)
+  -> {O.Vector.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Scalar.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Scalar(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Scalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Scalar{b_s}:
+      {==}
+
 def Vector.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -526,6 +532,12 @@ def Vector.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, K.Vector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))))),
         K.Multivector.fields(N.Tm, K.Vector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Vector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}}))),
         hh, {==})
+
+def Vector.Vector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>)
+  -> {O.Vector.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Vector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Vector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Vector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Vector{b_e1, b_e2, b_e3, b_eo, b_ei}:
+      {==}
 
 def Vector.transform.Twist.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -541,6 +553,12 @@ def Vector.transform.Twist.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
         K.Multivector.fields(N.Tm, K.Bivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Twist(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Twist{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}}))),
         hh, {==})
 
+def Vector.Twist.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Twist<T>)
+  -> {O.Vector.transform.Twist(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Twist.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Twist(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Bivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Twist{b_e23, b_e31, b_e12, b_e1i, b_e2i, b_e3i}:
+      {==}
+
 def Vector.transform.Bivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -554,6 +572,12 @@ def Vector.transform.Bivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{15n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{15n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), K.Bivector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{15n}, K.Bivector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{15n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))))),
         K.Multivector.fields(N.Tm, K.Bivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Bivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Bivector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}}))),
         hh, {==})
+
+def Vector.Bivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>)
+  -> {O.Vector.transform.Bivector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Bivector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Bivector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Bivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Bivector{b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi}:
+      {==}
 
 def Vector.transform.Trivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -569,6 +593,12 @@ def Vector.transform.Trivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T
         K.Multivector.fields(N.Tm, K.Trivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Trivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Trivector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}}))),
         hh, {==})
 
+def Vector.Trivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Trivector<T>)
+  -> {O.Vector.transform.Trivector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Trivector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Trivector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Trivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Trivector{b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123}:
+      {==}
+
 def Vector.transform.Quadvector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -582,6 +612,12 @@ def Vector.transform.Quadvector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), K.Quadvector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, K.Quadvector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{10n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))))),
         K.Multivector.fields(N.Tm, K.Quadvector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Quadvector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Quadvector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}}))),
         hh, {==})
+
+def Vector.Quadvector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Quadvector<T>)
+  -> {O.Vector.transform.Quadvector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Quadvector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Quadvector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Quadvector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Quadvector{b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i}:
+      {==}
 
 def Vector.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -597,6 +633,12 @@ def Vector.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
         K.Multivector.fields(N.Tm, K.Pseudoscalar.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Pseudoscalar{N.TVar{5n}}))),
         hh, {==})
 
+def Vector.Pseudoscalar.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> {O.Vector.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Pseudoscalar.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Pseudoscalar{b_e123oi}:
+      {==}
+
 def Vector.transform.Motor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -610,6 +652,12 @@ def Vector.transform.Motor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{13n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{13n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{13n}, K.Motor{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{13n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))))),
         K.Multivector.fields(N.Tm, K.Even.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Motor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Motor{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}}))),
         hh, {==})
+
+def Vector.Motor.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Motor<T>)
+  -> {O.Vector.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Motor.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Motor(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Even<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Motor{b_s, b_e23, b_e31, b_e12, b_e1i, b_e2i, b_e3i, b_e123i}:
+      {==}
 
 def Vector.transform.Even.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -625,6 +673,12 @@ def Vector.transform.Even.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
         K.Multivector.fields(N.Tm, K.Even.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Even(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Even{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}}))),
         hh, {==})
 
+def Vector.Even.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Even<T>)
+  -> {O.Vector.transform.Even(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Even.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Even(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Even<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Even{b_s, b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi, b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i}:
+      {==}
+
 def Vector.transform.Odd.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -638,6 +692,12 @@ def Vector.transform.Odd.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{21n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{21n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), K.Odd.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{21n}, K.Odd{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Vector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{21n}, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))))),
         K.Multivector.fields(N.Tm, K.Odd.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Odd(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Odd{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}}))),
         hh, {==})
+
+def Vector.Odd.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>)
+  -> {O.Vector.transform.Odd(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Odd.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Odd(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Odd<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Odd{b_e1, b_e2, b_e3, b_eo, b_ei, b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123, b_e123oi}:
+      {==}
 
 def Vector.transform.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -653,6 +713,12 @@ def Vector.transform.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         K.Multivector.fields(N.Tm, K.Multivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}, K.Multivector{N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}, N.TVar{22n}, N.TVar{23n}, N.TVar{24n}, N.TVar{25n}, N.TVar{26n}, N.TVar{27n}, N.TVar{28n}, N.TVar{29n}, N.TVar{30n}, N.TVar{31n}, N.TVar{32n}, N.TVar{33n}, N.TVar{34n}, N.TVar{35n}, N.TVar{36n}}))),
         hh, {==})
 
+def Vector.Multivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>)
+  -> {O.Vector.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Vector.Multivector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Vector.prepare.Multivector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Multivector<T>}:
+  match a b:
+    case K.Vector{a_e1, a_e2, a_e3, a_eo, a_ei} K.Multivector{b_s, b_e1, b_e2, b_e3, b_eo, b_ei, b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi, b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123, b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i, b_e123oi}:
+      {==}
+
 def Motor.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -666,6 +732,12 @@ def Motor.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), K.Scalar.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, K.Scalar{N.TVar{8n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))))),
         K.Multivector.fields(N.Tm, K.Motor.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Scalar{N.TVar{8n}}))),
         hh, {==})
+
+def Motor.Scalar.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Scalar<T>)
+  -> {O.Motor.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Scalar.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Scalar(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Motor<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Scalar{b_s}:
+      {==}
 
 def Motor.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -681,6 +753,12 @@ def Motor.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
         K.Multivector.fields(N.Tm, K.Odd.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Vector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}}))),
         hh, {==})
 
+def Motor.Vector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Vector<T>)
+  -> {O.Motor.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Vector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Vector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Odd<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Vector{b_e1, b_e2, b_e3, b_eo, b_ei}:
+      {==}
+
 def Motor.transform.Twist.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -694,6 +772,12 @@ def Motor.transform.Twist.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{14n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{14n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), K.Twist.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{14n}, K.Twist{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{14n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))))),
         K.Multivector.fields(N.Tm, K.Twist.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Twist(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Twist{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}}))),
         hh, {==})
+
+def Motor.Twist.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Twist<T>)
+  -> {O.Motor.transform.Twist(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Twist.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Twist(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Twist<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Twist{b_e23, b_e31, b_e12, b_e1i, b_e2i, b_e3i}:
+      {==}
 
 def Motor.transform.Bivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -709,6 +793,12 @@ def Motor.transform.Bivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
         K.Multivector.fields(N.Tm, K.Bivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Bivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Bivector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}}))),
         hh, {==})
 
+def Motor.Bivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Bivector<T>)
+  -> {O.Motor.transform.Bivector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Bivector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Bivector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Bivector<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Bivector{b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi}:
+      {==}
+
 def Motor.transform.Trivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -722,6 +812,12 @@ def Motor.transform.Trivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{18n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{18n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), K.Trivector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{18n}, K.Trivector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{18n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))))),
         K.Multivector.fields(N.Tm, K.Trivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Trivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Trivector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}}))),
         hh, {==})
+
+def Motor.Trivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Trivector<T>)
+  -> {O.Motor.transform.Trivector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Trivector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Trivector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Trivector<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Trivector{b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123}:
+      {==}
 
 def Motor.transform.Quadvector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -737,6 +833,12 @@ def Motor.transform.Quadvector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T
         K.Multivector.fields(N.Tm, K.Even.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Quadvector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Quadvector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}}))),
         hh, {==})
 
+def Motor.Quadvector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Quadvector<T>)
+  -> {O.Motor.transform.Quadvector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Quadvector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Quadvector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Even<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Quadvector{b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i}:
+      {==}
+
 def Motor.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -750,6 +852,12 @@ def Motor.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, K.Pseudoscalar{N.TVar{8n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{9n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))))),
         K.Multivector.fields(N.Tm, K.Odd.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Pseudoscalar{N.TVar{8n}}))),
         hh, {==})
+
+def Motor.Pseudoscalar.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Pseudoscalar<T>)
+  -> {O.Motor.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Pseudoscalar.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Odd<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Pseudoscalar{b_e123oi}:
+      {==}
 
 def Motor.transform.Motor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -765,6 +873,12 @@ def Motor.transform.Motor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
         K.Multivector.fields(N.Tm, K.Motor.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Motor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Motor{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}}))),
         hh, {==})
 
+def Motor.Motor.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Motor<T>)
+  -> {O.Motor.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Motor.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Motor(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Motor<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Motor{b_s, b_e23, b_e31, b_e12, b_e1i, b_e2i, b_e3i, b_e123i}:
+      {==}
+
 def Motor.transform.Even.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -778,6 +892,12 @@ def Motor.transform.Even.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{24n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{24n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), K.Even.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{24n}, K.Even{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}, N.TVar{22n}, N.TVar{23n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{24n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))))),
         K.Multivector.fields(N.Tm, K.Even.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Even(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Even{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}, N.TVar{22n}, N.TVar{23n}}))),
         hh, {==})
+
+def Motor.Even.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Even<T>)
+  -> {O.Motor.transform.Even(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Even.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Even(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Even<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Even{b_s, b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi, b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i}:
+      {==}
 
 def Motor.transform.Odd.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -793,6 +913,12 @@ def Motor.transform.Odd.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul:
         K.Multivector.fields(N.Tm, K.Odd.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Odd(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Odd{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}, N.TVar{22n}, N.TVar{23n}}))),
         hh, {==})
 
+def Motor.Odd.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Odd<T>)
+  -> {O.Motor.transform.Odd(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Odd.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Odd(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Odd<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Odd{b_e1, b_e2, b_e3, b_eo, b_ei, b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123, b_e123oi}:
+      {==}
+
 def Motor.transform.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -806,6 +932,12 @@ def Motor.transform.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{40n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{40n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), K.Multivector.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{40n}, K.Multivector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}, N.TVar{22n}, N.TVar{23n}, N.TVar{24n}, N.TVar{25n}, N.TVar{26n}, N.TVar{27n}, N.TVar{28n}, N.TVar{29n}, N.TVar{30n}, N.TVar{31n}, N.TVar{32n}, N.TVar{33n}, N.TVar{34n}, N.TVar{35n}, N.TVar{36n}, N.TVar{37n}, N.TVar{38n}, N.TVar{39n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Motor.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{40n}, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))))),
         K.Multivector.fields(N.Tm, K.Multivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Motor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}, K.Multivector{N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}, N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}, N.TVar{22n}, N.TVar{23n}, N.TVar{24n}, N.TVar{25n}, N.TVar{26n}, N.TVar{27n}, N.TVar{28n}, N.TVar{29n}, N.TVar{30n}, N.TVar{31n}, N.TVar{32n}, N.TVar{33n}, N.TVar{34n}, N.TVar{35n}, N.TVar{36n}, N.TVar{37n}, N.TVar{38n}, N.TVar{39n}}))),
         hh, {==})
+
+def Motor.Multivector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Multivector<T>)
+  -> {O.Motor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Motor.Multivector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Motor.prepare.Multivector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Multivector<T>}:
+  match a b:
+    case K.Motor{a_s, a_e23, a_e31, a_e12, a_e1i, a_e2i, a_e3i, a_e123i} K.Multivector{b_s, b_e1, b_e2, b_e3, b_eo, b_ei, b_e23, b_e31, b_e12, b_e1o, b_e2o, b_e3o, b_e1i, b_e2i, b_e3i, b_eoi, b_e23o, b_e31o, b_e12o, b_e23i, b_e31i, b_e12i, b_e1oi, b_e2oi, b_e3oi, b_e123, b_e23oi, b_e31oi, b_e12oi, b_e123o, b_e123i, b_e123oi}:
+      {==}
 
 def Even.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -821,6 +953,12 @@ def Even.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
         K.Multivector.fields(N.Tm, K.Even.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Even.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Even{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}}, K.Scalar{N.TVar{16n}}))),
         hh, {==})
 
+def Even.Scalar.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Scalar<T>)
+  -> {O.Even.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Even.Scalar.apply(~T, ~zero, ~add, ~mul, ~neg, O.Even.prepare.Scalar(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Even<T>}:
+  match a b:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i} K.Scalar{b_s}:
+      {==}
+
 def Even.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -835,6 +973,12 @@ def Even.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
         K.Multivector.fields(N.Tm, K.Odd.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Even.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Even{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}}, K.Vector{N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}}))),
         hh, {==})
 
+def Even.Vector.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Vector<T>)
+  -> {O.Even.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Even.Vector.apply(~T, ~zero, ~add, ~mul, ~neg, O.Even.prepare.Vector(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Odd<T>}:
+  match a b:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i} K.Vector{b_e1, b_e2, b_e3, b_eo, b_ei}:
+      {==}
+
 def Even.transform.Twist.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -848,3 +992,9 @@ def Even.transform.Twist.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
         K.Multivector.fields(N.Tm, K.Multivector.of_tree(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{22n}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 5n, K.CGA3.sig(), K.Even.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{22n}, K.Even{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}}), K.Twist.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{22n}, K.Twist{N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 5n, K.Even.tree(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ~N.TVar{22n}, K.Even{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}}))))),
         K.Multivector.fields(N.Tm, K.Bivector.to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, O.Even.transform.Twist(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Even{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}, N.TVar{8n}, N.TVar{9n}, N.TVar{10n}, N.TVar{11n}, N.TVar{12n}, N.TVar{13n}, N.TVar{14n}, N.TVar{15n}}, K.Twist{N.TVar{16n}, N.TVar{17n}, N.TVar{18n}, N.TVar{19n}, N.TVar{20n}, N.TVar{21n}}))),
         hh, {==})
+
+def Even.Twist.prepared(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Twist<T>)
+  -> {O.Even.transform.Twist(~T, ~zero, ~add, ~mul, ~neg, a, b) == O.Even.Twist.apply(~T, ~zero, ~add, ~mul, ~neg, O.Even.prepare.Twist(~T, ~zero, ~add, ~mul, ~neg, a), b) : K.Bivector<T>}:
+  match a b:
+    case K.Even{a_s, a_e23, a_e31, a_e12, a_e1o, a_e2o, a_e3o, a_e1i, a_e2i, a_e3i, a_eoi, a_e23oi, a_e31oi, a_e12oi, a_e123o, a_e123i} K.Twist{b_e23, b_e31, b_e12, b_e1i, b_e2i, b_e3i}:
+      {==}

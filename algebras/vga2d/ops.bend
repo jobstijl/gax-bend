@@ -1749,6 +1749,23 @@ def Vector.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       K.Scalar{
         mul(b_s, m0_0)}
 
+type VectorScalarMap<-T: Data> is Data:
+  VectorScalarMap{m0_0: T}
+
+def Vector.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorScalarMap<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2}:
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +m0_0 = add(q1_1, q0_0)
+      VectorScalarMap{m0_0}
+
+def Vector.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case VectorScalarMap{+m0_0} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(b_s, m0_0)}
+
 def Vector.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Vector<T>:
   match a b:
     case K.Vector{+a_e1, +a_e2} K.Vector{+b_e1, +b_e2}:
@@ -1763,12 +1780,51 @@ def Vector.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
         add(mul(b_e1, m0_0), mul(b_e2, m0_1)),
         add(mul(b_e1, m1_0), mul(b_e2, m1_1))}
 
+type VectorVectorMap<-T: Data> is Data:
+  VectorVectorMap{m0_0: T, m0_1: T, m1_0: T, m1_1: T}
+
+def Vector.prepare.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorVectorMap<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2}:
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +m0_0 = add(neg(q1_1), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(q1_1, neg(q0_0))
+      VectorVectorMap{m0_0, m0_1, m1_0, m1_1}
+
+def Vector.Vector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorVectorMap<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match m b:
+    case VectorVectorMap{+m0_0, +m0_1, +m1_0, +m1_1} K.Vector{+b_e1, +b_e2}:
+      K.Vector{
+        add(mul(b_e1, m0_0), mul(b_e2, m0_1)),
+        add(mul(b_e1, m1_0), mul(b_e2, m1_1))}
+
 def Vector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Vector{+a_e1, +a_e2} K.Pseudoscalar{+b_e12}:
       +q1_1 = mul(a_e2, a_e2)
       +q0_0 = mul(a_e1, a_e1)
       +m0_0 = add(neg(q1_1), neg(q0_0))
+      K.Pseudoscalar{
+        mul(b_e12, m0_0)}
+
+type VectorPseudoscalarMap<-T: Data> is Data:
+  VectorPseudoscalarMap{m0_0: T}
+
+def Vector.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorPseudoscalarMap<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2}:
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +m0_0 = add(neg(q1_1), neg(q0_0))
+      VectorPseudoscalarMap{m0_0}
+
+def Vector.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case VectorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e12}:
       K.Pseudoscalar{
         mul(b_e12, m0_0)}
 
@@ -1779,6 +1835,25 @@ def Vector.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
       +q0_0 = mul(a_e1, a_e1)
       +m0_0 = add(q1_1, q0_0)
       +m1_1 = add(neg(q1_1), neg(q0_0))
+      K.Rotor{
+        mul(b_s, m0_0),
+        mul(b_e12, m1_1)}
+
+type VectorRotorMap<-T: Data> is Data:
+  VectorRotorMap{m0_0: T, m1_1: T}
+
+def Vector.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorRotorMap<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2}:
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +m0_0 = add(q1_1, q0_0)
+      +m1_1 = add(neg(q1_1), neg(q0_0))
+      VectorRotorMap{m0_0, m1_1}
+
+def Vector.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorRotorMap<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match m b:
+    case VectorRotorMap{+m0_0, +m1_1} K.Rotor{+b_s, +b_e12}:
       K.Rotor{
         mul(b_s, m0_0),
         mul(b_e12, m1_1)}
@@ -1801,12 +1876,55 @@ def Vector.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
         add(mul(b_e1, m2_1), mul(b_e2, m2_2)),
         mul(b_e12, m3_3)}
 
+type VectorMultivectorMap<-T: Data> is Data:
+  VectorMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m2_1: T, m2_2: T, m3_3: T}
+
+def Vector.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>) -> VectorMultivectorMap<T>:
+  match a:
+    case K.Vector{+a_e1, +a_e2}:
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +m0_0 = add(q1_1, q0_0)
+      +m1_1 = add(neg(q1_1), q0_0)
+      +m1_2 = add(q0_1, q0_1)
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(q1_1, neg(q0_0))
+      +m3_3 = add(neg(q1_1), neg(q0_0))
+      VectorMultivectorMap{m0_0, m1_1, m1_2, m2_1, m2_2, m3_3}
+
+def Vector.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: VectorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case VectorMultivectorMap{+m0_0, +m1_1, +m1_2, +m2_1, +m2_2, +m3_3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e12}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e1, m1_1), mul(b_e2, m1_2)),
+        add(mul(b_e1, m2_1), mul(b_e2, m2_2)),
+        mul(b_e12, m3_3)}
+
 def Rotor.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Scalar<T>:
   match a b:
     case K.Rotor{+a_s, +a_e12} K.Scalar{+b_s}:
       +q1_1 = mul(a_e12, a_e12)
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(q1_1, q0_0)
+      K.Scalar{
+        mul(b_s, m0_0)}
+
+type RotorScalarMap<-T: Data> is Data:
+  RotorScalarMap{m0_0: T}
+
+def Rotor.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorScalarMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e12}:
+      +q1_1 = mul(a_e12, a_e12)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(q1_1, q0_0)
+      RotorScalarMap{m0_0}
+
+def Rotor.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case RotorScalarMap{+m0_0} K.Scalar{+b_s}:
       K.Scalar{
         mul(b_s, m0_0)}
 
@@ -1824,12 +1942,51 @@ def Rotor.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
         add(mul(b_e1, m0_0), mul(b_e2, m0_1)),
         add(mul(b_e1, m1_0), mul(b_e2, m1_1))}
 
+type RotorVectorMap<-T: Data> is Data:
+  RotorVectorMap{m0_0: T, m0_1: T, m1_0: T, m1_1: T}
+
+def Rotor.prepare.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorVectorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e12}:
+      +q1_1 = mul(a_e12, a_e12)
+      +q0_0 = mul(a_s, a_s)
+      +q0_1 = mul(a_s, a_e12)
+      +m0_0 = add(neg(q1_1), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m1_0 = add(neg(q0_1), neg(q0_1))
+      +m1_1 = add(neg(q1_1), q0_0)
+      RotorVectorMap{m0_0, m0_1, m1_0, m1_1}
+
+def Rotor.Vector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorVectorMap<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match m b:
+    case RotorVectorMap{+m0_0, +m0_1, +m1_0, +m1_1} K.Vector{+b_e1, +b_e2}:
+      K.Vector{
+        add(mul(b_e1, m0_0), mul(b_e2, m0_1)),
+        add(mul(b_e1, m1_0), mul(b_e2, m1_1))}
+
 def Rotor.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Rotor{+a_s, +a_e12} K.Pseudoscalar{+b_e12}:
       +q1_1 = mul(a_e12, a_e12)
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(q1_1, q0_0)
+      K.Pseudoscalar{
+        mul(b_e12, m0_0)}
+
+type RotorPseudoscalarMap<-T: Data> is Data:
+  RotorPseudoscalarMap{m0_0: T}
+
+def Rotor.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorPseudoscalarMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e12}:
+      +q1_1 = mul(a_e12, a_e12)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(q1_1, q0_0)
+      RotorPseudoscalarMap{m0_0}
+
+def Rotor.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case RotorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e12}:
       K.Pseudoscalar{
         mul(b_e12, m0_0)}
 
@@ -1840,6 +1997,25 @@ def Rotor.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(q1_1, q0_0)
       +m1_1 = add(q1_1, q0_0)
+      K.Rotor{
+        mul(b_s, m0_0),
+        mul(b_e12, m1_1)}
+
+type RotorRotorMap<-T: Data> is Data:
+  RotorRotorMap{m0_0: T, m1_1: T}
+
+def Rotor.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorRotorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e12}:
+      +q1_1 = mul(a_e12, a_e12)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(q1_1, q0_0)
+      +m1_1 = add(q1_1, q0_0)
+      RotorRotorMap{m0_0, m1_1}
+
+def Rotor.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorRotorMap<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match m b:
+    case RotorRotorMap{+m0_0, +m1_1} K.Rotor{+b_s, +b_e12}:
       K.Rotor{
         mul(b_s, m0_0),
         mul(b_e12, m1_1)}
@@ -1856,6 +2032,32 @@ def Rotor.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
       +m2_1 = add(neg(q0_1), neg(q0_1))
       +m2_2 = add(neg(q1_1), q0_0)
       +m3_3 = add(q1_1, q0_0)
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e1, m1_1), mul(b_e2, m1_2)),
+        add(mul(b_e1, m2_1), mul(b_e2, m2_2)),
+        mul(b_e12, m3_3)}
+
+type RotorMultivectorMap<-T: Data> is Data:
+  RotorMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m2_1: T, m2_2: T, m3_3: T}
+
+def Rotor.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorMultivectorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e12}:
+      +q1_1 = mul(a_e12, a_e12)
+      +q0_0 = mul(a_s, a_s)
+      +q0_1 = mul(a_s, a_e12)
+      +m0_0 = add(q1_1, q0_0)
+      +m1_1 = add(neg(q1_1), q0_0)
+      +m1_2 = add(q0_1, q0_1)
+      +m2_1 = add(neg(q0_1), neg(q0_1))
+      +m2_2 = add(neg(q1_1), q0_0)
+      +m3_3 = add(q1_1, q0_0)
+      RotorMultivectorMap{m0_0, m1_1, m1_2, m2_1, m2_2, m3_3}
+
+def Rotor.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case RotorMultivectorMap{+m0_0, +m1_1, +m1_2, +m2_1, +m2_2, +m3_3} K.Multivector{+b_s, +b_e1, +b_e2, +b_e12}:
       K.Multivector{
         mul(b_s, m0_0),
         add(mul(b_e1, m1_1), mul(b_e2, m1_2)),

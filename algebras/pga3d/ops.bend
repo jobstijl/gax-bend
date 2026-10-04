@@ -12617,6 +12617,24 @@ def Plane.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
       K.Scalar{
         mul(b_s, m0_0)}
 
+type PlaneScalarMap<-T: Data> is Data:
+  PlaneScalarMap{m0_0: T}
+
+def Plane.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneScalarMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      PlaneScalarMap{m0_0}
+
+def Plane.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case PlaneScalarMap{+m0_0} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(b_s, m0_0)}
+
 def Plane.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>, b: K.Plane<T>) -> K.Plane<T>:
   match a b:
     case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
@@ -12642,6 +12660,45 @@ def Plane.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m3_1 = add(q1_3, q1_3)
       +m3_2 = add(q2_3, q2_3)
       +m3_3 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      K.Plane{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3))))}
+
+type PlanePlaneMap<-T: Data> is Data:
+  PlanePlaneMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Plane.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlanePlaneMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_3 = mul(a_e1, a_e0)
+      +q1_3 = mul(a_e2, a_e0)
+      +q2_3 = mul(a_e3, a_e0)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(q1_3, q1_3)
+      +m3_2 = add(q2_3, q2_3)
+      +m3_3 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      PlanePlaneMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3}
+
+def Plane.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlanePlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case PlanePlaneMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -12692,6 +12749,58 @@ def Plane.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e23, m4_0), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5))))),
         add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5)))))}
 
+type PlaneLineMap<-T: Data> is Data:
+  PlaneLineMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Plane.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneLineMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_3 = mul(a_e1, a_e0)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m3_1 = add(neg(q2_3), neg(q2_3))
+      +m3_2 = add(q1_3, q1_3)
+      +m3_3 = add(add(q2_2, q1_1), neg(q0_0))
+      +m3_4 = add(neg(q0_1), neg(q0_1))
+      +m3_5 = add(neg(q0_2), neg(q0_2))
+      +m4_0 = add(q2_3, q2_3)
+      +m4_2 = add(neg(q0_3), neg(q0_3))
+      +m4_3 = add(neg(q0_1), neg(q0_1))
+      +m4_4 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m4_5 = add(neg(q1_2), neg(q1_2))
+      +m5_0 = add(neg(q1_3), neg(q1_3))
+      +m5_1 = add(q0_3, q0_3)
+      +m5_3 = add(neg(q0_2), neg(q0_2))
+      +m5_4 = add(neg(q1_2), neg(q1_2))
+      +m5_5 = add(add(neg(q2_2), q1_1), q0_0)
+      PlaneLineMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_3, m5_4, m5_5}
+
+def Plane.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case PlaneLineMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_3, +m5_4, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        add(mul(b_e23, m0_0), add(mul(b_e31, m0_1), mul(b_e12, m0_2))),
+        add(mul(b_e23, m1_0), add(mul(b_e31, m1_1), mul(b_e12, m1_2))),
+        add(mul(b_e23, m2_0), add(mul(b_e31, m2_1), mul(b_e12, m2_2))),
+        add(mul(b_e31, m3_1), add(mul(b_e12, m3_2), add(mul(b_e01, m3_3), add(mul(b_e02, m3_4), mul(b_e03, m3_5))))),
+        add(mul(b_e23, m4_0), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5))))),
+        add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5)))))}
+
 def Plane.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -12723,6 +12832,45 @@ def Plane.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
         mul(b_e123, m3_3)}
 
+type PlanePointMap<-T: Data> is Data:
+  PlanePointMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_3: T}
+
+def Plane.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlanePointMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q0_3 = mul(a_e1, a_e0)
+      +q1_2 = mul(a_e2, a_e3)
+      +q1_3 = mul(a_e2, a_e0)
+      +q2_3 = mul(a_e3, a_e0)
+      +m0_0 = add(add(q2_2, q1_1), neg(q0_0))
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(neg(q0_1), neg(q0_1))
+      +m1_1 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m1_2 = add(neg(q1_2), neg(q1_2))
+      +m1_3 = add(neg(q1_3), neg(q1_3))
+      +m2_0 = add(neg(q0_2), neg(q0_2))
+      +m2_1 = add(neg(q1_2), neg(q1_2))
+      +m2_2 = add(add(neg(q2_2), q1_1), q0_0)
+      +m2_3 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = add(add(q2_2, q1_1), q0_0)
+      PlanePointMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_3}
+
+def Plane.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlanePointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case PlanePointMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), add(mul(b_e021, m0_2), mul(b_e123, m0_3)))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), add(mul(b_e021, m1_2), mul(b_e123, m1_3)))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
+        mul(b_e123, m3_3)}
+
 def Plane.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>, b: K.Direction<T>) -> K.Point<T>:
   match a b:
     case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0} K.Direction{+b_e032, +b_e013, +b_e021}:
@@ -12747,6 +12895,38 @@ def Plane.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
         zero}
 
+type PlaneDirectionMap<-T: Data> is Data:
+  PlaneDirectionMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T}
+
+def Plane.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneDirectionMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +m0_0 = add(add(q2_2, q1_1), neg(q0_0))
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m1_0 = add(neg(q0_1), neg(q0_1))
+      +m1_1 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m1_2 = add(neg(q1_2), neg(q1_2))
+      +m2_0 = add(neg(q0_2), neg(q0_2))
+      +m2_1 = add(neg(q1_2), neg(q1_2))
+      +m2_2 = add(add(neg(q2_2), q1_1), q0_0)
+      PlaneDirectionMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2}
+
+def Plane.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case PlaneDirectionMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
+        zero}
+
 def Plane.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0} K.Pseudoscalar{+b_e0123}:
@@ -12754,6 +12934,24 @@ def Plane.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
       +q1_1 = mul(a_e2, a_e2)
       +q0_0 = mul(a_e1, a_e1)
       +m0_0 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type PlanePseudoscalarMap<-T: Data> is Data:
+  PlanePseudoscalarMap{m0_0: T}
+
+def Plane.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlanePseudoscalarMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      PlanePseudoscalarMap{m0_0}
+
+def Plane.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlanePseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case PlanePseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -12795,6 +12993,52 @@ def Plane.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m6_1), mul(b_e31, m6_2)),
         zero}
 
+type PlaneRotorMap<-T: Data> is Data:
+  PlaneRotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_2: T, m4_3: T, m5_1: T, m5_3: T, m6_1: T, m6_2: T}
+
+def Plane.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneRotorMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_3 = mul(a_e1, a_e0)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(q0_1, q0_1)
+      +m1_3 = add(q0_2, q0_2)
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m2_3 = add(q1_2, q1_2)
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(q1_2, q1_2)
+      +m3_3 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m4_2 = add(neg(q2_3), neg(q2_3))
+      +m4_3 = add(q1_3, q1_3)
+      +m5_1 = add(q2_3, q2_3)
+      +m5_3 = add(neg(q0_3), neg(q0_3))
+      +m6_1 = add(neg(q1_3), neg(q1_3))
+      +m6_2 = add(q0_3, q0_3)
+      PlaneRotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_2, m4_3, m5_1, m5_3, m6_1, m6_2}
+
+def Plane.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneRotorMap<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match m b:
+    case PlaneRotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_2, +m4_3, +m5_1, +m5_3, +m6_1, +m6_2} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e31, m4_2), mul(b_e12, m4_3)),
+        add(mul(b_e23, m5_1), mul(b_e12, m5_3)),
+        add(mul(b_e23, m6_1), mul(b_e31, m6_2)),
+        zero}
+
 def Plane.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>, b: K.Translator<T>) -> K.Translator<T>:
   match a b:
     case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -12814,6 +13058,39 @@ def Plane.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
       +m3_1 = add(neg(q0_2), neg(q0_2))
       +m3_2 = add(neg(q1_2), neg(q1_2))
       +m3_3 = add(add(neg(q2_2), q1_1), q0_0)
+      K.Translator{
+        mul(b_s, m0_0),
+        add(mul(b_e01, m1_1), add(mul(b_e02, m1_2), mul(b_e03, m1_3))),
+        add(mul(b_e01, m2_1), add(mul(b_e02, m2_2), mul(b_e03, m2_3))),
+        add(mul(b_e01, m3_1), add(mul(b_e02, m3_2), mul(b_e03, m3_3)))}
+
+type PlaneTranslatorMap<-T: Data> is Data:
+  PlaneTranslatorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Plane.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneTranslatorMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(q2_2, q1_1), neg(q0_0))
+      +m1_2 = add(neg(q0_1), neg(q0_1))
+      +m1_3 = add(neg(q0_2), neg(q0_2))
+      +m2_1 = add(neg(q0_1), neg(q0_1))
+      +m2_2 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m2_3 = add(neg(q1_2), neg(q1_2))
+      +m3_1 = add(neg(q0_2), neg(q0_2))
+      +m3_2 = add(neg(q1_2), neg(q1_2))
+      +m3_3 = add(add(neg(q2_2), q1_1), q0_0)
+      PlaneTranslatorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3}
+
+def Plane.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneTranslatorMap<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match m b:
+    case PlaneTranslatorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Translator{
         mul(b_s, m0_0),
         add(mul(b_e01, m1_1), add(mul(b_e02, m1_2), mul(b_e03, m1_3))),
@@ -12868,6 +13145,62 @@ def Plane.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6))))),
         mul(b_e0123, m7_7)}
 
+type PlaneMotorMap<-T: Data> is Data:
+  PlaneMotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_4: T, m6_5: T, m6_6: T, m7_7: T}
+
+def Plane.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneMotorMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_3 = mul(a_e1, a_e0)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(q0_1, q0_1)
+      +m1_3 = add(q0_2, q0_2)
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m2_3 = add(q1_2, q1_2)
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(q1_2, q1_2)
+      +m3_3 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m4_2 = add(neg(q2_3), neg(q2_3))
+      +m4_3 = add(q1_3, q1_3)
+      +m4_4 = add(add(q2_2, q1_1), neg(q0_0))
+      +m4_5 = add(neg(q0_1), neg(q0_1))
+      +m4_6 = add(neg(q0_2), neg(q0_2))
+      +m5_1 = add(q2_3, q2_3)
+      +m5_3 = add(neg(q0_3), neg(q0_3))
+      +m5_4 = add(neg(q0_1), neg(q0_1))
+      +m5_5 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m5_6 = add(neg(q1_2), neg(q1_2))
+      +m6_1 = add(neg(q1_3), neg(q1_3))
+      +m6_2 = add(q0_3, q0_3)
+      +m6_4 = add(neg(q0_2), neg(q0_2))
+      +m6_5 = add(neg(q1_2), neg(q1_2))
+      +m6_6 = add(add(neg(q2_2), q1_1), q0_0)
+      +m7_7 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      PlaneMotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_4, m6_5, m6_6, m7_7}
+
+def Plane.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case PlaneMotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_4, +m6_5, +m6_6, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e31, m4_2), add(mul(b_e12, m4_3), add(mul(b_e01, m4_4), add(mul(b_e02, m4_5), mul(b_e03, m4_6))))),
+        add(mul(b_e23, m5_1), add(mul(b_e12, m5_3), add(mul(b_e01, m5_4), add(mul(b_e02, m5_5), mul(b_e03, m5_6))))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6))))),
+        mul(b_e0123, m7_7)}
+
 def Plane.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -12906,6 +13239,62 @@ def Plane.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +m6_6 = add(add(neg(q2_2), q1_1), q0_0)
       +m6_7 = add(neg(q2_3), neg(q2_3))
       +m7_7 = add(add(q2_2, q1_1), q0_0)
+      K.Flector{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3)))),
+        add(mul(b_e032, m4_4), add(mul(b_e013, m4_5), add(mul(b_e021, m4_6), mul(b_e123, m4_7)))),
+        add(mul(b_e032, m5_4), add(mul(b_e013, m5_5), add(mul(b_e021, m5_6), mul(b_e123, m5_7)))),
+        add(mul(b_e032, m6_4), add(mul(b_e013, m6_5), add(mul(b_e021, m6_6), mul(b_e123, m6_7)))),
+        mul(b_e123, m7_7)}
+
+type PlaneFlectorMap<-T: Data> is Data:
+  PlaneFlectorMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_7: T}
+
+def Plane.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneFlectorMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_3 = mul(a_e1, a_e0)
+      +q1_3 = mul(a_e2, a_e0)
+      +q2_3 = mul(a_e3, a_e0)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(q1_3, q1_3)
+      +m3_2 = add(q2_3, q2_3)
+      +m3_3 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      +m4_4 = add(add(q2_2, q1_1), neg(q0_0))
+      +m4_5 = add(neg(q0_1), neg(q0_1))
+      +m4_6 = add(neg(q0_2), neg(q0_2))
+      +m4_7 = add(neg(q0_3), neg(q0_3))
+      +m5_4 = add(neg(q0_1), neg(q0_1))
+      +m5_5 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m5_6 = add(neg(q1_2), neg(q1_2))
+      +m5_7 = add(neg(q1_3), neg(q1_3))
+      +m6_4 = add(neg(q0_2), neg(q0_2))
+      +m6_5 = add(neg(q1_2), neg(q1_2))
+      +m6_6 = add(add(neg(q2_2), q1_1), q0_0)
+      +m6_7 = add(neg(q2_3), neg(q2_3))
+      +m7_7 = add(add(q2_2, q1_1), q0_0)
+      PlaneFlectorMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_7}
+
+def Plane.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case PlaneFlectorMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -12998,6 +13387,96 @@ def Plane.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         mul(b_e123, m14_14),
         mul(b_e0123, m15_15)}
 
+type PlaneMultivectorMap<-T: Data> is Data:
+  PlaneMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_2: T, m2_3: T, m2_4: T, m3_2: T, m3_3: T, m3_4: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_8: T, m5_9: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_9: T, m7_10: T, m8_8: T, m8_9: T, m8_10: T, m9_8: T, m9_9: T, m9_10: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_14: T, m15_15: T}
+
+def Plane.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Plane<T>) -> PlaneMultivectorMap<T>:
+  match a:
+    case K.Plane{+a_e1, +a_e2, +a_e3, +a_e0}:
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q0_3 = mul(a_e1, a_e0)
+      +q1_3 = mul(a_e2, a_e0)
+      +q2_3 = mul(a_e3, a_e0)
+      +q0_1 = mul(a_e1, a_e2)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(q0_3, q0_3)
+      +m1_3 = add(q1_3, q1_3)
+      +m1_4 = add(q2_3, q2_3)
+      +m2_2 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(q0_1, q0_1)
+      +m2_4 = add(q0_2, q0_2)
+      +m3_2 = add(q0_1, q0_1)
+      +m3_3 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m3_4 = add(q1_2, q1_2)
+      +m4_2 = add(q0_2, q0_2)
+      +m4_3 = add(q1_2, q1_2)
+      +m4_4 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m5_5 = add(add(q2_2, q1_1), neg(q0_0))
+      +m5_6 = add(neg(q0_1), neg(q0_1))
+      +m5_7 = add(neg(q0_2), neg(q0_2))
+      +m5_8 = add(q1_3, q1_3)
+      +m5_9 = add(neg(q2_3), neg(q2_3))
+      +m6_5 = add(neg(q0_1), neg(q0_1))
+      +m6_6 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m6_7 = add(neg(q1_2), neg(q1_2))
+      +m6_8 = add(neg(q0_3), neg(q0_3))
+      +m6_10 = add(q2_3, q2_3)
+      +m7_5 = add(neg(q0_2), neg(q0_2))
+      +m7_6 = add(neg(q1_2), neg(q1_2))
+      +m7_7 = add(add(neg(q2_2), q1_1), q0_0)
+      +m7_9 = add(q0_3, q0_3)
+      +m7_10 = add(neg(q1_3), neg(q1_3))
+      +m8_8 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m8_9 = add(q1_2, q1_2)
+      +m8_10 = add(q0_2, q0_2)
+      +m9_8 = add(q1_2, q1_2)
+      +m9_9 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m9_10 = add(q0_1, q0_1)
+      +m10_8 = add(q0_2, q0_2)
+      +m10_9 = add(q0_1, q0_1)
+      +m10_10 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m11_11 = add(add(neg(q2_2), q1_1), q0_0)
+      +m11_12 = add(neg(q1_2), neg(q1_2))
+      +m11_13 = add(neg(q0_2), neg(q0_2))
+      +m11_14 = add(neg(q2_3), neg(q2_3))
+      +m12_11 = add(neg(q1_2), neg(q1_2))
+      +m12_12 = add(add(q2_2, neg(q1_1)), q0_0)
+      +m12_13 = add(neg(q0_1), neg(q0_1))
+      +m12_14 = add(neg(q1_3), neg(q1_3))
+      +m13_11 = add(neg(q0_2), neg(q0_2))
+      +m13_12 = add(neg(q0_1), neg(q0_1))
+      +m13_13 = add(add(q2_2, q1_1), neg(q0_0))
+      +m13_14 = add(neg(q0_3), neg(q0_3))
+      +m14_14 = add(add(q2_2, q1_1), q0_0)
+      +m15_15 = add(add(neg(q2_2), neg(q1_1)), neg(q0_0))
+      PlaneMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_2, m2_3, m2_4, m3_2, m3_3, m3_4, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_8, m5_9, m6_5, m6_6, m6_7, m6_8, m6_10, m7_5, m7_6, m7_7, m7_9, m7_10, m8_8, m8_9, m8_10, m9_8, m9_9, m9_10, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_14, m15_15}
+
+def Plane.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PlaneMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case PlaneMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_2, +m2_3, +m2_4, +m3_2, +m3_3, +m3_4, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_8, +m5_9, +m6_5, +m6_6, +m6_7, +m6_8, +m6_10, +m7_5, +m7_6, +m7_7, +m7_9, +m7_10, +m8_8, +m8_9, +m8_10, +m9_8, +m9_9, +m9_10, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_14, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4))),
+        add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4))),
+        add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4))),
+        add(mul(b_e01, m5_5), add(mul(b_e02, m5_6), add(mul(b_e03, m5_7), add(mul(b_e12, m5_8), mul(b_e31, m5_9))))),
+        add(mul(b_e01, m6_5), add(mul(b_e02, m6_6), add(mul(b_e03, m6_7), add(mul(b_e12, m6_8), mul(b_e23, m6_10))))),
+        add(mul(b_e01, m7_5), add(mul(b_e02, m7_6), add(mul(b_e03, m7_7), add(mul(b_e31, m7_9), mul(b_e23, m7_10))))),
+        add(mul(b_e12, m8_8), add(mul(b_e31, m8_9), mul(b_e23, m8_10))),
+        add(mul(b_e12, m9_8), add(mul(b_e31, m9_9), mul(b_e23, m9_10))),
+        add(mul(b_e12, m10_8), add(mul(b_e31, m10_9), mul(b_e23, m10_10))),
+        add(mul(b_e021, m11_11), add(mul(b_e013, m11_12), add(mul(b_e032, m11_13), mul(b_e123, m11_14)))),
+        add(mul(b_e021, m12_11), add(mul(b_e013, m12_12), add(mul(b_e032, m12_13), mul(b_e123, m12_14)))),
+        add(mul(b_e021, m13_11), add(mul(b_e013, m13_12), add(mul(b_e032, m13_13), mul(b_e123, m13_14)))),
+        mul(b_e123, m14_14),
+        mul(b_e0123, m15_15)}
+
 def Line.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Scalar<T>) -> K.Motor<T>:
   match a b:
     case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03} K.Scalar{+b_s}:
@@ -13009,6 +13488,35 @@ def Line.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +q0_3 = mul(a_e23, a_e01)
       +m0_0 = add(add(q2_2, q1_1), q0_0)
       +m7_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      K.Motor{
+        mul(b_s, m0_0),
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(b_s, m7_0)}
+
+type LineScalarMap<-T: Data> is Data:
+  LineScalarMap{m0_0: T, m7_0: T}
+
+def Line.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineScalarMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q2_5 = mul(a_e12, a_e03)
+      +q1_4 = mul(a_e31, a_e02)
+      +q0_3 = mul(a_e23, a_e01)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      LineScalarMap{m0_0, m7_0}
+
+def Line.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineScalarMap<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match m b:
+    case LineScalarMap{+m0_0, +m7_0} K.Scalar{+b_s}:
       K.Motor{
         mul(b_s, m0_0),
         zero,
@@ -13047,6 +13555,48 @@ def Line.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
       +m3_1 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
       +m3_2 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
       +m3_3 = add(add(q2_2, q1_1), q0_0)
+      K.Plane{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3))))}
+
+type LinePlaneMap<-T: Data> is Data:
+  LinePlaneMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Line.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LinePlaneMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m3_0 = add(add(add(neg(q2_4), neg(q2_4)), q1_5), q1_5)
+      +m3_1 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
+      +m3_2 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
+      +m3_3 = add(add(q2_2, q1_1), q0_0)
+      LinePlaneMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3}
+
+def Line.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LinePlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case LinePlaneMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -13106,6 +13656,67 @@ def Line.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T
         add(mul(b_e23, m4_0), add(mul(b_e31, m4_1), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5)))))),
         add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e12, m5_2), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5))))))}
 
+type LineLineMap<-T: Data> is Data:
+  LineLineMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Line.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineLineMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_5 = mul(a_e12, a_e03)
+      +q1_4 = mul(a_e31, a_e02)
+      +q0_3 = mul(a_e23, a_e01)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m3_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_3), q0_3)
+      +m3_1 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m3_2 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m3_3 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(q0_1, q0_1)
+      +m3_5 = add(q0_2, q0_2)
+      +m4_0 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m4_1 = add(add(add(add(add(neg(q2_5), neg(q2_5)), q1_4), q1_4), neg(q0_3)), neg(q0_3))
+      +m4_2 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m4_3 = add(q0_1, q0_1)
+      +m4_4 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m4_5 = add(q1_2, q1_2)
+      +m5_0 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m5_1 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m5_2 = add(add(add(add(add(q2_5, q2_5), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      +m5_3 = add(q0_2, q0_2)
+      +m5_4 = add(q1_2, q1_2)
+      +m5_5 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      LineLineMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_1, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_2, m5_3, m5_4, m5_5}
+
+def Line.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case LineLineMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        add(mul(b_e23, m0_0), add(mul(b_e31, m0_1), mul(b_e12, m0_2))),
+        add(mul(b_e23, m1_0), add(mul(b_e31, m1_1), mul(b_e12, m1_2))),
+        add(mul(b_e23, m2_0), add(mul(b_e31, m2_1), mul(b_e12, m2_2))),
+        add(mul(b_e23, m3_0), add(mul(b_e31, m3_1), add(mul(b_e12, m3_2), add(mul(b_e01, m3_3), add(mul(b_e02, m3_4), mul(b_e03, m3_5)))))),
+        add(mul(b_e23, m4_0), add(mul(b_e31, m4_1), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5)))))),
+        add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e12, m5_2), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5))))))}
+
 def Line.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -13140,6 +13751,48 @@ def Line.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
         mul(b_e123, m3_3)}
 
+type LinePointMap<-T: Data> is Data:
+  LinePointMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_3: T}
+
+def Line.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LinePointMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m0_3 = add(add(add(neg(q2_4), neg(q2_4)), q1_5), q1_5)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m1_3 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m2_3 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
+      +m3_3 = add(add(q2_2, q1_1), q0_0)
+      LinePointMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_3}
+
+def Line.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LinePointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case LinePointMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), add(mul(b_e021, m0_2), mul(b_e123, m0_3)))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), add(mul(b_e021, m1_2), mul(b_e123, m1_3)))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
+        mul(b_e123, m3_3)}
+
 def Line.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Direction<T>) -> K.Point<T>:
   match a b:
     case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03} K.Direction{+b_e032, +b_e013, +b_e021}:
@@ -13164,6 +13817,38 @@ def Line.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
         zero}
 
+type LineDirectionMap<-T: Data> is Data:
+  LineDirectionMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T}
+
+def Line.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineDirectionMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      LineDirectionMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2}
+
+def Line.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case LineDirectionMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
+        zero}
+
 def Line.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03} K.Pseudoscalar{+b_e0123}:
@@ -13171,6 +13856,24 @@ def Line.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
       +q1_1 = mul(a_e31, a_e31)
       +q0_0 = mul(a_e23, a_e23)
       +m0_0 = add(add(q2_2, q1_1), q0_0)
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type LinePseudoscalarMap<-T: Data> is Data:
+  LinePseudoscalarMap{m0_0: T}
+
+def Line.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LinePseudoscalarMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      LinePseudoscalarMap{m0_0}
+
+def Line.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LinePseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case LinePseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -13222,6 +13925,62 @@ def Line.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e12, m6_3))),
         mul(b_s, m7_0)}
 
+type LineRotorMap<-T: Data> is Data:
+  LineRotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_1: T, m4_2: T, m4_3: T, m5_1: T, m5_2: T, m5_3: T, m6_1: T, m6_2: T, m6_3: T, m7_0: T}
+
+def Line.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineRotorMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_5 = mul(a_e12, a_e03)
+      +q1_4 = mul(a_e31, a_e02)
+      +q0_3 = mul(a_e23, a_e01)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(q0_1, q0_1)
+      +m1_3 = add(q0_2, q0_2)
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m2_3 = add(q1_2, q1_2)
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(q1_2, q1_2)
+      +m3_3 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m4_1 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_3), q0_3)
+      +m4_2 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m4_3 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m5_1 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m5_2 = add(add(add(add(add(neg(q2_5), neg(q2_5)), q1_4), q1_4), neg(q0_3)), neg(q0_3))
+      +m5_3 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m6_1 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m6_2 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m6_3 = add(add(add(add(add(q2_5, q2_5), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      +m7_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      LineRotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_1, m4_2, m4_3, m5_1, m5_2, m5_3, m6_1, m6_2, m6_3, m7_0}
+
+def Line.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineRotorMap<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match m b:
+    case LineRotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_1, +m4_2, +m4_3, +m5_1, +m5_2, +m5_3, +m6_1, +m6_2, +m6_3, +m7_0} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e23, m4_1), add(mul(b_e31, m4_2), mul(b_e12, m4_3))),
+        add(mul(b_e23, m5_1), add(mul(b_e31, m5_2), mul(b_e12, m5_3))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e12, m6_3))),
+        mul(b_s, m7_0)}
+
 def Line.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Translator<T>) -> K.Motor<T>:
   match a b:
     case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -13245,6 +14004,47 @@ def Line.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
       +m6_2 = add(q1_2, q1_2)
       +m6_3 = add(add(q2_2, neg(q1_1)), neg(q0_0))
       +m7_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      K.Motor{
+        mul(b_s, m0_0),
+        zero,
+        zero,
+        zero,
+        add(mul(b_e01, m4_1), add(mul(b_e02, m4_2), mul(b_e03, m4_3))),
+        add(mul(b_e01, m5_1), add(mul(b_e02, m5_2), mul(b_e03, m5_3))),
+        add(mul(b_e01, m6_1), add(mul(b_e02, m6_2), mul(b_e03, m6_3))),
+        mul(b_s, m7_0)}
+
+type LineTranslatorMap<-T: Data> is Data:
+  LineTranslatorMap{m0_0: T, m4_1: T, m4_2: T, m4_3: T, m5_1: T, m5_2: T, m5_3: T, m6_1: T, m6_2: T, m6_3: T, m7_0: T}
+
+def Line.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineTranslatorMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_5 = mul(a_e12, a_e03)
+      +q1_4 = mul(a_e31, a_e02)
+      +q0_3 = mul(a_e23, a_e01)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m4_1 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m4_2 = add(q0_1, q0_1)
+      +m4_3 = add(q0_2, q0_2)
+      +m5_1 = add(q0_1, q0_1)
+      +m5_2 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m5_3 = add(q1_2, q1_2)
+      +m6_1 = add(q0_2, q0_2)
+      +m6_2 = add(q1_2, q1_2)
+      +m6_3 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m7_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      LineTranslatorMap{m0_0, m4_1, m4_2, m4_3, m5_1, m5_2, m5_3, m6_1, m6_2, m6_3, m7_0}
+
+def Line.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineTranslatorMap<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match m b:
+    case LineTranslatorMap{+m0_0, +m4_1, +m4_2, +m4_3, +m5_1, +m5_2, +m5_3, +m6_1, +m6_2, +m6_3, +m7_0} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Motor{
         mul(b_s, m0_0),
         zero,
@@ -13313,6 +14113,72 @@ def Line.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e12, m6_3), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6)))))),
         add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
+type LineMotorMap<-T: Data> is Data:
+  LineMotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_3: T, m6_4: T, m6_5: T, m6_6: T, m7_0: T, m7_7: T}
+
+def Line.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineMotorMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_5 = mul(a_e12, a_e03)
+      +q1_4 = mul(a_e31, a_e02)
+      +q0_3 = mul(a_e23, a_e01)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(q0_1, q0_1)
+      +m1_3 = add(q0_2, q0_2)
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m2_3 = add(q1_2, q1_2)
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(q1_2, q1_2)
+      +m3_3 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m4_1 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_3), q0_3)
+      +m4_2 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m4_3 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m4_4 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(q0_1, q0_1)
+      +m4_6 = add(q0_2, q0_2)
+      +m5_1 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m5_2 = add(add(add(add(add(neg(q2_5), neg(q2_5)), q1_4), q1_4), neg(q0_3)), neg(q0_3))
+      +m5_3 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m5_4 = add(q0_1, q0_1)
+      +m5_5 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m5_6 = add(q1_2, q1_2)
+      +m6_1 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m6_2 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m6_3 = add(add(add(add(add(q2_5, q2_5), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      +m6_4 = add(q0_2, q0_2)
+      +m6_5 = add(q1_2, q1_2)
+      +m6_6 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m7_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      +m7_7 = add(add(q2_2, q1_1), q0_0)
+      LineMotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_1, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_2, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_3, m6_4, m6_5, m6_6, m7_0, m7_7}
+
+def Line.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case LineMotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_3, +m6_4, +m6_5, +m6_6, +m7_0, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e23, m4_1), add(mul(b_e31, m4_2), add(mul(b_e12, m4_3), add(mul(b_e01, m4_4), add(mul(b_e02, m4_5), mul(b_e03, m4_6)))))),
+        add(mul(b_e23, m5_1), add(mul(b_e31, m5_2), add(mul(b_e12, m5_3), add(mul(b_e01, m5_4), add(mul(b_e02, m5_5), mul(b_e03, m5_6)))))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e12, m6_3), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
+
 def Line.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -13354,6 +14220,65 @@ def Line.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
       +m6_6 = add(add(q2_2, neg(q1_1)), neg(q0_0))
       +m6_7 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
       +m7_7 = add(add(q2_2, q1_1), q0_0)
+      K.Flector{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3)))),
+        add(mul(b_e032, m4_4), add(mul(b_e013, m4_5), add(mul(b_e021, m4_6), mul(b_e123, m4_7)))),
+        add(mul(b_e032, m5_4), add(mul(b_e013, m5_5), add(mul(b_e021, m5_6), mul(b_e123, m5_7)))),
+        add(mul(b_e032, m6_4), add(mul(b_e013, m6_5), add(mul(b_e021, m6_6), mul(b_e123, m6_7)))),
+        mul(b_e123, m7_7)}
+
+type LineFlectorMap<-T: Data> is Data:
+  LineFlectorMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_7: T}
+
+def Line.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineFlectorMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +m0_0 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m0_1 = add(q0_1, q0_1)
+      +m0_2 = add(q0_2, q0_2)
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m3_0 = add(add(add(neg(q2_4), neg(q2_4)), q1_5), q1_5)
+      +m3_1 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
+      +m3_2 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
+      +m3_3 = add(add(q2_2, q1_1), q0_0)
+      +m4_4 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(q0_1, q0_1)
+      +m4_6 = add(q0_2, q0_2)
+      +m4_7 = add(add(add(neg(q2_4), neg(q2_4)), q1_5), q1_5)
+      +m5_4 = add(q0_1, q0_1)
+      +m5_5 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m5_6 = add(q1_2, q1_2)
+      +m5_7 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
+      +m6_4 = add(q0_2, q0_2)
+      +m6_5 = add(q1_2, q1_2)
+      +m6_6 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m6_7 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
+      +m7_7 = add(add(q2_2, q1_1), q0_0)
+      LineFlectorMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_7}
+
+def Line.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case LineFlectorMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -13456,11 +14381,127 @@ def Line.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
         mul(b_e123, m14_14),
         add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
 
+type LineMultivectorMap<-T: Data> is Data:
+  LineMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_2: T, m2_3: T, m2_4: T, m3_2: T, m3_3: T, m3_4: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_8: T, m5_9: T, m5_10: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_9: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_8: T, m7_9: T, m7_10: T, m8_8: T, m8_9: T, m8_10: T, m9_8: T, m9_9: T, m9_10: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_14: T, m15_0: T, m15_15: T}
+
+def Line.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>) -> LineMultivectorMap<T>:
+  match a:
+    case K.Line{+a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03}:
+      +q2_2 = mul(a_e12, a_e12)
+      +q1_1 = mul(a_e31, a_e31)
+      +q0_0 = mul(a_e23, a_e23)
+      +q2_4 = mul(a_e12, a_e02)
+      +q1_5 = mul(a_e31, a_e03)
+      +q2_3 = mul(a_e12, a_e01)
+      +q0_5 = mul(a_e23, a_e03)
+      +q1_3 = mul(a_e31, a_e01)
+      +q0_4 = mul(a_e23, a_e02)
+      +q0_1 = mul(a_e23, a_e31)
+      +q0_2 = mul(a_e23, a_e12)
+      +q1_2 = mul(a_e31, a_e12)
+      +q2_5 = mul(a_e12, a_e03)
+      +q1_4 = mul(a_e31, a_e02)
+      +q0_3 = mul(a_e23, a_e01)
+      +m0_0 = add(add(q2_2, q1_1), q0_0)
+      +m1_1 = add(add(q2_2, q1_1), q0_0)
+      +m1_2 = add(add(add(neg(q2_4), neg(q2_4)), q1_5), q1_5)
+      +m1_3 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
+      +m1_4 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
+      +m2_2 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(q0_1, q0_1)
+      +m2_4 = add(q0_2, q0_2)
+      +m3_2 = add(q0_1, q0_1)
+      +m3_3 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m3_4 = add(q1_2, q1_2)
+      +m4_2 = add(q0_2, q0_2)
+      +m4_3 = add(q1_2, q1_2)
+      +m4_4 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m5_5 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(q0_1, q0_1)
+      +m5_7 = add(q0_2, q0_2)
+      +m5_8 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m5_9 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m5_10 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_3), q0_3)
+      +m6_5 = add(q0_1, q0_1)
+      +m6_6 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m6_7 = add(q1_2, q1_2)
+      +m6_8 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m6_9 = add(add(add(add(add(neg(q2_5), neg(q2_5)), q1_4), q1_4), neg(q0_3)), neg(q0_3))
+      +m6_10 = add(add(add(q1_3, q1_3), q0_4), q0_4)
+      +m7_5 = add(q0_2, q0_2)
+      +m7_6 = add(q1_2, q1_2)
+      +m7_7 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m7_8 = add(add(add(add(add(q2_5, q2_5), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      +m7_9 = add(add(add(q2_4, q2_4), q1_5), q1_5)
+      +m7_10 = add(add(add(q2_3, q2_3), q0_5), q0_5)
+      +m8_8 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m8_9 = add(q1_2, q1_2)
+      +m8_10 = add(q0_2, q0_2)
+      +m9_8 = add(q1_2, q1_2)
+      +m9_9 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m9_10 = add(q0_1, q0_1)
+      +m10_8 = add(q0_2, q0_2)
+      +m10_9 = add(q0_1, q0_1)
+      +m10_10 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m11_11 = add(add(q2_2, neg(q1_1)), neg(q0_0))
+      +m11_12 = add(q1_2, q1_2)
+      +m11_13 = add(q0_2, q0_2)
+      +m11_14 = add(add(add(neg(q1_3), neg(q1_3)), q0_4), q0_4)
+      +m12_11 = add(q1_2, q1_2)
+      +m12_12 = add(add(neg(q2_2), q1_1), neg(q0_0))
+      +m12_13 = add(q0_1, q0_1)
+      +m12_14 = add(add(add(q2_3, q2_3), neg(q0_5)), neg(q0_5))
+      +m13_11 = add(q0_2, q0_2)
+      +m13_12 = add(q0_1, q0_1)
+      +m13_13 = add(add(neg(q2_2), neg(q1_1)), q0_0)
+      +m13_14 = add(add(add(neg(q2_4), neg(q2_4)), q1_5), q1_5)
+      +m14_14 = add(add(q2_2, q1_1), q0_0)
+      +m15_0 = add(add(add(add(add(neg(q2_5), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_3)), neg(q0_3))
+      +m15_15 = add(add(q2_2, q1_1), q0_0)
+      LineMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_2, m2_3, m2_4, m3_2, m3_3, m3_4, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_8, m5_9, m5_10, m6_5, m6_6, m6_7, m6_8, m6_9, m6_10, m7_5, m7_6, m7_7, m7_8, m7_9, m7_10, m8_8, m8_9, m8_10, m9_8, m9_9, m9_10, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_14, m15_0, m15_15}
+
+def Line.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: LineMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case LineMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_2, +m2_3, +m2_4, +m3_2, +m3_3, +m3_4, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_8, +m5_9, +m5_10, +m6_5, +m6_6, +m6_7, +m6_8, +m6_9, +m6_10, +m7_5, +m7_6, +m7_7, +m7_8, +m7_9, +m7_10, +m8_8, +m8_9, +m8_10, +m9_8, +m9_9, +m9_10, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_14, +m15_0, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4))),
+        add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4))),
+        add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4))),
+        add(mul(b_e01, m5_5), add(mul(b_e02, m5_6), add(mul(b_e03, m5_7), add(mul(b_e12, m5_8), add(mul(b_e31, m5_9), mul(b_e23, m5_10)))))),
+        add(mul(b_e01, m6_5), add(mul(b_e02, m6_6), add(mul(b_e03, m6_7), add(mul(b_e12, m6_8), add(mul(b_e31, m6_9), mul(b_e23, m6_10)))))),
+        add(mul(b_e01, m7_5), add(mul(b_e02, m7_6), add(mul(b_e03, m7_7), add(mul(b_e12, m7_8), add(mul(b_e31, m7_9), mul(b_e23, m7_10)))))),
+        add(mul(b_e12, m8_8), add(mul(b_e31, m8_9), mul(b_e23, m8_10))),
+        add(mul(b_e12, m9_8), add(mul(b_e31, m9_9), mul(b_e23, m9_10))),
+        add(mul(b_e12, m10_8), add(mul(b_e31, m10_9), mul(b_e23, m10_10))),
+        add(mul(b_e021, m11_11), add(mul(b_e013, m11_12), add(mul(b_e032, m11_13), mul(b_e123, m11_14)))),
+        add(mul(b_e021, m12_11), add(mul(b_e013, m12_12), add(mul(b_e032, m12_13), mul(b_e123, m12_14)))),
+        add(mul(b_e021, m13_11), add(mul(b_e013, m13_12), add(mul(b_e032, m13_13), mul(b_e123, m13_14)))),
+        mul(b_e123, m14_14),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
+
 def Point.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Scalar<T>) -> K.Scalar<T>:
   match a b:
     case K.Point{+a_e032, +a_e013, +a_e021, +a_e123} K.Scalar{+b_s}:
       +q3_3 = mul(a_e123, a_e123)
       +m0_0 = q3_3
+      K.Scalar{
+        mul(b_s, m0_0)}
+
+type PointScalarMap<-T: Data> is Data:
+  PointScalarMap{m0_0: T}
+
+def Point.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointScalarMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +m0_0 = q3_3
+      PointScalarMap{m0_0}
+
+def Point.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case PointScalarMap{+m0_0} K.Scalar{+b_s}:
       K.Scalar{
         mul(b_s, m0_0)}
 
@@ -13478,6 +14519,34 @@ def Point.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m3_1 = add(neg(q1_3), neg(q1_3))
       +m3_2 = add(neg(q2_3), neg(q2_3))
       +m3_3 = neg(q3_3)
+      K.Plane{
+        mul(b_e1, m0_0),
+        mul(b_e2, m1_1),
+        mul(b_e3, m2_2),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3))))}
+
+type PointPlaneMap<-T: Data> is Data:
+  PointPlaneMap{m0_0: T, m1_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Point.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointPlaneMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = q3_3
+      +m2_2 = q3_3
+      +m3_0 = add(neg(q0_3), neg(q0_3))
+      +m3_1 = add(neg(q1_3), neg(q1_3))
+      +m3_2 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = neg(q3_3)
+      PointPlaneMap{m0_0, m1_1, m2_2, m3_0, m3_1, m3_2, m3_3}
+
+def Point.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointPlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case PointPlaneMap{+m0_0, +m1_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         mul(b_e1, m0_0),
         mul(b_e2, m1_1),
@@ -13511,6 +14580,41 @@ def Point.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e23, m4_0), add(mul(b_e12, m4_2), mul(b_e02, m4_4))),
         add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), mul(b_e03, m5_5)))}
 
+type PointLineMap<-T: Data> is Data:
+  PointLineMap{m0_0: T, m1_1: T, m2_2: T, m3_1: T, m3_2: T, m3_3: T, m4_0: T, m4_2: T, m4_4: T, m5_0: T, m5_1: T, m5_5: T}
+
+def Point.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointLineMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = q3_3
+      +m2_2 = q3_3
+      +m3_1 = add(neg(q2_3), neg(q2_3))
+      +m3_2 = add(q1_3, q1_3)
+      +m3_3 = neg(q3_3)
+      +m4_0 = add(q2_3, q2_3)
+      +m4_2 = add(neg(q0_3), neg(q0_3))
+      +m4_4 = neg(q3_3)
+      +m5_0 = add(neg(q1_3), neg(q1_3))
+      +m5_1 = add(q0_3, q0_3)
+      +m5_5 = neg(q3_3)
+      PointLineMap{m0_0, m1_1, m2_2, m3_1, m3_2, m3_3, m4_0, m4_2, m4_4, m5_0, m5_1, m5_5}
+
+def Point.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case PointLineMap{+m0_0, +m1_1, +m2_2, +m3_1, +m3_2, +m3_3, +m4_0, +m4_2, +m4_4, +m5_0, +m5_1, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        mul(b_e23, m0_0),
+        mul(b_e31, m1_1),
+        mul(b_e12, m2_2),
+        add(mul(b_e31, m3_1), add(mul(b_e12, m3_2), mul(b_e01, m3_3))),
+        add(mul(b_e23, m4_0), add(mul(b_e12, m4_2), mul(b_e02, m4_4))),
+        add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), mul(b_e03, m5_5)))}
+
 def Point.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Point{+a_e032, +a_e013, +a_e021, +a_e123} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -13531,6 +14635,34 @@ def Point.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e021, m2_2), mul(b_e123, m2_3)),
         mul(b_e123, m3_3)}
 
+type PointPointMap<-T: Data> is Data:
+  PointPointMap{m0_0: T, m0_3: T, m1_1: T, m1_3: T, m2_2: T, m2_3: T, m3_3: T}
+
+def Point.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointPointMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +m0_0 = neg(q3_3)
+      +m0_3 = add(q0_3, q0_3)
+      +m1_1 = neg(q3_3)
+      +m1_3 = add(q1_3, q1_3)
+      +m2_2 = neg(q3_3)
+      +m2_3 = add(q2_3, q2_3)
+      +m3_3 = q3_3
+      PointPointMap{m0_0, m0_3, m1_1, m1_3, m2_2, m2_3, m3_3}
+
+def Point.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointPointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case PointPointMap{+m0_0, +m0_3, +m1_1, +m1_3, +m2_2, +m2_3, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
+      K.Point{
+        add(mul(b_e032, m0_0), mul(b_e123, m0_3)),
+        add(mul(b_e013, m1_1), mul(b_e123, m1_3)),
+        add(mul(b_e021, m2_2), mul(b_e123, m2_3)),
+        mul(b_e123, m3_3)}
+
 def Point.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Direction<T>) -> K.Point<T>:
   match a b:
     case K.Point{+a_e032, +a_e013, +a_e021, +a_e123} K.Direction{+b_e032, +b_e013, +b_e021}:
@@ -13544,11 +14676,48 @@ def Point.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         mul(b_e021, m2_2),
         zero}
 
+type PointDirectionMap<-T: Data> is Data:
+  PointDirectionMap{m0_0: T, m1_1: T, m2_2: T}
+
+def Point.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointDirectionMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +m0_0 = neg(q3_3)
+      +m1_1 = neg(q3_3)
+      +m2_2 = neg(q3_3)
+      PointDirectionMap{m0_0, m1_1, m2_2}
+
+def Point.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case PointDirectionMap{+m0_0, +m1_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        mul(b_e032, m0_0),
+        mul(b_e013, m1_1),
+        mul(b_e021, m2_2),
+        zero}
+
 def Point.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Point{+a_e032, +a_e013, +a_e021, +a_e123} K.Pseudoscalar{+b_e0123}:
       +q3_3 = mul(a_e123, a_e123)
       +m0_0 = neg(q3_3)
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type PointPseudoscalarMap<-T: Data> is Data:
+  PointPseudoscalarMap{m0_0: T}
+
+def Point.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointPseudoscalarMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +m0_0 = neg(q3_3)
+      PointPseudoscalarMap{m0_0}
+
+def Point.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case PointPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -13579,6 +14748,41 @@ def Point.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m6_1), mul(b_e31, m6_2)),
         zero}
 
+type PointRotorMap<-T: Data> is Data:
+  PointRotorMap{m0_0: T, m1_1: T, m2_2: T, m3_3: T, m4_2: T, m4_3: T, m5_1: T, m5_3: T, m6_1: T, m6_2: T}
+
+def Point.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointRotorMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = q3_3
+      +m2_2 = q3_3
+      +m3_3 = q3_3
+      +m4_2 = add(neg(q2_3), neg(q2_3))
+      +m4_3 = add(q1_3, q1_3)
+      +m5_1 = add(q2_3, q2_3)
+      +m5_3 = add(neg(q0_3), neg(q0_3))
+      +m6_1 = add(neg(q1_3), neg(q1_3))
+      +m6_2 = add(q0_3, q0_3)
+      PointRotorMap{m0_0, m1_1, m2_2, m3_3, m4_2, m4_3, m5_1, m5_3, m6_1, m6_2}
+
+def Point.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointRotorMap<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match m b:
+    case PointRotorMap{+m0_0, +m1_1, +m2_2, +m3_3, +m4_2, +m4_3, +m5_1, +m5_3, +m6_1, +m6_2} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Motor{
+        mul(b_s, m0_0),
+        mul(b_e23, m1_1),
+        mul(b_e31, m2_2),
+        mul(b_e12, m3_3),
+        add(mul(b_e31, m4_2), mul(b_e12, m4_3)),
+        add(mul(b_e23, m5_1), mul(b_e12, m5_3)),
+        add(mul(b_e23, m6_1), mul(b_e31, m6_2)),
+        zero}
+
 def Point.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Translator<T>) -> K.Translator<T>:
   match a b:
     case K.Point{+a_e032, +a_e013, +a_e021, +a_e123} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -13587,6 +14791,28 @@ def Point.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
       +m1_1 = neg(q3_3)
       +m2_2 = neg(q3_3)
       +m3_3 = neg(q3_3)
+      K.Translator{
+        mul(b_s, m0_0),
+        mul(b_e01, m1_1),
+        mul(b_e02, m2_2),
+        mul(b_e03, m3_3)}
+
+type PointTranslatorMap<-T: Data> is Data:
+  PointTranslatorMap{m0_0: T, m1_1: T, m2_2: T, m3_3: T}
+
+def Point.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointTranslatorMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = neg(q3_3)
+      +m2_2 = neg(q3_3)
+      +m3_3 = neg(q3_3)
+      PointTranslatorMap{m0_0, m1_1, m2_2, m3_3}
+
+def Point.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointTranslatorMap<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match m b:
+    case PointTranslatorMap{+m0_0, +m1_1, +m2_2, +m3_3} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Translator{
         mul(b_s, m0_0),
         mul(b_e01, m1_1),
@@ -13624,6 +14850,45 @@ def Point.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e03, m6_6))),
         mul(b_e0123, m7_7)}
 
+type PointMotorMap<-T: Data> is Data:
+  PointMotorMap{m0_0: T, m1_1: T, m2_2: T, m3_3: T, m4_2: T, m4_3: T, m4_4: T, m5_1: T, m5_3: T, m5_5: T, m6_1: T, m6_2: T, m6_6: T, m7_7: T}
+
+def Point.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointMotorMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = q3_3
+      +m2_2 = q3_3
+      +m3_3 = q3_3
+      +m4_2 = add(neg(q2_3), neg(q2_3))
+      +m4_3 = add(q1_3, q1_3)
+      +m4_4 = neg(q3_3)
+      +m5_1 = add(q2_3, q2_3)
+      +m5_3 = add(neg(q0_3), neg(q0_3))
+      +m5_5 = neg(q3_3)
+      +m6_1 = add(neg(q1_3), neg(q1_3))
+      +m6_2 = add(q0_3, q0_3)
+      +m6_6 = neg(q3_3)
+      +m7_7 = neg(q3_3)
+      PointMotorMap{m0_0, m1_1, m2_2, m3_3, m4_2, m4_3, m4_4, m5_1, m5_3, m5_5, m6_1, m6_2, m6_6, m7_7}
+
+def Point.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case PointMotorMap{+m0_0, +m1_1, +m2_2, +m3_3, +m4_2, +m4_3, +m4_4, +m5_1, +m5_3, +m5_5, +m6_1, +m6_2, +m6_6, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        mul(b_e23, m1_1),
+        mul(b_e31, m2_2),
+        mul(b_e12, m3_3),
+        add(mul(b_e31, m4_2), add(mul(b_e12, m4_3), mul(b_e01, m4_4))),
+        add(mul(b_e23, m5_1), add(mul(b_e12, m5_3), mul(b_e02, m5_5))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e03, m6_6))),
+        mul(b_e0123, m7_7)}
+
 def Point.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Point{+a_e032, +a_e013, +a_e021, +a_e123} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -13645,6 +14910,45 @@ def Point.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +m6_6 = neg(q3_3)
       +m6_7 = add(q2_3, q2_3)
       +m7_7 = q3_3
+      K.Flector{
+        mul(b_e1, m0_0),
+        mul(b_e2, m1_1),
+        mul(b_e3, m2_2),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3)))),
+        add(mul(b_e032, m4_4), mul(b_e123, m4_7)),
+        add(mul(b_e013, m5_5), mul(b_e123, m5_7)),
+        add(mul(b_e021, m6_6), mul(b_e123, m6_7)),
+        mul(b_e123, m7_7)}
+
+type PointFlectorMap<-T: Data> is Data:
+  PointFlectorMap{m0_0: T, m1_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_7: T, m5_5: T, m5_7: T, m6_6: T, m6_7: T, m7_7: T}
+
+def Point.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointFlectorMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = q3_3
+      +m2_2 = q3_3
+      +m3_0 = add(neg(q0_3), neg(q0_3))
+      +m3_1 = add(neg(q1_3), neg(q1_3))
+      +m3_2 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = neg(q3_3)
+      +m4_4 = neg(q3_3)
+      +m4_7 = add(q0_3, q0_3)
+      +m5_5 = neg(q3_3)
+      +m5_7 = add(q1_3, q1_3)
+      +m6_6 = neg(q3_3)
+      +m6_7 = add(q2_3, q2_3)
+      +m7_7 = q3_3
+      PointFlectorMap{m0_0, m1_1, m2_2, m3_0, m3_1, m3_2, m3_3, m4_4, m4_7, m5_5, m5_7, m6_6, m6_7, m7_7}
+
+def Point.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case PointFlectorMap{+m0_0, +m1_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_7, +m5_5, +m5_7, +m6_6, +m6_7, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         mul(b_e1, m0_0),
         mul(b_e2, m1_1),
@@ -13708,6 +15012,67 @@ def Point.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         mul(b_e123, m14_14),
         mul(b_e0123, m15_15)}
 
+type PointMultivectorMap<-T: Data> is Data:
+  PointMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_2: T, m3_3: T, m4_4: T, m5_5: T, m5_8: T, m5_9: T, m6_6: T, m6_8: T, m6_10: T, m7_7: T, m7_9: T, m7_10: T, m8_8: T, m9_9: T, m10_10: T, m11_11: T, m11_14: T, m12_12: T, m12_14: T, m13_13: T, m13_14: T, m14_14: T, m15_15: T}
+
+def Point.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>) -> PointMultivectorMap<T>:
+  match a:
+    case K.Point{+a_e032, +a_e013, +a_e021, +a_e123}:
+      +q3_3 = mul(a_e123, a_e123)
+      +q0_3 = mul(a_e032, a_e123)
+      +q1_3 = mul(a_e013, a_e123)
+      +q2_3 = mul(a_e021, a_e123)
+      +m0_0 = q3_3
+      +m1_1 = neg(q3_3)
+      +m1_2 = add(neg(q0_3), neg(q0_3))
+      +m1_3 = add(neg(q1_3), neg(q1_3))
+      +m1_4 = add(neg(q2_3), neg(q2_3))
+      +m2_2 = q3_3
+      +m3_3 = q3_3
+      +m4_4 = q3_3
+      +m5_5 = neg(q3_3)
+      +m5_8 = add(q1_3, q1_3)
+      +m5_9 = add(neg(q2_3), neg(q2_3))
+      +m6_6 = neg(q3_3)
+      +m6_8 = add(neg(q0_3), neg(q0_3))
+      +m6_10 = add(q2_3, q2_3)
+      +m7_7 = neg(q3_3)
+      +m7_9 = add(q0_3, q0_3)
+      +m7_10 = add(neg(q1_3), neg(q1_3))
+      +m8_8 = q3_3
+      +m9_9 = q3_3
+      +m10_10 = q3_3
+      +m11_11 = neg(q3_3)
+      +m11_14 = add(q2_3, q2_3)
+      +m12_12 = neg(q3_3)
+      +m12_14 = add(q1_3, q1_3)
+      +m13_13 = neg(q3_3)
+      +m13_14 = add(q0_3, q0_3)
+      +m14_14 = q3_3
+      +m15_15 = neg(q3_3)
+      PointMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_2, m3_3, m4_4, m5_5, m5_8, m5_9, m6_6, m6_8, m6_10, m7_7, m7_9, m7_10, m8_8, m9_9, m10_10, m11_11, m11_14, m12_12, m12_14, m13_13, m13_14, m14_14, m15_15}
+
+def Point.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: PointMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case PointMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_2, +m3_3, +m4_4, +m5_5, +m5_8, +m5_9, +m6_6, +m6_8, +m6_10, +m7_7, +m7_9, +m7_10, +m8_8, +m9_9, +m10_10, +m11_11, +m11_14, +m12_12, +m12_14, +m13_13, +m13_14, +m14_14, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        mul(b_e1, m2_2),
+        mul(b_e2, m3_3),
+        mul(b_e3, m4_4),
+        add(mul(b_e01, m5_5), add(mul(b_e12, m5_8), mul(b_e31, m5_9))),
+        add(mul(b_e02, m6_6), add(mul(b_e12, m6_8), mul(b_e23, m6_10))),
+        add(mul(b_e03, m7_7), add(mul(b_e31, m7_9), mul(b_e23, m7_10))),
+        mul(b_e12, m8_8),
+        mul(b_e31, m9_9),
+        mul(b_e23, m10_10),
+        add(mul(b_e021, m11_11), mul(b_e123, m11_14)),
+        add(mul(b_e013, m12_12), mul(b_e123, m12_14)),
+        add(mul(b_e032, m13_13), mul(b_e123, m13_14)),
+        mul(b_e123, m14_14),
+        mul(b_e0123, m15_15)}
+
 def Rotor.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Scalar<T>:
   match a b:
     case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
@@ -13716,6 +15081,25 @@ def Rotor.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
       +q1_1 = mul(a_e23, a_e23)
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Scalar{
+        mul(b_s, m0_0)}
+
+type RotorScalarMap<-T: Data> is Data:
+  RotorScalarMap{m0_0: T}
+
+def Rotor.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorScalarMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorScalarMap{m0_0}
+
+def Rotor.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case RotorScalarMap{+m0_0} K.Scalar{+b_s}:
       K.Scalar{
         mul(b_s, m0_0)}
 
@@ -13742,6 +15126,43 @@ def Rotor.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
       +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Plane{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        mul(b_e0, m3_3)}
+
+type RotorPlaneMap<-T: Data> is Data:
+  RotorPlaneMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_3: T}
+
+def Rotor.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorPlaneMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorPlaneMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_3}
+
+def Rotor.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorPlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case RotorPlaneMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -13787,6 +15208,53 @@ def Rotor.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5))),
         add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5)))}
 
+type RotorLineMap<-T: Data> is Data:
+  RotorLineMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_3: T, m3_4: T, m3_5: T, m4_3: T, m4_4: T, m4_5: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Rotor.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorLineMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_3 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m3_4 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m3_5 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m4_3 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m4_4 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m5_3 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m5_4 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m5_5 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      RotorLineMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_3, m3_4, m3_5, m4_3, m4_4, m4_5, m5_3, m5_4, m5_5}
+
+def Rotor.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case RotorLineMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_3, +m3_4, +m3_5, +m4_3, +m4_4, +m4_5, +m5_3, +m5_4, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        add(mul(b_e23, m0_0), add(mul(b_e31, m0_1), mul(b_e12, m0_2))),
+        add(mul(b_e23, m1_0), add(mul(b_e31, m1_1), mul(b_e12, m1_2))),
+        add(mul(b_e23, m2_0), add(mul(b_e31, m2_1), mul(b_e12, m2_2))),
+        add(mul(b_e01, m3_3), add(mul(b_e02, m3_4), mul(b_e03, m3_5))),
+        add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5))),
+        add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5)))}
+
 def Rotor.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -13810,6 +15278,43 @@ def Rotor.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
       +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
+        mul(b_e123, m3_3)}
+
+type RotorPointMap<-T: Data> is Data:
+  RotorPointMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_3: T}
+
+def Rotor.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorPointMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorPointMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_3}
+
+def Rotor.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorPointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case RotorPointMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
       K.Point{
         add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
         add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
@@ -13844,6 +15349,42 @@ def Rotor.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
         zero}
 
+type RotorDirectionMap<-T: Data> is Data:
+  RotorDirectionMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T}
+
+def Rotor.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorDirectionMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      RotorDirectionMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2}
+
+def Rotor.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case RotorDirectionMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
+        zero}
+
 def Rotor.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Pseudoscalar{+b_e0123}:
@@ -13852,6 +15393,25 @@ def Rotor.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
       +q1_1 = mul(a_e23, a_e23)
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type RotorPseudoscalarMap<-T: Data> is Data:
+  RotorPseudoscalarMap{m0_0: T}
+
+def Rotor.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorPseudoscalarMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorPseudoscalarMap{m0_0}
+
+def Rotor.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case RotorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -13884,6 +15444,43 @@ def Rotor.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
         add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3)))}
 
+type RotorRotorMap<-T: Data> is Data:
+  RotorRotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Rotor.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorRotorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m1_3 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m3_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m3_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      RotorRotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3}
+
+def Rotor.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorRotorMap<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match m b:
+    case RotorRotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Rotor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3)))}
+
 def Rotor.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Translator<T>) -> K.Translator<T>:
   match a b:
     case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -13907,6 +15504,43 @@ def Rotor.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
       +m3_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
       +m3_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
       +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      K.Translator{
+        mul(b_s, m0_0),
+        add(mul(b_e01, m1_1), add(mul(b_e02, m1_2), mul(b_e03, m1_3))),
+        add(mul(b_e01, m2_1), add(mul(b_e02, m2_2), mul(b_e03, m2_3))),
+        add(mul(b_e01, m3_1), add(mul(b_e02, m3_2), mul(b_e03, m3_3)))}
+
+type RotorTranslatorMap<-T: Data> is Data:
+  RotorTranslatorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Rotor.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorTranslatorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m1_3 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m3_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m3_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      RotorTranslatorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3}
+
+def Rotor.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorTranslatorMap<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match m b:
+    case RotorTranslatorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Translator{
         mul(b_s, m0_0),
         add(mul(b_e01, m1_1), add(mul(b_e02, m1_2), mul(b_e03, m1_3))),
@@ -13956,6 +15590,57 @@ def Rotor.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6))),
         mul(b_e0123, m7_7)}
 
+type RotorMotorMap<-T: Data> is Data:
+  RotorMotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m5_4: T, m5_5: T, m5_6: T, m6_4: T, m6_5: T, m6_6: T, m7_7: T}
+
+def Rotor.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorMotorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m1_3 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m3_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m3_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m4_4 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m4_6 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m5_4 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m5_5 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m6_4 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m6_5 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m6_6 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m7_7 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorMotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m5_4, m5_5, m5_6, m6_4, m6_5, m6_6, m7_7}
+
+def Rotor.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case RotorMotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m5_4, +m5_5, +m5_6, +m6_4, +m6_5, +m6_6, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e01, m4_4), add(mul(b_e02, m4_5), mul(b_e03, m4_6))),
+        add(mul(b_e01, m5_4), add(mul(b_e02, m5_5), mul(b_e03, m5_6))),
+        add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6))),
+        mul(b_e0123, m7_7)}
+
 def Rotor.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -13989,6 +15674,57 @@ def Rotor.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +m6_5 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
       +m6_6 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       +m7_7 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Flector{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        mul(b_e0, m3_3),
+        add(mul(b_e032, m4_4), add(mul(b_e013, m4_5), mul(b_e021, m4_6))),
+        add(mul(b_e032, m5_4), add(mul(b_e013, m5_5), mul(b_e021, m5_6))),
+        add(mul(b_e032, m6_4), add(mul(b_e013, m6_5), mul(b_e021, m6_6))),
+        mul(b_e123, m7_7)}
+
+type RotorFlectorMap<-T: Data> is Data:
+  RotorFlectorMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m5_4: T, m5_5: T, m5_6: T, m6_4: T, m6_5: T, m6_6: T, m7_7: T}
+
+def Rotor.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorFlectorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m4_4 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m4_6 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m5_4 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m5_5 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m6_4 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m6_5 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m6_6 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m7_7 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorFlectorMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_3, m4_4, m4_5, m4_6, m5_4, m5_5, m5_6, m6_4, m6_5, m6_6, m7_7}
+
+def Rotor.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case RotorFlectorMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_3, +m4_4, +m4_5, +m4_6, +m5_4, +m5_5, +m5_6, +m6_4, +m6_5, +m6_6, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -14070,11 +15806,106 @@ def Rotor.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         mul(b_e123, m14_14),
         mul(b_e0123, m15_15)}
 
+type RotorMultivectorMap<-T: Data> is Data:
+  RotorMultivectorMap{m0_0: T, m1_1: T, m2_2: T, m2_3: T, m2_4: T, m3_2: T, m3_3: T, m3_4: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m6_5: T, m6_6: T, m6_7: T, m7_5: T, m7_6: T, m7_7: T, m8_8: T, m8_9: T, m8_10: T, m9_8: T, m9_9: T, m9_10: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m12_11: T, m12_12: T, m12_13: T, m13_11: T, m13_12: T, m13_13: T, m14_14: T, m15_15: T}
+
+def Rotor.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>) -> RotorMultivectorMap<T>:
+  match a:
+    case K.Rotor{+a_s, +a_e23, +a_e31, +a_e12}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m2_2 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m2_3 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m2_4 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m3_2 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m3_3 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m4_2 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m4_3 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m4_4 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m5_5 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m5_7 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m6_5 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m6_6 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m6_7 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m7_5 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m7_6 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m7_7 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m8_8 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m8_9 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m8_10 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m9_8 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m9_9 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m9_10 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m10_8 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m10_9 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m10_10 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m11_11 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m11_12 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m11_13 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m12_11 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m12_12 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m12_13 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m13_11 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m13_12 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m13_13 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m14_14 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m15_15 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      RotorMultivectorMap{m0_0, m1_1, m2_2, m2_3, m2_4, m3_2, m3_3, m3_4, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m6_5, m6_6, m6_7, m7_5, m7_6, m7_7, m8_8, m8_9, m8_10, m9_8, m9_9, m9_10, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m12_11, m12_12, m12_13, m13_11, m13_12, m13_13, m14_14, m15_15}
+
+def Rotor.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: RotorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case RotorMultivectorMap{+m0_0, +m1_1, +m2_2, +m2_3, +m2_4, +m3_2, +m3_3, +m3_4, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m6_5, +m6_6, +m6_7, +m7_5, +m7_6, +m7_7, +m8_8, +m8_9, +m8_10, +m9_8, +m9_9, +m9_10, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m12_11, +m12_12, +m12_13, +m13_11, +m13_12, +m13_13, +m14_14, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        mul(b_e0, m1_1),
+        add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4))),
+        add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4))),
+        add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4))),
+        add(mul(b_e01, m5_5), add(mul(b_e02, m5_6), mul(b_e03, m5_7))),
+        add(mul(b_e01, m6_5), add(mul(b_e02, m6_6), mul(b_e03, m6_7))),
+        add(mul(b_e01, m7_5), add(mul(b_e02, m7_6), mul(b_e03, m7_7))),
+        add(mul(b_e12, m8_8), add(mul(b_e31, m8_9), mul(b_e23, m8_10))),
+        add(mul(b_e12, m9_8), add(mul(b_e31, m9_9), mul(b_e23, m9_10))),
+        add(mul(b_e12, m10_8), add(mul(b_e31, m10_9), mul(b_e23, m10_10))),
+        add(mul(b_e021, m11_11), add(mul(b_e013, m11_12), mul(b_e032, m11_13))),
+        add(mul(b_e021, m12_11), add(mul(b_e013, m12_12), mul(b_e032, m12_13))),
+        add(mul(b_e021, m13_11), add(mul(b_e013, m13_12), mul(b_e032, m13_13))),
+        mul(b_e123, m14_14),
+        mul(b_e0123, m15_15)}
+
 def Translator.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Scalar<T>) -> K.Scalar<T>:
   match a b:
     case K.Translator{+a_s, +a_e01, +a_e02, +a_e03} K.Scalar{+b_s}:
       +q0_0 = mul(a_s, a_s)
       +m0_0 = q0_0
+      K.Scalar{
+        mul(b_s, m0_0)}
+
+type TranslatorScalarMap<-T: Data> is Data:
+  TranslatorScalarMap{m0_0: T}
+
+def Translator.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorScalarMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = q0_0
+      TranslatorScalarMap{m0_0}
+
+def Translator.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorScalarMap<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match m b:
+    case TranslatorScalarMap{+m0_0} K.Scalar{+b_s}:
       K.Scalar{
         mul(b_s, m0_0)}
 
@@ -14092,6 +15923,34 @@ def Translator.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
       +m3_1 = add(q0_2, q0_2)
       +m3_2 = add(q0_3, q0_3)
       +m3_3 = q0_0
+      K.Plane{
+        mul(b_e1, m0_0),
+        mul(b_e2, m1_1),
+        mul(b_e3, m2_2),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3))))}
+
+type TranslatorPlaneMap<-T: Data> is Data:
+  TranslatorPlaneMap{m0_0: T, m1_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Translator.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorPlaneMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_1 = mul(a_s, a_e01)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_3 = mul(a_s, a_e03)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      +m3_0 = add(q0_1, q0_1)
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(q0_3, q0_3)
+      +m3_3 = q0_0
+      TranslatorPlaneMap{m0_0, m1_1, m2_2, m3_0, m3_1, m3_2, m3_3}
+
+def Translator.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorPlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case TranslatorPlaneMap{+m0_0, +m1_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         mul(b_e1, m0_0),
         mul(b_e2, m1_1),
@@ -14125,6 +15984,41 @@ def Translator.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         add(mul(b_e23, m4_0), add(mul(b_e12, m4_2), mul(b_e02, m4_4))),
         add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), mul(b_e03, m5_5)))}
 
+type TranslatorLineMap<-T: Data> is Data:
+  TranslatorLineMap{m0_0: T, m1_1: T, m2_2: T, m3_1: T, m3_2: T, m3_3: T, m4_0: T, m4_2: T, m4_4: T, m5_0: T, m5_1: T, m5_5: T}
+
+def Translator.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorLineMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_3 = mul(a_s, a_e03)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_1 = mul(a_s, a_e01)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      +m3_1 = add(q0_3, q0_3)
+      +m3_2 = add(neg(q0_2), neg(q0_2))
+      +m3_3 = q0_0
+      +m4_0 = add(neg(q0_3), neg(q0_3))
+      +m4_2 = add(q0_1, q0_1)
+      +m4_4 = q0_0
+      +m5_0 = add(q0_2, q0_2)
+      +m5_1 = add(neg(q0_1), neg(q0_1))
+      +m5_5 = q0_0
+      TranslatorLineMap{m0_0, m1_1, m2_2, m3_1, m3_2, m3_3, m4_0, m4_2, m4_4, m5_0, m5_1, m5_5}
+
+def Translator.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case TranslatorLineMap{+m0_0, +m1_1, +m2_2, +m3_1, +m3_2, +m3_3, +m4_0, +m4_2, +m4_4, +m5_0, +m5_1, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        mul(b_e23, m0_0),
+        mul(b_e31, m1_1),
+        mul(b_e12, m2_2),
+        add(mul(b_e31, m3_1), add(mul(b_e12, m3_2), mul(b_e01, m3_3))),
+        add(mul(b_e23, m4_0), add(mul(b_e12, m4_2), mul(b_e02, m4_4))),
+        add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), mul(b_e03, m5_5)))}
+
 def Translator.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Translator{+a_s, +a_e01, +a_e02, +a_e03} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -14145,6 +16039,34 @@ def Translator.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
         add(mul(b_e021, m2_2), mul(b_e123, m2_3)),
         mul(b_e123, m3_3)}
 
+type TranslatorPointMap<-T: Data> is Data:
+  TranslatorPointMap{m0_0: T, m0_3: T, m1_1: T, m1_3: T, m2_2: T, m2_3: T, m3_3: T}
+
+def Translator.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorPointMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_1 = mul(a_s, a_e01)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_3 = mul(a_s, a_e03)
+      +m0_0 = q0_0
+      +m0_3 = add(neg(q0_1), neg(q0_1))
+      +m1_1 = q0_0
+      +m1_3 = add(neg(q0_2), neg(q0_2))
+      +m2_2 = q0_0
+      +m2_3 = add(neg(q0_3), neg(q0_3))
+      +m3_3 = q0_0
+      TranslatorPointMap{m0_0, m0_3, m1_1, m1_3, m2_2, m2_3, m3_3}
+
+def Translator.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorPointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case TranslatorPointMap{+m0_0, +m0_3, +m1_1, +m1_3, +m2_2, +m2_3, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
+      K.Point{
+        add(mul(b_e032, m0_0), mul(b_e123, m0_3)),
+        add(mul(b_e013, m1_1), mul(b_e123, m1_3)),
+        add(mul(b_e021, m2_2), mul(b_e123, m2_3)),
+        mul(b_e123, m3_3)}
+
 def Translator.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Direction<T>) -> K.Point<T>:
   match a b:
     case K.Translator{+a_s, +a_e01, +a_e02, +a_e03} K.Direction{+b_e032, +b_e013, +b_e021}:
@@ -14158,11 +16080,48 @@ def Translator.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: 
         mul(b_e021, m2_2),
         zero}
 
+type TranslatorDirectionMap<-T: Data> is Data:
+  TranslatorDirectionMap{m0_0: T, m1_1: T, m2_2: T}
+
+def Translator.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorDirectionMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      TranslatorDirectionMap{m0_0, m1_1, m2_2}
+
+def Translator.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case TranslatorDirectionMap{+m0_0, +m1_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        mul(b_e032, m0_0),
+        mul(b_e013, m1_1),
+        mul(b_e021, m2_2),
+        zero}
+
 def Translator.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Translator{+a_s, +a_e01, +a_e02, +a_e03} K.Pseudoscalar{+b_e0123}:
       +q0_0 = mul(a_s, a_s)
       +m0_0 = q0_0
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type TranslatorPseudoscalarMap<-T: Data> is Data:
+  TranslatorPseudoscalarMap{m0_0: T}
+
+def Translator.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorPseudoscalarMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = q0_0
+      TranslatorPseudoscalarMap{m0_0}
+
+def Translator.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case TranslatorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -14193,6 +16152,41 @@ def Translator.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
         add(mul(b_e23, m6_1), mul(b_e31, m6_2)),
         zero}
 
+type TranslatorRotorMap<-T: Data> is Data:
+  TranslatorRotorMap{m0_0: T, m1_1: T, m2_2: T, m3_3: T, m4_2: T, m4_3: T, m5_1: T, m5_3: T, m6_1: T, m6_2: T}
+
+def Translator.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorRotorMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_3 = mul(a_s, a_e03)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_1 = mul(a_s, a_e01)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      +m3_3 = q0_0
+      +m4_2 = add(q0_3, q0_3)
+      +m4_3 = add(neg(q0_2), neg(q0_2))
+      +m5_1 = add(neg(q0_3), neg(q0_3))
+      +m5_3 = add(q0_1, q0_1)
+      +m6_1 = add(q0_2, q0_2)
+      +m6_2 = add(neg(q0_1), neg(q0_1))
+      TranslatorRotorMap{m0_0, m1_1, m2_2, m3_3, m4_2, m4_3, m5_1, m5_3, m6_1, m6_2}
+
+def Translator.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorRotorMap<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match m b:
+    case TranslatorRotorMap{+m0_0, +m1_1, +m2_2, +m3_3, +m4_2, +m4_3, +m5_1, +m5_3, +m6_1, +m6_2} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Motor{
+        mul(b_s, m0_0),
+        mul(b_e23, m1_1),
+        mul(b_e31, m2_2),
+        mul(b_e12, m3_3),
+        add(mul(b_e31, m4_2), mul(b_e12, m4_3)),
+        add(mul(b_e23, m5_1), mul(b_e12, m5_3)),
+        add(mul(b_e23, m6_1), mul(b_e31, m6_2)),
+        zero}
+
 def Translator.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Translator<T>) -> K.Translator<T>:
   match a b:
     case K.Translator{+a_s, +a_e01, +a_e02, +a_e03} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -14201,6 +16195,28 @@ def Translator.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul:
       +m1_1 = q0_0
       +m2_2 = q0_0
       +m3_3 = q0_0
+      K.Translator{
+        mul(b_s, m0_0),
+        mul(b_e01, m1_1),
+        mul(b_e02, m2_2),
+        mul(b_e03, m3_3)}
+
+type TranslatorTranslatorMap<-T: Data> is Data:
+  TranslatorTranslatorMap{m0_0: T, m1_1: T, m2_2: T, m3_3: T}
+
+def Translator.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorTranslatorMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      +m3_3 = q0_0
+      TranslatorTranslatorMap{m0_0, m1_1, m2_2, m3_3}
+
+def Translator.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorTranslatorMap<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match m b:
+    case TranslatorTranslatorMap{+m0_0, +m1_1, +m2_2, +m3_3} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Translator{
         mul(b_s, m0_0),
         mul(b_e01, m1_1),
@@ -14238,6 +16254,45 @@ def Translator.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e03, m6_6))),
         mul(b_e0123, m7_7)}
 
+type TranslatorMotorMap<-T: Data> is Data:
+  TranslatorMotorMap{m0_0: T, m1_1: T, m2_2: T, m3_3: T, m4_2: T, m4_3: T, m4_4: T, m5_1: T, m5_3: T, m5_5: T, m6_1: T, m6_2: T, m6_6: T, m7_7: T}
+
+def Translator.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorMotorMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_3 = mul(a_s, a_e03)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_1 = mul(a_s, a_e01)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      +m3_3 = q0_0
+      +m4_2 = add(q0_3, q0_3)
+      +m4_3 = add(neg(q0_2), neg(q0_2))
+      +m4_4 = q0_0
+      +m5_1 = add(neg(q0_3), neg(q0_3))
+      +m5_3 = add(q0_1, q0_1)
+      +m5_5 = q0_0
+      +m6_1 = add(q0_2, q0_2)
+      +m6_2 = add(neg(q0_1), neg(q0_1))
+      +m6_6 = q0_0
+      +m7_7 = q0_0
+      TranslatorMotorMap{m0_0, m1_1, m2_2, m3_3, m4_2, m4_3, m4_4, m5_1, m5_3, m5_5, m6_1, m6_2, m6_6, m7_7}
+
+def Translator.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case TranslatorMotorMap{+m0_0, +m1_1, +m2_2, +m3_3, +m4_2, +m4_3, +m4_4, +m5_1, +m5_3, +m5_5, +m6_1, +m6_2, +m6_6, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        mul(b_e23, m1_1),
+        mul(b_e31, m2_2),
+        mul(b_e12, m3_3),
+        add(mul(b_e31, m4_2), add(mul(b_e12, m4_3), mul(b_e01, m4_4))),
+        add(mul(b_e23, m5_1), add(mul(b_e12, m5_3), mul(b_e02, m5_5))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e03, m6_6))),
+        mul(b_e0123, m7_7)}
+
 def Translator.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Translator{+a_s, +a_e01, +a_e02, +a_e03} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -14259,6 +16314,45 @@ def Translator.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
       +m6_6 = q0_0
       +m6_7 = add(neg(q0_3), neg(q0_3))
       +m7_7 = q0_0
+      K.Flector{
+        mul(b_e1, m0_0),
+        mul(b_e2, m1_1),
+        mul(b_e3, m2_2),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3)))),
+        add(mul(b_e032, m4_4), mul(b_e123, m4_7)),
+        add(mul(b_e013, m5_5), mul(b_e123, m5_7)),
+        add(mul(b_e021, m6_6), mul(b_e123, m6_7)),
+        mul(b_e123, m7_7)}
+
+type TranslatorFlectorMap<-T: Data> is Data:
+  TranslatorFlectorMap{m0_0: T, m1_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_7: T, m5_5: T, m5_7: T, m6_6: T, m6_7: T, m7_7: T}
+
+def Translator.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorFlectorMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_1 = mul(a_s, a_e01)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_3 = mul(a_s, a_e03)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m2_2 = q0_0
+      +m3_0 = add(q0_1, q0_1)
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(q0_3, q0_3)
+      +m3_3 = q0_0
+      +m4_4 = q0_0
+      +m4_7 = add(neg(q0_1), neg(q0_1))
+      +m5_5 = q0_0
+      +m5_7 = add(neg(q0_2), neg(q0_2))
+      +m6_6 = q0_0
+      +m6_7 = add(neg(q0_3), neg(q0_3))
+      +m7_7 = q0_0
+      TranslatorFlectorMap{m0_0, m1_1, m2_2, m3_0, m3_1, m3_2, m3_3, m4_4, m4_7, m5_5, m5_7, m6_6, m6_7, m7_7}
+
+def Translator.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case TranslatorFlectorMap{+m0_0, +m1_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_7, +m5_5, +m5_7, +m6_6, +m6_7, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         mul(b_e1, m0_0),
         mul(b_e2, m1_1),
@@ -14322,6 +16416,67 @@ def Translator.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul
         mul(b_e123, m14_14),
         mul(b_e0123, m15_15)}
 
+type TranslatorMultivectorMap<-T: Data> is Data:
+  TranslatorMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_2: T, m3_3: T, m4_4: T, m5_5: T, m5_8: T, m5_9: T, m6_6: T, m6_8: T, m6_10: T, m7_7: T, m7_9: T, m7_10: T, m8_8: T, m9_9: T, m10_10: T, m11_11: T, m11_14: T, m12_12: T, m12_14: T, m13_13: T, m13_14: T, m14_14: T, m15_15: T}
+
+def Translator.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>) -> TranslatorMultivectorMap<T>:
+  match a:
+    case K.Translator{+a_s, +a_e01, +a_e02, +a_e03}:
+      +q0_0 = mul(a_s, a_s)
+      +q0_1 = mul(a_s, a_e01)
+      +q0_2 = mul(a_s, a_e02)
+      +q0_3 = mul(a_s, a_e03)
+      +m0_0 = q0_0
+      +m1_1 = q0_0
+      +m1_2 = add(q0_1, q0_1)
+      +m1_3 = add(q0_2, q0_2)
+      +m1_4 = add(q0_3, q0_3)
+      +m2_2 = q0_0
+      +m3_3 = q0_0
+      +m4_4 = q0_0
+      +m5_5 = q0_0
+      +m5_8 = add(neg(q0_2), neg(q0_2))
+      +m5_9 = add(q0_3, q0_3)
+      +m6_6 = q0_0
+      +m6_8 = add(q0_1, q0_1)
+      +m6_10 = add(neg(q0_3), neg(q0_3))
+      +m7_7 = q0_0
+      +m7_9 = add(neg(q0_1), neg(q0_1))
+      +m7_10 = add(q0_2, q0_2)
+      +m8_8 = q0_0
+      +m9_9 = q0_0
+      +m10_10 = q0_0
+      +m11_11 = q0_0
+      +m11_14 = add(neg(q0_3), neg(q0_3))
+      +m12_12 = q0_0
+      +m12_14 = add(neg(q0_2), neg(q0_2))
+      +m13_13 = q0_0
+      +m13_14 = add(neg(q0_1), neg(q0_1))
+      +m14_14 = q0_0
+      +m15_15 = q0_0
+      TranslatorMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_2, m3_3, m4_4, m5_5, m5_8, m5_9, m6_6, m6_8, m6_10, m7_7, m7_9, m7_10, m8_8, m9_9, m10_10, m11_11, m11_14, m12_12, m12_14, m13_13, m13_14, m14_14, m15_15}
+
+def Translator.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: TranslatorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case TranslatorMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_2, +m3_3, +m4_4, +m5_5, +m5_8, +m5_9, +m6_6, +m6_8, +m6_10, +m7_7, +m7_9, +m7_10, +m8_8, +m9_9, +m10_10, +m11_11, +m11_14, +m12_12, +m12_14, +m13_13, +m13_14, +m14_14, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        mul(b_e1, m2_2),
+        mul(b_e2, m3_3),
+        mul(b_e3, m4_4),
+        add(mul(b_e01, m5_5), add(mul(b_e12, m5_8), mul(b_e31, m5_9))),
+        add(mul(b_e02, m6_6), add(mul(b_e12, m6_8), mul(b_e23, m6_10))),
+        add(mul(b_e03, m7_7), add(mul(b_e31, m7_9), mul(b_e23, m7_10))),
+        mul(b_e12, m8_8),
+        mul(b_e31, m9_9),
+        mul(b_e23, m10_10),
+        add(mul(b_e021, m11_11), mul(b_e123, m11_14)),
+        add(mul(b_e013, m12_12), mul(b_e123, m12_14)),
+        add(mul(b_e032, m13_13), mul(b_e123, m13_14)),
+        mul(b_e123, m14_14),
+        mul(b_e0123, m15_15)}
+
 def Motor.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Scalar<T>) -> K.Motor<T>:
   match a b:
     case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123} K.Scalar{+b_s}:
@@ -14335,6 +16490,37 @@ def Motor.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
       +q0_7 = mul(a_s, a_e0123)
       +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
       +m7_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      K.Motor{
+        mul(b_s, m0_0),
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(b_s, m7_0)}
+
+type MotorScalarMap<-T: Data> is Data:
+  MotorScalarMap{m0_0: T, m7_0: T}
+
+def Motor.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorScalarMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q3_6 = mul(a_e12, a_e03)
+      +q2_5 = mul(a_e31, a_e02)
+      +q1_4 = mul(a_e23, a_e01)
+      +q0_7 = mul(a_s, a_e0123)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      MotorScalarMap{m0_0, m7_0}
+
+def Motor.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorScalarMap<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match m b:
+    case MotorScalarMap{+m0_0, +m7_0} K.Scalar{+b_s}:
       K.Motor{
         mul(b_s, m0_0),
         zero,
@@ -14383,6 +16569,58 @@ def Motor.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
       +m3_1 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), neg(q1_6)), neg(q1_6)), q0_5), q0_5)
       +m3_2 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_6), q0_6)
       +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Plane{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3))))}
+
+type MotorPlaneMap<-T: Data> is Data:
+  MotorPlaneMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Motor.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorPlaneMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_0 = add(add(add(add(add(add(add(neg(q3_5), neg(q3_5)), q2_6), q2_6), q1_7), q1_7), q0_4), q0_4)
+      +m3_1 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), neg(q1_6)), neg(q1_6)), q0_5), q0_5)
+      +m3_2 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_6), q0_6)
+      +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      MotorPlaneMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3}
+
+def Motor.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorPlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case MotorPlaneMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -14453,6 +16691,78 @@ def Motor.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> 
         add(mul(b_e23, m4_0), add(mul(b_e31, m4_1), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5)))))),
         add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e12, m5_2), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5))))))}
 
+type MotorLineMap<-T: Data> is Data:
+  MotorLineMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Motor.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorLineMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_6 = mul(a_e12, a_e03)
+      +q2_5 = mul(a_e31, a_e02)
+      +q1_4 = mul(a_e23, a_e01)
+      +q0_7 = mul(a_s, a_e0123)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m3_1 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_4), q2_4), q1_5), q1_5), q0_6), q0_6)
+      +m3_2 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), q1_6), q1_6), neg(q0_5)), neg(q0_5))
+      +m3_3 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m3_4 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m3_5 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m4_0 = add(add(add(add(add(add(add(q3_7, q3_7), q2_4), q2_4), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m4_1 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m4_2 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m4_3 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m4_4 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m5_0 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), q1_6), q1_6), q0_5), q0_5)
+      +m5_1 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m5_2 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m5_3 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m5_4 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m5_5 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      MotorLineMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_1, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_2, m5_3, m5_4, m5_5}
+
+def Motor.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case MotorLineMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        add(mul(b_e23, m0_0), add(mul(b_e31, m0_1), mul(b_e12, m0_2))),
+        add(mul(b_e23, m1_0), add(mul(b_e31, m1_1), mul(b_e12, m1_2))),
+        add(mul(b_e23, m2_0), add(mul(b_e31, m2_1), mul(b_e12, m2_2))),
+        add(mul(b_e23, m3_0), add(mul(b_e31, m3_1), add(mul(b_e12, m3_2), add(mul(b_e01, m3_3), add(mul(b_e02, m3_4), mul(b_e03, m3_5)))))),
+        add(mul(b_e23, m4_0), add(mul(b_e31, m4_1), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5)))))),
+        add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e12, m5_2), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5))))))}
+
 def Motor.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -14497,6 +16807,58 @@ def Motor.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
         mul(b_e123, m3_3)}
 
+type MotorPointMap<-T: Data> is Data:
+  MotorPointMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_3: T}
+
+def Motor.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorPointMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(neg(q3_5), neg(q3_5)), q2_6), q2_6), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m1_3 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), neg(q1_6)), neg(q1_6)), neg(q0_5)), neg(q0_5))
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      MotorPointMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_3}
+
+def Motor.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorPointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case MotorPointMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), add(mul(b_e021, m0_2), mul(b_e123, m0_3)))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), add(mul(b_e021, m1_2), mul(b_e123, m1_3)))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
+        mul(b_e123, m3_3)}
+
 def Motor.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Direction<T>) -> K.Point<T>:
   match a b:
     case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123} K.Direction{+b_e032, +b_e013, +b_e021}:
@@ -14525,6 +16887,42 @@ def Motor.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
         zero}
 
+type MotorDirectionMap<-T: Data> is Data:
+  MotorDirectionMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T}
+
+def Motor.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorDirectionMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      MotorDirectionMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2}
+
+def Motor.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case MotorDirectionMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
+        zero}
+
 def Motor.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123} K.Pseudoscalar{+b_e0123}:
@@ -14533,6 +16931,25 @@ def Motor.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
       +q1_1 = mul(a_e23, a_e23)
       +q0_0 = mul(a_s, a_s)
       +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type MotorPseudoscalarMap<-T: Data> is Data:
+  MotorPseudoscalarMap{m0_0: T}
+
+def Motor.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorPseudoscalarMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      MotorPseudoscalarMap{m0_0}
+
+def Motor.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case MotorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -14595,6 +17012,73 @@ def Motor.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e12, m6_3))),
         mul(b_s, m7_0)}
 
+type MotorRotorMap<-T: Data> is Data:
+  MotorRotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_1: T, m4_2: T, m4_3: T, m5_1: T, m5_2: T, m5_3: T, m6_1: T, m6_2: T, m6_3: T, m7_0: T}
+
+def Motor.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorRotorMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_6 = mul(a_e12, a_e03)
+      +q2_5 = mul(a_e31, a_e02)
+      +q1_4 = mul(a_e23, a_e01)
+      +q0_7 = mul(a_s, a_e0123)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m1_3 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m3_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m3_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m4_1 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m4_2 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_4), q2_4), q1_5), q1_5), q0_6), q0_6)
+      +m4_3 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), q1_6), q1_6), neg(q0_5)), neg(q0_5))
+      +m5_1 = add(add(add(add(add(add(add(q3_7, q3_7), q2_4), q2_4), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m5_2 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m5_3 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m6_1 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), q1_6), q1_6), q0_5), q0_5)
+      +m6_2 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m6_3 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      MotorRotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_1, m4_2, m4_3, m5_1, m5_2, m5_3, m6_1, m6_2, m6_3, m7_0}
+
+def Motor.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorRotorMap<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match m b:
+    case MotorRotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_1, +m4_2, +m4_3, +m5_1, +m5_2, +m5_3, +m6_1, +m6_2, +m6_3, +m7_0} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e23, m4_1), add(mul(b_e31, m4_2), mul(b_e12, m4_3))),
+        add(mul(b_e23, m5_1), add(mul(b_e31, m5_2), mul(b_e12, m5_3))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e12, m6_3))),
+        mul(b_s, m7_0)}
+
 def Motor.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Translator<T>) -> K.Motor<T>:
   match a b:
     case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -14623,6 +17107,52 @@ def Motor.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T ->
       +m6_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
       +m6_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       +m7_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      K.Motor{
+        mul(b_s, m0_0),
+        zero,
+        zero,
+        zero,
+        add(mul(b_e01, m4_1), add(mul(b_e02, m4_2), mul(b_e03, m4_3))),
+        add(mul(b_e01, m5_1), add(mul(b_e02, m5_2), mul(b_e03, m5_3))),
+        add(mul(b_e01, m6_1), add(mul(b_e02, m6_2), mul(b_e03, m6_3))),
+        mul(b_s, m7_0)}
+
+type MotorTranslatorMap<-T: Data> is Data:
+  MotorTranslatorMap{m0_0: T, m4_1: T, m4_2: T, m4_3: T, m5_1: T, m5_2: T, m5_3: T, m6_1: T, m6_2: T, m6_3: T, m7_0: T}
+
+def Motor.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorTranslatorMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_6 = mul(a_e12, a_e03)
+      +q2_5 = mul(a_e31, a_e02)
+      +q1_4 = mul(a_e23, a_e01)
+      +q0_7 = mul(a_s, a_e0123)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m4_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_2 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m4_3 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m5_1 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m5_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m5_3 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m6_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m6_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m6_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      MotorTranslatorMap{m0_0, m4_1, m4_2, m4_3, m5_1, m5_2, m5_3, m6_1, m6_2, m6_3, m7_0}
+
+def Motor.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorTranslatorMap<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match m b:
+    case MotorTranslatorMap{+m0_0, +m4_1, +m4_2, +m4_3, +m5_1, +m5_2, +m5_3, +m6_1, +m6_2, +m6_3, +m7_0} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Motor{
         mul(b_s, m0_0),
         zero,
@@ -14702,6 +17232,83 @@ def Motor.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T ->
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e12, m6_3), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6)))))),
         add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
+type MotorMotorMap<-T: Data> is Data:
+  MotorMotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_3: T, m6_4: T, m6_5: T, m6_6: T, m7_0: T, m7_7: T}
+
+def Motor.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorMotorMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_6 = mul(a_e12, a_e03)
+      +q2_5 = mul(a_e31, a_e02)
+      +q1_4 = mul(a_e23, a_e01)
+      +q0_7 = mul(a_s, a_e0123)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m1_2 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m1_3 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m2_2 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m3_1 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m3_2 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m4_1 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m4_2 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_4), q2_4), q1_5), q1_5), q0_6), q0_6)
+      +m4_3 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), q1_6), q1_6), neg(q0_5)), neg(q0_5))
+      +m4_4 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m4_6 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m5_1 = add(add(add(add(add(add(add(q3_7, q3_7), q2_4), q2_4), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m5_2 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m5_3 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m5_4 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m5_5 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m6_1 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), q1_6), q1_6), q0_5), q0_5)
+      +m6_2 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m6_3 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m6_4 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m6_5 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m6_6 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m7_7 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      MotorMotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_1, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_2, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_3, m6_4, m6_5, m6_6, m7_0, m7_7}
+
+def Motor.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case MotorMotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_3, +m6_4, +m6_5, +m6_6, +m7_0, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e23, m4_1), add(mul(b_e31, m4_2), add(mul(b_e12, m4_3), add(mul(b_e01, m4_4), add(mul(b_e02, m4_5), mul(b_e03, m4_6)))))),
+        add(mul(b_e23, m5_1), add(mul(b_e31, m5_2), add(mul(b_e12, m5_3), add(mul(b_e01, m5_4), add(mul(b_e02, m5_5), mul(b_e03, m5_6)))))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e12, m6_3), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
+
 def Motor.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -14753,6 +17360,75 @@ def Motor.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +m6_6 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       +m6_7 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_6)), neg(q0_6))
       +m7_7 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      K.Flector{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3)))),
+        add(mul(b_e032, m4_4), add(mul(b_e013, m4_5), add(mul(b_e021, m4_6), mul(b_e123, m4_7)))),
+        add(mul(b_e032, m5_4), add(mul(b_e013, m5_5), add(mul(b_e021, m5_6), mul(b_e123, m5_7)))),
+        add(mul(b_e032, m6_4), add(mul(b_e013, m6_5), add(mul(b_e021, m6_6), mul(b_e123, m6_7)))),
+        mul(b_e123, m7_7)}
+
+type MotorFlectorMap<-T: Data> is Data:
+  MotorFlectorMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_7: T}
+
+def Motor.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorFlectorMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +m0_0 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m0_1 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m0_2 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m1_1 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m2_0 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m2_2 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m3_0 = add(add(add(add(add(add(add(neg(q3_5), neg(q3_5)), q2_6), q2_6), q1_7), q1_7), q0_4), q0_4)
+      +m3_1 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), neg(q1_6)), neg(q1_6)), q0_5), q0_5)
+      +m3_2 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_6), q0_6)
+      +m3_3 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m4_4 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m4_5 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m4_6 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m4_7 = add(add(add(add(add(add(add(neg(q3_5), neg(q3_5)), q2_6), q2_6), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m5_4 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m5_5 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m5_7 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), neg(q1_6)), neg(q1_6)), neg(q0_5)), neg(q0_5))
+      +m6_4 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m6_5 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m6_6 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m6_7 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m7_7 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      MotorFlectorMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_7}
+
+def Motor.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case MotorFlectorMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -14866,6 +17542,117 @@ def Motor.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         mul(b_e123, m14_14),
         add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
 
+type MotorMultivectorMap<-T: Data> is Data:
+  MotorMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_2: T, m2_3: T, m2_4: T, m3_2: T, m3_3: T, m3_4: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_8: T, m5_9: T, m5_10: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_9: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_8: T, m7_9: T, m7_10: T, m8_8: T, m8_9: T, m8_10: T, m9_8: T, m9_9: T, m9_10: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_14: T, m15_0: T, m15_15: T}
+
+def Motor.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>) -> MotorMultivectorMap<T>:
+  match a:
+    case K.Motor{+a_s, +a_e23, +a_e31, +a_e12, +a_e01, +a_e02, +a_e03, +a_e0123}:
+      +q3_3 = mul(a_e12, a_e12)
+      +q2_2 = mul(a_e31, a_e31)
+      +q1_1 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q3_5 = mul(a_e12, a_e02)
+      +q2_6 = mul(a_e31, a_e03)
+      +q1_7 = mul(a_e23, a_e0123)
+      +q0_4 = mul(a_s, a_e01)
+      +q3_4 = mul(a_e12, a_e01)
+      +q2_7 = mul(a_e31, a_e0123)
+      +q1_6 = mul(a_e23, a_e03)
+      +q0_5 = mul(a_s, a_e02)
+      +q3_7 = mul(a_e12, a_e0123)
+      +q2_4 = mul(a_e31, a_e01)
+      +q1_5 = mul(a_e23, a_e02)
+      +q0_6 = mul(a_s, a_e03)
+      +q1_2 = mul(a_e23, a_e31)
+      +q0_3 = mul(a_s, a_e12)
+      +q1_3 = mul(a_e23, a_e12)
+      +q0_2 = mul(a_s, a_e31)
+      +q2_3 = mul(a_e31, a_e12)
+      +q0_1 = mul(a_s, a_e23)
+      +q3_6 = mul(a_e12, a_e03)
+      +q2_5 = mul(a_e31, a_e02)
+      +q1_4 = mul(a_e23, a_e01)
+      +q0_7 = mul(a_s, a_e0123)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(neg(q3_5), neg(q3_5)), q2_6), q2_6), q1_7), q1_7), q0_4), q0_4)
+      +m1_3 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), neg(q1_6)), neg(q1_6)), q0_5), q0_5)
+      +m1_4 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_4)), neg(q2_4)), q1_5), q1_5), q0_6), q0_6)
+      +m2_2 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m2_3 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m2_4 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m3_2 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m3_3 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m3_4 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m4_2 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m4_3 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m4_4 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m5_5 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m5_6 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m5_7 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m5_8 = add(add(add(add(add(add(add(q3_4, q3_4), q2_7), q2_7), q1_6), q1_6), neg(q0_5)), neg(q0_5))
+      +m5_9 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), q2_4), q2_4), q1_5), q1_5), q0_6), q0_6)
+      +m5_10 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), q1_4), q1_4), neg(q0_7)), neg(q0_7))
+      +m6_5 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m6_6 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m6_7 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m6_8 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), neg(q1_7)), neg(q1_7)), q0_4), q0_4)
+      +m6_9 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), q2_5), q2_5), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m6_10 = add(add(add(add(add(add(add(q3_7, q3_7), q2_4), q2_4), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m7_5 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m7_6 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m7_7 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m7_8 = add(add(add(add(add(add(add(q3_6, q3_6), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), neg(q0_7)), neg(q0_7))
+      +m7_9 = add(add(add(add(add(add(add(q3_5, q3_5), q2_6), q2_6), q1_7), q1_7), neg(q0_4)), neg(q0_4))
+      +m7_10 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), q1_6), q1_6), q0_5), q0_5)
+      +m8_8 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m8_9 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m8_10 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m9_8 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m9_9 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m9_10 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m10_8 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m10_9 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m10_10 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m11_11 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m11_12 = add(add(add(q2_3, q2_3), neg(q0_1)), neg(q0_1))
+      +m11_13 = add(add(add(q1_3, q1_3), q0_2), q0_2)
+      +m11_14 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_4)), neg(q2_4)), q1_5), q1_5), neg(q0_6)), neg(q0_6))
+      +m12_11 = add(add(add(q2_3, q2_3), q0_1), q0_1)
+      +m12_12 = add(add(add(neg(q3_3), q2_2), neg(q1_1)), q0_0)
+      +m12_13 = add(add(add(q1_2, q1_2), neg(q0_3)), neg(q0_3))
+      +m12_14 = add(add(add(add(add(add(add(q3_4, q3_4), neg(q2_7)), neg(q2_7)), neg(q1_6)), neg(q1_6)), neg(q0_5)), neg(q0_5))
+      +m13_11 = add(add(add(q1_3, q1_3), neg(q0_2)), neg(q0_2))
+      +m13_12 = add(add(add(q1_2, q1_2), q0_3), q0_3)
+      +m13_13 = add(add(add(neg(q3_3), neg(q2_2)), q1_1), q0_0)
+      +m13_14 = add(add(add(add(add(add(add(neg(q3_5), neg(q3_5)), q2_6), q2_6), neg(q1_7)), neg(q1_7)), neg(q0_4)), neg(q0_4))
+      +m14_14 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      +m15_0 = add(add(add(add(add(add(add(neg(q3_6), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q1_4)), neg(q1_4)), q0_7), q0_7)
+      +m15_15 = add(add(add(q3_3, q2_2), q1_1), q0_0)
+      MotorMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_2, m2_3, m2_4, m3_2, m3_3, m3_4, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_8, m5_9, m5_10, m6_5, m6_6, m6_7, m6_8, m6_9, m6_10, m7_5, m7_6, m7_7, m7_8, m7_9, m7_10, m8_8, m8_9, m8_10, m9_8, m9_9, m9_10, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_14, m15_0, m15_15}
+
+def Motor.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: MotorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case MotorMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_2, +m2_3, +m2_4, +m3_2, +m3_3, +m3_4, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_8, +m5_9, +m5_10, +m6_5, +m6_6, +m6_7, +m6_8, +m6_9, +m6_10, +m7_5, +m7_6, +m7_7, +m7_8, +m7_9, +m7_10, +m8_8, +m8_9, +m8_10, +m9_8, +m9_9, +m9_10, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_14, +m15_0, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4))),
+        add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4))),
+        add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4))),
+        add(mul(b_e01, m5_5), add(mul(b_e02, m5_6), add(mul(b_e03, m5_7), add(mul(b_e12, m5_8), add(mul(b_e31, m5_9), mul(b_e23, m5_10)))))),
+        add(mul(b_e01, m6_5), add(mul(b_e02, m6_6), add(mul(b_e03, m6_7), add(mul(b_e12, m6_8), add(mul(b_e31, m6_9), mul(b_e23, m6_10)))))),
+        add(mul(b_e01, m7_5), add(mul(b_e02, m7_6), add(mul(b_e03, m7_7), add(mul(b_e12, m7_8), add(mul(b_e31, m7_9), mul(b_e23, m7_10)))))),
+        add(mul(b_e12, m8_8), add(mul(b_e31, m8_9), mul(b_e23, m8_10))),
+        add(mul(b_e12, m9_8), add(mul(b_e31, m9_9), mul(b_e23, m9_10))),
+        add(mul(b_e12, m10_8), add(mul(b_e31, m10_9), mul(b_e23, m10_10))),
+        add(mul(b_e021, m11_11), add(mul(b_e013, m11_12), add(mul(b_e032, m11_13), mul(b_e123, m11_14)))),
+        add(mul(b_e021, m12_11), add(mul(b_e013, m12_12), add(mul(b_e032, m12_13), mul(b_e123, m12_14)))),
+        add(mul(b_e021, m13_11), add(mul(b_e013, m13_12), add(mul(b_e032, m13_13), mul(b_e123, m13_14)))),
+        mul(b_e123, m14_14),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
+
 def Flector.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Scalar<T>) -> K.Motor<T>:
   match a b:
     case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123} K.Scalar{+b_s}:
@@ -14879,6 +17666,37 @@ def Flector.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T
       +q0_4 = mul(a_e1, a_e032)
       +m0_0 = add(add(add(q7_7, q2_2), q1_1), q0_0)
       +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      K.Motor{
+        mul(b_s, m0_0),
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(b_s, m7_0)}
+
+type FlectorScalarMap<-T: Data> is Data:
+  FlectorScalarMap{m0_0: T, m7_0: T}
+
+def Flector.prepare.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorScalarMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q3_7 = mul(a_e0, a_e123)
+      +q2_6 = mul(a_e3, a_e021)
+      +q1_5 = mul(a_e2, a_e013)
+      +q0_4 = mul(a_e1, a_e032)
+      +m0_0 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      FlectorScalarMap{m0_0, m7_0}
+
+def Flector.Scalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorScalarMap<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match m b:
+    case FlectorScalarMap{+m0_0, +m7_0} K.Scalar{+b_s}:
       K.Motor{
         mul(b_s, m0_0),
         zero,
@@ -14927,6 +17745,58 @@ def Flector.transform.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
       +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
       +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
       +m3_3 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      K.Plane{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3))))}
+
+type FlectorPlaneMap<-T: Data> is Data:
+  FlectorPlaneMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T}
+
+def Flector.prepare.Plane(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorPlaneMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +m0_0 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_1 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m0_2 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m1_0 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m1_1 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m1_2 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m2_0 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m2_2 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m3_3 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      FlectorPlaneMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3}
+
+def Flector.Plane.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorPlaneMap<T>, b: K.Plane<T>) -> K.Plane<T>:
+  match m b:
+    case FlectorPlaneMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3} K.Plane{+b_e1, +b_e2, +b_e3, +b_e0}:
       K.Plane{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -14997,6 +17867,78 @@ def Flector.transform.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -
         add(mul(b_e23, m4_0), add(mul(b_e31, m4_1), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5)))))),
         add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e12, m5_2), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5))))))}
 
+type FlectorLineMap<-T: Data> is Data:
+  FlectorLineMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m3_4: T, m3_5: T, m4_0: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m5_0: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T}
+
+def Flector.prepare.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorLineMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q3_7 = mul(a_e0, a_e123)
+      +q2_6 = mul(a_e3, a_e021)
+      +q1_5 = mul(a_e2, a_e013)
+      +q0_4 = mul(a_e1, a_e032)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +m0_0 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_1 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m0_2 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m1_0 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m1_1 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m1_2 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m2_0 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m2_2 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m3_0 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), q0_4), q0_4)
+      +m3_1 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m3_2 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m3_3 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m3_4 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m3_5 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m4_0 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m4_1 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m4_2 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q2_5), q2_5), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m4_3 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m4_4 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m4_5 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m5_0 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m5_1 = add(add(add(add(add(add(add(q4_7, q4_7), q2_5), q2_5), q1_6), q1_6), q0_3), q0_3)
+      +m5_2 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m5_3 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m5_4 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m5_5 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      FlectorLineMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m3_4, m3_5, m4_0, m4_1, m4_2, m4_3, m4_4, m4_5, m5_0, m5_1, m5_2, m5_3, m5_4, m5_5}
+
+def Flector.Line.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorLineMap<T>, b: K.Line<T>) -> K.Line<T>:
+  match m b:
+    case FlectorLineMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m3_4, +m3_5, +m4_0, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m5_0, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5} K.Line{+b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03}:
+      K.Line{
+        add(mul(b_e23, m0_0), add(mul(b_e31, m0_1), mul(b_e12, m0_2))),
+        add(mul(b_e23, m1_0), add(mul(b_e31, m1_1), mul(b_e12, m1_2))),
+        add(mul(b_e23, m2_0), add(mul(b_e31, m2_1), mul(b_e12, m2_2))),
+        add(mul(b_e23, m3_0), add(mul(b_e31, m3_1), add(mul(b_e12, m3_2), add(mul(b_e01, m3_3), add(mul(b_e02, m3_4), mul(b_e03, m3_5)))))),
+        add(mul(b_e23, m4_0), add(mul(b_e31, m4_1), add(mul(b_e12, m4_2), add(mul(b_e01, m4_3), add(mul(b_e02, m4_4), mul(b_e03, m4_5)))))),
+        add(mul(b_e23, m5_0), add(mul(b_e31, m5_1), add(mul(b_e12, m5_2), add(mul(b_e01, m5_3), add(mul(b_e02, m5_4), mul(b_e03, m5_5))))))}
+
 def Flector.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Point<T>) -> K.Point<T>:
   match a b:
     case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
@@ -15041,6 +17983,58 @@ def Flector.transform.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
         mul(b_e123, m3_3)}
 
+type FlectorPointMap<-T: Data> is Data:
+  FlectorPointMap{m0_0: T, m0_1: T, m0_2: T, m0_3: T, m1_0: T, m1_1: T, m1_2: T, m1_3: T, m2_0: T, m2_1: T, m2_2: T, m2_3: T, m3_3: T}
+
+def Flector.prepare.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorPointMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +m0_0 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m0_1 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m0_2 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m1_0 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m1_1 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m1_3 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m2_0 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m2_2 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      +m2_3 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m3_3 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      FlectorPointMap{m0_0, m0_1, m0_2, m0_3, m1_0, m1_1, m1_2, m1_3, m2_0, m2_1, m2_2, m2_3, m3_3}
+
+def Flector.Point.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorPointMap<T>, b: K.Point<T>) -> K.Point<T>:
+  match m b:
+    case FlectorPointMap{+m0_0, +m0_1, +m0_2, +m0_3, +m1_0, +m1_1, +m1_2, +m1_3, +m2_0, +m2_1, +m2_2, +m2_3, +m3_3} K.Point{+b_e032, +b_e013, +b_e021, +b_e123}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), add(mul(b_e021, m0_2), mul(b_e123, m0_3)))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), add(mul(b_e021, m1_2), mul(b_e123, m1_3)))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), add(mul(b_e021, m2_2), mul(b_e123, m2_3)))),
+        mul(b_e123, m3_3)}
+
 def Flector.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Direction<T>) -> K.Point<T>:
   match a b:
     case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123} K.Direction{+b_e032, +b_e013, +b_e021}:
@@ -15069,6 +18063,42 @@ def Flector.transform.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -
         add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
         zero}
 
+type FlectorDirectionMap<-T: Data> is Data:
+  FlectorDirectionMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T}
+
+def Flector.prepare.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorDirectionMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +m0_0 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m0_1 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m0_2 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m1_0 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m1_1 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m2_0 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m2_1 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m2_2 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      FlectorDirectionMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2}
+
+def Flector.Direction.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorDirectionMap<T>, b: K.Direction<T>) -> K.Point<T>:
+  match m b:
+    case FlectorDirectionMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2} K.Direction{+b_e032, +b_e013, +b_e021}:
+      K.Point{
+        add(mul(b_e032, m0_0), add(mul(b_e013, m0_1), mul(b_e021, m0_2))),
+        add(mul(b_e032, m1_0), add(mul(b_e013, m1_1), mul(b_e021, m1_2))),
+        add(mul(b_e032, m2_0), add(mul(b_e013, m2_1), mul(b_e021, m2_2))),
+        zero}
+
 def Flector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123} K.Pseudoscalar{+b_e0123}:
@@ -15077,6 +18107,25 @@ def Flector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: 
       +q1_1 = mul(a_e2, a_e2)
       +q0_0 = mul(a_e1, a_e1)
       +m0_0 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      K.Pseudoscalar{
+        mul(b_e0123, m0_0)}
+
+type FlectorPseudoscalarMap<-T: Data> is Data:
+  FlectorPseudoscalarMap{m0_0: T}
+
+def Flector.prepare.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorPseudoscalarMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +m0_0 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      FlectorPseudoscalarMap{m0_0}
+
+def Flector.Pseudoscalar.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorPseudoscalarMap<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match m b:
+    case FlectorPseudoscalarMap{+m0_0} K.Pseudoscalar{+b_e0123}:
       K.Pseudoscalar{
         mul(b_e0123, m0_0)}
 
@@ -15139,6 +18188,73 @@ def Flector.transform.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e12, m6_3))),
         mul(b_s, m7_0)}
 
+type FlectorRotorMap<-T: Data> is Data:
+  FlectorRotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_1: T, m4_2: T, m4_3: T, m5_1: T, m5_2: T, m5_3: T, m6_1: T, m6_2: T, m6_3: T, m7_0: T}
+
+def Flector.prepare.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorRotorMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q3_7 = mul(a_e0, a_e123)
+      +q2_6 = mul(a_e3, a_e021)
+      +q1_5 = mul(a_e2, a_e013)
+      +q0_4 = mul(a_e1, a_e032)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +m0_0 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m1_3 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m2_2 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m2_3 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m3_1 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m3_2 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m3_3 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m4_1 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), q0_4), q0_4)
+      +m4_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m4_3 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m5_1 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m5_2 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m5_3 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q2_5), q2_5), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m6_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m6_2 = add(add(add(add(add(add(add(q4_7, q4_7), q2_5), q2_5), q1_6), q1_6), q0_3), q0_3)
+      +m6_3 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      FlectorRotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_1, m4_2, m4_3, m5_1, m5_2, m5_3, m6_1, m6_2, m6_3, m7_0}
+
+def Flector.Rotor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorRotorMap<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match m b:
+    case FlectorRotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_1, +m4_2, +m4_3, +m5_1, +m5_2, +m5_3, +m6_1, +m6_2, +m6_3, +m7_0} K.Rotor{+b_s, +b_e23, +b_e31, +b_e12}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e23, m4_1), add(mul(b_e31, m4_2), mul(b_e12, m4_3))),
+        add(mul(b_e23, m5_1), add(mul(b_e31, m5_2), mul(b_e12, m5_3))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), mul(b_e12, m6_3))),
+        mul(b_s, m7_0)}
+
 def Flector.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Translator<T>) -> K.Motor<T>:
   match a b:
     case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
@@ -15167,6 +18283,52 @@ def Flector.transform.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T 
       +m6_2 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
       +m6_3 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
       +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      K.Motor{
+        mul(b_s, m0_0),
+        zero,
+        zero,
+        zero,
+        add(mul(b_e01, m4_1), add(mul(b_e02, m4_2), mul(b_e03, m4_3))),
+        add(mul(b_e01, m5_1), add(mul(b_e02, m5_2), mul(b_e03, m5_3))),
+        add(mul(b_e01, m6_1), add(mul(b_e02, m6_2), mul(b_e03, m6_3))),
+        mul(b_s, m7_0)}
+
+type FlectorTranslatorMap<-T: Data> is Data:
+  FlectorTranslatorMap{m0_0: T, m4_1: T, m4_2: T, m4_3: T, m5_1: T, m5_2: T, m5_3: T, m6_1: T, m6_2: T, m6_3: T, m7_0: T}
+
+def Flector.prepare.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorTranslatorMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q3_7 = mul(a_e0, a_e123)
+      +q2_6 = mul(a_e3, a_e021)
+      +q1_5 = mul(a_e2, a_e013)
+      +q0_4 = mul(a_e1, a_e032)
+      +m0_0 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      +m4_1 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m4_2 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m4_3 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m5_1 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m5_2 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m5_3 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m6_1 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m6_2 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m6_3 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      FlectorTranslatorMap{m0_0, m4_1, m4_2, m4_3, m5_1, m5_2, m5_3, m6_1, m6_2, m6_3, m7_0}
+
+def Flector.Translator.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorTranslatorMap<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match m b:
+    case FlectorTranslatorMap{+m0_0, +m4_1, +m4_2, +m4_3, +m5_1, +m5_2, +m5_3, +m6_1, +m6_2, +m6_3, +m7_0} K.Translator{+b_s, +b_e01, +b_e02, +b_e03}:
       K.Motor{
         mul(b_s, m0_0),
         zero,
@@ -15246,6 +18408,83 @@ def Flector.transform.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T 
         add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e12, m6_3), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6)))))),
         add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
+type FlectorMotorMap<-T: Data> is Data:
+  FlectorMotorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m2_1: T, m2_2: T, m2_3: T, m3_1: T, m3_2: T, m3_3: T, m4_1: T, m4_2: T, m4_3: T, m4_4: T, m4_5: T, m4_6: T, m5_1: T, m5_2: T, m5_3: T, m5_4: T, m5_5: T, m5_6: T, m6_1: T, m6_2: T, m6_3: T, m6_4: T, m6_5: T, m6_6: T, m7_0: T, m7_7: T}
+
+def Flector.prepare.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorMotorMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q3_7 = mul(a_e0, a_e123)
+      +q2_6 = mul(a_e3, a_e021)
+      +q1_5 = mul(a_e2, a_e013)
+      +q0_4 = mul(a_e1, a_e032)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +m0_0 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m1_2 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m1_3 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m2_1 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m2_2 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m2_3 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m3_1 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m3_2 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m3_3 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m4_1 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), q0_4), q0_4)
+      +m4_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m4_3 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m4_4 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m4_5 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m4_6 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m5_1 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m5_2 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m5_3 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q2_5), q2_5), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m5_4 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m5_5 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m6_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m6_2 = add(add(add(add(add(add(add(q4_7, q4_7), q2_5), q2_5), q1_6), q1_6), q0_3), q0_3)
+      +m6_3 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m6_4 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m6_5 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m6_6 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m7_7 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      FlectorMotorMap{m0_0, m1_1, m1_2, m1_3, m2_1, m2_2, m2_3, m3_1, m3_2, m3_3, m4_1, m4_2, m4_3, m4_4, m4_5, m4_6, m5_1, m5_2, m5_3, m5_4, m5_5, m5_6, m6_1, m6_2, m6_3, m6_4, m6_5, m6_6, m7_0, m7_7}
+
+def Flector.Motor.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorMotorMap<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match m b:
+    case FlectorMotorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m2_1, +m2_2, +m2_3, +m3_1, +m3_2, +m3_3, +m4_1, +m4_2, +m4_3, +m4_4, +m4_5, +m4_6, +m5_1, +m5_2, +m5_3, +m5_4, +m5_5, +m5_6, +m6_1, +m6_2, +m6_3, +m6_4, +m6_5, +m6_6, +m7_0, +m7_7} K.Motor{+b_s, +b_e23, +b_e31, +b_e12, +b_e01, +b_e02, +b_e03, +b_e0123}:
+      K.Motor{
+        mul(b_s, m0_0),
+        add(mul(b_e23, m1_1), add(mul(b_e31, m1_2), mul(b_e12, m1_3))),
+        add(mul(b_e23, m2_1), add(mul(b_e31, m2_2), mul(b_e12, m2_3))),
+        add(mul(b_e23, m3_1), add(mul(b_e31, m3_2), mul(b_e12, m3_3))),
+        add(mul(b_e23, m4_1), add(mul(b_e31, m4_2), add(mul(b_e12, m4_3), add(mul(b_e01, m4_4), add(mul(b_e02, m4_5), mul(b_e03, m4_6)))))),
+        add(mul(b_e23, m5_1), add(mul(b_e31, m5_2), add(mul(b_e12, m5_3), add(mul(b_e01, m5_4), add(mul(b_e02, m5_5), mul(b_e03, m5_6)))))),
+        add(mul(b_e23, m6_1), add(mul(b_e31, m6_2), add(mul(b_e12, m6_3), add(mul(b_e01, m6_4), add(mul(b_e02, m6_5), mul(b_e03, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
+
 def Flector.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Flector<T>) -> K.Flector<T>:
   match a b:
     case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
@@ -15297,6 +18536,75 @@ def Flector.transform.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
       +m6_6 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
       +m6_7 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
       +m7_7 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      K.Flector{
+        add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
+        add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
+        add(mul(b_e1, m2_0), add(mul(b_e2, m2_1), mul(b_e3, m2_2))),
+        add(mul(b_e1, m3_0), add(mul(b_e2, m3_1), add(mul(b_e3, m3_2), mul(b_e0, m3_3)))),
+        add(mul(b_e032, m4_4), add(mul(b_e013, m4_5), add(mul(b_e021, m4_6), mul(b_e123, m4_7)))),
+        add(mul(b_e032, m5_4), add(mul(b_e013, m5_5), add(mul(b_e021, m5_6), mul(b_e123, m5_7)))),
+        add(mul(b_e032, m6_4), add(mul(b_e013, m6_5), add(mul(b_e021, m6_6), mul(b_e123, m6_7)))),
+        mul(b_e123, m7_7)}
+
+type FlectorFlectorMap<-T: Data> is Data:
+  FlectorFlectorMap{m0_0: T, m0_1: T, m0_2: T, m1_0: T, m1_1: T, m1_2: T, m2_0: T, m2_1: T, m2_2: T, m3_0: T, m3_1: T, m3_2: T, m3_3: T, m4_4: T, m4_5: T, m4_6: T, m4_7: T, m5_4: T, m5_5: T, m5_6: T, m5_7: T, m6_4: T, m6_5: T, m6_6: T, m6_7: T, m7_7: T}
+
+def Flector.prepare.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorFlectorMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +m0_0 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m0_1 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m0_2 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m1_0 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m1_1 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m1_2 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m2_0 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m2_1 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m2_2 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m3_3 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m4_4 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m4_5 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m4_6 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m4_7 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m5_4 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m5_5 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m5_6 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m5_7 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m6_4 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m6_5 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m6_6 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      +m6_7 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m7_7 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      FlectorFlectorMap{m0_0, m0_1, m0_2, m1_0, m1_1, m1_2, m2_0, m2_1, m2_2, m3_0, m3_1, m3_2, m3_3, m4_4, m4_5, m4_6, m4_7, m5_4, m5_5, m5_6, m5_7, m6_4, m6_5, m6_6, m6_7, m7_7}
+
+def Flector.Flector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorFlectorMap<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match m b:
+    case FlectorFlectorMap{+m0_0, +m0_1, +m0_2, +m1_0, +m1_1, +m1_2, +m2_0, +m2_1, +m2_2, +m3_0, +m3_1, +m3_2, +m3_3, +m4_4, +m4_5, +m4_6, +m4_7, +m5_4, +m5_5, +m5_6, +m5_7, +m6_4, +m6_5, +m6_6, +m6_7, +m7_7} K.Flector{+b_e1, +b_e2, +b_e3, +b_e0, +b_e032, +b_e013, +b_e021, +b_e123}:
       K.Flector{
         add(mul(b_e1, m0_0), add(mul(b_e2, m0_1), mul(b_e3, m0_2))),
         add(mul(b_e1, m1_0), add(mul(b_e2, m1_1), mul(b_e3, m1_2))),
@@ -15392,6 +18700,117 @@ def Flector.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T
       +m14_14 = add(add(add(q7_7, q2_2), q1_1), q0_0)
       +m15_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
       +m15_15 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      K.Multivector{
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4))),
+        add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4))),
+        add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4))),
+        add(mul(b_e01, m5_5), add(mul(b_e02, m5_6), add(mul(b_e03, m5_7), add(mul(b_e12, m5_8), add(mul(b_e31, m5_9), mul(b_e23, m5_10)))))),
+        add(mul(b_e01, m6_5), add(mul(b_e02, m6_6), add(mul(b_e03, m6_7), add(mul(b_e12, m6_8), add(mul(b_e31, m6_9), mul(b_e23, m6_10)))))),
+        add(mul(b_e01, m7_5), add(mul(b_e02, m7_6), add(mul(b_e03, m7_7), add(mul(b_e12, m7_8), add(mul(b_e31, m7_9), mul(b_e23, m7_10)))))),
+        add(mul(b_e12, m8_8), add(mul(b_e31, m8_9), mul(b_e23, m8_10))),
+        add(mul(b_e12, m9_8), add(mul(b_e31, m9_9), mul(b_e23, m9_10))),
+        add(mul(b_e12, m10_8), add(mul(b_e31, m10_9), mul(b_e23, m10_10))),
+        add(mul(b_e021, m11_11), add(mul(b_e013, m11_12), add(mul(b_e032, m11_13), mul(b_e123, m11_14)))),
+        add(mul(b_e021, m12_11), add(mul(b_e013, m12_12), add(mul(b_e032, m12_13), mul(b_e123, m12_14)))),
+        add(mul(b_e021, m13_11), add(mul(b_e013, m13_12), add(mul(b_e032, m13_13), mul(b_e123, m13_14)))),
+        mul(b_e123, m14_14),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
+
+type FlectorMultivectorMap<-T: Data> is Data:
+  FlectorMultivectorMap{m0_0: T, m1_1: T, m1_2: T, m1_3: T, m1_4: T, m2_2: T, m2_3: T, m2_4: T, m3_2: T, m3_3: T, m3_4: T, m4_2: T, m4_3: T, m4_4: T, m5_5: T, m5_6: T, m5_7: T, m5_8: T, m5_9: T, m5_10: T, m6_5: T, m6_6: T, m6_7: T, m6_8: T, m6_9: T, m6_10: T, m7_5: T, m7_6: T, m7_7: T, m7_8: T, m7_9: T, m7_10: T, m8_8: T, m8_9: T, m8_10: T, m9_8: T, m9_9: T, m9_10: T, m10_8: T, m10_9: T, m10_10: T, m11_11: T, m11_12: T, m11_13: T, m11_14: T, m12_11: T, m12_12: T, m12_13: T, m12_14: T, m13_11: T, m13_12: T, m13_13: T, m13_14: T, m14_14: T, m15_0: T, m15_15: T}
+
+def Flector.prepare.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>) -> FlectorMultivectorMap<T>:
+  match a:
+    case K.Flector{+a_e1, +a_e2, +a_e3, +a_e0, +a_e032, +a_e013, +a_e021, +a_e123}:
+      +q7_7 = mul(a_e123, a_e123)
+      +q2_2 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e2, a_e2)
+      +q0_0 = mul(a_e1, a_e1)
+      +q4_7 = mul(a_e032, a_e123)
+      +q2_5 = mul(a_e3, a_e013)
+      +q1_6 = mul(a_e2, a_e021)
+      +q0_3 = mul(a_e1, a_e0)
+      +q5_7 = mul(a_e013, a_e123)
+      +q2_4 = mul(a_e3, a_e032)
+      +q1_3 = mul(a_e2, a_e0)
+      +q0_6 = mul(a_e1, a_e021)
+      +q6_7 = mul(a_e021, a_e123)
+      +q2_3 = mul(a_e3, a_e0)
+      +q1_4 = mul(a_e2, a_e032)
+      +q0_5 = mul(a_e1, a_e013)
+      +q2_7 = mul(a_e3, a_e123)
+      +q0_1 = mul(a_e1, a_e2)
+      +q1_7 = mul(a_e2, a_e123)
+      +q0_2 = mul(a_e1, a_e3)
+      +q1_2 = mul(a_e2, a_e3)
+      +q0_7 = mul(a_e1, a_e123)
+      +q3_7 = mul(a_e0, a_e123)
+      +q2_6 = mul(a_e3, a_e021)
+      +q1_5 = mul(a_e2, a_e013)
+      +q0_4 = mul(a_e1, a_e032)
+      +m0_0 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      +m1_1 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      +m1_2 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), neg(q2_5)), neg(q2_5)), q1_6), q1_6), q0_3), q0_3)
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), q1_3), q1_3), neg(q0_6)), neg(q0_6))
+      +m1_4 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q2_3), q2_3), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m2_2 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m2_3 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m2_4 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m3_2 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m3_3 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m3_4 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m4_2 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m4_3 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m4_4 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m5_5 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m5_6 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m5_7 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m5_8 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), q1_3), q1_3), q0_6), q0_6)
+      +m5_9 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q2_3)), neg(q2_3)), q1_4), q1_4), q0_5), q0_5)
+      +m5_10 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), q0_4), q0_4)
+      +m6_5 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m6_6 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m6_7 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m6_8 = add(add(add(add(add(add(add(neg(q4_7), neg(q4_7)), q2_5), q2_5), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m6_9 = add(add(add(add(add(add(add(q3_7, q3_7), neg(q2_6)), neg(q2_6)), q1_5), q1_5), neg(q0_4)), neg(q0_4))
+      +m6_10 = add(add(add(add(add(add(add(q6_7, q6_7), q2_3), q2_3), q1_4), q1_4), q0_5), q0_5)
+      +m7_5 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m7_6 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m7_7 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      +m7_8 = add(add(add(add(add(add(add(q3_7, q3_7), q2_6), q2_6), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m7_9 = add(add(add(add(add(add(add(q4_7, q4_7), q2_5), q2_5), q1_6), q1_6), q0_3), q0_3)
+      +m7_10 = add(add(add(add(add(add(add(neg(q5_7), neg(q5_7)), q2_4), q2_4), neg(q1_3)), neg(q1_3)), q0_6), q0_6)
+      +m8_8 = add(add(add(q7_7, q2_2), neg(q1_1)), neg(q0_0))
+      +m8_9 = add(add(add(q1_2, q1_2), q0_7), q0_7)
+      +m8_10 = add(add(add(neg(q1_7), neg(q1_7)), q0_2), q0_2)
+      +m9_8 = add(add(add(q1_2, q1_2), neg(q0_7)), neg(q0_7))
+      +m9_9 = add(add(add(q7_7, neg(q2_2)), q1_1), neg(q0_0))
+      +m9_10 = add(add(add(q2_7, q2_7), q0_1), q0_1)
+      +m10_8 = add(add(add(q1_7, q1_7), q0_2), q0_2)
+      +m10_9 = add(add(add(neg(q2_7), neg(q2_7)), q0_1), q0_1)
+      +m10_10 = add(add(add(q7_7, neg(q2_2)), neg(q1_1)), q0_0)
+      +m11_11 = add(add(add(neg(q7_7), neg(q2_2)), q1_1), q0_0)
+      +m11_12 = add(add(add(neg(q1_2), neg(q1_2)), neg(q0_7)), neg(q0_7))
+      +m11_13 = add(add(add(q1_7, q1_7), neg(q0_2)), neg(q0_2))
+      +m11_14 = add(add(add(add(add(add(add(q6_7, q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4)), q0_5), q0_5)
+      +m12_11 = add(add(add(neg(q1_2), neg(q1_2)), q0_7), q0_7)
+      +m12_12 = add(add(add(neg(q7_7), q2_2), neg(q1_1)), q0_0)
+      +m12_13 = add(add(add(neg(q2_7), neg(q2_7)), neg(q0_1)), neg(q0_1))
+      +m12_14 = add(add(add(add(add(add(add(q5_7, q5_7), q2_4), q2_4), neg(q1_3)), neg(q1_3)), neg(q0_6)), neg(q0_6))
+      +m13_11 = add(add(add(neg(q1_7), neg(q1_7)), neg(q0_2)), neg(q0_2))
+      +m13_12 = add(add(add(q2_7, q2_7), neg(q0_1)), neg(q0_1))
+      +m13_13 = add(add(add(neg(q7_7), q2_2), q1_1), neg(q0_0))
+      +m13_14 = add(add(add(add(add(add(add(q4_7, q4_7), neg(q2_5)), neg(q2_5)), q1_6), q1_6), neg(q0_3)), neg(q0_3))
+      +m14_14 = add(add(add(q7_7, q2_2), q1_1), q0_0)
+      +m15_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q3_7)), neg(q2_6)), neg(q2_6)), neg(q1_5)), neg(q1_5)), neg(q0_4)), neg(q0_4))
+      +m15_15 = add(add(add(neg(q7_7), neg(q2_2)), neg(q1_1)), neg(q0_0))
+      FlectorMultivectorMap{m0_0, m1_1, m1_2, m1_3, m1_4, m2_2, m2_3, m2_4, m3_2, m3_3, m3_4, m4_2, m4_3, m4_4, m5_5, m5_6, m5_7, m5_8, m5_9, m5_10, m6_5, m6_6, m6_7, m6_8, m6_9, m6_10, m7_5, m7_6, m7_7, m7_8, m7_9, m7_10, m8_8, m8_9, m8_10, m9_8, m9_9, m9_10, m10_8, m10_9, m10_10, m11_11, m11_12, m11_13, m11_14, m12_11, m12_12, m12_13, m12_14, m13_11, m13_12, m13_13, m13_14, m14_14, m15_0, m15_15}
+
+def Flector.Multivector.apply(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, m: FlectorMultivectorMap<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match m b:
+    case FlectorMultivectorMap{+m0_0, +m1_1, +m1_2, +m1_3, +m1_4, +m2_2, +m2_3, +m2_4, +m3_2, +m3_3, +m3_4, +m4_2, +m4_3, +m4_4, +m5_5, +m5_6, +m5_7, +m5_8, +m5_9, +m5_10, +m6_5, +m6_6, +m6_7, +m6_8, +m6_9, +m6_10, +m7_5, +m7_6, +m7_7, +m7_8, +m7_9, +m7_10, +m8_8, +m8_9, +m8_10, +m9_8, +m9_9, +m9_10, +m10_8, +m10_9, +m10_10, +m11_11, +m11_12, +m11_13, +m11_14, +m12_11, +m12_12, +m12_13, +m12_14, +m13_11, +m13_12, +m13_13, +m13_14, +m14_14, +m15_0, +m15_15} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e01, +b_e02, +b_e03, +b_e12, +b_e31, +b_e23, +b_e021, +b_e013, +b_e032, +b_e123, +b_e0123}:
       K.Multivector{
         mul(b_s, m0_0),
         add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),

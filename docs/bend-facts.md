@@ -281,6 +281,12 @@ At 2²⁸ points with the hip branch (`bend-hip`):
   multiplies. gax's unit kernel interleaves point and motor terms earlier.
   With a different motor per point the advantage shrinks to 35 against 33
   multiplies; this harness does not measure that case.
+- **The prepared form** (`bench/q14_prepared_sandwich.bend`: the matrix
+  once, `Motor.Point.apply` per point) takes the same time, 160–189 ms on
+  one thread and 28–39 ms on 16. That confirms the hoisting explanation:
+  here clang already pulled the motor's half out of the loop. The explicit
+  form is for code where it cannot, such as a matrix passed across calls or
+  to GPU lanes.
 - **On the GPU both take the same time.** At 2²⁸ the device is no longer
   bound by multiplications.
 - **The sums differ** in the last digits (74445530000 against 74445520000):

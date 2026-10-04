@@ -716,32 +716,92 @@ def Multivector.undual(a: K.Multivector<F32>) -> K.Multivector<F32>:
 def Vector.transform.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Vector.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Scalar(a: K.Vector<F32>) -> O.VectorScalarMap<F32>:
+  O.Vector.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Scalar.apply(m: O.VectorScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Vector.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
   O.Vector.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Vector(a: K.Vector<F32>) -> O.VectorVectorMap<F32>:
+  O.Vector.prepare.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Vector.apply(m: O.VectorVectorMap<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Vector.Vector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Vector.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Pseudoscalar(a: K.Vector<F32>) -> O.VectorPseudoscalarMap<F32>:
+  O.Vector.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Pseudoscalar.apply(m: O.VectorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Vector.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Rotor(a: K.Vector<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
   O.Vector.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Rotor(a: K.Vector<F32>) -> O.VectorRotorMap<F32>:
+  O.Vector.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Rotor.apply(m: O.VectorRotorMap<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Vector.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Vector.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Multivector(a: K.Vector<F32>) -> O.VectorMultivectorMap<F32>:
+  O.Vector.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Multivector.apply(m: O.VectorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Rotor.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Scalar(a: K.Rotor<F32>) -> O.RotorScalarMap<F32>:
+  O.Rotor.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Scalar.apply(m: O.RotorScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Rotor.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Vector(a: K.Rotor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
   O.Rotor.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Vector(a: K.Rotor<F32>) -> O.RotorVectorMap<F32>:
+  O.Rotor.prepare.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Vector.apply(m: O.RotorVectorMap<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Rotor.Vector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Pseudoscalar(a: K.Rotor<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Rotor.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Pseudoscalar(a: K.Rotor<F32>) -> O.RotorPseudoscalarMap<F32>:
+  O.Rotor.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Pseudoscalar.apply(m: O.RotorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Rotor.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
   O.Rotor.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Rotor(a: K.Rotor<F32>) -> O.RotorRotorMap<F32>:
+  O.Rotor.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Rotor.apply(m: O.RotorRotorMap<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Rotor.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Rotor.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Multivector(a: K.Rotor<F32>) -> O.RotorMultivectorMap<F32>:
+  O.Rotor.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Multivector.apply(m: O.RotorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Rotor.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.commutator.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Pseudoscalar<F32>:
   O.Vector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)

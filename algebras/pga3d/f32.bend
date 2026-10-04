@@ -2891,233 +2891,695 @@ def Multivector.undual(a: K.Multivector<F32>) -> K.Multivector<F32>:
 def Plane.transform.Scalar(a: K.Plane<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Plane.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Plane.prepare.Scalar(a: K.Plane<F32>) -> O.PlaneScalarMap<F32>:
+  O.Plane.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Scalar.apply(m: O.PlaneScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Plane.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Plane.transform.Plane(a: K.Plane<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Plane.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Plane.prepare.Plane(a: K.Plane<F32>) -> O.PlanePlaneMap<F32>:
+  O.Plane.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Plane.apply(m: O.PlanePlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Plane.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Plane.transform.Line(a: K.Plane<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Plane.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Plane.prepare.Line(a: K.Plane<F32>) -> O.PlaneLineMap<F32>:
+  O.Plane.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Line.apply(m: O.PlaneLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Plane.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Plane.transform.Point(a: K.Plane<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Plane.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Plane.prepare.Point(a: K.Plane<F32>) -> O.PlanePointMap<F32>:
+  O.Plane.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Point.apply(m: O.PlanePointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Plane.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Plane.transform.Direction(a: K.Plane<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Plane.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Plane.prepare.Direction(a: K.Plane<F32>) -> O.PlaneDirectionMap<F32>:
+  O.Plane.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Direction.apply(m: O.PlaneDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Plane.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Plane.transform.Pseudoscalar(a: K.Plane<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Plane.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Plane.prepare.Pseudoscalar(a: K.Plane<F32>) -> O.PlanePseudoscalarMap<F32>:
+  O.Plane.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Pseudoscalar.apply(m: O.PlanePseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Plane.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Plane.transform.Rotor(a: K.Plane<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
   O.Plane.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Plane.prepare.Rotor(a: K.Plane<F32>) -> O.PlaneRotorMap<F32>:
+  O.Plane.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Rotor.apply(m: O.PlaneRotorMap<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
+  O.Plane.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Plane.transform.Translator(a: K.Plane<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
   O.Plane.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Plane.prepare.Translator(a: K.Plane<F32>) -> O.PlaneTranslatorMap<F32>:
+  O.Plane.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Translator.apply(m: O.PlaneTranslatorMap<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
+  O.Plane.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Plane.transform.Motor(a: K.Plane<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Plane.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Plane.prepare.Motor(a: K.Plane<F32>) -> O.PlaneMotorMap<F32>:
+  O.Plane.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Motor.apply(m: O.PlaneMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Plane.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Plane.transform.Flector(a: K.Plane<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Plane.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Plane.prepare.Flector(a: K.Plane<F32>) -> O.PlaneFlectorMap<F32>:
+  O.Plane.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Flector.apply(m: O.PlaneFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Plane.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Plane.transform.Multivector(a: K.Plane<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Plane.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Plane.prepare.Multivector(a: K.Plane<F32>) -> O.PlaneMultivectorMap<F32>:
+  O.Plane.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Plane.Multivector.apply(m: O.PlaneMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Plane.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Line.transform.Scalar(a: K.Line<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
   O.Line.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Line.prepare.Scalar(a: K.Line<F32>) -> O.LineScalarMap<F32>:
+  O.Line.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Scalar.apply(m: O.LineScalarMap<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
+  O.Line.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Line.transform.Plane(a: K.Line<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Line.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Line.prepare.Plane(a: K.Line<F32>) -> O.LinePlaneMap<F32>:
+  O.Line.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Plane.apply(m: O.LinePlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Line.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Line.transform.Line(a: K.Line<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Line.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Line.prepare.Line(a: K.Line<F32>) -> O.LineLineMap<F32>:
+  O.Line.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Line.apply(m: O.LineLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Line.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Line.transform.Point(a: K.Line<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Line.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Line.prepare.Point(a: K.Line<F32>) -> O.LinePointMap<F32>:
+  O.Line.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Point.apply(m: O.LinePointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Line.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Line.transform.Direction(a: K.Line<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Line.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Line.prepare.Direction(a: K.Line<F32>) -> O.LineDirectionMap<F32>:
+  O.Line.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Direction.apply(m: O.LineDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Line.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Line.transform.Pseudoscalar(a: K.Line<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Line.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Line.prepare.Pseudoscalar(a: K.Line<F32>) -> O.LinePseudoscalarMap<F32>:
+  O.Line.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Pseudoscalar.apply(m: O.LinePseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Line.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Line.transform.Rotor(a: K.Line<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
   O.Line.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Line.prepare.Rotor(a: K.Line<F32>) -> O.LineRotorMap<F32>:
+  O.Line.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Rotor.apply(m: O.LineRotorMap<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
+  O.Line.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Line.transform.Translator(a: K.Line<F32>, b: K.Translator<F32>) -> K.Motor<F32>:
   O.Line.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Line.prepare.Translator(a: K.Line<F32>) -> O.LineTranslatorMap<F32>:
+  O.Line.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Translator.apply(m: O.LineTranslatorMap<F32>, b: K.Translator<F32>) -> K.Motor<F32>:
+  O.Line.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Line.transform.Motor(a: K.Line<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Line.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Line.prepare.Motor(a: K.Line<F32>) -> O.LineMotorMap<F32>:
+  O.Line.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Motor.apply(m: O.LineMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Line.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Line.transform.Flector(a: K.Line<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Line.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Line.prepare.Flector(a: K.Line<F32>) -> O.LineFlectorMap<F32>:
+  O.Line.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Flector.apply(m: O.LineFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Line.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Line.transform.Multivector(a: K.Line<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Line.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Line.prepare.Multivector(a: K.Line<F32>) -> O.LineMultivectorMap<F32>:
+  O.Line.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Line.Multivector.apply(m: O.LineMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Line.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Point.transform.Scalar(a: K.Point<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Point.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Point.prepare.Scalar(a: K.Point<F32>) -> O.PointScalarMap<F32>:
+  O.Point.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Scalar.apply(m: O.PointScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Point.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Point.transform.Plane(a: K.Point<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Point.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Point.prepare.Plane(a: K.Point<F32>) -> O.PointPlaneMap<F32>:
+  O.Point.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Plane.apply(m: O.PointPlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Point.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Point.transform.Line(a: K.Point<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Point.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Point.prepare.Line(a: K.Point<F32>) -> O.PointLineMap<F32>:
+  O.Point.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Line.apply(m: O.PointLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Point.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Point.transform.Point(a: K.Point<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Point.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Point.prepare.Point(a: K.Point<F32>) -> O.PointPointMap<F32>:
+  O.Point.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Point.apply(m: O.PointPointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Point.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Point.transform.Direction(a: K.Point<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Point.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Point.prepare.Direction(a: K.Point<F32>) -> O.PointDirectionMap<F32>:
+  O.Point.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Direction.apply(m: O.PointDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Point.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Point.transform.Pseudoscalar(a: K.Point<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Point.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Point.prepare.Pseudoscalar(a: K.Point<F32>) -> O.PointPseudoscalarMap<F32>:
+  O.Point.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Pseudoscalar.apply(m: O.PointPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Point.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Point.transform.Rotor(a: K.Point<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
   O.Point.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Point.prepare.Rotor(a: K.Point<F32>) -> O.PointRotorMap<F32>:
+  O.Point.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Rotor.apply(m: O.PointRotorMap<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
+  O.Point.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Point.transform.Translator(a: K.Point<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
   O.Point.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Point.prepare.Translator(a: K.Point<F32>) -> O.PointTranslatorMap<F32>:
+  O.Point.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Translator.apply(m: O.PointTranslatorMap<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
+  O.Point.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Point.transform.Motor(a: K.Point<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Point.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Point.prepare.Motor(a: K.Point<F32>) -> O.PointMotorMap<F32>:
+  O.Point.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Motor.apply(m: O.PointMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Point.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Point.transform.Flector(a: K.Point<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Point.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Point.prepare.Flector(a: K.Point<F32>) -> O.PointFlectorMap<F32>:
+  O.Point.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Flector.apply(m: O.PointFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Point.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Point.transform.Multivector(a: K.Point<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Point.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Point.prepare.Multivector(a: K.Point<F32>) -> O.PointMultivectorMap<F32>:
+  O.Point.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Point.Multivector.apply(m: O.PointMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Point.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Rotor.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Scalar(a: K.Rotor<F32>) -> O.RotorScalarMap<F32>:
+  O.Rotor.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Scalar.apply(m: O.RotorScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Rotor.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Plane(a: K.Rotor<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Rotor.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Plane(a: K.Rotor<F32>) -> O.RotorPlaneMap<F32>:
+  O.Rotor.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Plane.apply(m: O.RotorPlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Rotor.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Line(a: K.Rotor<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Rotor.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Line(a: K.Rotor<F32>) -> O.RotorLineMap<F32>:
+  O.Rotor.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Line.apply(m: O.RotorLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Rotor.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Point(a: K.Rotor<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Rotor.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Point(a: K.Rotor<F32>) -> O.RotorPointMap<F32>:
+  O.Rotor.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Point.apply(m: O.RotorPointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Rotor.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Direction(a: K.Rotor<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Rotor.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Direction(a: K.Rotor<F32>) -> O.RotorDirectionMap<F32>:
+  O.Rotor.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Direction.apply(m: O.RotorDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Rotor.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Pseudoscalar(a: K.Rotor<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Rotor.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Pseudoscalar(a: K.Rotor<F32>) -> O.RotorPseudoscalarMap<F32>:
+  O.Rotor.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Pseudoscalar.apply(m: O.RotorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Rotor.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
   O.Rotor.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Rotor(a: K.Rotor<F32>) -> O.RotorRotorMap<F32>:
+  O.Rotor.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Rotor.apply(m: O.RotorRotorMap<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Rotor.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Translator(a: K.Rotor<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
   O.Rotor.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Translator(a: K.Rotor<F32>) -> O.RotorTranslatorMap<F32>:
+  O.Rotor.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Translator.apply(m: O.RotorTranslatorMap<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
+  O.Rotor.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Motor(a: K.Rotor<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Rotor.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Motor(a: K.Rotor<F32>) -> O.RotorMotorMap<F32>:
+  O.Rotor.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Motor.apply(m: O.RotorMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Rotor.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Rotor.transform.Flector(a: K.Rotor<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Rotor.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Rotor.prepare.Flector(a: K.Rotor<F32>) -> O.RotorFlectorMap<F32>:
+  O.Rotor.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Flector.apply(m: O.RotorFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Rotor.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Rotor.transform.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Rotor.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.prepare.Multivector(a: K.Rotor<F32>) -> O.RotorMultivectorMap<F32>:
+  O.Rotor.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Rotor.Multivector.apply(m: O.RotorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Rotor.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Translator.transform.Scalar(a: K.Translator<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Translator.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Translator.prepare.Scalar(a: K.Translator<F32>) -> O.TranslatorScalarMap<F32>:
+  O.Translator.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Scalar.apply(m: O.TranslatorScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Translator.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Translator.transform.Plane(a: K.Translator<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Translator.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Translator.prepare.Plane(a: K.Translator<F32>) -> O.TranslatorPlaneMap<F32>:
+  O.Translator.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Plane.apply(m: O.TranslatorPlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Translator.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Translator.transform.Line(a: K.Translator<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Translator.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Translator.prepare.Line(a: K.Translator<F32>) -> O.TranslatorLineMap<F32>:
+  O.Translator.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Line.apply(m: O.TranslatorLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Translator.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Translator.transform.Point(a: K.Translator<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Translator.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Translator.prepare.Point(a: K.Translator<F32>) -> O.TranslatorPointMap<F32>:
+  O.Translator.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Point.apply(m: O.TranslatorPointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Translator.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Translator.transform.Direction(a: K.Translator<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Translator.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Translator.prepare.Direction(a: K.Translator<F32>) -> O.TranslatorDirectionMap<F32>:
+  O.Translator.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Direction.apply(m: O.TranslatorDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Translator.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Translator.transform.Pseudoscalar(a: K.Translator<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Translator.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Translator.prepare.Pseudoscalar(a: K.Translator<F32>) -> O.TranslatorPseudoscalarMap<F32>:
+  O.Translator.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Pseudoscalar.apply(m: O.TranslatorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Translator.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Translator.transform.Rotor(a: K.Translator<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
   O.Translator.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Translator.prepare.Rotor(a: K.Translator<F32>) -> O.TranslatorRotorMap<F32>:
+  O.Translator.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Rotor.apply(m: O.TranslatorRotorMap<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
+  O.Translator.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Translator.transform.Translator(a: K.Translator<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
   O.Translator.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Translator.prepare.Translator(a: K.Translator<F32>) -> O.TranslatorTranslatorMap<F32>:
+  O.Translator.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Translator.apply(m: O.TranslatorTranslatorMap<F32>, b: K.Translator<F32>) -> K.Translator<F32>:
+  O.Translator.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Translator.transform.Motor(a: K.Translator<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Translator.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Translator.prepare.Motor(a: K.Translator<F32>) -> O.TranslatorMotorMap<F32>:
+  O.Translator.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Motor.apply(m: O.TranslatorMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Translator.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Translator.transform.Flector(a: K.Translator<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Translator.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Translator.prepare.Flector(a: K.Translator<F32>) -> O.TranslatorFlectorMap<F32>:
+  O.Translator.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Flector.apply(m: O.TranslatorFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Translator.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Translator.transform.Multivector(a: K.Translator<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Translator.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Translator.prepare.Multivector(a: K.Translator<F32>) -> O.TranslatorMultivectorMap<F32>:
+  O.Translator.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Translator.Multivector.apply(m: O.TranslatorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Translator.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Scalar(a: K.Motor<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
   O.Motor.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Scalar(a: K.Motor<F32>) -> O.MotorScalarMap<F32>:
+  O.Motor.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Scalar.apply(m: O.MotorScalarMap<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
+  O.Motor.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Plane(a: K.Motor<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Motor.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Plane(a: K.Motor<F32>) -> O.MotorPlaneMap<F32>:
+  O.Motor.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Plane.apply(m: O.MotorPlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Motor.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Line(a: K.Motor<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Motor.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Line(a: K.Motor<F32>) -> O.MotorLineMap<F32>:
+  O.Motor.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Line.apply(m: O.MotorLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Motor.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Point(a: K.Motor<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Motor.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Point(a: K.Motor<F32>) -> O.MotorPointMap<F32>:
+  O.Motor.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Point.apply(m: O.MotorPointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Motor.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Direction(a: K.Motor<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Motor.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Direction(a: K.Motor<F32>) -> O.MotorDirectionMap<F32>:
+  O.Motor.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Direction.apply(m: O.MotorDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Motor.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Pseudoscalar(a: K.Motor<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Motor.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Pseudoscalar(a: K.Motor<F32>) -> O.MotorPseudoscalarMap<F32>:
+  O.Motor.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Pseudoscalar.apply(m: O.MotorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Motor.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Rotor(a: K.Motor<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
   O.Motor.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Rotor(a: K.Motor<F32>) -> O.MotorRotorMap<F32>:
+  O.Motor.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Rotor.apply(m: O.MotorRotorMap<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
+  O.Motor.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Translator(a: K.Motor<F32>, b: K.Translator<F32>) -> K.Motor<F32>:
   O.Motor.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Translator(a: K.Motor<F32>) -> O.MotorTranslatorMap<F32>:
+  O.Motor.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Translator.apply(m: O.MotorTranslatorMap<F32>, b: K.Translator<F32>) -> K.Motor<F32>:
+  O.Motor.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Motor(a: K.Motor<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Motor.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Motor(a: K.Motor<F32>) -> O.MotorMotorMap<F32>:
+  O.Motor.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Motor.apply(m: O.MotorMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Motor.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Flector(a: K.Motor<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Motor.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Flector(a: K.Motor<F32>) -> O.MotorFlectorMap<F32>:
+  O.Motor.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Flector.apply(m: O.MotorFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Motor.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Multivector(a: K.Motor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Motor.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Multivector(a: K.Motor<F32>) -> O.MotorMultivectorMap<F32>:
+  O.Motor.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Multivector.apply(m: O.MotorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Motor.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Flector.transform.Scalar(a: K.Flector<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
   O.Flector.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Flector.prepare.Scalar(a: K.Flector<F32>) -> O.FlectorScalarMap<F32>:
+  O.Flector.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Scalar.apply(m: O.FlectorScalarMap<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
+  O.Flector.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Flector.transform.Plane(a: K.Flector<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
   O.Flector.transform.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Flector.prepare.Plane(a: K.Flector<F32>) -> O.FlectorPlaneMap<F32>:
+  O.Flector.prepare.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Plane.apply(m: O.FlectorPlaneMap<F32>, b: K.Plane<F32>) -> K.Plane<F32>:
+  O.Flector.Plane.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Flector.transform.Line(a: K.Flector<F32>, b: K.Line<F32>) -> K.Line<F32>:
   O.Flector.transform.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Flector.prepare.Line(a: K.Flector<F32>) -> O.FlectorLineMap<F32>:
+  O.Flector.prepare.Line(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Line.apply(m: O.FlectorLineMap<F32>, b: K.Line<F32>) -> K.Line<F32>:
+  O.Flector.Line.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Flector.transform.Point(a: K.Flector<F32>, b: K.Point<F32>) -> K.Point<F32>:
   O.Flector.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Flector.prepare.Point(a: K.Flector<F32>) -> O.FlectorPointMap<F32>:
+  O.Flector.prepare.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Point.apply(m: O.FlectorPointMap<F32>, b: K.Point<F32>) -> K.Point<F32>:
+  O.Flector.Point.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Flector.transform.Direction(a: K.Flector<F32>, b: K.Direction<F32>) -> K.Point<F32>:
   O.Flector.transform.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Flector.prepare.Direction(a: K.Flector<F32>) -> O.FlectorDirectionMap<F32>:
+  O.Flector.prepare.Direction(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Direction.apply(m: O.FlectorDirectionMap<F32>, b: K.Direction<F32>) -> K.Point<F32>:
+  O.Flector.Direction.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Flector.transform.Pseudoscalar(a: K.Flector<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Flector.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Flector.prepare.Pseudoscalar(a: K.Flector<F32>) -> O.FlectorPseudoscalarMap<F32>:
+  O.Flector.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Pseudoscalar.apply(m: O.FlectorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Flector.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Flector.transform.Rotor(a: K.Flector<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
   O.Flector.transform.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Flector.prepare.Rotor(a: K.Flector<F32>) -> O.FlectorRotorMap<F32>:
+  O.Flector.prepare.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Rotor.apply(m: O.FlectorRotorMap<F32>, b: K.Rotor<F32>) -> K.Motor<F32>:
+  O.Flector.Rotor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Flector.transform.Translator(a: K.Flector<F32>, b: K.Translator<F32>) -> K.Motor<F32>:
   O.Flector.transform.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Flector.prepare.Translator(a: K.Flector<F32>) -> O.FlectorTranslatorMap<F32>:
+  O.Flector.prepare.Translator(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Translator.apply(m: O.FlectorTranslatorMap<F32>, b: K.Translator<F32>) -> K.Motor<F32>:
+  O.Flector.Translator.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Flector.transform.Motor(a: K.Flector<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Flector.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Flector.prepare.Motor(a: K.Flector<F32>) -> O.FlectorMotorMap<F32>:
+  O.Flector.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Motor.apply(m: O.FlectorMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Flector.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Flector.transform.Flector(a: K.Flector<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
   O.Flector.transform.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Flector.prepare.Flector(a: K.Flector<F32>) -> O.FlectorFlectorMap<F32>:
+  O.Flector.prepare.Flector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Flector.apply(m: O.FlectorFlectorMap<F32>, b: K.Flector<F32>) -> K.Flector<F32>:
+  O.Flector.Flector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Flector.transform.Multivector(a: K.Flector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Flector.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Flector.prepare.Multivector(a: K.Flector<F32>) -> O.FlectorMultivectorMap<F32>:
+  O.Flector.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Flector.Multivector.apply(m: O.FlectorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Flector.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Plane.commutator.Plane(a: K.Plane<F32>, b: K.Plane<F32>) -> K.Line<F32>:
   O.Plane.commutator.Plane(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)

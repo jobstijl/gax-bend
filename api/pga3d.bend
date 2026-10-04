@@ -90,6 +90,19 @@ def Line.normalized.go(+l: K.Line<F32>, ab: F32 & F32) -> K.Line<F32>:
 def Line.normalized(+l: K.Line<F32>) -> K.Line<F32>:
   Line.normalized.go(l, Study.rsqrt(Line.study(l)))
 
+# one Newton step back towards m ~m = 1, with no square root (gax's
+# renormalize_fast): (3 - n) m / 2 with n = m ~m = s + p I, so an error e
+# in n becomes (3/4) e². Use it after products that drift.
+def Motor.renormalize_fast.go(+m: K.Motor<F32>, sp: F32 & F32) -> U.Normed<K.Motor<F32>>:
+  match sp:
+    case (s, p):
+      U.Normed{Motor.scale_study(((3.0 - s) * 0.5 : F32), (F32.neg(p) * 0.5 : F32), m)}
+
+def Motor.renormalize_fast(u: U.Normed<K.Motor<F32>>) -> U.Normed<K.Motor<F32>>:
+  match u:
+    case U.Normed{+m}:
+      Motor.renormalize_fast.go(m, Motor.study(m))
+
 # Exponential and logarithm
 # -------------------------
 

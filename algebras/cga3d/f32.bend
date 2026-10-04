@@ -3536,131 +3536,395 @@ def Multivector.conjugate(a: K.Multivector<F32>) -> K.Multivector<F32>:
 def Vector.transform.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
   O.Vector.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Scalar(a: K.Vector<F32>) -> O.VectorScalarMap<F32>:
+  O.Vector.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Scalar.apply(m: O.VectorScalarMap<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Vector.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
   O.Vector.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Vector(a: K.Vector<F32>) -> O.VectorVectorMap<F32>:
+  O.Vector.prepare.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Vector.apply(m: O.VectorVectorMap<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Vector.Vector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Twist(a: K.Vector<F32>, b: K.Twist<F32>) -> K.Bivector<F32>:
   O.Vector.transform.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Twist(a: K.Vector<F32>) -> O.VectorTwistMap<F32>:
+  O.Vector.prepare.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Twist.apply(m: O.VectorTwistMap<F32>, b: K.Twist<F32>) -> K.Bivector<F32>:
+  O.Vector.Twist.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
   O.Vector.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Bivector(a: K.Vector<F32>) -> O.VectorBivectorMap<F32>:
+  O.Vector.prepare.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Bivector.apply(m: O.VectorBivectorMap<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Vector.Bivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Trivector(a: K.Vector<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
   O.Vector.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Trivector(a: K.Vector<F32>) -> O.VectorTrivectorMap<F32>:
+  O.Vector.prepare.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Trivector.apply(m: O.VectorTrivectorMap<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Vector.Trivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Quadvector(a: K.Vector<F32>, b: K.Quadvector<F32>) -> K.Quadvector<F32>:
   O.Vector.transform.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Quadvector(a: K.Vector<F32>) -> O.VectorQuadvectorMap<F32>:
+  O.Vector.prepare.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Quadvector.apply(m: O.VectorQuadvectorMap<F32>, b: K.Quadvector<F32>) -> K.Quadvector<F32>:
+  O.Vector.Quadvector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
   O.Vector.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Pseudoscalar(a: K.Vector<F32>) -> O.VectorPseudoscalarMap<F32>:
+  O.Vector.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Pseudoscalar.apply(m: O.VectorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Vector.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Motor(a: K.Vector<F32>, b: K.Motor<F32>) -> K.Even<F32>:
   O.Vector.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Motor(a: K.Vector<F32>) -> O.VectorMotorMap<F32>:
+  O.Vector.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Motor.apply(m: O.VectorMotorMap<F32>, b: K.Motor<F32>) -> K.Even<F32>:
+  O.Vector.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Even<F32>:
   O.Vector.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Even(a: K.Vector<F32>) -> O.VectorEvenMap<F32>:
+  O.Vector.prepare.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Even.apply(m: O.VectorEvenMap<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Vector.Even.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Vector.transform.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
   O.Vector.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.prepare.Odd(a: K.Vector<F32>) -> O.VectorOddMap<F32>:
+  O.Vector.prepare.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Odd.apply(m: O.VectorOddMap<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Vector.Odd.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Vector.transform.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Vector.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Vector.prepare.Multivector(a: K.Vector<F32>) -> O.VectorMultivectorMap<F32>:
+  O.Vector.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Vector.Multivector.apply(m: O.VectorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Scalar(a: K.Motor<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
   O.Motor.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Scalar(a: K.Motor<F32>) -> O.MotorScalarMap<F32>:
+  O.Motor.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Scalar.apply(m: O.MotorScalarMap<F32>, b: K.Scalar<F32>) -> K.Motor<F32>:
+  O.Motor.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Vector(a: K.Motor<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
   O.Motor.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Vector(a: K.Motor<F32>) -> O.MotorVectorMap<F32>:
+  O.Motor.prepare.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Vector.apply(m: O.MotorVectorMap<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Motor.Vector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Twist(a: K.Motor<F32>, b: K.Twist<F32>) -> K.Twist<F32>:
   O.Motor.transform.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Twist(a: K.Motor<F32>) -> O.MotorTwistMap<F32>:
+  O.Motor.prepare.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Twist.apply(m: O.MotorTwistMap<F32>, b: K.Twist<F32>) -> K.Twist<F32>:
+  O.Motor.Twist.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Bivector(a: K.Motor<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
   O.Motor.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Bivector(a: K.Motor<F32>) -> O.MotorBivectorMap<F32>:
+  O.Motor.prepare.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Bivector.apply(m: O.MotorBivectorMap<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Motor.Bivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Trivector(a: K.Motor<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
   O.Motor.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Trivector(a: K.Motor<F32>) -> O.MotorTrivectorMap<F32>:
+  O.Motor.prepare.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Trivector.apply(m: O.MotorTrivectorMap<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Motor.Trivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Quadvector(a: K.Motor<F32>, b: K.Quadvector<F32>) -> K.Even<F32>:
   O.Motor.transform.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Quadvector(a: K.Motor<F32>) -> O.MotorQuadvectorMap<F32>:
+  O.Motor.prepare.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Quadvector.apply(m: O.MotorQuadvectorMap<F32>, b: K.Quadvector<F32>) -> K.Even<F32>:
+  O.Motor.Quadvector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Pseudoscalar(a: K.Motor<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
   O.Motor.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Pseudoscalar(a: K.Motor<F32>) -> O.MotorPseudoscalarMap<F32>:
+  O.Motor.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Pseudoscalar.apply(m: O.MotorPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Motor.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Motor(a: K.Motor<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
   O.Motor.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Motor(a: K.Motor<F32>) -> O.MotorMotorMap<F32>:
+  O.Motor.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Motor.apply(m: O.MotorMotorMap<F32>, b: K.Motor<F32>) -> K.Motor<F32>:
+  O.Motor.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Even(a: K.Motor<F32>, b: K.Even<F32>) -> K.Even<F32>:
   O.Motor.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Even(a: K.Motor<F32>) -> O.MotorEvenMap<F32>:
+  O.Motor.prepare.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Even.apply(m: O.MotorEvenMap<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Motor.Even.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Motor.transform.Odd(a: K.Motor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
   O.Motor.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Motor.prepare.Odd(a: K.Motor<F32>) -> O.MotorOddMap<F32>:
+  O.Motor.prepare.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Odd.apply(m: O.MotorOddMap<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Motor.Odd.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Motor.transform.Multivector(a: K.Motor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Motor.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Motor.prepare.Multivector(a: K.Motor<F32>) -> O.MotorMultivectorMap<F32>:
+  O.Motor.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Motor.Multivector.apply(m: O.MotorMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Motor.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Even.transform.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
   O.Even.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Even.prepare.Scalar(a: K.Even<F32>) -> O.EvenScalarMap<F32>:
+  O.Even.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Scalar.apply(m: O.EvenScalarMap<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
+  O.Even.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Even.transform.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
   O.Even.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.prepare.Vector(a: K.Even<F32>) -> O.EvenVectorMap<F32>:
+  O.Even.prepare.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Vector.apply(m: O.EvenVectorMap<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Even.Vector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Even.transform.Twist(a: K.Even<F32>, b: K.Twist<F32>) -> K.Bivector<F32>:
   O.Even.transform.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Even.prepare.Twist(a: K.Even<F32>) -> O.EvenTwistMap<F32>:
+  O.Even.prepare.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Twist.apply(m: O.EvenTwistMap<F32>, b: K.Twist<F32>) -> K.Bivector<F32>:
+  O.Even.Twist.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Even.transform.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
   O.Even.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.prepare.Bivector(a: K.Even<F32>) -> O.EvenBivectorMap<F32>:
+  O.Even.prepare.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Bivector.apply(m: O.EvenBivectorMap<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Even.Bivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Even.transform.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
   O.Even.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Even.prepare.Trivector(a: K.Even<F32>) -> O.EvenTrivectorMap<F32>:
+  O.Even.prepare.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Trivector.apply(m: O.EvenTrivectorMap<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Even.Trivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Even.transform.Quadvector(a: K.Even<F32>, b: K.Quadvector<F32>) -> K.Even<F32>:
   O.Even.transform.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.prepare.Quadvector(a: K.Even<F32>) -> O.EvenQuadvectorMap<F32>:
+  O.Even.prepare.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Quadvector.apply(m: O.EvenQuadvectorMap<F32>, b: K.Quadvector<F32>) -> K.Even<F32>:
+  O.Even.Quadvector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Even.transform.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
   O.Even.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Even.prepare.Pseudoscalar(a: K.Even<F32>) -> O.EvenPseudoscalarMap<F32>:
+  O.Even.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Pseudoscalar.apply(m: O.EvenPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Even.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Even.transform.Motor(a: K.Even<F32>, b: K.Motor<F32>) -> K.Even<F32>:
   O.Even.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.prepare.Motor(a: K.Even<F32>) -> O.EvenMotorMap<F32>:
+  O.Even.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Motor.apply(m: O.EvenMotorMap<F32>, b: K.Motor<F32>) -> K.Even<F32>:
+  O.Even.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Even.transform.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Even<F32>:
   O.Even.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Even.prepare.Even(a: K.Even<F32>) -> O.EvenEvenMap<F32>:
+  O.Even.prepare.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Even.apply(m: O.EvenEvenMap<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Even.Even.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Even.transform.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
   O.Even.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.prepare.Odd(a: K.Even<F32>) -> O.EvenOddMap<F32>:
+  O.Even.prepare.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Odd.apply(m: O.EvenOddMap<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.Odd.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Even.transform.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Even.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Even.prepare.Multivector(a: K.Even<F32>) -> O.EvenMultivectorMap<F32>:
+  O.Even.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Even.Multivector.apply(m: O.EvenMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Odd.transform.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
   O.Odd.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.prepare.Scalar(a: K.Odd<F32>) -> O.OddScalarMap<F32>:
+  O.Odd.prepare.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Scalar.apply(m: O.OddScalarMap<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
+  O.Odd.Scalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Odd.transform.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
   O.Odd.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Odd.prepare.Vector(a: K.Odd<F32>) -> O.OddVectorMap<F32>:
+  O.Odd.prepare.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Vector.apply(m: O.OddVectorMap<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Odd.Vector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Odd.transform.Twist(a: K.Odd<F32>, b: K.Twist<F32>) -> K.Bivector<F32>:
   O.Odd.transform.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.prepare.Twist(a: K.Odd<F32>) -> O.OddTwistMap<F32>:
+  O.Odd.prepare.Twist(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Twist.apply(m: O.OddTwistMap<F32>, b: K.Twist<F32>) -> K.Bivector<F32>:
+  O.Odd.Twist.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Odd.transform.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
   O.Odd.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Odd.prepare.Bivector(a: K.Odd<F32>) -> O.OddBivectorMap<F32>:
+  O.Odd.prepare.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Bivector.apply(m: O.OddBivectorMap<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Odd.Bivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Odd.transform.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
   O.Odd.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.prepare.Trivector(a: K.Odd<F32>) -> O.OddTrivectorMap<F32>:
+  O.Odd.prepare.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Trivector.apply(m: O.OddTrivectorMap<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Odd.Trivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Odd.transform.Quadvector(a: K.Odd<F32>, b: K.Quadvector<F32>) -> K.Even<F32>:
   O.Odd.transform.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Odd.prepare.Quadvector(a: K.Odd<F32>) -> O.OddQuadvectorMap<F32>:
+  O.Odd.prepare.Quadvector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Quadvector.apply(m: O.OddQuadvectorMap<F32>, b: K.Quadvector<F32>) -> K.Even<F32>:
+  O.Odd.Quadvector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Odd.transform.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
   O.Odd.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.prepare.Pseudoscalar(a: K.Odd<F32>) -> O.OddPseudoscalarMap<F32>:
+  O.Odd.prepare.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Pseudoscalar.apply(m: O.OddPseudoscalarMap<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Odd.Pseudoscalar.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Odd.transform.Motor(a: K.Odd<F32>, b: K.Motor<F32>) -> K.Even<F32>:
   O.Odd.transform.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Odd.prepare.Motor(a: K.Odd<F32>) -> O.OddMotorMap<F32>:
+  O.Odd.prepare.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Motor.apply(m: O.OddMotorMap<F32>, b: K.Motor<F32>) -> K.Even<F32>:
+  O.Odd.Motor.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Odd.transform.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Even<F32>:
   O.Odd.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.prepare.Even(a: K.Odd<F32>) -> O.OddEvenMap<F32>:
+  O.Odd.prepare.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Even.apply(m: O.OddEvenMap<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Odd.Even.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
 
 def Odd.transform.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
   O.Odd.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
 
+def Odd.prepare.Odd(a: K.Odd<F32>) -> O.OddOddMap<F32>:
+  O.Odd.prepare.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Odd.apply(m: O.OddOddMap<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Odd.Odd.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)
+
 def Odd.transform.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Odd.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.prepare.Multivector(a: K.Odd<F32>) -> O.OddMultivectorMap<F32>:
+  O.Odd.prepare.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a)
+
+def Odd.Multivector.apply(m: O.OddMultivectorMap<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.Multivector.apply(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, b)

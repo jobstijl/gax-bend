@@ -755,20 +755,31 @@ def Path.bname(+p: List<&2, Bool>, names: List<&2, String>) -> String:
 
 # a let binding of a kernel, and the multiplications it costs
 type Let is Data:
-  Let{src: String, muls: Nat}
+  Let{entry: String, src: String, muls: Nat}
+
+def Let.entries.put(+n: String, +rest: List<&2, String>) -> List<&2, String>:
+  Bool.pick(List<&2, String>, String.eq(n, ""), rest, n <> rest)
+
+# the names of the lets that are matrix entries
+def Let.entries(ls: List<&2, Let>) -> List<&2, String>:
+  match ls:
+    case Nil{}:
+      Nil{}
+    case Let{n, s, m} <> t:
+      Let.entries.put(n, Let.entries(t))
 
 def Let.srcs(ls: List<&2, Let>) -> String:
   match ls:
     case Nil{}:
       ""
-    case Let{s, m} <> t:
+    case Let{n, s, m} <> t:
       s ++ Let.srcs(t)
 
 def Let.muls(ls: List<&2, Let>) -> Nat:
   match ls:
     case Nil{}:
       0n
-    case Let{s, m} <> t:
+    case Let{n, s, m} <> t:
       Nat.add(m, Let.muls(t))
 
 # a kind's general element over Tm as Bend source: K.<n>{N.TVar{i}, ...}
@@ -927,7 +938,7 @@ def Qf.plets(ps: List<&2, Pr>, +vs: List<&2, String>) -> List<&2, Let>:
     case Nil{}:
       Nil{}
     case Pr{+a, +b} <> t:
-      Let{"      +" ++ Qf.qname(a, b) ++ " = mul(" ++ Gen.nth(vs, a) ++ ", " ++ Gen.nth(vs, b) ++ ")\n", 1n} <> Qf.plets(t, vs)
+      Let{"", "      +" ++ Qf.qname(a, b) ++ " = mul(" ++ Gen.nth(vs, a) ++ ", " ++ Gen.nth(vs, b) ++ ")\n", 1n} <> Qf.plets(t, vs)
 
 # the lets of the nonzero entries of field c, and the field: Σ_j x_j Q_cj
 type Fld is Data:
@@ -940,7 +951,7 @@ def Fld.add(+c: Nat, +j: Nat, +x: String, ts: List<&2, Term>, f: Fld) -> Fld:
     case +h <> +t:
       match f:
         case Fld{ls, e, m}:
-          Fld{Let{"      +" ++ Qf.mname(c, j) ++ " = " ++ E.Expr.show(Qf.sum(h <> t)) ++ "\n", 0n} <> ls,
+          Fld{Let{Qf.mname(c, j), "      +" ++ Qf.mname(c, j) ++ " = " ++ E.Expr.show(Qf.sum(h <> t)) ++ "\n", 0n} <> ls,
             E.EAdd{E.EMul{E.EVar{x}, E.EVar{Qf.mname(c, j)}}, e}, 1n+m}
 
 def Qf.field(+c: Nat, r: List<&2, List<&2, Term>>, +j: Nat, xs: List<&2, String>) -> Fld:
@@ -1043,10 +1054,70 @@ def Cf.ps(cs: List<&2, Cf>) -> List<&2, String>:
     case Cf{l, r, p} <> t:
       p <> Cf.ps(t)
 
+# Prepared sandwiches: the matrix Q of v alone (V.prepare.X), applied to
+# any number of operands (V.X.apply). A batch moving many points by one
+# motor pays the products once. The law .prepared says apply(prepare(v), x)
+# is the kernel, by {==}.
+type Pp is Data:
+  Pp{src: String, prf: String, api: String}
+
+def Strs.wrap(xs: List<&2, String>, +pre: String, +post: String) -> List<&2, String>:
+  match xs:
+    case Nil{}:
+      Nil{}
+    case x <> t:
+      (pre ++ x ++ post) <> Strs.wrap(t, pre, post)
+
+def Sw.prep.go(+an: String, +bn: String, +cn: String, +abs: List<&2, Bl>, +bbs: List<&2, Bl>, +ls: List<&2, Let>, +es: List<&2, E.Expr>, +ent: List<&2, String>, empty: Bool) -> Pp:
+  match empty:
+    case True{}:
+      Pp{"", "", ""}
+    case False{}:
+      +mt = an ++ bn ++ "Map"
+      +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
+      +opn = {"~T, ~zero, ~add, ~mul, ~neg" : String}
+      +opf = {"~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg" : String}
+      Pp{
+        String.concat([
+          "\ntype ", mt, "<-T: Data> is Data:\n  ", mt, "{", String.join(Strs.wrap(ent, "", ": T"), ", "), "}\n\n",
+          "def ", an, ".prepare.", bn, "(", ops, ", a: K.", an, "<T>) -> ", mt, "<T>:\n",
+          "  match a:\n    case K.", an, "{", String.join(Kd.fields(abs, "+a_", ""), ", "), "}:\n",
+          Let.srcs(ls), "      ", mt, "{", String.join(ent, ", "), "}\n\n",
+          "def ", an, ".", bn, ".apply(", ops, ", m: ", mt, "<T>, b: K.", bn, "<T>) -> K.", cn, "<T>:\n",
+          "  match m b:\n    case ", mt, "{", String.join(Strs.wrap(ent, "+", ""), ", "), "} K.", bn, "{", String.join(Kd.fields(bbs, "+b_", ""), ", "), "}:\n",
+          "      K.", cn, "{\n        ", String.join(Ker.show(es), ",\n        "), "}\n"]),
+        String.concat([
+          "\ndef ", an, ".", bn, ".prepared(", ops, ", a: K.", an, "<T>, b: K.", bn, "<T>)\n",
+          "  -> {O.", an, ".transform.", bn, "(", opn, ", a, b) == O.", an, ".", bn, ".apply(", opn, ", O.", an, ".prepare.", bn, "(", opn, ", a), b) : K.", cn, "<T>}:\n",
+          "  match a b:\n    case K.", an, "{", String.join(Kd.fields(abs, "a_", ""), ", "), "} K.", bn, "{", String.join(Kd.fields(bbs, "b_", ""), ", "), "}:\n      {==}\n"]),
+        String.concat([
+          "\ndef ", an, ".prepare.", bn, "(a: K.", an, "<F32>) -> O.", mt, "<F32>:\n  O.", an, ".prepare.", bn, "(", opf, ", a)\n\n",
+          "def ", an, ".", bn, ".apply(m: O.", mt, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n  O.", an, ".", bn, ".apply(", opf, ", m, b)\n"])}
+
+def Sw.prep(+an: String, +bn: String, +cn: String, +abs: List<&2, Bl>, +bbs: List<&2, Bl>, +ls: List<&2, Let>, +es: List<&2, E.Expr>) -> Pp:
+  +ent = Let.entries(ls)
+  Sw.prep.go(an, bn, cn, abs, bbs, ls, es, ent, List.is_empty(&2, String, ent))
+
+def Pp.src(p: Pp) -> String:
+  match p:
+    case Pp{s, f, a}:
+      s
+
+def Pp.prf(p: Pp) -> String:
+  match p:
+    case Pp{s, f, a}:
+      f
+
+def Pp.api(p: Pp) -> String:
+  match p:
+    case Pp{s, f, a}:
+      a
+
 def Sw.text(+dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd, kc: Kd, fs: Fs, outs: List<&2, List<&2, Bool>>) -> Ker:
   match ka kb kc fs:
-    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, +cbs} Fs{ls, es, muls}:
+    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, +cbs} Fs{+ls, +es, muls}:
       +name = an ++ ".transform." ++ bn
+      +pp = Sw.prep(an, bn, cn, abs, bbs, ls, es)
       +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
       +hyps = {"~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,\n  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),\n  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),\n  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg)" : String}
       +args = "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>"
@@ -1069,17 +1140,17 @@ def Sw.text(+dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd,
           "def ", name, "(", ops, ", ", args, ") -> K.", cn, "<T>:\n",
           "  match a b:\n    case ", ppat, ":\n",
           Let.srcs(ls),
-          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
+          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n", Pp.src(pp)]),
         String.concat([
           "def ", name, ".ok(", hyps, ", ", args, ")\n",
           "  -> {K.", cn, ".of_tree(~T, ~zero, ~neg, ", spec, ") == O.", name, "(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.", cn, "<T>}:\n",
           "  match a b:\n    case ", ppat, ":\n",
           "      K.", cn, ".cong(T,\n        ", String.join(Cf.ls(cfs), ",\n        "), ",\n        ",
           String.join(Cf.rs(cfs), ",\n        "), ",\n        ", String.join(Cf.ps(cfs), ",\n        "), ")\n",
-          String.concat(Sw.zeros(dn, name, names, hyps ++ ", " ++ args, pat, env, spec, spect, outs))]),
+          String.concat(Sw.zeros(dn, name, names, hyps ++ ", " ++ args, pat, env, spec, spect, outs)), Pp.prf(pp)]),
         String.concat([
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
-          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
+          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n", Pp.api(pp)]),
         muls}
 
 # the product lets in front, their multiplications counted
@@ -1976,9 +2047,21 @@ def Nl.rhs(nk: NK, +cn: String, +ops: String, +k: String) -> String:
     case NKS{}:
       k
 
+def Nl.prep(nk: NK, +an: String, +bn: String, +cn: String, +abs: List<&2, Bl>, +bbs: List<&2, Bl>, +ls: List<&2, Let>, +es: List<&2, E.Expr>) -> Pp:
+  match nk:
+    case NKS{}:
+      Sw.prep(an, bn, cn, abs, bbs, ls, es)
+    case NKB{o}:
+      Pp{"", "", ""}
+    case NKH{o}:
+      Pp{"", "", ""}
+    case NKU{o}:
+      Pp{"", "", ""}
+
 def Nl.text(+dn: String, +pre: String, +nk: NK, ka: Kd, kb: Kd, kc: Kd, +mn: String, fs: Fs) -> Ker:
   match ka kb kc fs:
-    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, +cbs} Fs{ls, es, muls}:
+    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, +cbs} Fs{+ls, +es, muls}:
+      +pp = Nl.prep(nk, an, bn, cn, abs, bbs, ls, es)
       +un = NK.unary(nk)
       +name = NK.name(nk, an, bn)
       +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
@@ -2016,17 +2099,17 @@ def Nl.text(+dn: String, +pre: String, +nk: NK, ka: Kd, kb: Kd, kc: Kd, +mn: Str
           "def ", name, "(", ops, ", ", args, ") -> K.", cn, "<T>:\n",
           "  match ", mh, ":\n    case ", ppat, ":\n",
           Let.srcs(ls),
-          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
+          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n", Pp.src(pp)]),
         String.concat([
           "def ", name, ".ok(", hd, ")\n",
           "  -> {K.", mn, ".fields(T, ", Nl.ofT(mn, spec), ")\n      == K.", mn, ".fields(T, K.", cn, ".to_mv(~T, ~zero, ~neg, ", rhs, ")) : List<&2, T>}:\n",
           "  match ", mh, ":\n    case ", ppat, ":\n",
           "      NP.NormSH.eqs(", Nl.hargs(), ", ", env, ", ", hvn, ",\n        K.", mn, ".fields(N.Tm, ", Nl.ofTm(mn, hvn, spect), "),\n",
-          "        K.", mn, ".fields(N.Tm, K.", cn, ".to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, ", rhst, ")),\n        hh, {==})\n"]),
+          "        K.", mn, ".fields(N.Tm, K.", cn, ".to_mv(~N.Tm, ~N.TZero{}, ~N.Tm.neg, ", rhst, ")),\n        hh, {==})\n", Pp.prf(pp)]),
         String.concat([
           "def ", name, "(", Bool.pick(String, un, "a: K." ++ an ++ "<F32>", "a: K." ++ an ++ "<F32>, b: K." ++ bn ++ "<F32>"),
           ") -> K.", cn, "<F32>:\n",
-          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, ", argn, ")\n"]),
+          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, ", argn, ")\n", Pp.api(pp)]),
         muls}
 
 # the law that a kind's projection inverts its embedding: the change of
