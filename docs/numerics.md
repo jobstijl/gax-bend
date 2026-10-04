@@ -211,9 +211,11 @@ and it does.
    proven to meet the model with ε = 2^(1−p) (`proofs/round.bend`). So the
    theorems hold outright for p-bit truncating arithmetic. Round to
    nearest, ties to even, is proven with ε = 2^−p, IEEE's unit roundoff
-   (`Rne.rel`; `tests/round_err.bend`). Still to do: the binary32 exponent
-   range (overflow; subnormals with η) and the bit-level implementation
-   proven equal to it. The largest piece; recent Lean work (TorchLean's
+   (`Rne.rel`; `tests/round_err.bend`). Gradual underflow is proven
+   too: the format model |fl(x) − x| ≤ 2^−p|x| + 2^−(k+1) (`Fl.model`),
+   with binary32 at p = 24, k = 149. Still to do: a fast executable
+   version of the spec proven equal to it, and native F32 checked against
+   it bit for bit. The largest piece; recent Lean work (TorchLean's
    IEEE32Exec, FloatLib, Tunnell's FP) is the closest reference.
 5. Running bounds (**done**: `Err.track`, `api/track.bend`) and `Approx`;
    compensated and exact-accumulator kernels.

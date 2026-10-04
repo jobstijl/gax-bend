@@ -184,6 +184,8 @@ concrete ordered ring for every theorem stated over one.
 |---|---|---|---|---|
 | `Round.rel` | for every dyadic z and p ≥ 1: \|trunc_p(z) − z\| ≤ 2^(1−p) \|z\| (truncation to p significant bits, toward zero) | nothing | proof | `proofs/round.bend` |
 | `Rne.rel` | for every dyadic z and p ≥ 1: \|rne_p(z) − z\| ≤ 2^(−p) \|z\| (round to nearest, ties to even: IEEE's significand rounding, unit roundoff u = 2^−p) | nothing | proof | `proofs/round.bend` |
+| `Rfix.rel` | rounding to the grid 2^−k (nearest, ties to even): \|rfix_k(z) − z\| ≤ 2^−(k+1) | nothing | proof | `proofs/round.bend` |
+| `Fl.model` | a format rounding to p bits in its normal range and to the grid 2^−k below: \|fl(x) − x\| ≤ 2^−p \|x\| + 2^−(k+1), whatever the range test decides. Binary32 is p = 24, k = 149: u = 2⁻²⁴, η = 2⁻¹⁵⁰ | nothing | proof | `proofs/round.bend` |
 
 Truncation halves the magnitude n until it is below 2^p, keeping n = q 2^s
 + r, 2^s = r + 1 + w_r and, once shifted, q = 2^(p−1) + w_q (`Inv`, true
@@ -206,9 +208,15 @@ neither ε can be halved:
 - z = 5 rounds to nearest to 4 (a tie, to even), an error of 1/5, more
   than 2⁻³.
 
-Exponents are unbounded, so there is no overflow or underflow. IEEE
-binary32 adds the exponent range (subnormals: the η term of `Err.bound_u`)
-and the bit encoding; that is the software float (numerics.md, step 4).
+`Fl.model` adds gradual underflow. Below the normal range the format
+rounds to a fixed grid, an absolute error of at most half its spacing, so
+the format meets the model of `Err.bound_u` with η = 2^−(k+1).
+`tests/f32_model.bend` instantiates `Err.bound_u` in such arithmetic for
+every format. That is the rounding-error theorem for binary32's rounding
+(p = 24, k = 149), with no hypothesis left. Overflow stays outside the
+model, so the theorem covers executions whose results are finite. What
+remains for native F32 is the link: that the hardware rounds this way. A
+differential test checks it on samples (numerics.md, step 4).
 
 ## Dual numbers (`src/dual.bend`, ADR-006)
 
