@@ -29,6 +29,7 @@ for f in tests/*.bend; do
 done
 
 for f in tests/neg/*.bend; do
+  [ "$(basename "$f")" = common.bend ] && continue
   [ -e "$f" ] || continue
   got=$(tools/cap.sh bend "$f" 2>&1 | head -1)
   if [ "$got" = "SOME PROOFS FAIL" ]; then

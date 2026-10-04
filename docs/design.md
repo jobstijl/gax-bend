@@ -9,7 +9,7 @@ notes added in place. The facts and measurements cited live in
 
 ## ADR-001: Three layers (spec, kernels, API), with the proof burden on Bend
 
-**Status:** accepted with amendments, 2026-10-04. Proposed in Phase 0; your review answered the open decisions. The amendments (A1–A4) follow the Decision section and override the items they name.
+**Status:** accepted with amendments, 2026-10-04. Proposed in Phase 0; your review answered the open decisions. The amendments (A1–A4) follow the Decision section and override the items they name. 2026-10-04: Layer S is built and all 22 of its draft laws are proven ([laws.md](laws.md)); item 1 holds as written, and A3 (MV.mk) cost the predicted one transparency lemma per operation.
 
 ### Context
 

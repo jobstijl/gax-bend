@@ -16,6 +16,7 @@ import ./proofs/scale.bend as SC
 import ./proofs/inv.bend as IV
 import ./proofs/rev.bend as RV
 import ./proofs/gen.bend as GN
+import ./proofs/grade.bend as GR
 
 # Addition
 # --------
@@ -110,3 +111,9 @@ def Laws.rcomp_lcomp(T, neg, neg_neg, d, x):
 
 def Laws.rcomp_vee(T, add, mul, neg, neg_neg, d, x, y):
   WV.Comp.rcomp_vee(~T, ~add, ~mul, ~neg, ~neg_neg, d, x, y)
+
+# Grades
+# ------
+
+def Laws.wedge_grade(T, add, mul, neg, d, j, k, x, y, hx, hy):
+  GR.Wedge.grade(~T, ~add, ~mul, ~neg, d, False{}, False{}, j, k, x, y, hx, hy)
