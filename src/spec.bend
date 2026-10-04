@@ -409,3 +409,84 @@ def MV.of_q(~T: Data, ~neg: T -> T, d: Nat, q: Q, one: T) -> MV(T, d):
 # what generator i squares to, as a multivector
 def MV.metric(~T: Data, ~neg: T -> T, +d: Nat, sig: Sig(d), i: Nat, one: T) -> MV(T, d):
   MV.of_q(~T, ~neg, d, Sig.at(d, sig, i), one)
+
+# Blades by path
+# --------------
+# A basis blade is a path: one Bool per generator, outermost first, True
+# where the blade holds the generator (the e-part of that level).
+
+# x times the blade at path (a missing step is False)
+def MV.blade(-T: Data, +d: Nat, path: List<&2, Bool>, x: T) -> MV(T, d):
+  match d:
+    case 0n:
+      L{x}
+    case 1n+p:
+      match path:
+        case Nil{}:
+          N{MV.zero(T, p), MV.blade(T, p, Nil{}, x)}
+        case Con{b, rest}:
+          match b:
+            case True{}:
+              N{MV.blade(T, p, rest, x), MV.zero(T, p)}
+            case False{}:
+              N{MV.zero(T, p), MV.blade(T, p, rest, x)}
+
+# (-1)^s times the coefficient at path, zero where the tree has none
+def MV.at(~T: Data, ~zero: T, ~neg: T -> T, +d: Nat, path: List<&2, Bool>, s: Bool, x: MV(T, d)) -> T:
+  match d:
+    case 0n:
+      match x:
+        case LZ{}:
+          zero
+        case L{a}:
+          Ring.negf(~T, ~neg, s, a)
+    case 1n+p:
+      match path:
+        case Nil{}:
+          match x:
+            case NZ{}:
+              zero
+            case N{e, r}:
+              MV.at(~T, ~zero, ~neg, p, Nil{}, s, r)
+        case Con{b, rest}:
+          match b:
+            case True{}:
+              match x:
+                case NZ{}:
+                  zero
+                case N{e, r}:
+                  MV.at(~T, ~zero, ~neg, p, rest, s, e)
+            case False{}:
+              match x:
+                case NZ{}:
+                  zero
+                case N{e, r}:
+                  MV.at(~T, ~zero, ~neg, p, rest, s, r)
+
+# x with the coefficient at path removed
+def MV.clear(-T: Data, +d: Nat, path: List<&2, Bool>, x: MV(T, d)) -> MV(T, d):
+  match d:
+    case 0n:
+      LZ{}
+    case 1n+p:
+      match path:
+        case Nil{}:
+          match x:
+            case NZ{}:
+              NZ{}
+            case N{e, r}:
+              MV.mk(T, p, e, MV.clear(T, p, Nil{}, r))
+        case Con{b, rest}:
+          match b:
+            case True{}:
+              match x:
+                case NZ{}:
+                  NZ{}
+                case N{e, r}:
+                  MV.mk(T, p, MV.clear(T, p, rest, e), r)
+            case False{}:
+              match x:
+                case NZ{}:
+                  NZ{}
+                case N{e, r}:
+                  MV.mk(T, p, e, MV.clear(T, p, rest, r))

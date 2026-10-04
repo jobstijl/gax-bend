@@ -179,3 +179,69 @@ Negative controls are required per law family.
 | Generator as a Bend printer in gax-gen (Rust) | reuses gax-gen's parser, kind tables and optimiser | your decision: everything in Bend, in this repository (A1) |
 | Normaliser proofs as the main kernel evidence | `--verdict` out of fuel at PGA3D (Q4) | kept for bend2; mirror kernels are the kernel-checked route |
 | `~ieee` hypothesis for native F32 under `--verdict` | no model (Q9b) | moot after A2: bend2 accepts it; tagged proof-modulo |
+
+---
+
+## ADR-002: Layer K: generated kind records and mirror kernels, proven by `{==}`
+
+**Status:** proposed, 2026-10-04 (Phase 2 start).
+
+### Context
+
+Layer S is proven, but it is a tree walk: no use as runtime code. Speed
+needs flat records per kind and straight-line kernels (Q5: a flat F32
+record kernel matches clang). ADR-001 A1 puts the generator in Bend.
+
+### Decision
+
+1. **An algebra is Bend data.** An algebra is a `Spec` value: a name, a
+   signature `Sig(d)` and kinds. A kind is a name plus oriented blades, each
+   written as a list of generator indices (so e032 is `[0, 3, 2]`, stored as
+   −e023). This is the content of gax's `.gax` files, typed. A text parser
+   for `.gax` can come later.
+2. **The generator runs the spec itself.** `gen/` instantiates Layer S at a
+   symbolic ring `Expr` (variables, `add`, `mul`, `neg` as data) and
+   evaluates `MV.gpf` (and the other products) on the embedded symbolic
+   operands. The output tree is printed as the kernel. So a mirror kernel is
+   the spec's own unfolding, and its equality with the spec holds by
+   construction. The checker confirms it per kernel by `{==}` (Q4: 0.3 s
+   for a full PGA3D product).
+3. **Every algebra is generated as three modules:**
+   - kinds: records `Motor<T>` and so on, the embedding `K.tree` (fields to
+     leaves, with orientation signs) and the projection `K.of_tree`;
+   - kernels: one def per (operation, kind, kind), generic over
+     `~T, ~zero, ~add, ~mul, ~neg`, returning the result kind's record;
+   - proofs: per kernel the law `K.of_tree(spec(A.tree x, B.tree y)) ==
+     kernel(x, y)`, plus the support law (the spec's result is zero outside
+     the result kind). Both are proven by matching the records and `{==}`.
+
+   The generator also writes `regen --check`, which compares the committed
+   output byte for byte.
+4. **Result kind** follows gax's rule (ADR-021 there):
+   1. among the declared kinds that contain the support, prefer one that
+      adds no grade;
+   2. then the smallest;
+   3. then the first declared.
+
+   An empty support means no kernel, plus a named empty witness type for
+   the API (Q3c). The support law makes a wrong choice a failed proof.
+   Minimality is not proven (ADR-001 item 5).
+5. **Fields of the result kind outside the support** are `zero` in the
+   kernel: a constant, never a multiplication.
+6. **No CSE or reassociation in mirror kernels.** Optimised kernels
+   (sandwiches, unit kernels) are Phase 3, proven through the polynomial
+   normaliser.
+
+### What it costs
+
+- A Bend program of a few hundred lines (Expr, blade masks, printing, file
+  IO).
+- Generated code grows with kinds² × operations.
+- Mirror kernels carry the tree's sum order and its sign noise. In F32 a
+  negation is a sign flip, which clang folds into an fsub.
+
+### Measured, not adopted
+
+- **Printing kernels from blade tables (gax-gen's way):** it would need a
+  separate proof that the tables equal the spec. Running the spec makes
+  that proof `{==}`.
