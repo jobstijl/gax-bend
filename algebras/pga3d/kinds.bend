@@ -27,6 +27,12 @@ def Scalar.s(-T: Data, x: Scalar<T>) -> T:
     case Scalar{s}:
       s
 
+def Scalar.cong(-T: Data, -a0: T, -b0: T,
+  e0: {a0 == b0 : T})
+  -> {Scalar{a0} == Scalar{b0} : Scalar<T>}:
+  %e0 : {Scalar{a0} == Scalar{_} : Scalar<T>}
+  {==}
+
 type Plane<-T: Data> is Data:
   Plane{e1: T, e2: T, e3: T, e0: T}
 
@@ -64,6 +70,15 @@ def Plane.e0(-T: Data, x: Plane<T>) -> T:
   match x:
     case Plane{e1, e2, e3, e0}:
       e0
+
+def Plane.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T, -b3: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T})
+  -> {Plane{a0, a1, a2, a3} == Plane{b0, b1, b2, b3} : Plane<T>}:
+  %e0 : {Plane{a0, a1, a2, a3} == Plane{_, b1, b2, b3} : Plane<T>}
+  %e1 : {Plane{a0, a1, a2, a3} == Plane{a0, _, b2, b3} : Plane<T>}
+  %e2 : {Plane{a0, a1, a2, a3} == Plane{a0, a1, _, b3} : Plane<T>}
+  %e3 : {Plane{a0, a1, a2, a3} == Plane{a0, a1, a2, _} : Plane<T>}
+  {==}
 
 type Line<-T: Data> is Data:
   Line{e23: T, e31: T, e12: T, e01: T, e02: T, e03: T}
@@ -115,6 +130,17 @@ def Line.e03(-T: Data, x: Line<T>) -> T:
     case Line{e23, e31, e12, e01, e02, e03}:
       e03
 
+def Line.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -b0: T, -b1: T, -b2: T, -b3: T, -b4: T, -b5: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T}, e4: {a4 == b4 : T}, e5: {a5 == b5 : T})
+  -> {Line{a0, a1, a2, a3, a4, a5} == Line{b0, b1, b2, b3, b4, b5} : Line<T>}:
+  %e0 : {Line{a0, a1, a2, a3, a4, a5} == Line{_, b1, b2, b3, b4, b5} : Line<T>}
+  %e1 : {Line{a0, a1, a2, a3, a4, a5} == Line{a0, _, b2, b3, b4, b5} : Line<T>}
+  %e2 : {Line{a0, a1, a2, a3, a4, a5} == Line{a0, a1, _, b3, b4, b5} : Line<T>}
+  %e3 : {Line{a0, a1, a2, a3, a4, a5} == Line{a0, a1, a2, _, b4, b5} : Line<T>}
+  %e4 : {Line{a0, a1, a2, a3, a4, a5} == Line{a0, a1, a2, a3, _, b5} : Line<T>}
+  %e5 : {Line{a0, a1, a2, a3, a4, a5} == Line{a0, a1, a2, a3, a4, _} : Line<T>}
+  {==}
+
 type Point<-T: Data> is Data:
   Point{e032: T, e013: T, e021: T, e123: T}
 
@@ -153,6 +179,15 @@ def Point.e123(-T: Data, x: Point<T>) -> T:
     case Point{e032, e013, e021, e123}:
       e123
 
+def Point.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T, -b3: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T})
+  -> {Point{a0, a1, a2, a3} == Point{b0, b1, b2, b3} : Point<T>}:
+  %e0 : {Point{a0, a1, a2, a3} == Point{_, b1, b2, b3} : Point<T>}
+  %e1 : {Point{a0, a1, a2, a3} == Point{a0, _, b2, b3} : Point<T>}
+  %e2 : {Point{a0, a1, a2, a3} == Point{a0, a1, _, b3} : Point<T>}
+  %e3 : {Point{a0, a1, a2, a3} == Point{a0, a1, a2, _} : Point<T>}
+  {==}
+
 type Direction<-T: Data> is Data:
   Direction{e032: T, e013: T, e021: T}
 
@@ -185,6 +220,14 @@ def Direction.e021(-T: Data, x: Direction<T>) -> T:
     case Direction{e032, e013, e021}:
       e021
 
+def Direction.cong(-T: Data, -a0: T, -a1: T, -a2: T, -b0: T, -b1: T, -b2: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T})
+  -> {Direction{a0, a1, a2} == Direction{b0, b1, b2} : Direction<T>}:
+  %e0 : {Direction{a0, a1, a2} == Direction{_, b1, b2} : Direction<T>}
+  %e1 : {Direction{a0, a1, a2} == Direction{a0, _, b2} : Direction<T>}
+  %e2 : {Direction{a0, a1, a2} == Direction{a0, a1, _} : Direction<T>}
+  {==}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e0123: T}
 
@@ -204,6 +247,12 @@ def Pseudoscalar.e0123(-T: Data, x: Pseudoscalar<T>) -> T:
   match x:
     case Pseudoscalar{e0123}:
       e0123
+
+def Pseudoscalar.cong(-T: Data, -a0: T, -b0: T,
+  e0: {a0 == b0 : T})
+  -> {Pseudoscalar{a0} == Pseudoscalar{b0} : Pseudoscalar<T>}:
+  %e0 : {Pseudoscalar{a0} == Pseudoscalar{_} : Pseudoscalar<T>}
+  {==}
 
 type Rotor<-T: Data> is Data:
   Rotor{s: T, e23: T, e31: T, e12: T}
@@ -243,6 +292,15 @@ def Rotor.e12(-T: Data, x: Rotor<T>) -> T:
     case Rotor{s, e23, e31, e12}:
       e12
 
+def Rotor.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T, -b3: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T})
+  -> {Rotor{a0, a1, a2, a3} == Rotor{b0, b1, b2, b3} : Rotor<T>}:
+  %e0 : {Rotor{a0, a1, a2, a3} == Rotor{_, b1, b2, b3} : Rotor<T>}
+  %e1 : {Rotor{a0, a1, a2, a3} == Rotor{a0, _, b2, b3} : Rotor<T>}
+  %e2 : {Rotor{a0, a1, a2, a3} == Rotor{a0, a1, _, b3} : Rotor<T>}
+  %e3 : {Rotor{a0, a1, a2, a3} == Rotor{a0, a1, a2, _} : Rotor<T>}
+  {==}
+
 type Translator<-T: Data> is Data:
   Translator{s: T, e01: T, e02: T, e03: T}
 
@@ -280,6 +338,15 @@ def Translator.e03(-T: Data, x: Translator<T>) -> T:
   match x:
     case Translator{s, e01, e02, e03}:
       e03
+
+def Translator.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T, -b3: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T})
+  -> {Translator{a0, a1, a2, a3} == Translator{b0, b1, b2, b3} : Translator<T>}:
+  %e0 : {Translator{a0, a1, a2, a3} == Translator{_, b1, b2, b3} : Translator<T>}
+  %e1 : {Translator{a0, a1, a2, a3} == Translator{a0, _, b2, b3} : Translator<T>}
+  %e2 : {Translator{a0, a1, a2, a3} == Translator{a0, a1, _, b3} : Translator<T>}
+  %e3 : {Translator{a0, a1, a2, a3} == Translator{a0, a1, a2, _} : Translator<T>}
+  {==}
 
 type Motor<-T: Data> is Data:
   Motor{s: T, e23: T, e31: T, e12: T, e01: T, e02: T, e03: T, e0123: T}
@@ -343,6 +410,19 @@ def Motor.e0123(-T: Data, x: Motor<T>) -> T:
     case Motor{s, e23, e31, e12, e01, e02, e03, e0123}:
       e0123
 
+def Motor.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -a6: T, -a7: T, -b0: T, -b1: T, -b2: T, -b3: T, -b4: T, -b5: T, -b6: T, -b7: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T}, e4: {a4 == b4 : T}, e5: {a5 == b5 : T}, e6: {a6 == b6 : T}, e7: {a7 == b7 : T})
+  -> {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{b0, b1, b2, b3, b4, b5, b6, b7} : Motor<T>}:
+  %e0 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{_, b1, b2, b3, b4, b5, b6, b7} : Motor<T>}
+  %e1 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, _, b2, b3, b4, b5, b6, b7} : Motor<T>}
+  %e2 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, a1, _, b3, b4, b5, b6, b7} : Motor<T>}
+  %e3 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, a1, a2, _, b4, b5, b6, b7} : Motor<T>}
+  %e4 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, a1, a2, a3, _, b5, b6, b7} : Motor<T>}
+  %e5 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, a1, a2, a3, a4, _, b6, b7} : Motor<T>}
+  %e6 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, a1, a2, a3, a4, a5, _, b7} : Motor<T>}
+  %e7 : {Motor{a0, a1, a2, a3, a4, a5, a6, a7} == Motor{a0, a1, a2, a3, a4, a5, a6, _} : Motor<T>}
+  {==}
+
 type Flector<-T: Data> is Data:
   Flector{e1: T, e2: T, e3: T, e0: T, e032: T, e013: T, e021: T, e123: T}
 
@@ -404,6 +484,19 @@ def Flector.e123(-T: Data, x: Flector<T>) -> T:
   match x:
     case Flector{e1, e2, e3, e0, e032, e013, e021, e123}:
       e123
+
+def Flector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -a6: T, -a7: T, -b0: T, -b1: T, -b2: T, -b3: T, -b4: T, -b5: T, -b6: T, -b7: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T}, e4: {a4 == b4 : T}, e5: {a5 == b5 : T}, e6: {a6 == b6 : T}, e7: {a7 == b7 : T})
+  -> {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{b0, b1, b2, b3, b4, b5, b6, b7} : Flector<T>}:
+  %e0 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{_, b1, b2, b3, b4, b5, b6, b7} : Flector<T>}
+  %e1 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, _, b2, b3, b4, b5, b6, b7} : Flector<T>}
+  %e2 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, a1, _, b3, b4, b5, b6, b7} : Flector<T>}
+  %e3 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, a1, a2, _, b4, b5, b6, b7} : Flector<T>}
+  %e4 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, a1, a2, a3, _, b5, b6, b7} : Flector<T>}
+  %e5 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, a1, a2, a3, a4, _, b6, b7} : Flector<T>}
+  %e6 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, a1, a2, a3, a4, a5, _, b7} : Flector<T>}
+  %e7 : {Flector{a0, a1, a2, a3, a4, a5, a6, a7} == Flector{a0, a1, a2, a3, a4, a5, a6, _} : Flector<T>}
+  {==}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e0: T, e1: T, e2: T, e3: T, e01: T, e02: T, e03: T, e12: T, e31: T, e23: T, e021: T, e013: T, e032: T, e123: T, e0123: T}
@@ -514,3 +607,24 @@ def Multivector.e0123(-T: Data, x: Multivector<T>) -> T:
   match x:
     case Multivector{s, e0, e1, e2, e3, e01, e02, e03, e12, e31, e23, e021, e013, e032, e123, e0123}:
       e0123
+
+def Multivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -a6: T, -a7: T, -a8: T, -a9: T, -a10: T, -a11: T, -a12: T, -a13: T, -a14: T, -a15: T, -b0: T, -b1: T, -b2: T, -b3: T, -b4: T, -b5: T, -b6: T, -b7: T, -b8: T, -b9: T, -b10: T, -b11: T, -b12: T, -b13: T, -b14: T, -b15: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T}, e4: {a4 == b4 : T}, e5: {a5 == b5 : T}, e6: {a6 == b6 : T}, e7: {a7 == b7 : T}, e8: {a8 == b8 : T}, e9: {a9 == b9 : T}, e10: {a10 == b10 : T}, e11: {a11 == b11 : T}, e12: {a12 == b12 : T}, e13: {a13 == b13 : T}, e14: {a14 == b14 : T}, e15: {a15 == b15 : T})
+  -> {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}:
+  %e0 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{_, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e1 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, _, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e2 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, _, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e3 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, _, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e4 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, _, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e5 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, _, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e6 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, _, b7, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e7 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, _, b8, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e8 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, _, b9, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e9 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, _, b10, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e10 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, _, b11, b12, b13, b14, b15} : Multivector<T>}
+  %e11 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, _, b12, b13, b14, b15} : Multivector<T>}
+  %e12 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, _, b13, b14, b15} : Multivector<T>}
+  %e13 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, _, b14, b15} : Multivector<T>}
+  %e14 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, _, b15} : Multivector<T>}
+  %e15 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, _} : Multivector<T>}
+  {==}

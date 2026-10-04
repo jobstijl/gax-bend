@@ -282,8 +282,12 @@ modulo u~u = 1 and for optimised kernels.
 4. **Hypotheses:** the eleven commutative-ring laws listed in `laws.md`,
    among them laws with a bare variable on one side (`zero_l`, `unit_r`,
    `neg_neg`). A2 allows these.
-5. **Kernels** bind the inner product's coefficients as lets: one copy of
-   v x, no common-subexpression search. The mirror law stays `{==}`.
+5. **Kernels are quadratic forms** (amended the same day; first they bound
+   v x as lets and kept the mirror law). Field c is Σ_j x_j Q_cj(v), with
+   the Q_cj read off the spec's coefficients after cancellation. Each field
+   is proven equal to the spec's by `Norm.eq`, and a generated congruence
+   lemma per kind joins the fields. The matrix Q is what a batch reuses
+   for many operands.
 
 ### Numbers
 
@@ -291,8 +295,11 @@ modulo u~u = 1 and for optimised kernels.
 - One PGA3D zero law (motor on point, e1) checks in under 0.5 s with
   everything it loads (`spikes/q12_transform_support.bend`). Each algebra's
   whole proofs file, sandwiches included, takes 0.6–2.7 s.
-- PGA3D `Motor.transform.Point` costs 52 multiplications: 20 for v x, 32
-  for (v x) ~v. gax's plain kernel costs 38 and its unit kernel 33.
+- PGA3D `Motor.transform.Point` costs 35 multiplications: 22 products of
+  motor coefficients and 13 matrix entries (the let-bound mirror form took
+  52; gax's plain kernel takes 38 and its unit kernel 33).
+- With every sandwich field proven by `Norm.eq`, the PGA3D proofs file
+  checks in 9.6 s and STA's in 9.3 s; the whole gate takes 44 s.
 
 ### What it costs
 
@@ -301,9 +308,9 @@ modulo u~u = 1 and for optimised kernels.
 - Cancellation is quadratic in the number of monomials. That is fine for
   degree-3 sandwich terms; degree-4 or larger identities may need sorting
   first.
-- Sandwich kernels are about 35% more multiplications than gax's plain
-  ones until the optimised kernels (Phase 3) land. Those will be proven
-  through `Norm.eq`.
+- The quadratic form is not further simplified: an entry such as
+  2(ab + cd) is computed with repeated additions, and unit versors get no
+  cheaper kernel yet (gax's unit kernels use u ~u = 1).
 
 ### Measured, not adopted
 

@@ -27,6 +27,12 @@ def Scalar.s(-T: Data, x: Scalar<T>) -> T:
     case Scalar{s}:
       s
 
+def Scalar.cong(-T: Data, -a0: T, -b0: T,
+  e0: {a0 == b0 : T})
+  -> {Scalar{a0} == Scalar{b0} : Scalar<T>}:
+  %e0 : {Scalar{a0} == Scalar{_} : Scalar<T>}
+  {==}
+
 type Vector<-T: Data> is Data:
   Vector{e1: T, e2: T}
 
@@ -53,6 +59,13 @@ def Vector.e2(-T: Data, x: Vector<T>) -> T:
     case Vector{e1, e2}:
       e2
 
+def Vector.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T})
+  -> {Vector{a0, a1} == Vector{b0, b1} : Vector<T>}:
+  %e0 : {Vector{a0, a1} == Vector{_, b1} : Vector<T>}
+  %e1 : {Vector{a0, a1} == Vector{a0, _} : Vector<T>}
+  {==}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e12: T}
 
@@ -72,6 +85,12 @@ def Pseudoscalar.e12(-T: Data, x: Pseudoscalar<T>) -> T:
   match x:
     case Pseudoscalar{e12}:
       e12
+
+def Pseudoscalar.cong(-T: Data, -a0: T, -b0: T,
+  e0: {a0 == b0 : T})
+  -> {Pseudoscalar{a0} == Pseudoscalar{b0} : Pseudoscalar<T>}:
+  %e0 : {Pseudoscalar{a0} == Pseudoscalar{_} : Pseudoscalar<T>}
+  {==}
 
 type Rotor<-T: Data> is Data:
   Rotor{s: T, e12: T}
@@ -98,6 +117,13 @@ def Rotor.e12(-T: Data, x: Rotor<T>) -> T:
   match x:
     case Rotor{s, e12}:
       e12
+
+def Rotor.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T})
+  -> {Rotor{a0, a1} == Rotor{b0, b1} : Rotor<T>}:
+  %e0 : {Rotor{a0, a1} == Rotor{_, b1} : Rotor<T>}
+  %e1 : {Rotor{a0, a1} == Rotor{a0, _} : Rotor<T>}
+  {==}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e1: T, e2: T, e12: T}
@@ -136,3 +162,12 @@ def Multivector.e12(-T: Data, x: Multivector<T>) -> T:
   match x:
     case Multivector{s, e1, e2, e12}:
       e12
+
+def Multivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T, -b3: T,
+  e0: {a0 == b0 : T}, e1: {a1 == b1 : T}, e2: {a2 == b2 : T}, e3: {a3 == b3 : T})
+  -> {Multivector{a0, a1, a2, a3} == Multivector{b0, b1, b2, b3} : Multivector<T>}:
+  %e0 : {Multivector{a0, a1, a2, a3} == Multivector{_, b1, b2, b3} : Multivector<T>}
+  %e1 : {Multivector{a0, a1, a2, a3} == Multivector{a0, _, b2, b3} : Multivector<T>}
+  %e2 : {Multivector{a0, a1, a2, a3} == Multivector{a0, a1, _, b3} : Multivector<T>}
+  %e3 : {Multivector{a0, a1, a2, a3} == Multivector{a0, a1, a2, _} : Multivector<T>}
+  {==}

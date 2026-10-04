@@ -9015,518 +9015,1474 @@ def Multivector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>) ->
 def Vector.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>) -> K.Scalar<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
-      +t0 = mul(a_e0, b_s)
-      +t1 = mul(a_e1, b_s)
-      +t2 = mul(a_e2, b_s)
-      +t3 = mul(a_e3, b_s)
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +m0_0 = add(add(add(q0_0, neg(q1_1)), neg(q2_2)), neg(q3_3))
       K.Scalar{
-        add(mul(t0, a_e0), add(neg(mul(t1, a_e1)), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))))}
+        mul(b_s, m0_0)}
 
 def Vector.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Vector<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
-      +t0 = add(mul(a_e0, b_e1), neg(mul(a_e1, b_e0)))
-      +t1 = add(mul(a_e0, b_e2), neg(mul(a_e2, b_e0)))
-      +t2 = add(mul(a_e0, b_e3), neg(mul(a_e3, b_e0)))
-      +t3 = add(mul(a_e1, b_e2), neg(mul(a_e2, b_e1)))
-      +t4 = add(mul(a_e1, b_e3), neg(mul(a_e3, b_e1)))
-      +t5 = add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))
-      +t6 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q0_0 = mul(a_e0, a_e0)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(q1_1, q2_2), q3_3), q0_0)
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(add(neg(q0_0), q2_2), q3_3), neg(q1_1))
+      +m1_2 = add(neg(q1_2), neg(q1_2))
+      +m1_3 = add(neg(q1_3), neg(q1_3))
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(neg(q1_2), neg(q1_2))
+      +m2_2 = add(add(add(neg(q0_0), q1_1), q3_3), neg(q2_2))
+      +m2_3 = add(neg(q2_3), neg(q2_3))
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(neg(q1_3), neg(q1_3))
+      +m3_2 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = add(add(add(neg(q0_0), q1_1), q2_2), neg(q3_3))
       K.Vector{
-        add(add(neg(mul(t0, a_e1)), add(neg(mul(t1, a_e2)), neg(mul(t2, a_e3)))), mul(t6, a_e0)),
-        add(neg(mul(t0, a_e0)), add(add(neg(mul(t3, a_e2)), neg(mul(t4, a_e3))), mul(t6, a_e1))),
-        add(neg(mul(t1, a_e0)), add(mul(t3, a_e1), add(neg(mul(t5, a_e3)), mul(t6, a_e2)))),
-        add(neg(mul(t2, a_e0)), add(mul(t4, a_e1), add(mul(t5, a_e2), mul(t6, a_e3))))}
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3))))}
 
 def Vector.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>) -> K.Bivector<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
-      +t0 = add(mul(a_e0, b_e12), add(neg(mul(a_e1, neg(b_e20))), mul(a_e2, neg(b_e10))))
-      +t1 = add(mul(a_e0, neg(b_e31)), add(neg(mul(a_e1, neg(b_e30))), mul(a_e3, neg(b_e10))))
-      +t2 = add(mul(a_e0, b_e23), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20))))
-      +t3 = add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30))))
-      +t4 = add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12)))
-      +t5 = add(mul(a_e0, neg(b_e10)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31))))
-      +t6 = add(mul(a_e0, neg(b_e20)), add(neg(mul(a_e1, b_e12)), mul(a_e3, b_e23)))
-      +t7 = add(mul(a_e0, neg(b_e30)), add(neg(mul(a_e1, neg(b_e31))), neg(mul(a_e2, b_e23))))
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_3 = mul(a_e0, a_e3)
+      +q0_2 = mul(a_e0, a_e2)
+      +q2_3 = mul(a_e2, a_e3)
+      +q0_1 = mul(a_e0, a_e1)
+      +m0_0 = add(add(add(neg(q2_2), neg(q3_3)), q1_1), neg(q0_0))
+      +m0_1 = add(q1_2, q1_2)
+      +m0_2 = add(q1_3, q1_3)
+      +m0_4 = add(neg(q0_3), neg(q0_3))
+      +m0_5 = add(q0_2, q0_2)
+      +m1_0 = add(q1_2, q1_2)
+      +m1_1 = add(add(add(neg(q1_1), neg(q3_3)), q2_2), neg(q0_0))
+      +m1_2 = add(q2_3, q2_3)
+      +m1_3 = add(q0_3, q0_3)
+      +m1_5 = add(neg(q0_1), neg(q0_1))
+      +m2_0 = add(q1_3, q1_3)
+      +m2_1 = add(q2_3, q2_3)
+      +m2_2 = add(add(add(neg(q1_1), neg(q2_2)), q3_3), neg(q0_0))
+      +m2_3 = add(neg(q0_2), neg(q0_2))
+      +m2_4 = add(q0_1, q0_1)
+      +m3_1 = add(neg(q0_3), neg(q0_3))
+      +m3_2 = add(q0_2, q0_2)
+      +m3_3 = add(add(add(q0_0, neg(q1_1)), q3_3), q2_2)
+      +m3_4 = add(neg(q1_2), neg(q1_2))
+      +m3_5 = add(neg(q1_3), neg(q1_3))
+      +m4_0 = add(q0_3, q0_3)
+      +m4_2 = add(neg(q0_1), neg(q0_1))
+      +m4_3 = add(neg(q1_2), neg(q1_2))
+      +m4_4 = add(add(add(q0_0, neg(q2_2)), q3_3), q1_1)
+      +m4_5 = add(neg(q2_3), neg(q2_3))
+      +m5_0 = add(neg(q0_2), neg(q0_2))
+      +m5_1 = add(q0_1, q0_1)
+      +m5_3 = add(neg(q1_3), neg(q1_3))
+      +m5_4 = add(neg(q2_3), neg(q2_3))
+      +m5_5 = add(add(add(q0_0, neg(q3_3)), q2_2), q1_1)
       K.Bivector{
-        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), mul(t3, a_e1)), neg(mul(t5, a_e0)))),
-        neg(add(add(mul(t0, a_e1), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), neg(mul(t6, a_e0)))),
-        neg(add(add(mul(t1, a_e1), add(mul(t2, a_e2), mul(t3, a_e3))), neg(mul(t7, a_e0)))),
-        add(mul(t2, a_e0), add(neg(mul(t4, a_e1)), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
-        neg(add(mul(t1, a_e0), add(add(mul(t4, a_e2), mul(t5, a_e3)), neg(mul(t7, a_e1))))),
-        add(mul(t0, a_e0), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), neg(mul(t6, a_e1))))}
+        add(mul(b_e10, m0_0), add(mul(b_e20, m0_1), add(mul(b_e30, m0_2), add(mul(b_e31, m0_4), mul(b_e12, m0_5))))),
+        add(mul(b_e10, m1_0), add(mul(b_e20, m1_1), add(mul(b_e30, m1_2), add(mul(b_e23, m1_3), mul(b_e12, m1_5))))),
+        add(mul(b_e10, m2_0), add(mul(b_e20, m2_1), add(mul(b_e30, m2_2), add(mul(b_e23, m2_3), mul(b_e31, m2_4))))),
+        add(mul(b_e20, m3_1), add(mul(b_e30, m3_2), add(mul(b_e23, m3_3), add(mul(b_e31, m3_4), mul(b_e12, m3_5))))),
+        add(mul(b_e10, m4_0), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5))))),
+        add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5)))))}
 
 def Vector.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Trivector<T>) -> K.Trivector<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
-      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
-      +t1 = add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))
-      +t2 = add(mul(a_e1, neg(b_e021)), neg(mul(a_e3, neg(b_e032))))
-      +t3 = add(mul(a_e1, b_e013), mul(a_e2, neg(b_e032)))
-      +t4 = add(mul(a_e0, neg(b_e021)), neg(mul(a_e3, b_e123)))
-      +t5 = add(mul(a_e0, b_e013), mul(a_e2, b_e123))
-      +t6 = add(mul(a_e0, neg(b_e032)), neg(mul(a_e1, b_e123)))
+      +q0_0 = mul(a_e0, a_e0)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(neg(q0_0), neg(q3_3)), neg(q2_2)), neg(q1_1))
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(add(q1_1, neg(q3_3)), neg(q2_2)), q0_0)
+      +m1_2 = add(q1_2, q1_2)
+      +m1_3 = add(q1_3, q1_3)
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(add(q2_2, neg(q3_3)), neg(q1_1)), q0_0)
+      +m2_3 = add(q2_3, q2_3)
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(q1_3, q1_3)
+      +m3_2 = add(q2_3, q2_3)
+      +m3_3 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       K.Trivector{
-        add(neg(mul(t0, a_e0)), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), mul(t6, a_e1))),
-        neg(add(add(neg(mul(t0, a_e1)), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), mul(t6, a_e0))),
-        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), neg(mul(t3, a_e1))), mul(t5, a_e0)),
-        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), neg(mul(t2, a_e1))), mul(t4, a_e0)))}
+        add(mul(b_e123, m0_0), add(mul(b_e032, m0_1), add(mul(b_e013, m0_2), mul(b_e021, m0_3)))),
+        add(mul(b_e123, m1_0), add(mul(b_e032, m1_1), add(mul(b_e013, m1_2), mul(b_e021, m1_3)))),
+        add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
+        add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
 
 def Vector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e0123}:
-      +t0 = mul(a_e3, b_e0123)
-      +t1 = neg(mul(a_e2, b_e0123))
-      +t2 = mul(a_e1, b_e0123)
-      +t3 = mul(a_e0, b_e0123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q0_0 = mul(a_e0, a_e0)
+      +m0_0 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
       K.Pseudoscalar{
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), mul(t2, a_e1)), neg(mul(t3, a_e0)))}
+        mul(b_e0123, m0_0)}
 
 def Vector.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Phasor<T>) -> K.Phasor<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Phasor{+b_s, +b_e0123}:
-      +t0 = mul(a_e3, b_e0123)
-      +t1 = neg(mul(a_e2, b_e0123))
-      +t2 = mul(a_e1, b_e0123)
-      +t3 = mul(a_e0, b_s)
-      +t4 = mul(a_e0, b_e0123)
-      +t5 = mul(a_e1, b_s)
-      +t6 = mul(a_e2, b_s)
-      +t7 = mul(a_e3, b_s)
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +m0_0 = add(add(add(q0_0, neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m1_1 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
       K.Phasor{
-        add(mul(t3, a_e0), add(neg(mul(t5, a_e1)), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), mul(t2, a_e1)), neg(mul(t4, a_e0)))}
+        mul(b_s, m0_0),
+        mul(b_e0123, m1_1)}
 
 def Vector.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Even<T>) -> K.Even<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
-      +t0 = add(mul(a_e0, b_e12), add(neg(mul(a_e1, neg(b_e20))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
-      +t1 = add(mul(a_e0, neg(b_e31)), add(neg(mul(a_e1, neg(b_e30))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
-      +t2 = add(mul(a_e0, b_e23), add(mul(a_e1, b_e0123), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
-      +t3 = add(mul(a_e0, b_s), add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
-      +t4 = add(mul(a_e0, b_e0123), add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
-      +t5 = add(mul(a_e0, neg(b_e10)), add(mul(a_e1, b_s), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
-      +t6 = add(mul(a_e0, neg(b_e20)), add(neg(mul(a_e1, b_e12)), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
-      +t7 = add(mul(a_e0, neg(b_e30)), add(neg(mul(a_e1, neg(b_e31))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q0_3 = mul(a_e0, a_e3)
+      +q0_2 = mul(a_e0, a_e2)
+      +q2_3 = mul(a_e2, a_e3)
+      +q0_1 = mul(a_e0, a_e1)
+      +m0_0 = add(add(add(q0_0, neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m1_1 = add(add(add(neg(q2_2), neg(q3_3)), q1_1), neg(q0_0))
+      +m1_2 = add(q1_2, q1_2)
+      +m1_3 = add(q1_3, q1_3)
+      +m1_5 = add(neg(q0_3), neg(q0_3))
+      +m1_6 = add(q0_2, q0_2)
+      +m2_1 = add(q1_2, q1_2)
+      +m2_2 = add(add(add(neg(q1_1), neg(q3_3)), q2_2), neg(q0_0))
+      +m2_3 = add(q2_3, q2_3)
+      +m2_4 = add(q0_3, q0_3)
+      +m2_6 = add(neg(q0_1), neg(q0_1))
+      +m3_1 = add(q1_3, q1_3)
+      +m3_2 = add(q2_3, q2_3)
+      +m3_3 = add(add(add(neg(q1_1), neg(q2_2)), q3_3), neg(q0_0))
+      +m3_4 = add(neg(q0_2), neg(q0_2))
+      +m3_5 = add(q0_1, q0_1)
+      +m4_2 = add(neg(q0_3), neg(q0_3))
+      +m4_3 = add(q0_2, q0_2)
+      +m4_4 = add(add(add(q0_0, neg(q1_1)), q3_3), q2_2)
+      +m4_5 = add(neg(q1_2), neg(q1_2))
+      +m4_6 = add(neg(q1_3), neg(q1_3))
+      +m5_1 = add(q0_3, q0_3)
+      +m5_3 = add(neg(q0_1), neg(q0_1))
+      +m5_4 = add(neg(q1_2), neg(q1_2))
+      +m5_5 = add(add(add(q0_0, neg(q2_2)), q3_3), q1_1)
+      +m5_6 = add(neg(q2_3), neg(q2_3))
+      +m6_1 = add(neg(q0_2), neg(q0_2))
+      +m6_2 = add(q0_1, q0_1)
+      +m6_4 = add(neg(q1_3), neg(q1_3))
+      +m6_5 = add(neg(q2_3), neg(q2_3))
+      +m6_6 = add(add(add(q0_0, neg(q3_3)), q2_2), q1_1)
+      +m7_7 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
       K.Even{
-        add(mul(t3, a_e0), add(neg(mul(t5, a_e1)), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
-        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), mul(t3, a_e1)), neg(mul(t5, a_e0)))),
-        neg(add(add(mul(t0, a_e1), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), neg(mul(t6, a_e0)))),
-        neg(add(add(mul(t1, a_e1), add(mul(t2, a_e2), mul(t3, a_e3))), neg(mul(t7, a_e0)))),
-        add(mul(t2, a_e0), add(neg(mul(t4, a_e1)), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
-        neg(add(mul(t1, a_e0), add(add(mul(t4, a_e2), mul(t5, a_e3)), neg(mul(t7, a_e1))))),
-        add(mul(t0, a_e0), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), neg(mul(t6, a_e1)))),
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), mul(t2, a_e1)), neg(mul(t4, a_e0)))}
+        mul(b_s, m0_0),
+        add(mul(b_e10, m1_1), add(mul(b_e20, m1_2), add(mul(b_e30, m1_3), add(mul(b_e31, m1_5), mul(b_e12, m1_6))))),
+        add(mul(b_e10, m2_1), add(mul(b_e20, m2_2), add(mul(b_e30, m2_3), add(mul(b_e23, m2_4), mul(b_e12, m2_6))))),
+        add(mul(b_e10, m3_1), add(mul(b_e20, m3_2), add(mul(b_e30, m3_3), add(mul(b_e23, m3_4), mul(b_e31, m3_5))))),
+        add(mul(b_e20, m4_2), add(mul(b_e30, m4_3), add(mul(b_e23, m4_4), add(mul(b_e31, m4_5), mul(b_e12, m4_6))))),
+        add(mul(b_e10, m5_1), add(mul(b_e30, m5_3), add(mul(b_e23, m5_4), add(mul(b_e31, m5_5), mul(b_e12, m5_6))))),
+        add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6))))),
+        mul(b_e0123, m7_7)}
 
 def Vector.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Odd<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
-      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
-      +t1 = add(mul(a_e0, b_e1), add(neg(mul(a_e1, b_e0)), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
-      +t2 = add(mul(a_e0, b_e2), add(mul(a_e1, neg(b_e021)), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
-      +t3 = add(mul(a_e0, b_e3), add(mul(a_e1, b_e013), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
-      +t4 = add(mul(a_e0, neg(b_e021)), add(mul(a_e1, b_e2), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
-      +t5 = add(mul(a_e0, b_e013), add(mul(a_e1, b_e3), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
-      +t6 = add(mul(a_e0, neg(b_e032)), add(neg(mul(a_e1, b_e123)), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
-      +t7 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q0_0 = mul(a_e0, a_e0)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(q1_1, q2_2), q3_3), q0_0)
+      +m0_1 = add(neg(q0_1), neg(q0_1))
+      +m0_2 = add(neg(q0_2), neg(q0_2))
+      +m0_3 = add(neg(q0_3), neg(q0_3))
+      +m1_0 = add(q0_1, q0_1)
+      +m1_1 = add(add(add(neg(q0_0), q2_2), q3_3), neg(q1_1))
+      +m1_2 = add(neg(q1_2), neg(q1_2))
+      +m1_3 = add(neg(q1_3), neg(q1_3))
+      +m2_0 = add(q0_2, q0_2)
+      +m2_1 = add(neg(q1_2), neg(q1_2))
+      +m2_2 = add(add(add(neg(q0_0), q1_1), q3_3), neg(q2_2))
+      +m2_3 = add(neg(q2_3), neg(q2_3))
+      +m3_0 = add(q0_3, q0_3)
+      +m3_1 = add(neg(q1_3), neg(q1_3))
+      +m3_2 = add(neg(q2_3), neg(q2_3))
+      +m3_3 = add(add(add(neg(q0_0), q1_1), q2_2), neg(q3_3))
+      +m4_4 = add(add(add(neg(q0_0), neg(q3_3)), neg(q2_2)), neg(q1_1))
+      +m4_5 = add(neg(q0_1), neg(q0_1))
+      +m4_6 = add(neg(q0_2), neg(q0_2))
+      +m4_7 = add(neg(q0_3), neg(q0_3))
+      +m5_4 = add(q0_1, q0_1)
+      +m5_5 = add(add(add(q1_1, neg(q3_3)), neg(q2_2)), q0_0)
+      +m5_6 = add(q1_2, q1_2)
+      +m5_7 = add(q1_3, q1_3)
+      +m6_4 = add(q0_2, q0_2)
+      +m6_5 = add(q1_2, q1_2)
+      +m6_6 = add(add(add(q2_2, neg(q3_3)), neg(q1_1)), q0_0)
+      +m6_7 = add(q2_3, q2_3)
+      +m7_4 = add(q0_3, q0_3)
+      +m7_5 = add(q1_3, q1_3)
+      +m7_6 = add(q2_3, q2_3)
+      +m7_7 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
       K.Odd{
-        add(add(neg(mul(t1, a_e1)), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))), mul(t7, a_e0)),
-        add(neg(mul(t1, a_e0)), add(add(neg(mul(t4, a_e2)), neg(mul(t5, a_e3))), mul(t7, a_e1))),
-        add(neg(mul(t2, a_e0)), add(mul(t4, a_e1), add(neg(mul(t6, a_e3)), mul(t7, a_e2)))),
-        add(neg(mul(t3, a_e0)), add(mul(t5, a_e1), add(mul(t6, a_e2), mul(t7, a_e3)))),
-        add(neg(mul(t0, a_e0)), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), mul(t6, a_e1))),
-        neg(add(add(neg(mul(t0, a_e1)), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), mul(t6, a_e0))),
-        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), neg(mul(t3, a_e1))), mul(t5, a_e0)),
-        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), neg(mul(t2, a_e1))), mul(t4, a_e0)))}
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3)))),
+        add(mul(b_e123, m4_4), add(mul(b_e032, m4_5), add(mul(b_e013, m4_6), mul(b_e021, m4_7)))),
+        add(mul(b_e123, m5_4), add(mul(b_e032, m5_5), add(mul(b_e013, m5_6), mul(b_e021, m5_7)))),
+        add(mul(b_e123, m6_4), add(mul(b_e032, m6_5), add(mul(b_e013, m6_6), mul(b_e021, m6_7)))),
+        add(mul(b_e123, m7_4), add(mul(b_e032, m7_5), add(mul(b_e013, m7_6), mul(b_e021, m7_7))))}
 
 def Vector.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
   match a b:
     case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
-      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
-      +t1 = add(mul(a_e0, b_e12), add(neg(mul(a_e1, neg(b_e20))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
-      +t2 = add(mul(a_e0, neg(b_e31)), add(neg(mul(a_e1, neg(b_e30))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
-      +t3 = add(mul(a_e0, b_e1), add(neg(mul(a_e1, b_e0)), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
-      +t4 = add(mul(a_e0, b_e23), add(mul(a_e1, b_e0123), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
-      +t5 = add(mul(a_e0, b_e2), add(mul(a_e1, neg(b_e021)), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
-      +t6 = add(mul(a_e0, b_e3), add(mul(a_e1, b_e013), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
-      +t7 = add(mul(a_e0, b_s), add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
-      +t8 = add(mul(a_e0, b_e0123), add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
-      +t9 = add(mul(a_e0, neg(b_e021)), add(mul(a_e1, b_e2), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
-      +t10 = add(mul(a_e0, b_e013), add(mul(a_e1, b_e3), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
-      +t11 = add(mul(a_e0, neg(b_e10)), add(mul(a_e1, b_s), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
-      +t12 = add(mul(a_e0, neg(b_e032)), add(neg(mul(a_e1, b_e123)), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
-      +t13 = add(mul(a_e0, neg(b_e20)), add(neg(mul(a_e1, b_e12)), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
-      +t14 = add(mul(a_e0, neg(b_e30)), add(neg(mul(a_e1, neg(b_e31))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
-      +t15 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      +q0_0 = mul(a_e0, a_e0)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q0_1 = mul(a_e0, a_e1)
+      +q0_2 = mul(a_e0, a_e2)
+      +q0_3 = mul(a_e0, a_e3)
+      +q1_2 = mul(a_e1, a_e2)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(q0_0, neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m1_1 = add(add(add(q1_1, q2_2), q3_3), q0_0)
+      +m1_2 = add(neg(q0_1), neg(q0_1))
+      +m1_3 = add(neg(q0_2), neg(q0_2))
+      +m1_4 = add(neg(q0_3), neg(q0_3))
+      +m2_1 = add(q0_1, q0_1)
+      +m2_2 = add(add(add(neg(q0_0), q2_2), q3_3), neg(q1_1))
+      +m2_3 = add(neg(q1_2), neg(q1_2))
+      +m2_4 = add(neg(q1_3), neg(q1_3))
+      +m3_1 = add(q0_2, q0_2)
+      +m3_2 = add(neg(q1_2), neg(q1_2))
+      +m3_3 = add(add(add(neg(q0_0), q1_1), q3_3), neg(q2_2))
+      +m3_4 = add(neg(q2_3), neg(q2_3))
+      +m4_1 = add(q0_3, q0_3)
+      +m4_2 = add(neg(q1_3), neg(q1_3))
+      +m4_3 = add(neg(q2_3), neg(q2_3))
+      +m4_4 = add(add(add(neg(q0_0), q1_1), q2_2), neg(q3_3))
+      +m5_5 = add(add(add(neg(q2_2), neg(q3_3)), q1_1), neg(q0_0))
+      +m5_6 = add(q1_2, q1_2)
+      +m5_7 = add(q1_3, q1_3)
+      +m5_9 = add(neg(q0_3), neg(q0_3))
+      +m5_10 = add(q0_2, q0_2)
+      +m6_5 = add(q1_2, q1_2)
+      +m6_6 = add(add(add(neg(q1_1), neg(q3_3)), q2_2), neg(q0_0))
+      +m6_7 = add(q2_3, q2_3)
+      +m6_8 = add(q0_3, q0_3)
+      +m6_10 = add(neg(q0_1), neg(q0_1))
+      +m7_5 = add(q1_3, q1_3)
+      +m7_6 = add(q2_3, q2_3)
+      +m7_7 = add(add(add(neg(q1_1), neg(q2_2)), q3_3), neg(q0_0))
+      +m7_8 = add(neg(q0_2), neg(q0_2))
+      +m7_9 = add(q0_1, q0_1)
+      +m8_6 = add(neg(q0_3), neg(q0_3))
+      +m8_7 = add(q0_2, q0_2)
+      +m8_8 = add(add(add(q0_0, neg(q1_1)), q3_3), q2_2)
+      +m8_9 = add(neg(q1_2), neg(q1_2))
+      +m8_10 = add(neg(q1_3), neg(q1_3))
+      +m9_5 = add(q0_3, q0_3)
+      +m9_7 = add(neg(q0_1), neg(q0_1))
+      +m9_8 = add(neg(q1_2), neg(q1_2))
+      +m9_9 = add(add(add(q0_0, neg(q2_2)), q3_3), q1_1)
+      +m9_10 = add(neg(q2_3), neg(q2_3))
+      +m10_5 = add(neg(q0_2), neg(q0_2))
+      +m10_6 = add(q0_1, q0_1)
+      +m10_8 = add(neg(q1_3), neg(q1_3))
+      +m10_9 = add(neg(q2_3), neg(q2_3))
+      +m10_10 = add(add(add(q0_0, neg(q3_3)), q2_2), q1_1)
+      +m11_11 = add(add(add(neg(q0_0), neg(q3_3)), neg(q2_2)), neg(q1_1))
+      +m11_12 = add(neg(q0_1), neg(q0_1))
+      +m11_13 = add(neg(q0_2), neg(q0_2))
+      +m11_14 = add(neg(q0_3), neg(q0_3))
+      +m12_11 = add(q0_1, q0_1)
+      +m12_12 = add(add(add(q1_1, neg(q3_3)), neg(q2_2)), q0_0)
+      +m12_13 = add(q1_2, q1_2)
+      +m12_14 = add(q1_3, q1_3)
+      +m13_11 = add(q0_2, q0_2)
+      +m13_12 = add(q1_2, q1_2)
+      +m13_13 = add(add(add(q2_2, neg(q3_3)), neg(q1_1)), q0_0)
+      +m13_14 = add(q2_3, q2_3)
+      +m14_11 = add(q0_3, q0_3)
+      +m14_12 = add(q1_3, q1_3)
+      +m14_13 = add(q2_3, q2_3)
+      +m14_14 = add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q0_0)
+      +m15_15 = add(add(add(q3_3, q2_2), q1_1), neg(q0_0))
       K.Multivector{
-        add(mul(t7, a_e0), add(neg(mul(t11, a_e1)), add(neg(mul(t13, a_e2)), neg(mul(t14, a_e3))))),
-        add(add(neg(mul(t3, a_e1)), add(neg(mul(t5, a_e2)), neg(mul(t6, a_e3)))), mul(t15, a_e0)),
-        add(neg(mul(t3, a_e0)), add(add(neg(mul(t9, a_e2)), neg(mul(t10, a_e3))), mul(t15, a_e1))),
-        add(neg(mul(t5, a_e0)), add(mul(t9, a_e1), add(neg(mul(t12, a_e3)), mul(t15, a_e2)))),
-        add(neg(mul(t6, a_e0)), add(mul(t10, a_e1), add(mul(t12, a_e2), mul(t15, a_e3)))),
-        neg(add(add(add(neg(mul(t1, a_e2)), neg(mul(t2, a_e3))), mul(t7, a_e1)), neg(mul(t11, a_e0)))),
-        neg(add(add(mul(t1, a_e1), add(neg(mul(t4, a_e3)), mul(t7, a_e2))), neg(mul(t13, a_e0)))),
-        neg(add(add(mul(t2, a_e1), add(mul(t4, a_e2), mul(t7, a_e3))), neg(mul(t14, a_e0)))),
-        add(mul(t4, a_e0), add(neg(mul(t8, a_e1)), add(mul(t13, a_e3), neg(mul(t14, a_e2))))),
-        neg(add(mul(t2, a_e0), add(add(mul(t8, a_e2), mul(t11, a_e3)), neg(mul(t14, a_e1))))),
-        add(mul(t1, a_e0), add(add(neg(mul(t8, a_e3)), mul(t11, a_e2)), neg(mul(t13, a_e1)))),
-        add(neg(mul(t0, a_e0)), add(add(mul(t9, a_e3), neg(mul(t10, a_e2))), mul(t12, a_e1))),
-        neg(add(add(neg(mul(t0, a_e1)), add(mul(t5, a_e3), neg(mul(t6, a_e2)))), mul(t12, a_e0))),
-        add(add(add(mul(t0, a_e2), mul(t3, a_e3)), neg(mul(t6, a_e1))), mul(t10, a_e0)),
-        neg(add(add(add(neg(mul(t0, a_e3)), mul(t3, a_e2)), neg(mul(t5, a_e1))), mul(t9, a_e0))),
-        add(add(add(mul(t1, a_e3), neg(mul(t2, a_e2))), mul(t4, a_e1)), neg(mul(t8, a_e0)))}
+        mul(b_s, m0_0),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e0, m2_1), add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4)))),
+        add(mul(b_e0, m3_1), add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4)))),
+        add(mul(b_e0, m4_1), add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4)))),
+        add(mul(b_e10, m5_5), add(mul(b_e20, m5_6), add(mul(b_e30, m5_7), add(mul(b_e31, m5_9), mul(b_e12, m5_10))))),
+        add(mul(b_e10, m6_5), add(mul(b_e20, m6_6), add(mul(b_e30, m6_7), add(mul(b_e23, m6_8), mul(b_e12, m6_10))))),
+        add(mul(b_e10, m7_5), add(mul(b_e20, m7_6), add(mul(b_e30, m7_7), add(mul(b_e23, m7_8), mul(b_e31, m7_9))))),
+        add(mul(b_e20, m8_6), add(mul(b_e30, m8_7), add(mul(b_e23, m8_8), add(mul(b_e31, m8_9), mul(b_e12, m8_10))))),
+        add(mul(b_e10, m9_5), add(mul(b_e30, m9_7), add(mul(b_e23, m9_8), add(mul(b_e31, m9_9), mul(b_e12, m9_10))))),
+        add(mul(b_e10, m10_5), add(mul(b_e20, m10_6), add(mul(b_e23, m10_8), add(mul(b_e31, m10_9), mul(b_e12, m10_10))))),
+        add(mul(b_e123, m11_11), add(mul(b_e032, m11_12), add(mul(b_e013, m11_13), mul(b_e021, m11_14)))),
+        add(mul(b_e123, m12_11), add(mul(b_e032, m12_12), add(mul(b_e013, m12_13), mul(b_e021, m12_14)))),
+        add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
+        add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
+        mul(b_e0123, m15_15)}
 
 def Even.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Scalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Scalar{+b_s}:
-      +t0 = mul(a_e0123, b_s)
-      +t1 = mul(neg(a_e10), b_s)
-      +t2 = mul(neg(a_e20), b_s)
-      +t3 = mul(neg(a_e30), b_s)
-      +t4 = mul(a_e12, b_s)
-      +t5 = mul(neg(a_e31), b_s)
-      +t6 = mul(a_e23, b_s)
-      +t7 = mul(a_s, b_s)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q0_7 = mul(a_s, a_e0123)
+      +q1_4 = mul(a_e10, a_e23)
+      +q2_5 = mul(a_e20, a_e31)
+      +q3_6 = mul(a_e30, a_e12)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q1_1)), neg(q2_2)), neg(q3_3)), q6_6), q5_5), q4_4), q0_0)
+      +m1_0 = add(add(add(add(add(add(add(q0_7, q1_4), q2_5), q3_6), q3_6), q2_5), q1_4), q0_7)
       K.Phasor{
-        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
-        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+        mul(b_s, m0_0),
+        mul(b_s, m1_0)}
 
 def Even.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Vector<T>) -> K.Vector<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
-      +t0 = add(add(add(neg(mul(a_e0123, b_e3)), mul(neg(a_e10), b_e2)), neg(mul(neg(a_e20), b_e1))), mul(a_e12, b_e0))
-      +t1 = add(add(add(mul(a_e0123, b_e2), mul(neg(a_e10), b_e3)), neg(mul(neg(a_e30), b_e1))), mul(neg(a_e31), b_e0))
-      +t2 = add(add(neg(mul(a_e0123, b_e1)), add(mul(neg(a_e20), b_e3), neg(mul(neg(a_e30), b_e2)))), mul(a_e23, b_e0))
-      +t3 = add(add(neg(mul(neg(a_e10), b_e1)), add(neg(mul(neg(a_e20), b_e2)), neg(mul(neg(a_e30), b_e3)))), mul(a_s, b_e0))
-      +t4 = add(neg(mul(a_e0123, b_e0)), add(add(mul(a_e12, b_e3), neg(mul(neg(a_e31), b_e2))), mul(a_e23, b_e1)))
-      +t5 = add(neg(mul(neg(a_e10), b_e0)), add(add(neg(mul(a_e12, b_e2)), neg(mul(neg(a_e31), b_e3))), mul(a_s, b_e1)))
-      +t6 = add(neg(mul(neg(a_e20), b_e0)), add(mul(a_e12, b_e1), add(neg(mul(a_e23, b_e3)), mul(a_s, b_e2))))
-      +t7 = add(neg(mul(neg(a_e30), b_e0)), add(mul(neg(a_e31), b_e1), add(mul(a_e23, b_e2), mul(a_s, b_e3))))
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_6 = mul(a_e20, a_e12)
+      +q3_5 = mul(a_e30, a_e31)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q0_1 = mul(a_s, a_e10)
+      +q1_6 = mul(a_e10, a_e12)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q1_5 = mul(a_e10, a_e31)
+      +q2_4 = mul(a_e20, a_e23)
+      +q0_3 = mul(a_s, a_e30)
+      +q1_2 = mul(a_e10, a_e20)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q4_5 = mul(a_e23, a_e31)
+      +q0_6 = mul(a_s, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q4_6 = mul(a_e23, a_e12)
+      +q0_5 = mul(a_s, a_e31)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q2_3 = mul(a_e20, a_e30)
+      +q5_6 = mul(a_e31, a_e12)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(q6_6, q5_5), q4_4), q0_0), q7_7), q1_1), q2_2), q3_3)
+      +m0_1 = add(add(add(add(add(add(add(q2_6, neg(q3_5)), neg(q4_7)), q0_1), neg(q4_7)), q0_1), q2_6), neg(q3_5))
+      +m0_2 = add(add(add(add(add(add(add(neg(q1_6), neg(q5_7)), q3_4), q0_2), neg(q5_7)), neg(q1_6)), q0_2), q3_4)
+      +m0_3 = add(add(add(add(add(add(add(neg(q6_7), q1_5), neg(q2_4)), q0_3), neg(q6_7)), q1_5), neg(q2_4)), q0_3)
+      +m1_0 = add(add(add(add(add(add(add(neg(q2_6), q3_5), neg(q4_7)), q0_1), neg(q4_7)), q0_1), neg(q2_6)), q3_5)
+      +m1_1 = add(add(add(add(add(add(add(neg(q2_2), neg(q3_3)), q7_7), q1_1), q4_4), q0_0), neg(q6_6)), neg(q5_5))
+      +m1_2 = add(add(add(add(add(add(add(q1_2, neg(q3_7)), neg(q3_7)), q1_2), q4_5), neg(q0_6)), neg(q0_6)), q4_5)
+      +m1_3 = add(add(add(add(add(add(add(q2_7, q1_3), q2_7), q1_3), q4_6), q0_5), q4_6), q0_5)
+      +m2_0 = add(add(add(add(add(add(add(q1_6, neg(q5_7)), neg(q3_4)), q0_2), neg(q5_7)), q1_6), q0_2), neg(q3_4))
+      +m2_1 = add(add(add(add(add(add(add(q1_2, q3_7), q3_7), q1_2), q4_5), q0_6), q0_6), q4_5)
+      +m2_2 = add(add(add(add(add(add(add(neg(q1_1), q7_7), neg(q3_3)), q2_2), q5_5), neg(q6_6)), q0_0), neg(q4_4))
+      +m2_3 = add(add(add(add(add(add(add(neg(q1_7), neg(q1_7)), q2_3), q2_3), q5_6), q5_6), neg(q0_4)), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(neg(q6_7), neg(q1_5)), q2_4), q0_3), neg(q6_7)), neg(q1_5)), q2_4), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q2_7), q1_3), neg(q2_7)), q1_3), q4_6), neg(q0_5)), q4_6), neg(q0_5))
+      +m3_2 = add(add(add(add(add(add(add(q1_7, q1_7), q2_3), q2_3), q5_6), q5_6), q0_4), q0_4)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, neg(q1_1)), neg(q2_2)), q3_3), q6_6), neg(q5_5)), neg(q4_4)), q0_0)
       K.Vector{
-        add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30)))))),
-        add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31)))))),
-        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
-        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s))))}
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3))))}
 
 def Even.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Bivector<T>) -> K.Bivector<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
-      +t0 = add(add(mul(neg(a_e10), b_e23), add(neg(mul(neg(a_e20), neg(b_e31))), mul(neg(a_e30), b_e12))), add(add(mul(a_e12, neg(b_e30)), neg(mul(neg(a_e31), neg(b_e20)))), mul(a_e23, neg(b_e10))))
-      +t1 = add(add(neg(mul(a_e0123, b_e23)), add(mul(neg(a_e20), b_e12), mul(neg(a_e30), neg(b_e31)))), add(add(neg(mul(a_e12, neg(b_e20))), neg(mul(neg(a_e31), neg(b_e30)))), mul(a_s, neg(b_e10))))
-      +t2 = add(add(add(mul(a_e0123, neg(b_e31)), neg(mul(neg(a_e10), b_e12))), mul(neg(a_e30), b_e23)), add(mul(a_e12, neg(b_e10)), add(neg(mul(a_e23, neg(b_e30))), mul(a_s, neg(b_e20)))))
-      +t3 = add(add(add(neg(mul(a_e0123, b_e12)), neg(mul(neg(a_e10), neg(b_e31)))), neg(mul(neg(a_e20), b_e23))), add(mul(neg(a_e31), neg(b_e10)), add(mul(a_e23, neg(b_e20)), mul(a_s, neg(b_e30)))))
-      +t4 = add(add(add(mul(a_e0123, neg(b_e30)), neg(mul(neg(a_e10), neg(b_e20)))), mul(neg(a_e20), neg(b_e10))), add(mul(neg(a_e31), b_e23), add(neg(mul(a_e23, neg(b_e31))), mul(a_s, b_e12))))
-      +t5 = add(add(add(neg(mul(a_e0123, neg(b_e20))), neg(mul(neg(a_e10), neg(b_e30)))), mul(neg(a_e30), neg(b_e10))), add(neg(mul(a_e12, b_e23)), add(mul(a_e23, b_e12), mul(a_s, neg(b_e31)))))
-      +t6 = add(add(mul(a_e0123, neg(b_e10)), add(neg(mul(neg(a_e20), neg(b_e30))), mul(neg(a_e30), neg(b_e20)))), add(add(mul(a_e12, neg(b_e31)), neg(mul(neg(a_e31), b_e12))), mul(a_s, b_e23)))
-      +t7 = add(add(mul(neg(a_e10), neg(b_e10)), add(mul(neg(a_e20), neg(b_e20)), mul(neg(a_e30), neg(b_e30)))), add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))))
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q4_5 = mul(a_e23, a_e31)
+      +q0_6 = mul(a_s, a_e12)
+      +q1_2 = mul(a_e10, a_e20)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q4_6 = mul(a_e23, a_e12)
+      +q0_5 = mul(a_s, a_e31)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q1_4 = mul(a_e10, a_e23)
+      +q0_7 = mul(a_s, a_e0123)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_5 = mul(a_e20, a_e31)
+      +q2_4 = mul(a_e20, a_e23)
+      +q0_3 = mul(a_s, a_e30)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q1_5 = mul(a_e10, a_e31)
+      +q3_4 = mul(a_e30, a_e23)
+      +q0_2 = mul(a_s, a_e20)
+      +q1_6 = mul(a_e10, a_e12)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q5_6 = mul(a_e31, a_e12)
+      +q0_4 = mul(a_s, a_e23)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q2_3 = mul(a_e20, a_e30)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q4_7 = mul(a_e23, a_e0123)
+      +m0_0 = add(add(add(add(add(add(add(q4_4, q0_0), neg(q6_6)), neg(q5_5)), q2_2), q3_3), neg(q7_7)), neg(q1_1))
+      +m0_1 = add(add(add(add(add(add(add(q4_5, neg(q0_6)), neg(q0_6)), q4_5), neg(q1_2)), q3_7), q3_7), neg(q1_2))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, q0_5), q4_6), q0_5), neg(q2_7)), neg(q1_3)), neg(q2_7)), neg(q1_3))
+      +m0_3 = add(add(add(add(add(add(add(q1_4, q0_7), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q3_6)), q0_7), q1_4)
+      +m0_4 = add(add(add(add(add(add(add(q2_4, neg(q0_3)), neg(q6_7)), q1_5), q2_4), neg(q0_3)), neg(q6_7)), q1_5)
+      +m0_5 = add(add(add(add(add(add(add(q3_4, q0_2), q1_6), q5_7), q0_2), q3_4), q5_7), q1_6)
+      +m1_0 = add(add(add(add(add(add(add(q4_5, q0_6), q0_6), q4_5), neg(q1_2)), neg(q3_7)), neg(q3_7)), neg(q1_2))
+      +m1_1 = add(add(add(add(add(add(add(q5_5, neg(q6_6)), q0_0), neg(q4_4)), q1_1), neg(q7_7)), q3_3), neg(q2_2))
+      +m1_2 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q0_4)), neg(q0_4)), q1_7), q1_7), neg(q2_3)), neg(q2_3))
+      +m1_3 = add(add(add(add(add(add(add(q1_5, q6_7), q0_3), q2_4), q1_5), q6_7), q0_3), q2_4)
+      +m1_4 = add(add(add(add(add(add(add(q2_5, neg(q3_6)), q0_7), neg(q1_4)), neg(q1_4)), q0_7), neg(q3_6)), q2_5)
+      +m1_5 = add(add(add(add(add(add(add(q3_5, q2_6), neg(q0_1)), neg(q4_7)), neg(q0_1)), neg(q4_7)), q3_5), q2_6)
+      +m2_0 = add(add(add(add(add(add(add(q4_6, neg(q0_5)), q4_6), neg(q0_5)), q2_7), neg(q1_3)), q2_7), neg(q1_3))
+      +m2_1 = add(add(add(add(add(add(add(q5_6, q5_6), q0_4), q0_4), neg(q1_7)), neg(q1_7)), neg(q2_3)), neg(q2_3))
+      +m2_2 = add(add(add(add(add(add(add(q6_6, neg(q5_5)), neg(q4_4)), q0_0), neg(q7_7)), q1_1), q2_2), neg(q3_3))
+      +m2_3 = add(add(add(add(add(add(add(q1_6, neg(q5_7)), q3_4), neg(q0_2)), neg(q5_7)), q1_6), neg(q0_2)), q3_4)
+      +m2_4 = add(add(add(add(add(add(add(q2_6, q3_5), q4_7), q0_1), q4_7), q0_1), q2_6), q3_5)
+      +m2_5 = add(add(add(add(add(add(add(q3_6, neg(q2_5)), neg(q1_4)), q0_7), q0_7), neg(q1_4)), neg(q2_5)), q3_6)
+      +m3_0 = add(add(add(add(add(add(add(neg(q1_4), neg(q0_7)), q3_6), q2_5), q2_5), q3_6), neg(q0_7)), neg(q1_4))
+      +m3_1 = add(add(add(add(add(add(add(neg(q1_5), q6_7), q0_3), neg(q2_4)), neg(q1_5)), q6_7), q0_3), neg(q2_4))
+      +m3_2 = add(add(add(add(add(add(add(neg(q1_6), neg(q5_7)), neg(q3_4)), neg(q0_2)), neg(q5_7)), neg(q1_6)), neg(q0_2)), neg(q3_4))
+      +m3_3 = add(add(add(add(add(add(add(neg(q1_1), neg(q7_7)), q3_3), q2_2), neg(q5_5)), neg(q6_6)), q0_0), q4_4)
+      +m3_4 = add(add(add(add(add(add(add(neg(q1_2), q3_7), q3_7), neg(q1_2)), q4_5), neg(q0_6)), neg(q0_6)), q4_5)
+      +m3_5 = add(add(add(add(add(add(add(neg(q1_3), neg(q2_7)), neg(q1_3)), neg(q2_7)), q0_5), q4_6), q0_5), q4_6)
+      +m4_0 = add(add(add(add(add(add(add(neg(q2_4), neg(q0_3)), neg(q6_7)), neg(q1_5)), neg(q2_4)), neg(q0_3)), neg(q6_7)), neg(q1_5))
+      +m4_1 = add(add(add(add(add(add(add(neg(q2_5), q3_6), neg(q0_7)), q1_4), q1_4), neg(q0_7)), q3_6), neg(q2_5))
+      +m4_2 = add(add(add(add(add(add(add(neg(q2_6), neg(q3_5)), q4_7), q0_1), q4_7), q0_1), neg(q2_6)), neg(q3_5))
+      +m4_3 = add(add(add(add(add(add(add(neg(q1_2), neg(q3_7)), neg(q3_7)), neg(q1_2)), q4_5), q0_6), q0_6), q4_5)
+      +m4_4 = add(add(add(add(add(add(add(neg(q2_2), q3_3), neg(q7_7)), q1_1), neg(q4_4)), q0_0), neg(q6_6)), q5_5)
+      +m4_5 = add(add(add(add(add(add(add(neg(q2_3), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4)), q5_6), q5_6)
+      +m5_0 = add(add(add(add(add(add(add(neg(q3_4), q0_2), neg(q1_6)), q5_7), q0_2), neg(q3_4)), q5_7), neg(q1_6))
+      +m5_1 = add(add(add(add(add(add(add(neg(q3_5), neg(q2_6)), neg(q0_1)), neg(q4_7)), neg(q0_1)), neg(q4_7)), neg(q3_5)), neg(q2_6))
+      +m5_2 = add(add(add(add(add(add(add(neg(q3_6), q2_5), q1_4), neg(q0_7)), neg(q0_7)), q1_4), q2_5), neg(q3_6))
+      +m5_3 = add(add(add(add(add(add(add(neg(q1_3), q2_7), neg(q1_3)), q2_7), neg(q0_5)), q4_6), neg(q0_5)), q4_6)
+      +m5_4 = add(add(add(add(add(add(add(neg(q2_3), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4), q5_6), q5_6)
+      +m5_5 = add(add(add(add(add(add(add(neg(q3_3), q2_2), q1_1), neg(q7_7)), q0_0), neg(q4_4)), neg(q5_5)), q6_6)
       K.Bivector{
-        neg(add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10))))))),
-        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
-        neg(add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30))))))),
-        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
-        neg(add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31))))))),
-        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12)))))}
+        add(mul(b_e10, m0_0), add(mul(b_e20, m0_1), add(mul(b_e30, m0_2), add(mul(b_e23, m0_3), add(mul(b_e31, m0_4), mul(b_e12, m0_5)))))),
+        add(mul(b_e10, m1_0), add(mul(b_e20, m1_1), add(mul(b_e30, m1_2), add(mul(b_e23, m1_3), add(mul(b_e31, m1_4), mul(b_e12, m1_5)))))),
+        add(mul(b_e10, m2_0), add(mul(b_e20, m2_1), add(mul(b_e30, m2_2), add(mul(b_e23, m2_3), add(mul(b_e31, m2_4), mul(b_e12, m2_5)))))),
+        add(mul(b_e10, m3_0), add(mul(b_e20, m3_1), add(mul(b_e30, m3_2), add(mul(b_e23, m3_3), add(mul(b_e31, m3_4), mul(b_e12, m3_5)))))),
+        add(mul(b_e10, m4_0), add(mul(b_e20, m4_1), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5)))))),
+        add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e30, m5_2), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5))))))}
 
 def Even.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Trivector<T>) -> K.Trivector<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
-      +t0 = add(neg(mul(neg(a_e30), b_e123)), add(mul(neg(a_e31), neg(b_e032)), add(neg(mul(a_e23, b_e013)), mul(a_s, neg(b_e021)))))
-      +t1 = add(mul(neg(a_e20), b_e123), add(neg(mul(a_e12, neg(b_e032))), add(mul(a_e23, neg(b_e021)), mul(a_s, b_e013))))
-      +t2 = add(neg(mul(neg(a_e10), b_e123)), add(add(mul(a_e12, b_e013), neg(mul(neg(a_e31), neg(b_e021)))), mul(a_s, neg(b_e032))))
-      +t3 = add(mul(a_e0123, b_e123), add(add(neg(mul(a_e12, neg(b_e021))), neg(mul(neg(a_e31), b_e013))), neg(mul(a_e23, neg(b_e032)))))
-      +t4 = add(add(neg(mul(neg(a_e10), neg(b_e032))), add(mul(neg(a_e20), b_e013), neg(mul(neg(a_e30), neg(b_e021))))), mul(a_s, b_e123))
-      +t5 = add(add(mul(a_e0123, neg(b_e032)), add(neg(mul(neg(a_e20), neg(b_e021))), neg(mul(neg(a_e30), b_e013)))), neg(mul(a_e23, b_e123)))
-      +t6 = add(add(add(neg(mul(a_e0123, b_e013)), mul(neg(a_e10), neg(b_e021))), neg(mul(neg(a_e30), neg(b_e032)))), mul(neg(a_e31), b_e123))
-      +t7 = add(add(add(mul(a_e0123, neg(b_e021)), mul(neg(a_e10), b_e013)), mul(neg(a_e20), neg(b_e032))), neg(mul(a_e12, b_e123)))
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q0_0 = mul(a_s, a_s)
+      +q4_4 = mul(a_e23, a_e23)
+      +q5_5 = mul(a_e31, a_e31)
+      +q6_6 = mul(a_e12, a_e12)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q0_2 = mul(a_s, a_e20)
+      +q1_6 = mul(a_e10, a_e12)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q0_3 = mul(a_s, a_e30)
+      +q2_4 = mul(a_e20, a_e23)
+      +q1_5 = mul(a_e10, a_e31)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q4_5 = mul(a_e23, a_e31)
+      +q0_6 = mul(a_s, a_e12)
+      +q1_2 = mul(a_e10, a_e20)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q0_5 = mul(a_s, a_e31)
+      +q4_6 = mul(a_e23, a_e12)
+      +q1_3 = mul(a_e10, a_e30)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q0_4 = mul(a_s, a_e23)
+      +q5_6 = mul(a_e31, a_e12)
+      +q2_3 = mul(a_e20, a_e30)
+      +q1_7 = mul(a_e10, a_e0123)
+      +m0_0 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q7_7), q0_0), q4_4), q5_5), q6_6)
+      +m0_1 = add(add(add(add(add(add(add(q3_5, neg(q2_6)), neg(q0_1)), q4_7), neg(q0_1)), q4_7), q3_5), neg(q2_6))
+      +m0_2 = add(add(add(add(add(add(add(neg(q3_4), neg(q0_2)), q1_6), q5_7), neg(q0_2)), neg(q3_4)), q5_7), q1_6)
+      +m0_3 = add(add(add(add(add(add(add(neg(q0_3), q2_4), neg(q1_5)), q6_7), neg(q0_3)), q2_4), neg(q1_5)), q6_7)
+      +m1_0 = add(add(add(add(add(add(add(neg(q3_5), q2_6), neg(q0_1)), q4_7), neg(q0_1)), q4_7), neg(q3_5)), q2_6)
+      +m1_1 = add(add(add(add(add(add(add(neg(q5_5), neg(q6_6)), q0_0), q4_4), q1_1), q7_7), neg(q3_3)), neg(q2_2))
+      +m1_2 = add(add(add(add(add(add(add(q4_5, neg(q0_6)), neg(q0_6)), q4_5), q1_2), neg(q3_7)), neg(q3_7)), q1_2)
+      +m1_3 = add(add(add(add(add(add(add(q0_5, q4_6), q0_5), q4_6), q1_3), q2_7), q1_3), q2_7)
+      +m2_0 = add(add(add(add(add(add(add(q3_4, neg(q0_2)), neg(q1_6)), q5_7), neg(q0_2)), q3_4), q5_7), neg(q1_6))
+      +m2_1 = add(add(add(add(add(add(add(q4_5, q0_6), q0_6), q4_5), q1_2), q3_7), q3_7), q1_2)
+      +m2_2 = add(add(add(add(add(add(add(neg(q4_4), q0_0), neg(q6_6)), q5_5), q2_2), neg(q3_3)), q7_7), neg(q1_1))
+      +m2_3 = add(add(add(add(add(add(add(neg(q0_4), neg(q0_4)), q5_6), q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7))
+      +m3_0 = add(add(add(add(add(add(add(neg(q0_3), neg(q2_4)), q1_5), q6_7), neg(q0_3)), neg(q2_4)), q1_5), q6_7)
+      +m3_1 = add(add(add(add(add(add(add(neg(q0_5), q4_6), neg(q0_5)), q4_6), q1_3), neg(q2_7)), q1_3), neg(q2_7))
+      +m3_2 = add(add(add(add(add(add(add(q0_4, q0_4), q5_6), q5_6), q2_3), q2_3), q1_7), q1_7)
+      +m3_3 = add(add(add(add(add(add(add(q0_0, neg(q4_4)), neg(q5_5)), q6_6), q3_3), neg(q2_2)), neg(q1_1)), q7_7)
       K.Trivector{
-        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12))))),
-        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
-        add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10)))))),
-        neg(add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123)))))}
+        add(mul(b_e123, m0_0), add(mul(b_e032, m0_1), add(mul(b_e013, m0_2), mul(b_e021, m0_3)))),
+        add(mul(b_e123, m1_0), add(mul(b_e032, m1_1), add(mul(b_e013, m1_2), mul(b_e021, m1_3)))),
+        add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
+        add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
 
 def Even.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Pseudoscalar{+b_e0123}:
-      +t0 = mul(a_s, b_e0123)
-      +t1 = neg(mul(a_e23, b_e0123))
-      +t2 = mul(neg(a_e31), b_e0123)
-      +t3 = neg(mul(a_e12, b_e0123))
-      +t4 = mul(neg(a_e30), b_e0123)
-      +t5 = neg(mul(neg(a_e20), b_e0123))
-      +t6 = mul(neg(a_e10), b_e0123)
-      +t7 = neg(mul(a_e0123, b_e0123))
+      +q0_7 = mul(a_s, a_e0123)
+      +q1_4 = mul(a_e10, a_e23)
+      +q2_5 = mul(a_e20, a_e31)
+      +q3_6 = mul(a_e30, a_e12)
+      +q0_0 = mul(a_s, a_s)
+      +q4_4 = mul(a_e23, a_e23)
+      +q5_5 = mul(a_e31, a_e31)
+      +q6_6 = mul(a_e12, a_e12)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_2 = mul(a_e20, a_e20)
+      +q1_1 = mul(a_e10, a_e10)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +m0_0 = add(add(add(add(add(add(add(neg(q0_7), neg(q1_4)), neg(q2_5)), neg(q3_6)), neg(q3_6)), neg(q2_5)), neg(q1_4)), neg(q0_7))
+      +m1_0 = add(add(add(add(add(add(add(q0_0, q4_4), q5_5), q6_6), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q7_7))
       K.Phasor{
-        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
-        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+        mul(b_e0123, m0_0),
+        mul(b_e0123, m1_0)}
 
 def Even.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Phasor<T>) -> K.Phasor<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Phasor{+b_s, +b_e0123}:
-      +t0 = add(mul(a_e0123, b_s), mul(a_s, b_e0123))
-      +t1 = add(mul(neg(a_e10), b_s), neg(mul(a_e23, b_e0123)))
-      +t2 = add(mul(neg(a_e20), b_s), mul(neg(a_e31), b_e0123))
-      +t3 = add(mul(neg(a_e30), b_s), neg(mul(a_e12, b_e0123)))
-      +t4 = add(mul(neg(a_e30), b_e0123), mul(a_e12, b_s))
-      +t5 = add(neg(mul(neg(a_e20), b_e0123)), mul(neg(a_e31), b_s))
-      +t6 = add(mul(neg(a_e10), b_e0123), mul(a_e23, b_s))
-      +t7 = add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s))
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q0_7 = mul(a_s, a_e0123)
+      +q1_4 = mul(a_e10, a_e23)
+      +q2_5 = mul(a_e20, a_e31)
+      +q3_6 = mul(a_e30, a_e12)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q1_1)), neg(q2_2)), neg(q3_3)), q6_6), q5_5), q4_4), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(neg(q0_7), neg(q1_4)), neg(q2_5)), neg(q3_6)), neg(q3_6)), neg(q2_5)), neg(q1_4)), neg(q0_7))
+      +m1_0 = add(add(add(add(add(add(add(q0_7, q1_4), q2_5), q3_6), q3_6), q2_5), q1_4), q0_7)
+      +m1_1 = add(add(add(add(add(add(add(q0_0, q4_4), q5_5), q6_6), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q7_7))
       K.Phasor{
-        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
-        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+        add(mul(b_s, m0_0), mul(b_e0123, m0_1)),
+        add(mul(b_s, m1_0), mul(b_e0123, m1_1))}
 
 def Even.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Even<T>) -> K.Even<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
-      +t0 = add(add(add(mul(a_e0123, b_s), mul(neg(a_e10), b_e23)), add(neg(mul(neg(a_e20), neg(b_e31))), mul(neg(a_e30), b_e12))), add(add(mul(a_e12, neg(b_e30)), neg(mul(neg(a_e31), neg(b_e20)))), add(mul(a_e23, neg(b_e10)), mul(a_s, b_e0123))))
-      +t1 = add(add(add(neg(mul(a_e0123, b_e23)), mul(neg(a_e10), b_s)), add(mul(neg(a_e20), b_e12), mul(neg(a_e30), neg(b_e31)))), add(add(neg(mul(a_e12, neg(b_e20))), neg(mul(neg(a_e31), neg(b_e30)))), add(neg(mul(a_e23, b_e0123)), mul(a_s, neg(b_e10)))))
-      +t2 = add(add(add(mul(a_e0123, neg(b_e31)), neg(mul(neg(a_e10), b_e12))), add(mul(neg(a_e20), b_s), mul(neg(a_e30), b_e23))), add(add(mul(a_e12, neg(b_e10)), mul(neg(a_e31), b_e0123)), add(neg(mul(a_e23, neg(b_e30))), mul(a_s, neg(b_e20)))))
-      +t3 = add(add(add(neg(mul(a_e0123, b_e12)), neg(mul(neg(a_e10), neg(b_e31)))), add(neg(mul(neg(a_e20), b_e23)), mul(neg(a_e30), b_s))), add(add(neg(mul(a_e12, b_e0123)), mul(neg(a_e31), neg(b_e10))), add(mul(a_e23, neg(b_e20)), mul(a_s, neg(b_e30)))))
-      +t4 = add(add(add(mul(a_e0123, neg(b_e30)), neg(mul(neg(a_e10), neg(b_e20)))), add(mul(neg(a_e20), neg(b_e10)), mul(neg(a_e30), b_e0123))), add(add(mul(a_e12, b_s), mul(neg(a_e31), b_e23)), add(neg(mul(a_e23, neg(b_e31))), mul(a_s, b_e12))))
-      +t5 = add(add(add(neg(mul(a_e0123, neg(b_e20))), neg(mul(neg(a_e10), neg(b_e30)))), add(neg(mul(neg(a_e20), b_e0123)), mul(neg(a_e30), neg(b_e10)))), add(add(neg(mul(a_e12, b_e23)), mul(neg(a_e31), b_s)), add(mul(a_e23, b_e12), mul(a_s, neg(b_e31)))))
-      +t6 = add(add(add(mul(a_e0123, neg(b_e10)), mul(neg(a_e10), b_e0123)), add(neg(mul(neg(a_e20), neg(b_e30))), mul(neg(a_e30), neg(b_e20)))), add(add(mul(a_e12, neg(b_e31)), neg(mul(neg(a_e31), b_e12))), add(mul(a_e23, b_s), mul(a_s, b_e23))))
-      +t7 = add(add(add(neg(mul(a_e0123, b_e0123)), mul(neg(a_e10), neg(b_e10))), add(mul(neg(a_e20), neg(b_e20)), mul(neg(a_e30), neg(b_e30)))), add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s))))
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q0_7 = mul(a_s, a_e0123)
+      +q1_4 = mul(a_e10, a_e23)
+      +q2_5 = mul(a_e20, a_e31)
+      +q3_6 = mul(a_e30, a_e12)
+      +q4_5 = mul(a_e23, a_e31)
+      +q0_6 = mul(a_s, a_e12)
+      +q1_2 = mul(a_e10, a_e20)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q4_6 = mul(a_e23, a_e12)
+      +q0_5 = mul(a_s, a_e31)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q2_4 = mul(a_e20, a_e23)
+      +q0_3 = mul(a_s, a_e30)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q1_5 = mul(a_e10, a_e31)
+      +q3_4 = mul(a_e30, a_e23)
+      +q0_2 = mul(a_s, a_e20)
+      +q1_6 = mul(a_e10, a_e12)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q5_6 = mul(a_e31, a_e12)
+      +q0_4 = mul(a_s, a_e23)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q2_3 = mul(a_e20, a_e30)
+      +q3_5 = mul(a_e30, a_e31)
+      +q2_6 = mul(a_e20, a_e12)
+      +q0_1 = mul(a_s, a_e10)
+      +q4_7 = mul(a_e23, a_e0123)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q1_1)), neg(q2_2)), neg(q3_3)), q6_6), q5_5), q4_4), q0_0)
+      +m0_7 = add(add(add(add(add(add(add(neg(q0_7), neg(q1_4)), neg(q2_5)), neg(q3_6)), neg(q3_6)), neg(q2_5)), neg(q1_4)), neg(q0_7))
+      +m1_1 = add(add(add(add(add(add(add(q4_4, q0_0), neg(q6_6)), neg(q5_5)), q2_2), q3_3), neg(q7_7)), neg(q1_1))
+      +m1_2 = add(add(add(add(add(add(add(q4_5, neg(q0_6)), neg(q0_6)), q4_5), neg(q1_2)), q3_7), q3_7), neg(q1_2))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, q0_5), q4_6), q0_5), neg(q2_7)), neg(q1_3)), neg(q2_7)), neg(q1_3))
+      +m1_4 = add(add(add(add(add(add(add(q1_4, q0_7), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q3_6)), q0_7), q1_4)
+      +m1_5 = add(add(add(add(add(add(add(q2_4, neg(q0_3)), neg(q6_7)), q1_5), q2_4), neg(q0_3)), neg(q6_7)), q1_5)
+      +m1_6 = add(add(add(add(add(add(add(q3_4, q0_2), q1_6), q5_7), q0_2), q3_4), q5_7), q1_6)
+      +m2_1 = add(add(add(add(add(add(add(q4_5, q0_6), q0_6), q4_5), neg(q1_2)), neg(q3_7)), neg(q3_7)), neg(q1_2))
+      +m2_2 = add(add(add(add(add(add(add(q5_5, neg(q6_6)), q0_0), neg(q4_4)), q1_1), neg(q7_7)), q3_3), neg(q2_2))
+      +m2_3 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q0_4)), neg(q0_4)), q1_7), q1_7), neg(q2_3)), neg(q2_3))
+      +m2_4 = add(add(add(add(add(add(add(q1_5, q6_7), q0_3), q2_4), q1_5), q6_7), q0_3), q2_4)
+      +m2_5 = add(add(add(add(add(add(add(q2_5, neg(q3_6)), q0_7), neg(q1_4)), neg(q1_4)), q0_7), neg(q3_6)), q2_5)
+      +m2_6 = add(add(add(add(add(add(add(q3_5, q2_6), neg(q0_1)), neg(q4_7)), neg(q0_1)), neg(q4_7)), q3_5), q2_6)
+      +m3_1 = add(add(add(add(add(add(add(q4_6, neg(q0_5)), q4_6), neg(q0_5)), q2_7), neg(q1_3)), q2_7), neg(q1_3))
+      +m3_2 = add(add(add(add(add(add(add(q5_6, q5_6), q0_4), q0_4), neg(q1_7)), neg(q1_7)), neg(q2_3)), neg(q2_3))
+      +m3_3 = add(add(add(add(add(add(add(q6_6, neg(q5_5)), neg(q4_4)), q0_0), neg(q7_7)), q1_1), q2_2), neg(q3_3))
+      +m3_4 = add(add(add(add(add(add(add(q1_6, neg(q5_7)), q3_4), neg(q0_2)), neg(q5_7)), q1_6), neg(q0_2)), q3_4)
+      +m3_5 = add(add(add(add(add(add(add(q2_6, q3_5), q4_7), q0_1), q4_7), q0_1), q2_6), q3_5)
+      +m3_6 = add(add(add(add(add(add(add(q3_6, neg(q2_5)), neg(q1_4)), q0_7), q0_7), neg(q1_4)), neg(q2_5)), q3_6)
+      +m4_1 = add(add(add(add(add(add(add(neg(q1_4), neg(q0_7)), q3_6), q2_5), q2_5), q3_6), neg(q0_7)), neg(q1_4))
+      +m4_2 = add(add(add(add(add(add(add(neg(q1_5), q6_7), q0_3), neg(q2_4)), neg(q1_5)), q6_7), q0_3), neg(q2_4))
+      +m4_3 = add(add(add(add(add(add(add(neg(q1_6), neg(q5_7)), neg(q3_4)), neg(q0_2)), neg(q5_7)), neg(q1_6)), neg(q0_2)), neg(q3_4))
+      +m4_4 = add(add(add(add(add(add(add(neg(q1_1), neg(q7_7)), q3_3), q2_2), neg(q5_5)), neg(q6_6)), q0_0), q4_4)
+      +m4_5 = add(add(add(add(add(add(add(neg(q1_2), q3_7), q3_7), neg(q1_2)), q4_5), neg(q0_6)), neg(q0_6)), q4_5)
+      +m4_6 = add(add(add(add(add(add(add(neg(q1_3), neg(q2_7)), neg(q1_3)), neg(q2_7)), q0_5), q4_6), q0_5), q4_6)
+      +m5_1 = add(add(add(add(add(add(add(neg(q2_4), neg(q0_3)), neg(q6_7)), neg(q1_5)), neg(q2_4)), neg(q0_3)), neg(q6_7)), neg(q1_5))
+      +m5_2 = add(add(add(add(add(add(add(neg(q2_5), q3_6), neg(q0_7)), q1_4), q1_4), neg(q0_7)), q3_6), neg(q2_5))
+      +m5_3 = add(add(add(add(add(add(add(neg(q2_6), neg(q3_5)), q4_7), q0_1), q4_7), q0_1), neg(q2_6)), neg(q3_5))
+      +m5_4 = add(add(add(add(add(add(add(neg(q1_2), neg(q3_7)), neg(q3_7)), neg(q1_2)), q4_5), q0_6), q0_6), q4_5)
+      +m5_5 = add(add(add(add(add(add(add(neg(q2_2), q3_3), neg(q7_7)), q1_1), neg(q4_4)), q0_0), neg(q6_6)), q5_5)
+      +m5_6 = add(add(add(add(add(add(add(neg(q2_3), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4)), q5_6), q5_6)
+      +m6_1 = add(add(add(add(add(add(add(neg(q3_4), q0_2), neg(q1_6)), q5_7), q0_2), neg(q3_4)), q5_7), neg(q1_6))
+      +m6_2 = add(add(add(add(add(add(add(neg(q3_5), neg(q2_6)), neg(q0_1)), neg(q4_7)), neg(q0_1)), neg(q4_7)), neg(q3_5)), neg(q2_6))
+      +m6_3 = add(add(add(add(add(add(add(neg(q3_6), q2_5), q1_4), neg(q0_7)), neg(q0_7)), q1_4), q2_5), neg(q3_6))
+      +m6_4 = add(add(add(add(add(add(add(neg(q1_3), q2_7), neg(q1_3)), q2_7), neg(q0_5)), q4_6), neg(q0_5)), q4_6)
+      +m6_5 = add(add(add(add(add(add(add(neg(q2_3), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4), q5_6), q5_6)
+      +m6_6 = add(add(add(add(add(add(add(neg(q3_3), q2_2), q1_1), neg(q7_7)), q0_0), neg(q4_4)), neg(q5_5)), q6_6)
+      +m7_0 = add(add(add(add(add(add(add(q0_7, q1_4), q2_5), q3_6), q3_6), q2_5), q1_4), q0_7)
+      +m7_7 = add(add(add(add(add(add(add(q0_0, q4_4), q5_5), q6_6), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q7_7))
       K.Even{
-        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
-        neg(add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10))))))),
-        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
-        neg(add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30))))))),
-        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
-        neg(add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31))))))),
-        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12))))),
-        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+        add(mul(b_s, m0_0), mul(b_e0123, m0_7)),
+        add(mul(b_e10, m1_1), add(mul(b_e20, m1_2), add(mul(b_e30, m1_3), add(mul(b_e23, m1_4), add(mul(b_e31, m1_5), mul(b_e12, m1_6)))))),
+        add(mul(b_e10, m2_1), add(mul(b_e20, m2_2), add(mul(b_e30, m2_3), add(mul(b_e23, m2_4), add(mul(b_e31, m2_5), mul(b_e12, m2_6)))))),
+        add(mul(b_e10, m3_1), add(mul(b_e20, m3_2), add(mul(b_e30, m3_3), add(mul(b_e23, m3_4), add(mul(b_e31, m3_5), mul(b_e12, m3_6)))))),
+        add(mul(b_e10, m4_1), add(mul(b_e20, m4_2), add(mul(b_e30, m4_3), add(mul(b_e23, m4_4), add(mul(b_e31, m4_5), mul(b_e12, m4_6)))))),
+        add(mul(b_e10, m5_1), add(mul(b_e20, m5_2), add(mul(b_e30, m5_3), add(mul(b_e23, m5_4), add(mul(b_e31, m5_5), mul(b_e12, m5_6)))))),
+        add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e30, m6_3), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
 def Even.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Odd<T>) -> K.Odd<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
-      +t0 = add(add(add(neg(mul(a_e0123, b_e3)), mul(neg(a_e10), b_e2)), add(neg(mul(neg(a_e20), b_e1)), neg(mul(neg(a_e30), b_e123)))), add(add(mul(a_e12, b_e0), mul(neg(a_e31), neg(b_e032))), add(neg(mul(a_e23, b_e013)), mul(a_s, neg(b_e021)))))
-      +t1 = add(add(add(mul(a_e0123, b_e2), mul(neg(a_e10), b_e3)), add(mul(neg(a_e20), b_e123), neg(mul(neg(a_e30), b_e1)))), add(add(neg(mul(a_e12, neg(b_e032))), mul(neg(a_e31), b_e0)), add(mul(a_e23, neg(b_e021)), mul(a_s, b_e013))))
-      +t2 = add(add(add(neg(mul(a_e0123, b_e1)), neg(mul(neg(a_e10), b_e123))), add(mul(neg(a_e20), b_e3), neg(mul(neg(a_e30), b_e2)))), add(add(mul(a_e12, b_e013), neg(mul(neg(a_e31), neg(b_e021)))), add(mul(a_e23, b_e0), mul(a_s, neg(b_e032)))))
-      +t3 = add(add(add(mul(a_e0123, b_e123), neg(mul(neg(a_e10), b_e1))), add(neg(mul(neg(a_e20), b_e2)), neg(mul(neg(a_e30), b_e3)))), add(add(neg(mul(a_e12, neg(b_e021))), neg(mul(neg(a_e31), b_e013))), add(neg(mul(a_e23, neg(b_e032))), mul(a_s, b_e0))))
-      +t4 = add(add(add(neg(mul(a_e0123, b_e0)), neg(mul(neg(a_e10), neg(b_e032)))), add(mul(neg(a_e20), b_e013), neg(mul(neg(a_e30), neg(b_e021))))), add(add(mul(a_e12, b_e3), neg(mul(neg(a_e31), b_e2))), add(mul(a_e23, b_e1), mul(a_s, b_e123))))
-      +t5 = add(add(add(mul(a_e0123, neg(b_e032)), neg(mul(neg(a_e10), b_e0))), add(neg(mul(neg(a_e20), neg(b_e021))), neg(mul(neg(a_e30), b_e013)))), add(add(neg(mul(a_e12, b_e2)), neg(mul(neg(a_e31), b_e3))), add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1))))
-      +t6 = add(add(add(neg(mul(a_e0123, b_e013)), mul(neg(a_e10), neg(b_e021))), add(neg(mul(neg(a_e20), b_e0)), neg(mul(neg(a_e30), neg(b_e032))))), add(add(mul(a_e12, b_e1), mul(neg(a_e31), b_e123)), add(neg(mul(a_e23, b_e3)), mul(a_s, b_e2))))
-      +t7 = add(add(add(mul(a_e0123, neg(b_e021)), mul(neg(a_e10), b_e013)), add(mul(neg(a_e20), neg(b_e032)), neg(mul(neg(a_e30), b_e0)))), add(add(neg(mul(a_e12, b_e123)), mul(neg(a_e31), b_e1)), add(mul(a_e23, b_e2), mul(a_s, b_e3))))
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q2_6 = mul(a_e20, a_e12)
+      +q3_5 = mul(a_e30, a_e31)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q0_1 = mul(a_s, a_e10)
+      +q1_6 = mul(a_e10, a_e12)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q1_5 = mul(a_e10, a_e31)
+      +q2_4 = mul(a_e20, a_e23)
+      +q0_3 = mul(a_s, a_e30)
+      +q1_2 = mul(a_e10, a_e20)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q4_5 = mul(a_e23, a_e31)
+      +q0_6 = mul(a_s, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q4_6 = mul(a_e23, a_e12)
+      +q0_5 = mul(a_s, a_e31)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q2_3 = mul(a_e20, a_e30)
+      +q5_6 = mul(a_e31, a_e12)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(q6_6, q5_5), q4_4), q0_0), q7_7), q1_1), q2_2), q3_3)
+      +m0_1 = add(add(add(add(add(add(add(q2_6, neg(q3_5)), neg(q4_7)), q0_1), neg(q4_7)), q0_1), q2_6), neg(q3_5))
+      +m0_2 = add(add(add(add(add(add(add(neg(q1_6), neg(q5_7)), q3_4), q0_2), neg(q5_7)), neg(q1_6)), q0_2), q3_4)
+      +m0_3 = add(add(add(add(add(add(add(neg(q6_7), q1_5), neg(q2_4)), q0_3), neg(q6_7)), q1_5), neg(q2_4)), q0_3)
+      +m1_0 = add(add(add(add(add(add(add(neg(q2_6), q3_5), neg(q4_7)), q0_1), neg(q4_7)), q0_1), neg(q2_6)), q3_5)
+      +m1_1 = add(add(add(add(add(add(add(neg(q2_2), neg(q3_3)), q7_7), q1_1), q4_4), q0_0), neg(q6_6)), neg(q5_5))
+      +m1_2 = add(add(add(add(add(add(add(q1_2, neg(q3_7)), neg(q3_7)), q1_2), q4_5), neg(q0_6)), neg(q0_6)), q4_5)
+      +m1_3 = add(add(add(add(add(add(add(q2_7, q1_3), q2_7), q1_3), q4_6), q0_5), q4_6), q0_5)
+      +m2_0 = add(add(add(add(add(add(add(q1_6, neg(q5_7)), neg(q3_4)), q0_2), neg(q5_7)), q1_6), q0_2), neg(q3_4))
+      +m2_1 = add(add(add(add(add(add(add(q1_2, q3_7), q3_7), q1_2), q4_5), q0_6), q0_6), q4_5)
+      +m2_2 = add(add(add(add(add(add(add(neg(q1_1), q7_7), neg(q3_3)), q2_2), q5_5), neg(q6_6)), q0_0), neg(q4_4))
+      +m2_3 = add(add(add(add(add(add(add(neg(q1_7), neg(q1_7)), q2_3), q2_3), q5_6), q5_6), neg(q0_4)), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(neg(q6_7), neg(q1_5)), q2_4), q0_3), neg(q6_7)), neg(q1_5)), q2_4), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q2_7), q1_3), neg(q2_7)), q1_3), q4_6), neg(q0_5)), q4_6), neg(q0_5))
+      +m3_2 = add(add(add(add(add(add(add(q1_7, q1_7), q2_3), q2_3), q5_6), q5_6), q0_4), q0_4)
+      +m3_3 = add(add(add(add(add(add(add(q7_7, neg(q1_1)), neg(q2_2)), q3_3), q6_6), neg(q5_5)), neg(q4_4)), q0_0)
+      +m4_4 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q7_7), q0_0), q4_4), q5_5), q6_6)
+      +m4_5 = add(add(add(add(add(add(add(q3_5, neg(q2_6)), neg(q0_1)), q4_7), neg(q0_1)), q4_7), q3_5), neg(q2_6))
+      +m4_6 = add(add(add(add(add(add(add(neg(q3_4), neg(q0_2)), q1_6), q5_7), neg(q0_2)), neg(q3_4)), q5_7), q1_6)
+      +m4_7 = add(add(add(add(add(add(add(neg(q0_3), q2_4), neg(q1_5)), q6_7), neg(q0_3)), q2_4), neg(q1_5)), q6_7)
+      +m5_4 = add(add(add(add(add(add(add(neg(q3_5), q2_6), neg(q0_1)), q4_7), neg(q0_1)), q4_7), neg(q3_5)), q2_6)
+      +m5_5 = add(add(add(add(add(add(add(neg(q5_5), neg(q6_6)), q0_0), q4_4), q1_1), q7_7), neg(q3_3)), neg(q2_2))
+      +m5_6 = add(add(add(add(add(add(add(q4_5, neg(q0_6)), neg(q0_6)), q4_5), q1_2), neg(q3_7)), neg(q3_7)), q1_2)
+      +m5_7 = add(add(add(add(add(add(add(q0_5, q4_6), q0_5), q4_6), q1_3), q2_7), q1_3), q2_7)
+      +m6_4 = add(add(add(add(add(add(add(q3_4, neg(q0_2)), neg(q1_6)), q5_7), neg(q0_2)), q3_4), q5_7), neg(q1_6))
+      +m6_5 = add(add(add(add(add(add(add(q4_5, q0_6), q0_6), q4_5), q1_2), q3_7), q3_7), q1_2)
+      +m6_6 = add(add(add(add(add(add(add(neg(q4_4), q0_0), neg(q6_6)), q5_5), q2_2), neg(q3_3)), q7_7), neg(q1_1))
+      +m6_7 = add(add(add(add(add(add(add(neg(q0_4), neg(q0_4)), q5_6), q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7))
+      +m7_4 = add(add(add(add(add(add(add(neg(q0_3), neg(q2_4)), q1_5), q6_7), neg(q0_3)), neg(q2_4)), q1_5), q6_7)
+      +m7_5 = add(add(add(add(add(add(add(neg(q0_5), q4_6), neg(q0_5)), q4_6), q1_3), neg(q2_7)), q1_3), neg(q2_7))
+      +m7_6 = add(add(add(add(add(add(add(q0_4, q0_4), q5_6), q5_6), q2_3), q2_3), q1_7), q1_7)
+      +m7_7 = add(add(add(add(add(add(add(q0_0, neg(q4_4)), neg(q5_5)), q6_6), q3_3), neg(q2_2)), neg(q1_1)), q7_7)
       K.Odd{
-        add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30)))))),
-        add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31)))))),
-        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
-        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
-        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12))))),
-        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
-        add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10)))))),
-        neg(add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123)))))}
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3)))),
+        add(mul(b_e123, m4_4), add(mul(b_e032, m4_5), add(mul(b_e013, m4_6), mul(b_e021, m4_7)))),
+        add(mul(b_e123, m5_4), add(mul(b_e032, m5_5), add(mul(b_e013, m5_6), mul(b_e021, m5_7)))),
+        add(mul(b_e123, m6_4), add(mul(b_e032, m6_5), add(mul(b_e013, m6_6), mul(b_e021, m6_7)))),
+        add(mul(b_e123, m7_4), add(mul(b_e032, m7_5), add(mul(b_e013, m7_6), mul(b_e021, m7_7))))}
 
 def Even.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Multivector<T>) -> K.Multivector<T>:
   match a b:
     case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
-      +t0 = add(add(add(mul(a_e0123, b_s), mul(neg(a_e10), b_e23)), add(neg(mul(neg(a_e20), neg(b_e31))), mul(neg(a_e30), b_e12))), add(add(mul(a_e12, neg(b_e30)), neg(mul(neg(a_e31), neg(b_e20)))), add(mul(a_e23, neg(b_e10)), mul(a_s, b_e0123))))
-      +t1 = add(add(add(neg(mul(a_e0123, b_e3)), mul(neg(a_e10), b_e2)), add(neg(mul(neg(a_e20), b_e1)), neg(mul(neg(a_e30), b_e123)))), add(add(mul(a_e12, b_e0), mul(neg(a_e31), neg(b_e032))), add(neg(mul(a_e23, b_e013)), mul(a_s, neg(b_e021)))))
-      +t2 = add(add(add(mul(a_e0123, b_e2), mul(neg(a_e10), b_e3)), add(mul(neg(a_e20), b_e123), neg(mul(neg(a_e30), b_e1)))), add(add(neg(mul(a_e12, neg(b_e032))), mul(neg(a_e31), b_e0)), add(mul(a_e23, neg(b_e021)), mul(a_s, b_e013))))
-      +t3 = add(add(add(neg(mul(a_e0123, b_e23)), mul(neg(a_e10), b_s)), add(mul(neg(a_e20), b_e12), mul(neg(a_e30), neg(b_e31)))), add(add(neg(mul(a_e12, neg(b_e20))), neg(mul(neg(a_e31), neg(b_e30)))), add(neg(mul(a_e23, b_e0123)), mul(a_s, neg(b_e10)))))
-      +t4 = add(add(add(neg(mul(a_e0123, b_e1)), neg(mul(neg(a_e10), b_e123))), add(mul(neg(a_e20), b_e3), neg(mul(neg(a_e30), b_e2)))), add(add(mul(a_e12, b_e013), neg(mul(neg(a_e31), neg(b_e021)))), add(mul(a_e23, b_e0), mul(a_s, neg(b_e032)))))
-      +t5 = add(add(add(mul(a_e0123, neg(b_e31)), neg(mul(neg(a_e10), b_e12))), add(mul(neg(a_e20), b_s), mul(neg(a_e30), b_e23))), add(add(mul(a_e12, neg(b_e10)), mul(neg(a_e31), b_e0123)), add(neg(mul(a_e23, neg(b_e30))), mul(a_s, neg(b_e20)))))
-      +t6 = add(add(add(neg(mul(a_e0123, b_e12)), neg(mul(neg(a_e10), neg(b_e31)))), add(neg(mul(neg(a_e20), b_e23)), mul(neg(a_e30), b_s))), add(add(neg(mul(a_e12, b_e0123)), mul(neg(a_e31), neg(b_e10))), add(mul(a_e23, neg(b_e20)), mul(a_s, neg(b_e30)))))
-      +t7 = add(add(add(mul(a_e0123, b_e123), neg(mul(neg(a_e10), b_e1))), add(neg(mul(neg(a_e20), b_e2)), neg(mul(neg(a_e30), b_e3)))), add(add(neg(mul(a_e12, neg(b_e021))), neg(mul(neg(a_e31), b_e013))), add(neg(mul(a_e23, neg(b_e032))), mul(a_s, b_e0))))
-      +t8 = add(add(add(neg(mul(a_e0123, b_e0)), neg(mul(neg(a_e10), neg(b_e032)))), add(mul(neg(a_e20), b_e013), neg(mul(neg(a_e30), neg(b_e021))))), add(add(mul(a_e12, b_e3), neg(mul(neg(a_e31), b_e2))), add(mul(a_e23, b_e1), mul(a_s, b_e123))))
-      +t9 = add(add(add(mul(a_e0123, neg(b_e30)), neg(mul(neg(a_e10), neg(b_e20)))), add(mul(neg(a_e20), neg(b_e10)), mul(neg(a_e30), b_e0123))), add(add(mul(a_e12, b_s), mul(neg(a_e31), b_e23)), add(neg(mul(a_e23, neg(b_e31))), mul(a_s, b_e12))))
-      +t10 = add(add(add(neg(mul(a_e0123, neg(b_e20))), neg(mul(neg(a_e10), neg(b_e30)))), add(neg(mul(neg(a_e20), b_e0123)), mul(neg(a_e30), neg(b_e10)))), add(add(neg(mul(a_e12, b_e23)), mul(neg(a_e31), b_s)), add(mul(a_e23, b_e12), mul(a_s, neg(b_e31)))))
-      +t11 = add(add(add(mul(a_e0123, neg(b_e032)), neg(mul(neg(a_e10), b_e0))), add(neg(mul(neg(a_e20), neg(b_e021))), neg(mul(neg(a_e30), b_e013)))), add(add(neg(mul(a_e12, b_e2)), neg(mul(neg(a_e31), b_e3))), add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1))))
-      +t12 = add(add(add(mul(a_e0123, neg(b_e10)), mul(neg(a_e10), b_e0123)), add(neg(mul(neg(a_e20), neg(b_e30))), mul(neg(a_e30), neg(b_e20)))), add(add(mul(a_e12, neg(b_e31)), neg(mul(neg(a_e31), b_e12))), add(mul(a_e23, b_s), mul(a_s, b_e23))))
-      +t13 = add(add(add(neg(mul(a_e0123, b_e013)), mul(neg(a_e10), neg(b_e021))), add(neg(mul(neg(a_e20), b_e0)), neg(mul(neg(a_e30), neg(b_e032))))), add(add(mul(a_e12, b_e1), mul(neg(a_e31), b_e123)), add(neg(mul(a_e23, b_e3)), mul(a_s, b_e2))))
-      +t14 = add(add(add(mul(a_e0123, neg(b_e021)), mul(neg(a_e10), b_e013)), add(mul(neg(a_e20), neg(b_e032)), neg(mul(neg(a_e30), b_e0)))), add(add(neg(mul(a_e12, b_e123)), mul(neg(a_e31), b_e1)), add(mul(a_e23, b_e2), mul(a_s, b_e3))))
-      +t15 = add(add(add(neg(mul(a_e0123, b_e0123)), mul(neg(a_e10), neg(b_e10))), add(mul(neg(a_e20), neg(b_e20)), mul(neg(a_e30), neg(b_e30)))), add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s))))
+      +q7_7 = mul(a_e0123, a_e0123)
+      +q1_1 = mul(a_e10, a_e10)
+      +q2_2 = mul(a_e20, a_e20)
+      +q3_3 = mul(a_e30, a_e30)
+      +q6_6 = mul(a_e12, a_e12)
+      +q5_5 = mul(a_e31, a_e31)
+      +q4_4 = mul(a_e23, a_e23)
+      +q0_0 = mul(a_s, a_s)
+      +q0_7 = mul(a_s, a_e0123)
+      +q1_4 = mul(a_e10, a_e23)
+      +q2_5 = mul(a_e20, a_e31)
+      +q3_6 = mul(a_e30, a_e12)
+      +q2_6 = mul(a_e20, a_e12)
+      +q3_5 = mul(a_e30, a_e31)
+      +q4_7 = mul(a_e23, a_e0123)
+      +q0_1 = mul(a_s, a_e10)
+      +q1_6 = mul(a_e10, a_e12)
+      +q5_7 = mul(a_e31, a_e0123)
+      +q3_4 = mul(a_e30, a_e23)
+      +q0_2 = mul(a_s, a_e20)
+      +q6_7 = mul(a_e12, a_e0123)
+      +q1_5 = mul(a_e10, a_e31)
+      +q2_4 = mul(a_e20, a_e23)
+      +q0_3 = mul(a_s, a_e30)
+      +q1_2 = mul(a_e10, a_e20)
+      +q3_7 = mul(a_e30, a_e0123)
+      +q4_5 = mul(a_e23, a_e31)
+      +q0_6 = mul(a_s, a_e12)
+      +q2_7 = mul(a_e20, a_e0123)
+      +q1_3 = mul(a_e10, a_e30)
+      +q4_6 = mul(a_e23, a_e12)
+      +q0_5 = mul(a_s, a_e31)
+      +q1_7 = mul(a_e10, a_e0123)
+      +q2_3 = mul(a_e20, a_e30)
+      +q5_6 = mul(a_e31, a_e12)
+      +q0_4 = mul(a_s, a_e23)
+      +m0_0 = add(add(add(add(add(add(add(neg(q7_7), neg(q1_1)), neg(q2_2)), neg(q3_3)), q6_6), q5_5), q4_4), q0_0)
+      +m0_15 = add(add(add(add(add(add(add(neg(q0_7), neg(q1_4)), neg(q2_5)), neg(q3_6)), neg(q3_6)), neg(q2_5)), neg(q1_4)), neg(q0_7))
+      +m1_1 = add(add(add(add(add(add(add(q6_6, q5_5), q4_4), q0_0), q7_7), q1_1), q2_2), q3_3)
+      +m1_2 = add(add(add(add(add(add(add(q2_6, neg(q3_5)), neg(q4_7)), q0_1), neg(q4_7)), q0_1), q2_6), neg(q3_5))
+      +m1_3 = add(add(add(add(add(add(add(neg(q1_6), neg(q5_7)), q3_4), q0_2), neg(q5_7)), neg(q1_6)), q0_2), q3_4)
+      +m1_4 = add(add(add(add(add(add(add(neg(q6_7), q1_5), neg(q2_4)), q0_3), neg(q6_7)), q1_5), neg(q2_4)), q0_3)
+      +m2_1 = add(add(add(add(add(add(add(neg(q2_6), q3_5), neg(q4_7)), q0_1), neg(q4_7)), q0_1), neg(q2_6)), q3_5)
+      +m2_2 = add(add(add(add(add(add(add(neg(q2_2), neg(q3_3)), q7_7), q1_1), q4_4), q0_0), neg(q6_6)), neg(q5_5))
+      +m2_3 = add(add(add(add(add(add(add(q1_2, neg(q3_7)), neg(q3_7)), q1_2), q4_5), neg(q0_6)), neg(q0_6)), q4_5)
+      +m2_4 = add(add(add(add(add(add(add(q2_7, q1_3), q2_7), q1_3), q4_6), q0_5), q4_6), q0_5)
+      +m3_1 = add(add(add(add(add(add(add(q1_6, neg(q5_7)), neg(q3_4)), q0_2), neg(q5_7)), q1_6), q0_2), neg(q3_4))
+      +m3_2 = add(add(add(add(add(add(add(q1_2, q3_7), q3_7), q1_2), q4_5), q0_6), q0_6), q4_5)
+      +m3_3 = add(add(add(add(add(add(add(neg(q1_1), q7_7), neg(q3_3)), q2_2), q5_5), neg(q6_6)), q0_0), neg(q4_4))
+      +m3_4 = add(add(add(add(add(add(add(neg(q1_7), neg(q1_7)), q2_3), q2_3), q5_6), q5_6), neg(q0_4)), neg(q0_4))
+      +m4_1 = add(add(add(add(add(add(add(neg(q6_7), neg(q1_5)), q2_4), q0_3), neg(q6_7)), neg(q1_5)), q2_4), q0_3)
+      +m4_2 = add(add(add(add(add(add(add(neg(q2_7), q1_3), neg(q2_7)), q1_3), q4_6), neg(q0_5)), q4_6), neg(q0_5))
+      +m4_3 = add(add(add(add(add(add(add(q1_7, q1_7), q2_3), q2_3), q5_6), q5_6), q0_4), q0_4)
+      +m4_4 = add(add(add(add(add(add(add(q7_7, neg(q1_1)), neg(q2_2)), q3_3), q6_6), neg(q5_5)), neg(q4_4)), q0_0)
+      +m5_5 = add(add(add(add(add(add(add(q4_4, q0_0), neg(q6_6)), neg(q5_5)), q2_2), q3_3), neg(q7_7)), neg(q1_1))
+      +m5_6 = add(add(add(add(add(add(add(q4_5, neg(q0_6)), neg(q0_6)), q4_5), neg(q1_2)), q3_7), q3_7), neg(q1_2))
+      +m5_7 = add(add(add(add(add(add(add(q4_6, q0_5), q4_6), q0_5), neg(q2_7)), neg(q1_3)), neg(q2_7)), neg(q1_3))
+      +m5_8 = add(add(add(add(add(add(add(q1_4, q0_7), neg(q3_6)), neg(q2_5)), neg(q2_5)), neg(q3_6)), q0_7), q1_4)
+      +m5_9 = add(add(add(add(add(add(add(q2_4, neg(q0_3)), neg(q6_7)), q1_5), q2_4), neg(q0_3)), neg(q6_7)), q1_5)
+      +m5_10 = add(add(add(add(add(add(add(q3_4, q0_2), q1_6), q5_7), q0_2), q3_4), q5_7), q1_6)
+      +m6_5 = add(add(add(add(add(add(add(q4_5, q0_6), q0_6), q4_5), neg(q1_2)), neg(q3_7)), neg(q3_7)), neg(q1_2))
+      +m6_6 = add(add(add(add(add(add(add(q5_5, neg(q6_6)), q0_0), neg(q4_4)), q1_1), neg(q7_7)), q3_3), neg(q2_2))
+      +m6_7 = add(add(add(add(add(add(add(q5_6, q5_6), neg(q0_4)), neg(q0_4)), q1_7), q1_7), neg(q2_3)), neg(q2_3))
+      +m6_8 = add(add(add(add(add(add(add(q1_5, q6_7), q0_3), q2_4), q1_5), q6_7), q0_3), q2_4)
+      +m6_9 = add(add(add(add(add(add(add(q2_5, neg(q3_6)), q0_7), neg(q1_4)), neg(q1_4)), q0_7), neg(q3_6)), q2_5)
+      +m6_10 = add(add(add(add(add(add(add(q3_5, q2_6), neg(q0_1)), neg(q4_7)), neg(q0_1)), neg(q4_7)), q3_5), q2_6)
+      +m7_5 = add(add(add(add(add(add(add(q4_6, neg(q0_5)), q4_6), neg(q0_5)), q2_7), neg(q1_3)), q2_7), neg(q1_3))
+      +m7_6 = add(add(add(add(add(add(add(q5_6, q5_6), q0_4), q0_4), neg(q1_7)), neg(q1_7)), neg(q2_3)), neg(q2_3))
+      +m7_7 = add(add(add(add(add(add(add(q6_6, neg(q5_5)), neg(q4_4)), q0_0), neg(q7_7)), q1_1), q2_2), neg(q3_3))
+      +m7_8 = add(add(add(add(add(add(add(q1_6, neg(q5_7)), q3_4), neg(q0_2)), neg(q5_7)), q1_6), neg(q0_2)), q3_4)
+      +m7_9 = add(add(add(add(add(add(add(q2_6, q3_5), q4_7), q0_1), q4_7), q0_1), q2_6), q3_5)
+      +m7_10 = add(add(add(add(add(add(add(q3_6, neg(q2_5)), neg(q1_4)), q0_7), q0_7), neg(q1_4)), neg(q2_5)), q3_6)
+      +m8_5 = add(add(add(add(add(add(add(neg(q1_4), neg(q0_7)), q3_6), q2_5), q2_5), q3_6), neg(q0_7)), neg(q1_4))
+      +m8_6 = add(add(add(add(add(add(add(neg(q1_5), q6_7), q0_3), neg(q2_4)), neg(q1_5)), q6_7), q0_3), neg(q2_4))
+      +m8_7 = add(add(add(add(add(add(add(neg(q1_6), neg(q5_7)), neg(q3_4)), neg(q0_2)), neg(q5_7)), neg(q1_6)), neg(q0_2)), neg(q3_4))
+      +m8_8 = add(add(add(add(add(add(add(neg(q1_1), neg(q7_7)), q3_3), q2_2), neg(q5_5)), neg(q6_6)), q0_0), q4_4)
+      +m8_9 = add(add(add(add(add(add(add(neg(q1_2), q3_7), q3_7), neg(q1_2)), q4_5), neg(q0_6)), neg(q0_6)), q4_5)
+      +m8_10 = add(add(add(add(add(add(add(neg(q1_3), neg(q2_7)), neg(q1_3)), neg(q2_7)), q0_5), q4_6), q0_5), q4_6)
+      +m9_5 = add(add(add(add(add(add(add(neg(q2_4), neg(q0_3)), neg(q6_7)), neg(q1_5)), neg(q2_4)), neg(q0_3)), neg(q6_7)), neg(q1_5))
+      +m9_6 = add(add(add(add(add(add(add(neg(q2_5), q3_6), neg(q0_7)), q1_4), q1_4), neg(q0_7)), q3_6), neg(q2_5))
+      +m9_7 = add(add(add(add(add(add(add(neg(q2_6), neg(q3_5)), q4_7), q0_1), q4_7), q0_1), neg(q2_6)), neg(q3_5))
+      +m9_8 = add(add(add(add(add(add(add(neg(q1_2), neg(q3_7)), neg(q3_7)), neg(q1_2)), q4_5), q0_6), q0_6), q4_5)
+      +m9_9 = add(add(add(add(add(add(add(neg(q2_2), q3_3), neg(q7_7)), q1_1), neg(q4_4)), q0_0), neg(q6_6)), q5_5)
+      +m9_10 = add(add(add(add(add(add(add(neg(q2_3), neg(q2_3)), q1_7), q1_7), neg(q0_4)), neg(q0_4)), q5_6), q5_6)
+      +m10_5 = add(add(add(add(add(add(add(neg(q3_4), q0_2), neg(q1_6)), q5_7), q0_2), neg(q3_4)), q5_7), neg(q1_6))
+      +m10_6 = add(add(add(add(add(add(add(neg(q3_5), neg(q2_6)), neg(q0_1)), neg(q4_7)), neg(q0_1)), neg(q4_7)), neg(q3_5)), neg(q2_6))
+      +m10_7 = add(add(add(add(add(add(add(neg(q3_6), q2_5), q1_4), neg(q0_7)), neg(q0_7)), q1_4), q2_5), neg(q3_6))
+      +m10_8 = add(add(add(add(add(add(add(neg(q1_3), q2_7), neg(q1_3)), q2_7), neg(q0_5)), q4_6), neg(q0_5)), q4_6)
+      +m10_9 = add(add(add(add(add(add(add(neg(q2_3), neg(q2_3)), neg(q1_7)), neg(q1_7)), q0_4), q0_4), q5_6), q5_6)
+      +m10_10 = add(add(add(add(add(add(add(neg(q3_3), q2_2), q1_1), neg(q7_7)), q0_0), neg(q4_4)), neg(q5_5)), q6_6)
+      +m11_11 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q7_7), q0_0), q4_4), q5_5), q6_6)
+      +m11_12 = add(add(add(add(add(add(add(q3_5, neg(q2_6)), neg(q0_1)), q4_7), neg(q0_1)), q4_7), q3_5), neg(q2_6))
+      +m11_13 = add(add(add(add(add(add(add(neg(q3_4), neg(q0_2)), q1_6), q5_7), neg(q0_2)), neg(q3_4)), q5_7), q1_6)
+      +m11_14 = add(add(add(add(add(add(add(neg(q0_3), q2_4), neg(q1_5)), q6_7), neg(q0_3)), q2_4), neg(q1_5)), q6_7)
+      +m12_11 = add(add(add(add(add(add(add(neg(q3_5), q2_6), neg(q0_1)), q4_7), neg(q0_1)), q4_7), neg(q3_5)), q2_6)
+      +m12_12 = add(add(add(add(add(add(add(neg(q5_5), neg(q6_6)), q0_0), q4_4), q1_1), q7_7), neg(q3_3)), neg(q2_2))
+      +m12_13 = add(add(add(add(add(add(add(q4_5, neg(q0_6)), neg(q0_6)), q4_5), q1_2), neg(q3_7)), neg(q3_7)), q1_2)
+      +m12_14 = add(add(add(add(add(add(add(q0_5, q4_6), q0_5), q4_6), q1_3), q2_7), q1_3), q2_7)
+      +m13_11 = add(add(add(add(add(add(add(q3_4, neg(q0_2)), neg(q1_6)), q5_7), neg(q0_2)), q3_4), q5_7), neg(q1_6))
+      +m13_12 = add(add(add(add(add(add(add(q4_5, q0_6), q0_6), q4_5), q1_2), q3_7), q3_7), q1_2)
+      +m13_13 = add(add(add(add(add(add(add(neg(q4_4), q0_0), neg(q6_6)), q5_5), q2_2), neg(q3_3)), q7_7), neg(q1_1))
+      +m13_14 = add(add(add(add(add(add(add(neg(q0_4), neg(q0_4)), q5_6), q5_6), q2_3), q2_3), neg(q1_7)), neg(q1_7))
+      +m14_11 = add(add(add(add(add(add(add(neg(q0_3), neg(q2_4)), q1_5), q6_7), neg(q0_3)), neg(q2_4)), q1_5), q6_7)
+      +m14_12 = add(add(add(add(add(add(add(neg(q0_5), q4_6), neg(q0_5)), q4_6), q1_3), neg(q2_7)), q1_3), neg(q2_7))
+      +m14_13 = add(add(add(add(add(add(add(q0_4, q0_4), q5_6), q5_6), q2_3), q2_3), q1_7), q1_7)
+      +m14_14 = add(add(add(add(add(add(add(q0_0, neg(q4_4)), neg(q5_5)), q6_6), q3_3), neg(q2_2)), neg(q1_1)), q7_7)
+      +m15_0 = add(add(add(add(add(add(add(q0_7, q1_4), q2_5), q3_6), q3_6), q2_5), q1_4), q0_7)
+      +m15_15 = add(add(add(add(add(add(add(q0_0, q4_4), q5_5), q6_6), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q7_7))
       K.Multivector{
-        add(add(add(neg(mul(t0, a_e0123)), mul(t3, neg(neg(a_e10)))), add(mul(t5, neg(neg(a_e20))), mul(t6, neg(neg(a_e30))))), add(add(neg(mul(t9, neg(a_e12))), neg(mul(t10, neg(neg(a_e31))))), add(neg(mul(t12, neg(a_e23))), mul(t15, a_s)))),
-        add(add(add(neg(mul(t1, neg(a_e12))), neg(mul(t2, neg(neg(a_e31))))), add(neg(mul(t4, neg(a_e23))), mul(t7, a_s))), add(add(neg(mul(t8, a_e0123)), mul(t11, neg(neg(a_e10)))), add(mul(t13, neg(neg(a_e20))), mul(t14, neg(neg(a_e30)))))),
-        add(add(add(neg(mul(t1, neg(neg(a_e20)))), neg(mul(t2, neg(neg(a_e30))))), add(neg(mul(t4, a_e0123)), mul(t7, neg(neg(a_e10))))), add(add(neg(mul(t8, neg(a_e23))), mul(t11, a_s)), add(mul(t13, neg(a_e12)), mul(t14, neg(neg(a_e31)))))),
-        add(add(add(mul(t1, neg(neg(a_e10))), mul(t2, a_e0123)), add(neg(mul(t4, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))), add(add(mul(t8, neg(neg(a_e31))), neg(mul(t11, neg(a_e12)))), add(mul(t13, a_s), mul(t14, neg(a_e23))))),
-        add(add(add(neg(mul(t1, a_e0123)), mul(t2, neg(neg(a_e10)))), add(mul(t4, neg(neg(a_e20))), mul(t7, neg(neg(a_e30))))), add(add(neg(mul(t8, neg(a_e12))), neg(mul(t11, neg(neg(a_e31))))), add(neg(mul(t13, neg(a_e23))), mul(t14, a_s)))),
-        neg(add(add(add(neg(mul(t0, neg(a_e23))), mul(t3, a_s)), add(mul(t5, neg(a_e12)), mul(t6, neg(neg(a_e31))))), add(add(neg(mul(t9, neg(neg(a_e20)))), neg(mul(t10, neg(neg(a_e30))))), add(neg(mul(t12, a_e0123)), mul(t15, neg(neg(a_e10))))))),
-        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t3, neg(a_e12)))), add(mul(t5, a_s), mul(t6, neg(a_e23)))), add(add(mul(t9, neg(neg(a_e10))), mul(t10, a_e0123)), add(neg(mul(t12, neg(neg(a_e30)))), mul(t15, neg(neg(a_e20))))))),
-        neg(add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t3, neg(neg(a_e31))))), add(neg(mul(t5, neg(a_e23))), mul(t6, a_s))), add(add(neg(mul(t9, a_e0123)), mul(t10, neg(neg(a_e10)))), add(mul(t12, neg(neg(a_e20))), mul(t15, neg(neg(a_e30))))))),
-        add(add(add(mul(t0, neg(neg(a_e10))), mul(t3, a_e0123)), add(neg(mul(t5, neg(neg(a_e30)))), mul(t6, neg(neg(a_e20))))), add(add(mul(t9, neg(neg(a_e31))), neg(mul(t10, neg(a_e12)))), add(mul(t12, a_s), mul(t15, neg(a_e23))))),
-        neg(add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t3, neg(neg(a_e30))))), add(neg(mul(t5, a_e0123)), mul(t6, neg(neg(a_e10))))), add(add(neg(mul(t9, neg(a_e23))), mul(t10, a_s)), add(mul(t12, neg(a_e12)), mul(t15, neg(neg(a_e31))))))),
-        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t3, neg(neg(a_e20))))), add(mul(t5, neg(neg(a_e10))), mul(t6, a_e0123))), add(add(mul(t9, a_s), mul(t10, neg(a_e23))), add(neg(mul(t12, neg(neg(a_e31)))), mul(t15, neg(a_e12))))),
-        add(add(add(mul(t1, neg(neg(a_e30))), neg(mul(t2, neg(neg(a_e20))))), add(mul(t4, neg(neg(a_e10))), mul(t7, a_e0123))), add(add(mul(t8, a_s), mul(t11, neg(a_e23))), add(neg(mul(t13, neg(neg(a_e31)))), mul(t14, neg(a_e12))))),
-        neg(add(add(add(mul(t1, neg(neg(a_e31))), neg(mul(t2, neg(a_e12)))), add(mul(t4, a_s), mul(t7, neg(a_e23)))), add(add(mul(t8, neg(neg(a_e10))), mul(t11, a_e0123)), add(neg(mul(t13, neg(neg(a_e30)))), mul(t14, neg(neg(a_e20))))))),
-        add(add(add(neg(mul(t1, neg(a_e23))), mul(t2, a_s)), add(mul(t4, neg(a_e12)), mul(t7, neg(neg(a_e31))))), add(add(neg(mul(t8, neg(neg(a_e20)))), neg(mul(t11, neg(neg(a_e30))))), add(neg(mul(t13, a_e0123)), mul(t14, neg(neg(a_e10)))))),
-        neg(add(add(add(mul(t1, a_s), mul(t2, neg(a_e23))), add(neg(mul(t4, neg(neg(a_e31)))), mul(t7, neg(a_e12)))), add(add(mul(t8, neg(neg(a_e30))), neg(mul(t11, neg(neg(a_e20))))), add(mul(t13, neg(neg(a_e10))), mul(t14, a_e0123))))),
-        add(add(add(mul(t0, a_s), mul(t3, neg(a_e23))), add(neg(mul(t5, neg(neg(a_e31)))), mul(t6, neg(a_e12)))), add(add(mul(t9, neg(neg(a_e30))), neg(mul(t10, neg(neg(a_e20))))), add(mul(t12, neg(neg(a_e10))), mul(t15, a_e0123))))}
+        add(mul(b_s, m0_0), mul(b_e0123, m0_15)),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e0, m2_1), add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4)))),
+        add(mul(b_e0, m3_1), add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4)))),
+        add(mul(b_e0, m4_1), add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4)))),
+        add(mul(b_e10, m5_5), add(mul(b_e20, m5_6), add(mul(b_e30, m5_7), add(mul(b_e23, m5_8), add(mul(b_e31, m5_9), mul(b_e12, m5_10)))))),
+        add(mul(b_e10, m6_5), add(mul(b_e20, m6_6), add(mul(b_e30, m6_7), add(mul(b_e23, m6_8), add(mul(b_e31, m6_9), mul(b_e12, m6_10)))))),
+        add(mul(b_e10, m7_5), add(mul(b_e20, m7_6), add(mul(b_e30, m7_7), add(mul(b_e23, m7_8), add(mul(b_e31, m7_9), mul(b_e12, m7_10)))))),
+        add(mul(b_e10, m8_5), add(mul(b_e20, m8_6), add(mul(b_e30, m8_7), add(mul(b_e23, m8_8), add(mul(b_e31, m8_9), mul(b_e12, m8_10)))))),
+        add(mul(b_e10, m9_5), add(mul(b_e20, m9_6), add(mul(b_e30, m9_7), add(mul(b_e23, m9_8), add(mul(b_e31, m9_9), mul(b_e12, m9_10)))))),
+        add(mul(b_e10, m10_5), add(mul(b_e20, m10_6), add(mul(b_e30, m10_7), add(mul(b_e23, m10_8), add(mul(b_e31, m10_9), mul(b_e12, m10_10)))))),
+        add(mul(b_e123, m11_11), add(mul(b_e032, m11_12), add(mul(b_e013, m11_13), mul(b_e021, m11_14)))),
+        add(mul(b_e123, m12_11), add(mul(b_e032, m12_12), add(mul(b_e013, m12_13), mul(b_e021, m12_14)))),
+        add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
+        add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
 
 def Odd.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Scalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Scalar{+b_s}:
-      +t0 = mul(neg(a_e021), b_s)
-      +t1 = mul(a_e013, b_s)
-      +t2 = mul(neg(a_e032), b_s)
-      +t3 = mul(a_e0, b_s)
-      +t4 = mul(a_e123, b_s)
-      +t5 = mul(a_e1, b_s)
-      +t6 = mul(a_e2, b_s)
-      +t7 = mul(a_e3, b_s)
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q0_0), neg(q4_4)), neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m1_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
       K.Phasor{
-        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+        mul(b_s, m0_0),
+        mul(b_s, m1_0)}
 
 def Odd.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Vector<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
-      +t0 = add(add(add(mul(neg(a_e021), b_e3), neg(mul(a_e013, b_e2))), mul(neg(a_e032), b_e1)), neg(mul(a_e123, b_e0)))
-      +t1 = add(add(add(neg(mul(neg(a_e021), b_e2)), neg(mul(a_e013, b_e3))), mul(a_e0, b_e1)), neg(mul(a_e1, b_e0)))
-      +t2 = add(add(mul(neg(a_e021), b_e1), add(neg(mul(neg(a_e032), b_e3)), mul(a_e0, b_e2))), neg(mul(a_e2, b_e0)))
-      +t3 = add(add(mul(a_e013, b_e1), add(mul(neg(a_e032), b_e2), mul(a_e0, b_e3))), neg(mul(a_e3, b_e0)))
-      +t4 = add(mul(neg(a_e021), b_e0), add(add(neg(mul(a_e123, b_e3)), mul(a_e1, b_e2)), neg(mul(a_e2, b_e1))))
-      +t5 = add(mul(a_e013, b_e0), add(add(mul(a_e123, b_e2), mul(a_e1, b_e3)), neg(mul(a_e3, b_e1))))
-      +t6 = add(mul(neg(a_e032), b_e0), add(neg(mul(a_e123, b_e1)), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
-      +t7 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_5 = mul(a_e123, a_e032)
+      +q0_1 = mul(a_e0, a_e1)
+      +q2_7 = mul(a_e2, a_e021)
+      +q3_6 = mul(a_e3, a_e013)
+      +q4_6 = mul(a_e123, a_e013)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q3_5 = mul(a_e3, a_e032)
+      +q4_7 = mul(a_e123, a_e021)
+      +q1_6 = mul(a_e1, a_e013)
+      +q2_5 = mul(a_e2, a_e032)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q0_7 = mul(a_e0, a_e021)
+      +q1_2 = mul(a_e1, a_e2)
+      +q3_4 = mul(a_e3, a_e123)
+      +q5_7 = mul(a_e032, a_e021)
+      +q0_6 = mul(a_e0, a_e013)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q6_7 = mul(a_e013, a_e021)
+      +q0_5 = mul(a_e0, a_e032)
+      +q1_4 = mul(a_e1, a_e123)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(add(add(add(add(q4_4, q1_1), q2_2), q3_3), q7_7), q6_6), q5_5), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(q4_5, neg(q0_1)), q2_7), neg(q3_6)), q2_7), neg(q3_6)), q4_5), neg(q0_1))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, neg(q1_7)), neg(q0_2)), q3_5), neg(q1_7)), q4_6), q3_5), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q4_7, q1_6), neg(q2_5)), neg(q0_3)), q4_7), q1_6), neg(q2_5)), neg(q0_3))
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_5), q0_1), q2_7), neg(q3_6)), q2_7), neg(q3_6)), neg(q4_5)), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(neg(q5_5), neg(q0_0)), q7_7), q6_6), q2_2), q3_3), neg(q4_4)), neg(q1_1))
+      +m1_2 = add(add(add(add(add(add(add(neg(q5_6), neg(q0_7)), neg(q0_7)), neg(q5_6)), neg(q1_2)), neg(q3_4)), neg(q3_4)), neg(q1_2))
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), q0_6), neg(q5_7)), q0_6), q2_4), neg(q1_3)), q2_4), neg(q1_3))
+      +m2_0 = add(add(add(add(add(add(add(neg(q4_6), neg(q1_7)), q0_2), q3_5), neg(q1_7)), neg(q4_6)), q3_5), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(neg(q5_6), q0_7), q0_7), neg(q5_6)), neg(q1_2)), q3_4), q3_4), neg(q1_2))
+      +m2_2 = add(add(add(add(add(add(add(neg(q6_6), q7_7), neg(q0_0)), q5_5), q1_1), neg(q4_4)), q3_3), neg(q2_2))
+      +m2_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q0_5)), neg(q0_5)), neg(q1_4)), neg(q1_4)), neg(q2_3)), neg(q2_3))
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), q1_6), neg(q2_5)), q0_3), neg(q4_7)), q1_6), neg(q2_5)), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q0_6)), neg(q5_7)), neg(q0_6)), neg(q2_4)), neg(q1_3)), neg(q2_4)), neg(q1_3))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q0_5), q0_5), q1_4), q1_4), neg(q2_3)), neg(q2_3))
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q0_0)), neg(q4_4)), q1_1), q2_2), neg(q3_3))
       K.Vector{
-        add(add(add(mul(t0, neg(a_e123)), neg(mul(t1, a_e1))), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))), add(add(neg(mul(t4, neg(neg(a_e021)))), neg(mul(t5, neg(a_e013)))), add(neg(mul(t6, neg(neg(a_e032)))), mul(t7, a_e0)))),
-        add(add(add(mul(t0, neg(neg(a_e032))), neg(mul(t1, a_e0))), add(neg(mul(t2, neg(neg(a_e021)))), neg(mul(t3, neg(a_e013))))), add(add(neg(mul(t4, a_e2)), neg(mul(t5, a_e3))), add(neg(mul(t6, neg(a_e123))), mul(t7, a_e1)))),
-        add(add(add(neg(mul(t0, neg(a_e013))), mul(t1, neg(neg(a_e021)))), add(neg(mul(t2, a_e0)), neg(mul(t3, neg(neg(a_e032)))))), add(add(mul(t4, a_e1), mul(t5, neg(a_e123))), add(neg(mul(t6, a_e3)), mul(t7, a_e2)))),
-        add(add(add(mul(t0, neg(neg(a_e021))), mul(t1, neg(a_e013))), add(mul(t2, neg(neg(a_e032))), neg(mul(t3, a_e0)))), add(add(neg(mul(t4, neg(a_e123))), mul(t5, a_e1)), add(mul(t6, a_e2), mul(t7, a_e3))))}
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3))))}
 
 def Odd.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Bivector<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
-      +t0 = add(add(mul(a_e013, b_e23), add(neg(mul(neg(a_e032), neg(b_e31))), mul(a_e0, b_e12))), add(add(mul(a_e123, neg(b_e30)), neg(mul(a_e1, neg(b_e20)))), mul(a_e2, neg(b_e10))))
-      +t1 = add(add(neg(mul(neg(a_e021), b_e23)), add(mul(neg(a_e032), b_e12), mul(a_e0, neg(b_e31)))), add(add(neg(mul(a_e123, neg(b_e20))), neg(mul(a_e1, neg(b_e30)))), mul(a_e3, neg(b_e10))))
-      +t2 = add(add(add(mul(neg(a_e021), neg(b_e31)), neg(mul(a_e013, b_e12))), mul(a_e0, b_e23)), add(mul(a_e123, neg(b_e10)), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
-      +t3 = add(add(add(neg(mul(neg(a_e021), b_e12)), neg(mul(a_e013, neg(b_e31)))), neg(mul(neg(a_e032), b_e23))), add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
-      +t4 = add(add(add(mul(neg(a_e021), neg(b_e30)), neg(mul(a_e013, neg(b_e20)))), mul(neg(a_e032), neg(b_e10))), add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
-      +t5 = add(add(add(neg(mul(neg(a_e021), neg(b_e20))), neg(mul(a_e013, neg(b_e30)))), mul(a_e0, neg(b_e10))), add(neg(mul(a_e123, b_e23)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
-      +t6 = add(add(mul(neg(a_e021), neg(b_e10)), add(neg(mul(neg(a_e032), neg(b_e30))), mul(a_e0, neg(b_e20)))), add(add(mul(a_e123, neg(b_e31)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)))
-      +t7 = add(add(mul(a_e013, neg(b_e10)), add(mul(neg(a_e032), neg(b_e20)), mul(a_e0, neg(b_e30)))), add(add(neg(mul(a_e123, b_e12)), neg(mul(a_e1, neg(b_e31)))), neg(mul(a_e2, b_e23))))
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q1_2 = mul(a_e1, a_e2)
+      +q3_4 = mul(a_e3, a_e123)
+      +q5_6 = mul(a_e032, a_e013)
+      +q0_7 = mul(a_e0, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q5_7 = mul(a_e032, a_e021)
+      +q0_6 = mul(a_e0, a_e013)
+      +q2_6 = mul(a_e2, a_e013)
+      +q3_7 = mul(a_e3, a_e021)
+      +q0_4 = mul(a_e0, a_e123)
+      +q1_5 = mul(a_e1, a_e032)
+      +q2_5 = mul(a_e2, a_e032)
+      +q0_3 = mul(a_e0, a_e3)
+      +q4_7 = mul(a_e123, a_e021)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_2 = mul(a_e0, a_e2)
+      +q3_5 = mul(a_e3, a_e032)
+      +q4_6 = mul(a_e123, a_e013)
+      +q1_7 = mul(a_e1, a_e021)
+      +q1_4 = mul(a_e1, a_e123)
+      +q2_3 = mul(a_e2, a_e3)
+      +q6_7 = mul(a_e013, a_e021)
+      +q0_5 = mul(a_e0, a_e032)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +m0_0 = add(add(add(add(add(add(add(neg(q2_2), neg(q3_3)), q4_4), q1_1), neg(q5_5)), neg(q0_0)), q7_7), q6_6)
+      +m0_1 = add(add(add(add(add(add(add(q1_2, q3_4), q3_4), q1_2), neg(q5_6)), neg(q0_7)), neg(q0_7)), neg(q5_6))
+      +m0_2 = add(add(add(add(add(add(add(neg(q2_4), q1_3), neg(q2_4)), q1_3), neg(q5_7)), q0_6), neg(q5_7)), q0_6)
+      +m0_3 = add(add(add(add(add(add(add(q2_6, q3_7), neg(q0_4)), neg(q1_5)), neg(q1_5)), neg(q0_4)), q3_7), q2_6)
+      +m0_4 = add(add(add(add(add(add(add(neg(q2_5), neg(q0_3)), neg(q4_7)), neg(q1_6)), neg(q2_5)), neg(q0_3)), neg(q4_7)), neg(q1_6))
+      +m0_5 = add(add(add(add(add(add(add(q0_2, neg(q3_5)), q4_6), neg(q1_7)), neg(q3_5)), q0_2), neg(q1_7)), q4_6)
+      +m1_0 = add(add(add(add(add(add(add(q1_2, neg(q3_4)), neg(q3_4)), q1_2), neg(q5_6)), q0_7), q0_7), neg(q5_6))
+      +m1_1 = add(add(add(add(add(add(add(neg(q1_1), q4_4), neg(q3_3)), q2_2), neg(q6_6)), q7_7), neg(q0_0)), q5_5)
+      +m1_2 = add(add(add(add(add(add(add(q1_4, q1_4), q2_3), q2_3), neg(q6_7)), neg(q6_7)), neg(q0_5)), neg(q0_5))
+      +m1_3 = add(add(add(add(add(add(add(neg(q1_6), q4_7), q0_3), neg(q2_5)), neg(q1_6)), q4_7), q0_3), neg(q2_5))
+      +m1_4 = add(add(add(add(add(add(add(q1_5, neg(q0_4)), q3_7), neg(q2_6)), neg(q2_6)), q3_7), neg(q0_4)), q1_5)
+      +m1_5 = add(add(add(add(add(add(add(neg(q0_1), neg(q4_5)), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q0_1)), neg(q4_5))
+      +m2_0 = add(add(add(add(add(add(add(q2_4, q1_3), q2_4), q1_3), neg(q5_7)), neg(q0_6)), neg(q5_7)), neg(q0_6))
+      +m2_1 = add(add(add(add(add(add(add(neg(q1_4), neg(q1_4)), q2_3), q2_3), neg(q6_7)), neg(q6_7)), q0_5), q0_5)
+      +m2_2 = add(add(add(add(add(add(add(q4_4, neg(q1_1)), neg(q2_2)), q3_3), neg(q7_7)), q6_6), q5_5), neg(q0_0))
+      +m2_3 = add(add(add(add(add(add(add(neg(q4_6), neg(q1_7)), neg(q0_2)), neg(q3_5)), neg(q1_7)), neg(q4_6)), neg(q3_5)), neg(q0_2))
+      +m2_4 = add(add(add(add(add(add(add(q4_5, q0_1), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q3_6)), q4_5), q0_1)
+      +m2_5 = add(add(add(add(add(add(add(neg(q0_4), q1_5), q2_6), neg(q3_7)), neg(q3_7)), q2_6), q1_5), neg(q0_4))
+      +m3_0 = add(add(add(add(add(add(add(q2_6, q3_7), neg(q0_4)), neg(q1_5)), neg(q1_5)), neg(q0_4)), q3_7), q2_6)
+      +m3_1 = add(add(add(add(add(add(add(neg(q1_6), neg(q4_7)), neg(q0_3)), neg(q2_5)), neg(q1_6)), neg(q4_7)), neg(q0_3)), neg(q2_5))
+      +m3_2 = add(add(add(add(add(add(add(q4_6, neg(q1_7)), q0_2), neg(q3_5)), neg(q1_7)), q4_6), neg(q3_5)), q0_2)
+      +m3_3 = add(add(add(add(add(add(add(neg(q6_6), neg(q7_7)), q0_0), q5_5), neg(q1_1)), neg(q4_4)), q3_3), q2_2)
+      +m3_4 = add(add(add(add(add(add(add(q5_6, q0_7), q0_7), q5_6), neg(q1_2)), neg(q3_4)), neg(q3_4)), neg(q1_2))
+      +m3_5 = add(add(add(add(add(add(add(neg(q0_6), q5_7), neg(q0_6)), q5_7), neg(q1_3)), q2_4), neg(q1_3)), q2_4)
+      +m4_0 = add(add(add(add(add(add(add(neg(q2_5), q0_3), q4_7), neg(q1_6)), neg(q2_5)), q0_3), q4_7), neg(q1_6))
+      +m4_1 = add(add(add(add(add(add(add(q1_5, neg(q0_4)), q3_7), neg(q2_6)), neg(q2_6)), q3_7), neg(q0_4)), q1_5)
+      +m4_2 = add(add(add(add(add(add(add(neg(q4_5), neg(q0_1)), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q4_5)), neg(q0_1))
+      +m4_3 = add(add(add(add(add(add(add(q5_6, neg(q0_7)), neg(q0_7)), q5_6), neg(q1_2)), q3_4), q3_4), neg(q1_2))
+      +m4_4 = add(add(add(add(add(add(add(neg(q5_5), q0_0), neg(q7_7)), q6_6), neg(q2_2)), q3_3), neg(q4_4)), q1_1)
+      +m4_5 = add(add(add(add(add(add(add(q0_5, q0_5), q6_7), q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4))
+      +m5_0 = add(add(add(add(add(add(add(neg(q0_2), neg(q3_5)), neg(q4_6)), neg(q1_7)), neg(q3_5)), neg(q0_2)), neg(q1_7)), neg(q4_6))
+      +m5_1 = add(add(add(add(add(add(add(q0_1, q4_5), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q2_7)), q0_1), q4_5)
+      +m5_2 = add(add(add(add(add(add(add(neg(q0_4), q1_5), q2_6), neg(q3_7)), neg(q3_7)), q2_6), q1_5), neg(q0_4))
+      +m5_3 = add(add(add(add(add(add(add(q0_6, q5_7), q0_6), q5_7), neg(q1_3)), neg(q2_4)), neg(q1_3)), neg(q2_4))
+      +m5_4 = add(add(add(add(add(add(add(neg(q0_5), neg(q0_5)), q6_7), q6_7), neg(q2_3)), neg(q2_3)), q1_4), q1_4)
+      +m5_5 = add(add(add(add(add(add(add(q0_0, neg(q5_5)), neg(q6_6)), q7_7), neg(q3_3)), q2_2), q1_1), neg(q4_4))
       K.Bivector{
-        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), add(neg(mul(t2, neg(a_e123))), mul(t3, a_e1))), add(add(mul(t4, neg(neg(a_e032))), neg(mul(t5, a_e0))), add(neg(mul(t6, neg(neg(a_e021)))), neg(mul(t7, neg(a_e013))))))),
-        neg(add(add(add(mul(t0, a_e1), mul(t1, neg(a_e123))), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), add(add(neg(mul(t4, neg(a_e013))), mul(t5, neg(neg(a_e021)))), add(neg(mul(t6, a_e0)), neg(mul(t7, neg(neg(a_e032)))))))),
-        neg(add(add(add(neg(mul(t0, neg(a_e123))), mul(t1, a_e1)), add(mul(t2, a_e2), mul(t3, a_e3))), add(add(mul(t4, neg(neg(a_e021))), mul(t5, neg(a_e013))), add(mul(t6, neg(neg(a_e032))), neg(mul(t7, a_e0)))))),
-        add(add(add(mul(t0, neg(a_e013)), neg(mul(t1, neg(neg(a_e021))))), add(mul(t2, a_e0), mul(t3, neg(neg(a_e032))))), add(add(neg(mul(t4, a_e1)), neg(mul(t5, neg(a_e123)))), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
-        neg(add(add(add(neg(mul(t0, neg(neg(a_e032)))), mul(t1, a_e0)), add(mul(t2, neg(neg(a_e021))), mul(t3, neg(a_e013)))), add(add(mul(t4, a_e2), mul(t5, a_e3)), add(mul(t6, neg(a_e123)), neg(mul(t7, a_e1)))))),
-        add(add(add(mul(t0, a_e0), mul(t1, neg(neg(a_e032)))), add(neg(mul(t2, neg(a_e013))), mul(t3, neg(neg(a_e021))))), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), add(neg(mul(t6, a_e1)), neg(mul(t7, neg(a_e123))))))}
+        add(mul(b_e10, m0_0), add(mul(b_e20, m0_1), add(mul(b_e30, m0_2), add(mul(b_e23, m0_3), add(mul(b_e31, m0_4), mul(b_e12, m0_5)))))),
+        add(mul(b_e10, m1_0), add(mul(b_e20, m1_1), add(mul(b_e30, m1_2), add(mul(b_e23, m1_3), add(mul(b_e31, m1_4), mul(b_e12, m1_5)))))),
+        add(mul(b_e10, m2_0), add(mul(b_e20, m2_1), add(mul(b_e30, m2_2), add(mul(b_e23, m2_3), add(mul(b_e31, m2_4), mul(b_e12, m2_5)))))),
+        add(mul(b_e10, m3_0), add(mul(b_e20, m3_1), add(mul(b_e30, m3_2), add(mul(b_e23, m3_3), add(mul(b_e31, m3_4), mul(b_e12, m3_5)))))),
+        add(mul(b_e10, m4_0), add(mul(b_e20, m4_1), add(mul(b_e30, m4_2), add(mul(b_e23, m4_3), add(mul(b_e31, m4_4), mul(b_e12, m4_5)))))),
+        add(mul(b_e10, m5_0), add(mul(b_e20, m5_1), add(mul(b_e30, m5_2), add(mul(b_e23, m5_3), add(mul(b_e31, m5_4), mul(b_e12, m5_5))))))}
 
 def Odd.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Trivector<T>) -> K.Trivector<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
-      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
-      +t1 = add(neg(mul(neg(a_e032), b_e123)), add(mul(a_e123, neg(b_e032)), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
-      +t2 = add(mul(a_e013, b_e123), add(add(neg(mul(a_e123, b_e013)), mul(a_e1, neg(b_e021))), neg(mul(a_e3, neg(b_e032)))))
-      +t3 = add(neg(mul(neg(a_e021), b_e123)), add(add(mul(a_e123, neg(b_e021)), mul(a_e1, b_e013)), mul(a_e2, neg(b_e032))))
-      +t4 = add(add(mul(a_e013, neg(b_e032)), add(neg(mul(neg(a_e032), b_e013)), mul(a_e0, neg(b_e021)))), neg(mul(a_e3, b_e123)))
-      +t5 = add(add(neg(mul(neg(a_e021), neg(b_e032))), add(mul(neg(a_e032), neg(b_e021)), mul(a_e0, b_e013))), mul(a_e2, b_e123))
-      +t6 = add(add(add(mul(neg(a_e021), b_e013), neg(mul(a_e013, neg(b_e021)))), mul(a_e0, neg(b_e032))), neg(mul(a_e1, b_e123)))
-      +t7 = add(add(add(neg(mul(neg(a_e021), neg(b_e021))), neg(mul(a_e013, b_e013))), neg(mul(neg(a_e032), neg(b_e032)))), mul(a_e123, b_e123))
+      +q0_0 = mul(a_e0, a_e0)
+      +q5_5 = mul(a_e032, a_e032)
+      +q6_6 = mul(a_e013, a_e013)
+      +q7_7 = mul(a_e021, a_e021)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q4_4 = mul(a_e123, a_e123)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q3_5 = mul(a_e3, a_e032)
+      +q4_6 = mul(a_e123, a_e013)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_3 = mul(a_e0, a_e3)
+      +q2_5 = mul(a_e2, a_e032)
+      +q1_6 = mul(a_e1, a_e013)
+      +q4_7 = mul(a_e123, a_e021)
+      +q1_2 = mul(a_e1, a_e2)
+      +q3_4 = mul(a_e3, a_e123)
+      +q5_6 = mul(a_e032, a_e013)
+      +q0_7 = mul(a_e0, a_e021)
+      +q1_3 = mul(a_e1, a_e3)
+      +q2_4 = mul(a_e2, a_e123)
+      +q0_6 = mul(a_e0, a_e013)
+      +q5_7 = mul(a_e032, a_e021)
+      +q2_3 = mul(a_e2, a_e3)
+      +q1_4 = mul(a_e1, a_e123)
+      +q0_5 = mul(a_e0, a_e032)
+      +q6_7 = mul(a_e013, a_e021)
+      +m0_0 = add(add(add(add(add(add(add(neg(q0_0), neg(q5_5)), neg(q6_6)), neg(q7_7)), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q4_4))
+      +m0_1 = add(add(add(add(add(add(add(neg(q0_1), q4_5), neg(q3_6)), q2_7), neg(q3_6)), q2_7), neg(q0_1)), q4_5)
+      +m0_2 = add(add(add(add(add(add(add(neg(q0_2), q3_5), q4_6), neg(q1_7)), q3_5), neg(q0_2)), neg(q1_7)), q4_6)
+      +m0_3 = add(add(add(add(add(add(add(neg(q0_3), neg(q2_5)), q1_6), q4_7), neg(q0_3)), neg(q2_5)), q1_6), q4_7)
+      +m1_0 = add(add(add(add(add(add(add(q0_1, neg(q4_5)), neg(q3_6)), q2_7), neg(q3_6)), q2_7), q0_1), neg(q4_5))
+      +m1_1 = add(add(add(add(add(add(add(q1_1, q4_4), neg(q3_3)), neg(q2_2)), neg(q6_6)), neg(q7_7)), q0_0), q5_5)
+      +m1_2 = add(add(add(add(add(add(add(q1_2, q3_4), q3_4), q1_2), q5_6), q0_7), q0_7), q5_6)
+      +m1_3 = add(add(add(add(add(add(add(q1_3, neg(q2_4)), q1_3), neg(q2_4)), neg(q0_6)), q5_7), neg(q0_6)), q5_7)
+      +m2_0 = add(add(add(add(add(add(add(q0_2, q3_5), neg(q4_6)), neg(q1_7)), q3_5), q0_2), neg(q1_7)), neg(q4_6))
+      +m2_1 = add(add(add(add(add(add(add(q1_2, neg(q3_4)), neg(q3_4)), q1_2), q5_6), neg(q0_7)), neg(q0_7)), q5_6)
+      +m2_2 = add(add(add(add(add(add(add(q2_2, neg(q3_3)), q4_4), neg(q1_1)), neg(q5_5)), q0_0), neg(q7_7)), q6_6)
+      +m2_3 = add(add(add(add(add(add(add(q2_3, q2_3), q1_4), q1_4), q0_5), q0_5), q6_7), q6_7)
+      +m3_0 = add(add(add(add(add(add(add(q0_3, neg(q2_5)), q1_6), neg(q4_7)), q0_3), neg(q2_5)), q1_6), neg(q4_7))
+      +m3_1 = add(add(add(add(add(add(add(q1_3, q2_4), q1_3), q2_4), q0_6), q5_7), q0_6), q5_7)
+      +m3_2 = add(add(add(add(add(add(add(q2_3, q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5)), q6_7), q6_7)
+      +m3_3 = add(add(add(add(add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q4_4), q0_0), neg(q5_5)), neg(q6_6)), q7_7)
       K.Trivector{
-        add(add(add(neg(mul(t0, a_e0)), neg(mul(t1, neg(neg(a_e032))))), add(mul(t2, neg(a_e013)), neg(mul(t3, neg(neg(a_e021)))))), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), add(mul(t6, a_e1), mul(t7, neg(a_e123))))),
-        neg(add(add(add(neg(mul(t0, a_e1)), neg(mul(t1, neg(a_e123)))), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), add(add(mul(t4, neg(a_e013)), neg(mul(t5, neg(neg(a_e021))))), add(mul(t6, a_e0), mul(t7, neg(neg(a_e032))))))),
-        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), add(mul(t2, neg(a_e123)), neg(mul(t3, a_e1)))), add(add(neg(mul(t4, neg(neg(a_e032)))), mul(t5, a_e0)), add(mul(t6, neg(neg(a_e021))), mul(t7, neg(a_e013))))),
-        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), add(neg(mul(t2, a_e1)), neg(mul(t3, neg(a_e123))))), add(add(mul(t4, a_e0), mul(t5, neg(neg(a_e032)))), add(neg(mul(t6, neg(a_e013))), mul(t7, neg(neg(a_e021)))))))}
+        add(mul(b_e123, m0_0), add(mul(b_e032, m0_1), add(mul(b_e013, m0_2), mul(b_e021, m0_3)))),
+        add(mul(b_e123, m1_0), add(mul(b_e032, m1_1), add(mul(b_e013, m1_2), mul(b_e021, m1_3)))),
+        add(mul(b_e123, m2_0), add(mul(b_e032, m2_1), add(mul(b_e013, m2_2), mul(b_e021, m2_3)))),
+        add(mul(b_e123, m3_0), add(mul(b_e032, m3_1), add(mul(b_e013, m3_2), mul(b_e021, m3_3))))}
 
 def Odd.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Pseudoscalar{+b_e0123}:
-      +t0 = mul(a_e3, b_e0123)
-      +t1 = neg(mul(a_e2, b_e0123))
-      +t2 = mul(a_e1, b_e0123)
-      +t3 = neg(mul(a_e123, b_e0123))
-      +t4 = mul(a_e0, b_e0123)
-      +t5 = neg(mul(neg(a_e032), b_e0123))
-      +t6 = mul(a_e013, b_e0123)
-      +t7 = neg(mul(neg(a_e021), b_e0123))
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q3_3 = mul(a_e3, a_e3)
+      +q2_2 = mul(a_e2, a_e2)
+      +q1_1 = mul(a_e1, a_e1)
+      +q4_4 = mul(a_e123, a_e123)
+      +q0_0 = mul(a_e0, a_e0)
+      +q5_5 = mul(a_e032, a_e032)
+      +q6_6 = mul(a_e013, a_e013)
+      +q7_7 = mul(a_e021, a_e021)
+      +m0_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m1_0 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q4_4), neg(q0_0)), neg(q5_5)), neg(q6_6)), neg(q7_7))
       K.Phasor{
-        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+        mul(b_e0123, m0_0),
+        mul(b_e0123, m1_0)}
 
 def Odd.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Phasor<T>) -> K.Phasor<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Phasor{+b_s, +b_e0123}:
-      +t0 = add(mul(neg(a_e021), b_s), mul(a_e3, b_e0123))
-      +t1 = add(mul(a_e013, b_s), neg(mul(a_e2, b_e0123)))
-      +t2 = add(mul(neg(a_e032), b_s), mul(a_e1, b_e0123))
-      +t3 = add(mul(a_e0, b_s), neg(mul(a_e123, b_e0123)))
-      +t4 = add(mul(a_e0, b_e0123), mul(a_e123, b_s))
-      +t5 = add(neg(mul(neg(a_e032), b_e0123)), mul(a_e1, b_s))
-      +t6 = add(mul(a_e013, b_e0123), mul(a_e2, b_s))
-      +t7 = add(neg(mul(neg(a_e021), b_e0123)), mul(a_e3, b_s))
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q0_0), neg(q4_4)), neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m0_1 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m1_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m1_1 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q4_4), neg(q0_0)), neg(q5_5)), neg(q6_6)), neg(q7_7))
       K.Phasor{
-        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+        add(mul(b_s, m0_0), mul(b_e0123, m0_1)),
+        add(mul(b_s, m1_0), mul(b_e0123, m1_1))}
 
 def Odd.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Even<T>) -> K.Even<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
-      +t0 = add(add(add(mul(neg(a_e021), b_s), mul(a_e013, b_e23)), add(neg(mul(neg(a_e032), neg(b_e31))), mul(a_e0, b_e12))), add(add(mul(a_e123, neg(b_e30)), neg(mul(a_e1, neg(b_e20)))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
-      +t1 = add(add(add(neg(mul(neg(a_e021), b_e23)), mul(a_e013, b_s)), add(mul(neg(a_e032), b_e12), mul(a_e0, neg(b_e31)))), add(add(neg(mul(a_e123, neg(b_e20))), neg(mul(a_e1, neg(b_e30)))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
-      +t2 = add(add(add(mul(neg(a_e021), neg(b_e31)), neg(mul(a_e013, b_e12))), add(mul(neg(a_e032), b_s), mul(a_e0, b_e23))), add(add(mul(a_e123, neg(b_e10)), mul(a_e1, b_e0123)), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
-      +t3 = add(add(add(neg(mul(neg(a_e021), b_e12)), neg(mul(a_e013, neg(b_e31)))), add(neg(mul(neg(a_e032), b_e23)), mul(a_e0, b_s))), add(add(neg(mul(a_e123, b_e0123)), mul(a_e1, neg(b_e10))), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
-      +t4 = add(add(add(mul(neg(a_e021), neg(b_e30)), neg(mul(a_e013, neg(b_e20)))), add(mul(neg(a_e032), neg(b_e10)), mul(a_e0, b_e0123))), add(add(mul(a_e123, b_s), mul(a_e1, b_e23)), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
-      +t5 = add(add(add(neg(mul(neg(a_e021), neg(b_e20))), neg(mul(a_e013, neg(b_e30)))), add(neg(mul(neg(a_e032), b_e0123)), mul(a_e0, neg(b_e10)))), add(add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
-      +t6 = add(add(add(mul(neg(a_e021), neg(b_e10)), mul(a_e013, b_e0123)), add(neg(mul(neg(a_e032), neg(b_e30))), mul(a_e0, neg(b_e20)))), add(add(mul(a_e123, neg(b_e31)), neg(mul(a_e1, b_e12))), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
-      +t7 = add(add(add(neg(mul(neg(a_e021), b_e0123)), mul(a_e013, neg(b_e10))), add(mul(neg(a_e032), neg(b_e20)), mul(a_e0, neg(b_e30)))), add(add(neg(mul(a_e123, b_e12)), neg(mul(a_e1, neg(b_e31)))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q1_2 = mul(a_e1, a_e2)
+      +q3_4 = mul(a_e3, a_e123)
+      +q5_6 = mul(a_e032, a_e013)
+      +q0_7 = mul(a_e0, a_e021)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q5_7 = mul(a_e032, a_e021)
+      +q0_6 = mul(a_e0, a_e013)
+      +q2_5 = mul(a_e2, a_e032)
+      +q0_3 = mul(a_e0, a_e3)
+      +q4_7 = mul(a_e123, a_e021)
+      +q1_6 = mul(a_e1, a_e013)
+      +q0_2 = mul(a_e0, a_e2)
+      +q3_5 = mul(a_e3, a_e032)
+      +q4_6 = mul(a_e123, a_e013)
+      +q1_7 = mul(a_e1, a_e021)
+      +q1_4 = mul(a_e1, a_e123)
+      +q2_3 = mul(a_e2, a_e3)
+      +q6_7 = mul(a_e013, a_e021)
+      +q0_5 = mul(a_e0, a_e032)
+      +q0_1 = mul(a_e0, a_e1)
+      +q4_5 = mul(a_e123, a_e032)
+      +q3_6 = mul(a_e3, a_e013)
+      +q2_7 = mul(a_e2, a_e021)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q0_0), neg(q4_4)), neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m0_7 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m1_1 = add(add(add(add(add(add(add(neg(q2_2), neg(q3_3)), q4_4), q1_1), neg(q5_5)), neg(q0_0)), q7_7), q6_6)
+      +m1_2 = add(add(add(add(add(add(add(q1_2, q3_4), q3_4), q1_2), neg(q5_6)), neg(q0_7)), neg(q0_7)), neg(q5_6))
+      +m1_3 = add(add(add(add(add(add(add(neg(q2_4), q1_3), neg(q2_4)), q1_3), neg(q5_7)), q0_6), neg(q5_7)), q0_6)
+      +m1_4 = add(add(add(add(add(add(add(q2_6, q3_7), neg(q0_4)), neg(q1_5)), neg(q1_5)), neg(q0_4)), q3_7), q2_6)
+      +m1_5 = add(add(add(add(add(add(add(neg(q2_5), neg(q0_3)), neg(q4_7)), neg(q1_6)), neg(q2_5)), neg(q0_3)), neg(q4_7)), neg(q1_6))
+      +m1_6 = add(add(add(add(add(add(add(q0_2, neg(q3_5)), q4_6), neg(q1_7)), neg(q3_5)), q0_2), neg(q1_7)), q4_6)
+      +m2_1 = add(add(add(add(add(add(add(q1_2, neg(q3_4)), neg(q3_4)), q1_2), neg(q5_6)), q0_7), q0_7), neg(q5_6))
+      +m2_2 = add(add(add(add(add(add(add(neg(q1_1), q4_4), neg(q3_3)), q2_2), neg(q6_6)), q7_7), neg(q0_0)), q5_5)
+      +m2_3 = add(add(add(add(add(add(add(q1_4, q1_4), q2_3), q2_3), neg(q6_7)), neg(q6_7)), neg(q0_5)), neg(q0_5))
+      +m2_4 = add(add(add(add(add(add(add(neg(q1_6), q4_7), q0_3), neg(q2_5)), neg(q1_6)), q4_7), q0_3), neg(q2_5))
+      +m2_5 = add(add(add(add(add(add(add(q1_5, neg(q0_4)), q3_7), neg(q2_6)), neg(q2_6)), q3_7), neg(q0_4)), q1_5)
+      +m2_6 = add(add(add(add(add(add(add(neg(q0_1), neg(q4_5)), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q0_1)), neg(q4_5))
+      +m3_1 = add(add(add(add(add(add(add(q2_4, q1_3), q2_4), q1_3), neg(q5_7)), neg(q0_6)), neg(q5_7)), neg(q0_6))
+      +m3_2 = add(add(add(add(add(add(add(neg(q1_4), neg(q1_4)), q2_3), q2_3), neg(q6_7)), neg(q6_7)), q0_5), q0_5)
+      +m3_3 = add(add(add(add(add(add(add(q4_4, neg(q1_1)), neg(q2_2)), q3_3), neg(q7_7)), q6_6), q5_5), neg(q0_0))
+      +m3_4 = add(add(add(add(add(add(add(neg(q4_6), neg(q1_7)), neg(q0_2)), neg(q3_5)), neg(q1_7)), neg(q4_6)), neg(q3_5)), neg(q0_2))
+      +m3_5 = add(add(add(add(add(add(add(q4_5, q0_1), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q3_6)), q4_5), q0_1)
+      +m3_6 = add(add(add(add(add(add(add(neg(q0_4), q1_5), q2_6), neg(q3_7)), neg(q3_7)), q2_6), q1_5), neg(q0_4))
+      +m4_1 = add(add(add(add(add(add(add(q2_6, q3_7), neg(q0_4)), neg(q1_5)), neg(q1_5)), neg(q0_4)), q3_7), q2_6)
+      +m4_2 = add(add(add(add(add(add(add(neg(q1_6), neg(q4_7)), neg(q0_3)), neg(q2_5)), neg(q1_6)), neg(q4_7)), neg(q0_3)), neg(q2_5))
+      +m4_3 = add(add(add(add(add(add(add(q4_6, neg(q1_7)), q0_2), neg(q3_5)), neg(q1_7)), q4_6), neg(q3_5)), q0_2)
+      +m4_4 = add(add(add(add(add(add(add(neg(q6_6), neg(q7_7)), q0_0), q5_5), neg(q1_1)), neg(q4_4)), q3_3), q2_2)
+      +m4_5 = add(add(add(add(add(add(add(q5_6, q0_7), q0_7), q5_6), neg(q1_2)), neg(q3_4)), neg(q3_4)), neg(q1_2))
+      +m4_6 = add(add(add(add(add(add(add(neg(q0_6), q5_7), neg(q0_6)), q5_7), neg(q1_3)), q2_4), neg(q1_3)), q2_4)
+      +m5_1 = add(add(add(add(add(add(add(neg(q2_5), q0_3), q4_7), neg(q1_6)), neg(q2_5)), q0_3), q4_7), neg(q1_6))
+      +m5_2 = add(add(add(add(add(add(add(q1_5, neg(q0_4)), q3_7), neg(q2_6)), neg(q2_6)), q3_7), neg(q0_4)), q1_5)
+      +m5_3 = add(add(add(add(add(add(add(neg(q4_5), neg(q0_1)), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q4_5)), neg(q0_1))
+      +m5_4 = add(add(add(add(add(add(add(q5_6, neg(q0_7)), neg(q0_7)), q5_6), neg(q1_2)), q3_4), q3_4), neg(q1_2))
+      +m5_5 = add(add(add(add(add(add(add(neg(q5_5), q0_0), neg(q7_7)), q6_6), neg(q2_2)), q3_3), neg(q4_4)), q1_1)
+      +m5_6 = add(add(add(add(add(add(add(q0_5, q0_5), q6_7), q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4))
+      +m6_1 = add(add(add(add(add(add(add(neg(q0_2), neg(q3_5)), neg(q4_6)), neg(q1_7)), neg(q3_5)), neg(q0_2)), neg(q1_7)), neg(q4_6))
+      +m6_2 = add(add(add(add(add(add(add(q0_1, q4_5), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q2_7)), q0_1), q4_5)
+      +m6_3 = add(add(add(add(add(add(add(neg(q0_4), q1_5), q2_6), neg(q3_7)), neg(q3_7)), q2_6), q1_5), neg(q0_4))
+      +m6_4 = add(add(add(add(add(add(add(q0_6, q5_7), q0_6), q5_7), neg(q1_3)), neg(q2_4)), neg(q1_3)), neg(q2_4))
+      +m6_5 = add(add(add(add(add(add(add(neg(q0_5), neg(q0_5)), q6_7), q6_7), neg(q2_3)), neg(q2_3)), q1_4), q1_4)
+      +m6_6 = add(add(add(add(add(add(add(q0_0, neg(q5_5)), neg(q6_6)), q7_7), neg(q3_3)), q2_2), q1_1), neg(q4_4))
+      +m7_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m7_7 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q4_4), neg(q0_0)), neg(q5_5)), neg(q6_6)), neg(q7_7))
       K.Even{
-        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
-        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), add(neg(mul(t2, neg(a_e123))), mul(t3, a_e1))), add(add(mul(t4, neg(neg(a_e032))), neg(mul(t5, a_e0))), add(neg(mul(t6, neg(neg(a_e021)))), neg(mul(t7, neg(a_e013))))))),
-        neg(add(add(add(mul(t0, a_e1), mul(t1, neg(a_e123))), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), add(add(neg(mul(t4, neg(a_e013))), mul(t5, neg(neg(a_e021)))), add(neg(mul(t6, a_e0)), neg(mul(t7, neg(neg(a_e032)))))))),
-        neg(add(add(add(neg(mul(t0, neg(a_e123))), mul(t1, a_e1)), add(mul(t2, a_e2), mul(t3, a_e3))), add(add(mul(t4, neg(neg(a_e021))), mul(t5, neg(a_e013))), add(mul(t6, neg(neg(a_e032))), neg(mul(t7, a_e0)))))),
-        add(add(add(mul(t0, neg(a_e013)), neg(mul(t1, neg(neg(a_e021))))), add(mul(t2, a_e0), mul(t3, neg(neg(a_e032))))), add(add(neg(mul(t4, a_e1)), neg(mul(t5, neg(a_e123)))), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
-        neg(add(add(add(neg(mul(t0, neg(neg(a_e032)))), mul(t1, a_e0)), add(mul(t2, neg(neg(a_e021))), mul(t3, neg(a_e013)))), add(add(mul(t4, a_e2), mul(t5, a_e3)), add(mul(t6, neg(a_e123)), neg(mul(t7, a_e1)))))),
-        add(add(add(mul(t0, a_e0), mul(t1, neg(neg(a_e032)))), add(neg(mul(t2, neg(a_e013))), mul(t3, neg(neg(a_e021))))), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), add(neg(mul(t6, a_e1)), neg(mul(t7, neg(a_e123)))))),
-        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+        add(mul(b_s, m0_0), mul(b_e0123, m0_7)),
+        add(mul(b_e10, m1_1), add(mul(b_e20, m1_2), add(mul(b_e30, m1_3), add(mul(b_e23, m1_4), add(mul(b_e31, m1_5), mul(b_e12, m1_6)))))),
+        add(mul(b_e10, m2_1), add(mul(b_e20, m2_2), add(mul(b_e30, m2_3), add(mul(b_e23, m2_4), add(mul(b_e31, m2_5), mul(b_e12, m2_6)))))),
+        add(mul(b_e10, m3_1), add(mul(b_e20, m3_2), add(mul(b_e30, m3_3), add(mul(b_e23, m3_4), add(mul(b_e31, m3_5), mul(b_e12, m3_6)))))),
+        add(mul(b_e10, m4_1), add(mul(b_e20, m4_2), add(mul(b_e30, m4_3), add(mul(b_e23, m4_4), add(mul(b_e31, m4_5), mul(b_e12, m4_6)))))),
+        add(mul(b_e10, m5_1), add(mul(b_e20, m5_2), add(mul(b_e30, m5_3), add(mul(b_e23, m5_4), add(mul(b_e31, m5_5), mul(b_e12, m5_6)))))),
+        add(mul(b_e10, m6_1), add(mul(b_e20, m6_2), add(mul(b_e30, m6_3), add(mul(b_e23, m6_4), add(mul(b_e31, m6_5), mul(b_e12, m6_6)))))),
+        add(mul(b_s, m7_0), mul(b_e0123, m7_7))}
 
 def Odd.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Odd<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
-      +t0 = add(add(add(mul(neg(a_e021), b_e3), neg(mul(a_e013, b_e2))), add(mul(neg(a_e032), b_e1), mul(a_e0, b_e123))), add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e1, neg(b_e032)))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
-      +t1 = add(add(add(neg(mul(neg(a_e021), b_e2)), neg(mul(a_e013, b_e3))), add(neg(mul(neg(a_e032), b_e123)), mul(a_e0, b_e1))), add(add(mul(a_e123, neg(b_e032)), neg(mul(a_e1, b_e0))), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
-      +t2 = add(add(add(mul(neg(a_e021), b_e1), mul(a_e013, b_e123)), add(neg(mul(neg(a_e032), b_e3)), mul(a_e0, b_e2))), add(add(neg(mul(a_e123, b_e013)), mul(a_e1, neg(b_e021))), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
-      +t3 = add(add(add(neg(mul(neg(a_e021), b_e123)), mul(a_e013, b_e1)), add(mul(neg(a_e032), b_e2), mul(a_e0, b_e3))), add(add(mul(a_e123, neg(b_e021)), mul(a_e1, b_e013)), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
-      +t4 = add(add(add(mul(neg(a_e021), b_e0), mul(a_e013, neg(b_e032))), add(neg(mul(neg(a_e032), b_e013)), mul(a_e0, neg(b_e021)))), add(add(neg(mul(a_e123, b_e3)), mul(a_e1, b_e2)), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
-      +t5 = add(add(add(neg(mul(neg(a_e021), neg(b_e032))), mul(a_e013, b_e0)), add(mul(neg(a_e032), neg(b_e021)), mul(a_e0, b_e013))), add(add(mul(a_e123, b_e2), mul(a_e1, b_e3)), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
-      +t6 = add(add(add(mul(neg(a_e021), b_e013), neg(mul(a_e013, neg(b_e021)))), add(mul(neg(a_e032), b_e0), mul(a_e0, neg(b_e032)))), add(add(neg(mul(a_e123, b_e1)), neg(mul(a_e1, b_e123))), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
-      +t7 = add(add(add(neg(mul(neg(a_e021), neg(b_e021))), neg(mul(a_e013, b_e013))), add(neg(mul(neg(a_e032), neg(b_e032))), mul(a_e0, b_e0))), add(add(mul(a_e123, b_e123), neg(mul(a_e1, b_e1))), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_5 = mul(a_e123, a_e032)
+      +q0_1 = mul(a_e0, a_e1)
+      +q2_7 = mul(a_e2, a_e021)
+      +q3_6 = mul(a_e3, a_e013)
+      +q4_6 = mul(a_e123, a_e013)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q3_5 = mul(a_e3, a_e032)
+      +q4_7 = mul(a_e123, a_e021)
+      +q1_6 = mul(a_e1, a_e013)
+      +q2_5 = mul(a_e2, a_e032)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q0_7 = mul(a_e0, a_e021)
+      +q1_2 = mul(a_e1, a_e2)
+      +q3_4 = mul(a_e3, a_e123)
+      +q5_7 = mul(a_e032, a_e021)
+      +q0_6 = mul(a_e0, a_e013)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q6_7 = mul(a_e013, a_e021)
+      +q0_5 = mul(a_e0, a_e032)
+      +q1_4 = mul(a_e1, a_e123)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(add(add(add(add(q4_4, q1_1), q2_2), q3_3), q7_7), q6_6), q5_5), q0_0)
+      +m0_1 = add(add(add(add(add(add(add(q4_5, neg(q0_1)), q2_7), neg(q3_6)), q2_7), neg(q3_6)), q4_5), neg(q0_1))
+      +m0_2 = add(add(add(add(add(add(add(q4_6, neg(q1_7)), neg(q0_2)), q3_5), neg(q1_7)), q4_6), q3_5), neg(q0_2))
+      +m0_3 = add(add(add(add(add(add(add(q4_7, q1_6), neg(q2_5)), neg(q0_3)), q4_7), q1_6), neg(q2_5)), neg(q0_3))
+      +m1_0 = add(add(add(add(add(add(add(neg(q4_5), q0_1), q2_7), neg(q3_6)), q2_7), neg(q3_6)), neg(q4_5)), q0_1)
+      +m1_1 = add(add(add(add(add(add(add(neg(q5_5), neg(q0_0)), q7_7), q6_6), q2_2), q3_3), neg(q4_4)), neg(q1_1))
+      +m1_2 = add(add(add(add(add(add(add(neg(q5_6), neg(q0_7)), neg(q0_7)), neg(q5_6)), neg(q1_2)), neg(q3_4)), neg(q3_4)), neg(q1_2))
+      +m1_3 = add(add(add(add(add(add(add(neg(q5_7), q0_6), neg(q5_7)), q0_6), q2_4), neg(q1_3)), q2_4), neg(q1_3))
+      +m2_0 = add(add(add(add(add(add(add(neg(q4_6), neg(q1_7)), q0_2), q3_5), neg(q1_7)), neg(q4_6)), q3_5), q0_2)
+      +m2_1 = add(add(add(add(add(add(add(neg(q5_6), q0_7), q0_7), neg(q5_6)), neg(q1_2)), q3_4), q3_4), neg(q1_2))
+      +m2_2 = add(add(add(add(add(add(add(neg(q6_6), q7_7), neg(q0_0)), q5_5), q1_1), neg(q4_4)), q3_3), neg(q2_2))
+      +m2_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q0_5)), neg(q0_5)), neg(q1_4)), neg(q1_4)), neg(q2_3)), neg(q2_3))
+      +m3_0 = add(add(add(add(add(add(add(neg(q4_7), q1_6), neg(q2_5)), q0_3), neg(q4_7)), q1_6), neg(q2_5)), q0_3)
+      +m3_1 = add(add(add(add(add(add(add(neg(q5_7), neg(q0_6)), neg(q5_7)), neg(q0_6)), neg(q2_4)), neg(q1_3)), neg(q2_4)), neg(q1_3))
+      +m3_2 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q0_5), q0_5), q1_4), q1_4), neg(q2_3)), neg(q2_3))
+      +m3_3 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q0_0)), neg(q4_4)), q1_1), q2_2), neg(q3_3))
+      +m4_4 = add(add(add(add(add(add(add(neg(q0_0), neg(q5_5)), neg(q6_6)), neg(q7_7)), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q4_4))
+      +m4_5 = add(add(add(add(add(add(add(neg(q0_1), q4_5), neg(q3_6)), q2_7), neg(q3_6)), q2_7), neg(q0_1)), q4_5)
+      +m4_6 = add(add(add(add(add(add(add(neg(q0_2), q3_5), q4_6), neg(q1_7)), q3_5), neg(q0_2)), neg(q1_7)), q4_6)
+      +m4_7 = add(add(add(add(add(add(add(neg(q0_3), neg(q2_5)), q1_6), q4_7), neg(q0_3)), neg(q2_5)), q1_6), q4_7)
+      +m5_4 = add(add(add(add(add(add(add(q0_1, neg(q4_5)), neg(q3_6)), q2_7), neg(q3_6)), q2_7), q0_1), neg(q4_5))
+      +m5_5 = add(add(add(add(add(add(add(q1_1, q4_4), neg(q3_3)), neg(q2_2)), neg(q6_6)), neg(q7_7)), q0_0), q5_5)
+      +m5_6 = add(add(add(add(add(add(add(q1_2, q3_4), q3_4), q1_2), q5_6), q0_7), q0_7), q5_6)
+      +m5_7 = add(add(add(add(add(add(add(q1_3, neg(q2_4)), q1_3), neg(q2_4)), neg(q0_6)), q5_7), neg(q0_6)), q5_7)
+      +m6_4 = add(add(add(add(add(add(add(q0_2, q3_5), neg(q4_6)), neg(q1_7)), q3_5), q0_2), neg(q1_7)), neg(q4_6))
+      +m6_5 = add(add(add(add(add(add(add(q1_2, neg(q3_4)), neg(q3_4)), q1_2), q5_6), neg(q0_7)), neg(q0_7)), q5_6)
+      +m6_6 = add(add(add(add(add(add(add(q2_2, neg(q3_3)), q4_4), neg(q1_1)), neg(q5_5)), q0_0), neg(q7_7)), q6_6)
+      +m6_7 = add(add(add(add(add(add(add(q2_3, q2_3), q1_4), q1_4), q0_5), q0_5), q6_7), q6_7)
+      +m7_4 = add(add(add(add(add(add(add(q0_3, neg(q2_5)), q1_6), neg(q4_7)), q0_3), neg(q2_5)), q1_6), neg(q4_7))
+      +m7_5 = add(add(add(add(add(add(add(q1_3, q2_4), q1_3), q2_4), q0_6), q5_7), q0_6), q5_7)
+      +m7_6 = add(add(add(add(add(add(add(q2_3, q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5)), q6_7), q6_7)
+      +m7_7 = add(add(add(add(add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q4_4), q0_0), neg(q5_5)), neg(q6_6)), q7_7)
       K.Odd{
-        add(add(add(mul(t0, neg(a_e123)), neg(mul(t1, a_e1))), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))), add(add(neg(mul(t4, neg(neg(a_e021)))), neg(mul(t5, neg(a_e013)))), add(neg(mul(t6, neg(neg(a_e032)))), mul(t7, a_e0)))),
-        add(add(add(mul(t0, neg(neg(a_e032))), neg(mul(t1, a_e0))), add(neg(mul(t2, neg(neg(a_e021)))), neg(mul(t3, neg(a_e013))))), add(add(neg(mul(t4, a_e2)), neg(mul(t5, a_e3))), add(neg(mul(t6, neg(a_e123))), mul(t7, a_e1)))),
-        add(add(add(neg(mul(t0, neg(a_e013))), mul(t1, neg(neg(a_e021)))), add(neg(mul(t2, a_e0)), neg(mul(t3, neg(neg(a_e032)))))), add(add(mul(t4, a_e1), mul(t5, neg(a_e123))), add(neg(mul(t6, a_e3)), mul(t7, a_e2)))),
-        add(add(add(mul(t0, neg(neg(a_e021))), mul(t1, neg(a_e013))), add(mul(t2, neg(neg(a_e032))), neg(mul(t3, a_e0)))), add(add(neg(mul(t4, neg(a_e123))), mul(t5, a_e1)), add(mul(t6, a_e2), mul(t7, a_e3)))),
-        add(add(add(neg(mul(t0, a_e0)), neg(mul(t1, neg(neg(a_e032))))), add(mul(t2, neg(a_e013)), neg(mul(t3, neg(neg(a_e021)))))), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), add(mul(t6, a_e1), mul(t7, neg(a_e123))))),
-        neg(add(add(add(neg(mul(t0, a_e1)), neg(mul(t1, neg(a_e123)))), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), add(add(mul(t4, neg(a_e013)), neg(mul(t5, neg(neg(a_e021))))), add(mul(t6, a_e0), mul(t7, neg(neg(a_e032))))))),
-        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), add(mul(t2, neg(a_e123)), neg(mul(t3, a_e1)))), add(add(neg(mul(t4, neg(neg(a_e032)))), mul(t5, a_e0)), add(mul(t6, neg(neg(a_e021))), mul(t7, neg(a_e013))))),
-        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), add(neg(mul(t2, a_e1)), neg(mul(t3, neg(a_e123))))), add(add(mul(t4, a_e0), mul(t5, neg(neg(a_e032)))), add(neg(mul(t6, neg(a_e013))), mul(t7, neg(neg(a_e021)))))))}
+        add(mul(b_e0, m0_0), add(mul(b_e1, m0_1), add(mul(b_e2, m0_2), mul(b_e3, m0_3)))),
+        add(mul(b_e0, m1_0), add(mul(b_e1, m1_1), add(mul(b_e2, m1_2), mul(b_e3, m1_3)))),
+        add(mul(b_e0, m2_0), add(mul(b_e1, m2_1), add(mul(b_e2, m2_2), mul(b_e3, m2_3)))),
+        add(mul(b_e0, m3_0), add(mul(b_e1, m3_1), add(mul(b_e2, m3_2), mul(b_e3, m3_3)))),
+        add(mul(b_e123, m4_4), add(mul(b_e032, m4_5), add(mul(b_e013, m4_6), mul(b_e021, m4_7)))),
+        add(mul(b_e123, m5_4), add(mul(b_e032, m5_5), add(mul(b_e013, m5_6), mul(b_e021, m5_7)))),
+        add(mul(b_e123, m6_4), add(mul(b_e032, m6_5), add(mul(b_e013, m6_6), mul(b_e021, m6_7)))),
+        add(mul(b_e123, m7_4), add(mul(b_e032, m7_5), add(mul(b_e013, m7_6), mul(b_e021, m7_7))))}
 
 def Odd.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
   match a b:
     case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
-      +t0 = add(add(add(mul(neg(a_e021), b_e3), neg(mul(a_e013, b_e2))), add(mul(neg(a_e032), b_e1), mul(a_e0, b_e123))), add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e1, neg(b_e032)))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
-      +t1 = add(add(add(mul(neg(a_e021), b_s), mul(a_e013, b_e23)), add(neg(mul(neg(a_e032), neg(b_e31))), mul(a_e0, b_e12))), add(add(mul(a_e123, neg(b_e30)), neg(mul(a_e1, neg(b_e20)))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
-      +t2 = add(add(add(neg(mul(neg(a_e021), b_e23)), mul(a_e013, b_s)), add(mul(neg(a_e032), b_e12), mul(a_e0, neg(b_e31)))), add(add(neg(mul(a_e123, neg(b_e20))), neg(mul(a_e1, neg(b_e30)))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
-      +t3 = add(add(add(neg(mul(neg(a_e021), b_e2)), neg(mul(a_e013, b_e3))), add(neg(mul(neg(a_e032), b_e123)), mul(a_e0, b_e1))), add(add(mul(a_e123, neg(b_e032)), neg(mul(a_e1, b_e0))), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
-      +t4 = add(add(add(mul(neg(a_e021), neg(b_e31)), neg(mul(a_e013, b_e12))), add(mul(neg(a_e032), b_s), mul(a_e0, b_e23))), add(add(mul(a_e123, neg(b_e10)), mul(a_e1, b_e0123)), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
-      +t5 = add(add(add(mul(neg(a_e021), b_e1), mul(a_e013, b_e123)), add(neg(mul(neg(a_e032), b_e3)), mul(a_e0, b_e2))), add(add(neg(mul(a_e123, b_e013)), mul(a_e1, neg(b_e021))), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
-      +t6 = add(add(add(neg(mul(neg(a_e021), b_e123)), mul(a_e013, b_e1)), add(mul(neg(a_e032), b_e2), mul(a_e0, b_e3))), add(add(mul(a_e123, neg(b_e021)), mul(a_e1, b_e013)), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
-      +t7 = add(add(add(neg(mul(neg(a_e021), b_e12)), neg(mul(a_e013, neg(b_e31)))), add(neg(mul(neg(a_e032), b_e23)), mul(a_e0, b_s))), add(add(neg(mul(a_e123, b_e0123)), mul(a_e1, neg(b_e10))), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
-      +t8 = add(add(add(mul(neg(a_e021), neg(b_e30)), neg(mul(a_e013, neg(b_e20)))), add(mul(neg(a_e032), neg(b_e10)), mul(a_e0, b_e0123))), add(add(mul(a_e123, b_s), mul(a_e1, b_e23)), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
-      +t9 = add(add(add(mul(neg(a_e021), b_e0), mul(a_e013, neg(b_e032))), add(neg(mul(neg(a_e032), b_e013)), mul(a_e0, neg(b_e021)))), add(add(neg(mul(a_e123, b_e3)), mul(a_e1, b_e2)), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
-      +t10 = add(add(add(neg(mul(neg(a_e021), neg(b_e032))), mul(a_e013, b_e0)), add(mul(neg(a_e032), neg(b_e021)), mul(a_e0, b_e013))), add(add(mul(a_e123, b_e2), mul(a_e1, b_e3)), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
-      +t11 = add(add(add(neg(mul(neg(a_e021), neg(b_e20))), neg(mul(a_e013, neg(b_e30)))), add(neg(mul(neg(a_e032), b_e0123)), mul(a_e0, neg(b_e10)))), add(add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
-      +t12 = add(add(add(mul(neg(a_e021), b_e013), neg(mul(a_e013, neg(b_e021)))), add(mul(neg(a_e032), b_e0), mul(a_e0, neg(b_e032)))), add(add(neg(mul(a_e123, b_e1)), neg(mul(a_e1, b_e123))), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
-      +t13 = add(add(add(mul(neg(a_e021), neg(b_e10)), mul(a_e013, b_e0123)), add(neg(mul(neg(a_e032), neg(b_e30))), mul(a_e0, neg(b_e20)))), add(add(mul(a_e123, neg(b_e31)), neg(mul(a_e1, b_e12))), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
-      +t14 = add(add(add(neg(mul(neg(a_e021), b_e0123)), mul(a_e013, neg(b_e10))), add(mul(neg(a_e032), neg(b_e20)), mul(a_e0, neg(b_e30)))), add(add(neg(mul(a_e123, b_e12)), neg(mul(a_e1, neg(b_e31)))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
-      +t15 = add(add(add(neg(mul(neg(a_e021), neg(b_e021))), neg(mul(a_e013, b_e013))), add(neg(mul(neg(a_e032), neg(b_e032))), mul(a_e0, b_e0))), add(add(mul(a_e123, b_e123), neg(mul(a_e1, b_e1))), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      +q7_7 = mul(a_e021, a_e021)
+      +q6_6 = mul(a_e013, a_e013)
+      +q5_5 = mul(a_e032, a_e032)
+      +q0_0 = mul(a_e0, a_e0)
+      +q4_4 = mul(a_e123, a_e123)
+      +q1_1 = mul(a_e1, a_e1)
+      +q2_2 = mul(a_e2, a_e2)
+      +q3_3 = mul(a_e3, a_e3)
+      +q3_7 = mul(a_e3, a_e021)
+      +q2_6 = mul(a_e2, a_e013)
+      +q1_5 = mul(a_e1, a_e032)
+      +q0_4 = mul(a_e0, a_e123)
+      +q4_5 = mul(a_e123, a_e032)
+      +q0_1 = mul(a_e0, a_e1)
+      +q2_7 = mul(a_e2, a_e021)
+      +q3_6 = mul(a_e3, a_e013)
+      +q4_6 = mul(a_e123, a_e013)
+      +q1_7 = mul(a_e1, a_e021)
+      +q0_2 = mul(a_e0, a_e2)
+      +q3_5 = mul(a_e3, a_e032)
+      +q4_7 = mul(a_e123, a_e021)
+      +q1_6 = mul(a_e1, a_e013)
+      +q2_5 = mul(a_e2, a_e032)
+      +q0_3 = mul(a_e0, a_e3)
+      +q5_6 = mul(a_e032, a_e013)
+      +q0_7 = mul(a_e0, a_e021)
+      +q1_2 = mul(a_e1, a_e2)
+      +q3_4 = mul(a_e3, a_e123)
+      +q5_7 = mul(a_e032, a_e021)
+      +q0_6 = mul(a_e0, a_e013)
+      +q2_4 = mul(a_e2, a_e123)
+      +q1_3 = mul(a_e1, a_e3)
+      +q6_7 = mul(a_e013, a_e021)
+      +q0_5 = mul(a_e0, a_e032)
+      +q1_4 = mul(a_e1, a_e123)
+      +q2_3 = mul(a_e2, a_e3)
+      +m0_0 = add(add(add(add(add(add(add(q7_7, q6_6), q5_5), q0_0), neg(q4_4)), neg(q1_1)), neg(q2_2)), neg(q3_3))
+      +m0_15 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m1_1 = add(add(add(add(add(add(add(q4_4, q1_1), q2_2), q3_3), q7_7), q6_6), q5_5), q0_0)
+      +m1_2 = add(add(add(add(add(add(add(q4_5, neg(q0_1)), q2_7), neg(q3_6)), q2_7), neg(q3_6)), q4_5), neg(q0_1))
+      +m1_3 = add(add(add(add(add(add(add(q4_6, neg(q1_7)), neg(q0_2)), q3_5), neg(q1_7)), q4_6), q3_5), neg(q0_2))
+      +m1_4 = add(add(add(add(add(add(add(q4_7, q1_6), neg(q2_5)), neg(q0_3)), q4_7), q1_6), neg(q2_5)), neg(q0_3))
+      +m2_1 = add(add(add(add(add(add(add(neg(q4_5), q0_1), q2_7), neg(q3_6)), q2_7), neg(q3_6)), neg(q4_5)), q0_1)
+      +m2_2 = add(add(add(add(add(add(add(neg(q5_5), neg(q0_0)), q7_7), q6_6), q2_2), q3_3), neg(q4_4)), neg(q1_1))
+      +m2_3 = add(add(add(add(add(add(add(neg(q5_6), neg(q0_7)), neg(q0_7)), neg(q5_6)), neg(q1_2)), neg(q3_4)), neg(q3_4)), neg(q1_2))
+      +m2_4 = add(add(add(add(add(add(add(neg(q5_7), q0_6), neg(q5_7)), q0_6), q2_4), neg(q1_3)), q2_4), neg(q1_3))
+      +m3_1 = add(add(add(add(add(add(add(neg(q4_6), neg(q1_7)), q0_2), q3_5), neg(q1_7)), neg(q4_6)), q3_5), q0_2)
+      +m3_2 = add(add(add(add(add(add(add(neg(q5_6), q0_7), q0_7), neg(q5_6)), neg(q1_2)), q3_4), q3_4), neg(q1_2))
+      +m3_3 = add(add(add(add(add(add(add(neg(q6_6), q7_7), neg(q0_0)), q5_5), q1_1), neg(q4_4)), q3_3), neg(q2_2))
+      +m3_4 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), neg(q0_5)), neg(q0_5)), neg(q1_4)), neg(q1_4)), neg(q2_3)), neg(q2_3))
+      +m4_1 = add(add(add(add(add(add(add(neg(q4_7), q1_6), neg(q2_5)), q0_3), neg(q4_7)), q1_6), neg(q2_5)), q0_3)
+      +m4_2 = add(add(add(add(add(add(add(neg(q5_7), neg(q0_6)), neg(q5_7)), neg(q0_6)), neg(q2_4)), neg(q1_3)), neg(q2_4)), neg(q1_3))
+      +m4_3 = add(add(add(add(add(add(add(neg(q6_7), neg(q6_7)), q0_5), q0_5), q1_4), q1_4), neg(q2_3)), neg(q2_3))
+      +m4_4 = add(add(add(add(add(add(add(neg(q7_7), q6_6), q5_5), neg(q0_0)), neg(q4_4)), q1_1), q2_2), neg(q3_3))
+      +m5_5 = add(add(add(add(add(add(add(neg(q2_2), neg(q3_3)), q4_4), q1_1), neg(q5_5)), neg(q0_0)), q7_7), q6_6)
+      +m5_6 = add(add(add(add(add(add(add(q1_2, q3_4), q3_4), q1_2), neg(q5_6)), neg(q0_7)), neg(q0_7)), neg(q5_6))
+      +m5_7 = add(add(add(add(add(add(add(neg(q2_4), q1_3), neg(q2_4)), q1_3), neg(q5_7)), q0_6), neg(q5_7)), q0_6)
+      +m5_8 = add(add(add(add(add(add(add(q2_6, q3_7), neg(q0_4)), neg(q1_5)), neg(q1_5)), neg(q0_4)), q3_7), q2_6)
+      +m5_9 = add(add(add(add(add(add(add(neg(q2_5), neg(q0_3)), neg(q4_7)), neg(q1_6)), neg(q2_5)), neg(q0_3)), neg(q4_7)), neg(q1_6))
+      +m5_10 = add(add(add(add(add(add(add(q0_2, neg(q3_5)), q4_6), neg(q1_7)), neg(q3_5)), q0_2), neg(q1_7)), q4_6)
+      +m6_5 = add(add(add(add(add(add(add(q1_2, neg(q3_4)), neg(q3_4)), q1_2), neg(q5_6)), q0_7), q0_7), neg(q5_6))
+      +m6_6 = add(add(add(add(add(add(add(neg(q1_1), q4_4), neg(q3_3)), q2_2), neg(q6_6)), q7_7), neg(q0_0)), q5_5)
+      +m6_7 = add(add(add(add(add(add(add(q1_4, q1_4), q2_3), q2_3), neg(q6_7)), neg(q6_7)), neg(q0_5)), neg(q0_5))
+      +m6_8 = add(add(add(add(add(add(add(neg(q1_6), q4_7), q0_3), neg(q2_5)), neg(q1_6)), q4_7), q0_3), neg(q2_5))
+      +m6_9 = add(add(add(add(add(add(add(q1_5, neg(q0_4)), q3_7), neg(q2_6)), neg(q2_6)), q3_7), neg(q0_4)), q1_5)
+      +m6_10 = add(add(add(add(add(add(add(neg(q0_1), neg(q4_5)), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q0_1)), neg(q4_5))
+      +m7_5 = add(add(add(add(add(add(add(q2_4, q1_3), q2_4), q1_3), neg(q5_7)), neg(q0_6)), neg(q5_7)), neg(q0_6))
+      +m7_6 = add(add(add(add(add(add(add(neg(q1_4), neg(q1_4)), q2_3), q2_3), neg(q6_7)), neg(q6_7)), q0_5), q0_5)
+      +m7_7 = add(add(add(add(add(add(add(q4_4, neg(q1_1)), neg(q2_2)), q3_3), neg(q7_7)), q6_6), q5_5), neg(q0_0))
+      +m7_8 = add(add(add(add(add(add(add(neg(q4_6), neg(q1_7)), neg(q0_2)), neg(q3_5)), neg(q1_7)), neg(q4_6)), neg(q3_5)), neg(q0_2))
+      +m7_9 = add(add(add(add(add(add(add(q4_5, q0_1), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q3_6)), q4_5), q0_1)
+      +m7_10 = add(add(add(add(add(add(add(neg(q0_4), q1_5), q2_6), neg(q3_7)), neg(q3_7)), q2_6), q1_5), neg(q0_4))
+      +m8_5 = add(add(add(add(add(add(add(q2_6, q3_7), neg(q0_4)), neg(q1_5)), neg(q1_5)), neg(q0_4)), q3_7), q2_6)
+      +m8_6 = add(add(add(add(add(add(add(neg(q1_6), neg(q4_7)), neg(q0_3)), neg(q2_5)), neg(q1_6)), neg(q4_7)), neg(q0_3)), neg(q2_5))
+      +m8_7 = add(add(add(add(add(add(add(q4_6, neg(q1_7)), q0_2), neg(q3_5)), neg(q1_7)), q4_6), neg(q3_5)), q0_2)
+      +m8_8 = add(add(add(add(add(add(add(neg(q6_6), neg(q7_7)), q0_0), q5_5), neg(q1_1)), neg(q4_4)), q3_3), q2_2)
+      +m8_9 = add(add(add(add(add(add(add(q5_6, q0_7), q0_7), q5_6), neg(q1_2)), neg(q3_4)), neg(q3_4)), neg(q1_2))
+      +m8_10 = add(add(add(add(add(add(add(neg(q0_6), q5_7), neg(q0_6)), q5_7), neg(q1_3)), q2_4), neg(q1_3)), q2_4)
+      +m9_5 = add(add(add(add(add(add(add(neg(q2_5), q0_3), q4_7), neg(q1_6)), neg(q2_5)), q0_3), q4_7), neg(q1_6))
+      +m9_6 = add(add(add(add(add(add(add(q1_5, neg(q0_4)), q3_7), neg(q2_6)), neg(q2_6)), q3_7), neg(q0_4)), q1_5)
+      +m9_7 = add(add(add(add(add(add(add(neg(q4_5), neg(q0_1)), neg(q2_7)), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q4_5)), neg(q0_1))
+      +m9_8 = add(add(add(add(add(add(add(q5_6, neg(q0_7)), neg(q0_7)), q5_6), neg(q1_2)), q3_4), q3_4), neg(q1_2))
+      +m9_9 = add(add(add(add(add(add(add(neg(q5_5), q0_0), neg(q7_7)), q6_6), neg(q2_2)), q3_3), neg(q4_4)), q1_1)
+      +m9_10 = add(add(add(add(add(add(add(q0_5, q0_5), q6_7), q6_7), neg(q2_3)), neg(q2_3)), neg(q1_4)), neg(q1_4))
+      +m10_5 = add(add(add(add(add(add(add(neg(q0_2), neg(q3_5)), neg(q4_6)), neg(q1_7)), neg(q3_5)), neg(q0_2)), neg(q1_7)), neg(q4_6))
+      +m10_6 = add(add(add(add(add(add(add(q0_1, q4_5), neg(q3_6)), neg(q2_7)), neg(q3_6)), neg(q2_7)), q0_1), q4_5)
+      +m10_7 = add(add(add(add(add(add(add(neg(q0_4), q1_5), q2_6), neg(q3_7)), neg(q3_7)), q2_6), q1_5), neg(q0_4))
+      +m10_8 = add(add(add(add(add(add(add(q0_6, q5_7), q0_6), q5_7), neg(q1_3)), neg(q2_4)), neg(q1_3)), neg(q2_4))
+      +m10_9 = add(add(add(add(add(add(add(neg(q0_5), neg(q0_5)), q6_7), q6_7), neg(q2_3)), neg(q2_3)), q1_4), q1_4)
+      +m10_10 = add(add(add(add(add(add(add(q0_0, neg(q5_5)), neg(q6_6)), q7_7), neg(q3_3)), q2_2), q1_1), neg(q4_4))
+      +m11_11 = add(add(add(add(add(add(add(neg(q0_0), neg(q5_5)), neg(q6_6)), neg(q7_7)), neg(q3_3)), neg(q2_2)), neg(q1_1)), neg(q4_4))
+      +m11_12 = add(add(add(add(add(add(add(neg(q0_1), q4_5), neg(q3_6)), q2_7), neg(q3_6)), q2_7), neg(q0_1)), q4_5)
+      +m11_13 = add(add(add(add(add(add(add(neg(q0_2), q3_5), q4_6), neg(q1_7)), q3_5), neg(q0_2)), neg(q1_7)), q4_6)
+      +m11_14 = add(add(add(add(add(add(add(neg(q0_3), neg(q2_5)), q1_6), q4_7), neg(q0_3)), neg(q2_5)), q1_6), q4_7)
+      +m12_11 = add(add(add(add(add(add(add(q0_1, neg(q4_5)), neg(q3_6)), q2_7), neg(q3_6)), q2_7), q0_1), neg(q4_5))
+      +m12_12 = add(add(add(add(add(add(add(q1_1, q4_4), neg(q3_3)), neg(q2_2)), neg(q6_6)), neg(q7_7)), q0_0), q5_5)
+      +m12_13 = add(add(add(add(add(add(add(q1_2, q3_4), q3_4), q1_2), q5_6), q0_7), q0_7), q5_6)
+      +m12_14 = add(add(add(add(add(add(add(q1_3, neg(q2_4)), q1_3), neg(q2_4)), neg(q0_6)), q5_7), neg(q0_6)), q5_7)
+      +m13_11 = add(add(add(add(add(add(add(q0_2, q3_5), neg(q4_6)), neg(q1_7)), q3_5), q0_2), neg(q1_7)), neg(q4_6))
+      +m13_12 = add(add(add(add(add(add(add(q1_2, neg(q3_4)), neg(q3_4)), q1_2), q5_6), neg(q0_7)), neg(q0_7)), q5_6)
+      +m13_13 = add(add(add(add(add(add(add(q2_2, neg(q3_3)), q4_4), neg(q1_1)), neg(q5_5)), q0_0), neg(q7_7)), q6_6)
+      +m13_14 = add(add(add(add(add(add(add(q2_3, q2_3), q1_4), q1_4), q0_5), q0_5), q6_7), q6_7)
+      +m14_11 = add(add(add(add(add(add(add(q0_3, neg(q2_5)), q1_6), neg(q4_7)), q0_3), neg(q2_5)), q1_6), neg(q4_7))
+      +m14_12 = add(add(add(add(add(add(add(q1_3, q2_4), q1_3), q2_4), q0_6), q5_7), q0_6), q5_7)
+      +m14_13 = add(add(add(add(add(add(add(q2_3, q2_3), neg(q1_4)), neg(q1_4)), neg(q0_5)), neg(q0_5)), q6_7), q6_7)
+      +m14_14 = add(add(add(add(add(add(add(q3_3, neg(q2_2)), neg(q1_1)), q4_4), q0_0), neg(q5_5)), neg(q6_6)), q7_7)
+      +m15_0 = add(add(add(add(add(add(add(neg(q3_7), neg(q2_6)), neg(q1_5)), neg(q0_4)), neg(q0_4)), neg(q1_5)), neg(q2_6)), neg(q3_7))
+      +m15_15 = add(add(add(add(add(add(add(q3_3, q2_2), q1_1), q4_4), neg(q0_0)), neg(q5_5)), neg(q6_6)), neg(q7_7))
       K.Multivector{
-        add(add(add(neg(mul(t1, neg(neg(a_e021)))), neg(mul(t2, neg(a_e013)))), add(neg(mul(t4, neg(neg(a_e032)))), mul(t7, a_e0))), add(add(mul(t8, neg(a_e123)), neg(mul(t11, a_e1))), add(neg(mul(t13, a_e2)), neg(mul(t14, a_e3))))),
-        add(add(add(mul(t0, neg(a_e123)), neg(mul(t3, a_e1))), add(neg(mul(t5, a_e2)), neg(mul(t6, a_e3)))), add(add(neg(mul(t9, neg(neg(a_e021)))), neg(mul(t10, neg(a_e013)))), add(neg(mul(t12, neg(neg(a_e032)))), mul(t15, a_e0)))),
-        add(add(add(mul(t0, neg(neg(a_e032))), neg(mul(t3, a_e0))), add(neg(mul(t5, neg(neg(a_e021)))), neg(mul(t6, neg(a_e013))))), add(add(neg(mul(t9, a_e2)), neg(mul(t10, a_e3))), add(neg(mul(t12, neg(a_e123))), mul(t15, a_e1)))),
-        add(add(add(neg(mul(t0, neg(a_e013))), mul(t3, neg(neg(a_e021)))), add(neg(mul(t5, a_e0)), neg(mul(t6, neg(neg(a_e032)))))), add(add(mul(t9, a_e1), mul(t10, neg(a_e123))), add(neg(mul(t12, a_e3)), mul(t15, a_e2)))),
-        add(add(add(mul(t0, neg(neg(a_e021))), mul(t3, neg(a_e013))), add(mul(t5, neg(neg(a_e032))), neg(mul(t6, a_e0)))), add(add(neg(mul(t9, neg(a_e123))), mul(t10, a_e1)), add(mul(t12, a_e2), mul(t15, a_e3)))),
-        neg(add(add(add(neg(mul(t1, a_e2)), neg(mul(t2, a_e3))), add(neg(mul(t4, neg(a_e123))), mul(t7, a_e1))), add(add(mul(t8, neg(neg(a_e032))), neg(mul(t11, a_e0))), add(neg(mul(t13, neg(neg(a_e021)))), neg(mul(t14, neg(a_e013))))))),
-        neg(add(add(add(mul(t1, a_e1), mul(t2, neg(a_e123))), add(neg(mul(t4, a_e3)), mul(t7, a_e2))), add(add(neg(mul(t8, neg(a_e013))), mul(t11, neg(neg(a_e021)))), add(neg(mul(t13, a_e0)), neg(mul(t14, neg(neg(a_e032)))))))),
-        neg(add(add(add(neg(mul(t1, neg(a_e123))), mul(t2, a_e1)), add(mul(t4, a_e2), mul(t7, a_e3))), add(add(mul(t8, neg(neg(a_e021))), mul(t11, neg(a_e013))), add(mul(t13, neg(neg(a_e032))), neg(mul(t14, a_e0)))))),
-        add(add(add(mul(t1, neg(a_e013)), neg(mul(t2, neg(neg(a_e021))))), add(mul(t4, a_e0), mul(t7, neg(neg(a_e032))))), add(add(neg(mul(t8, a_e1)), neg(mul(t11, neg(a_e123)))), add(mul(t13, a_e3), neg(mul(t14, a_e2))))),
-        neg(add(add(add(neg(mul(t1, neg(neg(a_e032)))), mul(t2, a_e0)), add(mul(t4, neg(neg(a_e021))), mul(t7, neg(a_e013)))), add(add(mul(t8, a_e2), mul(t11, a_e3)), add(mul(t13, neg(a_e123)), neg(mul(t14, a_e1)))))),
-        add(add(add(mul(t1, a_e0), mul(t2, neg(neg(a_e032)))), add(neg(mul(t4, neg(a_e013))), mul(t7, neg(neg(a_e021))))), add(add(neg(mul(t8, a_e3)), mul(t11, a_e2)), add(neg(mul(t13, a_e1)), neg(mul(t14, neg(a_e123)))))),
-        add(add(add(neg(mul(t0, a_e0)), neg(mul(t3, neg(neg(a_e032))))), add(mul(t5, neg(a_e013)), neg(mul(t6, neg(neg(a_e021)))))), add(add(mul(t9, a_e3), neg(mul(t10, a_e2))), add(mul(t12, a_e1), mul(t15, neg(a_e123))))),
-        neg(add(add(add(neg(mul(t0, a_e1)), neg(mul(t3, neg(a_e123)))), add(mul(t5, a_e3), neg(mul(t6, a_e2)))), add(add(mul(t9, neg(a_e013)), neg(mul(t10, neg(neg(a_e021))))), add(mul(t12, a_e0), mul(t15, neg(neg(a_e032))))))),
-        add(add(add(mul(t0, a_e2), mul(t3, a_e3)), add(mul(t5, neg(a_e123)), neg(mul(t6, a_e1)))), add(add(neg(mul(t9, neg(neg(a_e032)))), mul(t10, a_e0)), add(mul(t12, neg(neg(a_e021))), mul(t15, neg(a_e013))))),
-        neg(add(add(add(neg(mul(t0, a_e3)), mul(t3, a_e2)), add(neg(mul(t5, a_e1)), neg(mul(t6, neg(a_e123))))), add(add(mul(t9, a_e0), mul(t10, neg(neg(a_e032)))), add(neg(mul(t12, neg(a_e013))), mul(t15, neg(neg(a_e021))))))),
-        add(add(add(mul(t1, a_e3), neg(mul(t2, a_e2))), add(mul(t4, a_e1), mul(t7, neg(a_e123)))), add(add(neg(mul(t8, a_e0)), neg(mul(t11, neg(neg(a_e032))))), add(mul(t13, neg(a_e013)), neg(mul(t14, neg(neg(a_e021)))))))}
+        add(mul(b_s, m0_0), mul(b_e0123, m0_15)),
+        add(mul(b_e0, m1_1), add(mul(b_e1, m1_2), add(mul(b_e2, m1_3), mul(b_e3, m1_4)))),
+        add(mul(b_e0, m2_1), add(mul(b_e1, m2_2), add(mul(b_e2, m2_3), mul(b_e3, m2_4)))),
+        add(mul(b_e0, m3_1), add(mul(b_e1, m3_2), add(mul(b_e2, m3_3), mul(b_e3, m3_4)))),
+        add(mul(b_e0, m4_1), add(mul(b_e1, m4_2), add(mul(b_e2, m4_3), mul(b_e3, m4_4)))),
+        add(mul(b_e10, m5_5), add(mul(b_e20, m5_6), add(mul(b_e30, m5_7), add(mul(b_e23, m5_8), add(mul(b_e31, m5_9), mul(b_e12, m5_10)))))),
+        add(mul(b_e10, m6_5), add(mul(b_e20, m6_6), add(mul(b_e30, m6_7), add(mul(b_e23, m6_8), add(mul(b_e31, m6_9), mul(b_e12, m6_10)))))),
+        add(mul(b_e10, m7_5), add(mul(b_e20, m7_6), add(mul(b_e30, m7_7), add(mul(b_e23, m7_8), add(mul(b_e31, m7_9), mul(b_e12, m7_10)))))),
+        add(mul(b_e10, m8_5), add(mul(b_e20, m8_6), add(mul(b_e30, m8_7), add(mul(b_e23, m8_8), add(mul(b_e31, m8_9), mul(b_e12, m8_10)))))),
+        add(mul(b_e10, m9_5), add(mul(b_e20, m9_6), add(mul(b_e30, m9_7), add(mul(b_e23, m9_8), add(mul(b_e31, m9_9), mul(b_e12, m9_10)))))),
+        add(mul(b_e10, m10_5), add(mul(b_e20, m10_6), add(mul(b_e30, m10_7), add(mul(b_e23, m10_8), add(mul(b_e31, m10_9), mul(b_e12, m10_10)))))),
+        add(mul(b_e123, m11_11), add(mul(b_e032, m11_12), add(mul(b_e013, m11_13), mul(b_e021, m11_14)))),
+        add(mul(b_e123, m12_11), add(mul(b_e032, m12_12), add(mul(b_e013, m12_13), mul(b_e021, m12_14)))),
+        add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
+        add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
+        add(mul(b_s, m15_0), mul(b_e0123, m15_15))}

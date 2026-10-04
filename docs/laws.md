@@ -110,11 +110,11 @@ above, every algebraic law transfers to the kernels.
 
 | algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
 |---|---|---|---|---|---|
-| VGA2D | 5 | 245 | 10 | 4 | 534 |
-| VGA3D | 8 | 581 | 24 | 24 | 3426 |
-| PGA2D | 10 | 870 | 60 | 32 | 3496 |
-| PGA3D | 11 | 1037 | 77 | 101 | 11341 |
-| STA | 9 | 722 | 27 | 84 | 9536 |
+| VGA2D | 5 | 245 | 10 | 4 | 506 |
+| VGA3D | 8 | 581 | 24 | 24 | 3157 |
+| PGA2D | 10 | 870 | 60 | 32 | 3143 |
+| PGA3D | 11 | 1037 | 77 | 101 | 9696 |
+| STA | 9 | 722 | 27 | 84 | 8690 |
 
 The operations are gp, wedge, vee, lc, rc, dot, scalar_product, add, sub
 (any two kinds) and neg, reverse, involute, conjugate, dual (J_R) and
@@ -129,9 +129,15 @@ and a ring without ½ needs a different definition.
 
 **Sandwiches.** `V.transform.X(v, x)` is v x ~v (gax's `transform`), for
 every versor kind V and every kind X:
-- **Mirror law** `.ok`, by `{==}` as above. The kernel binds the
-  coefficients of v x once and multiplies by ~v. After substitution that is
-  the spec's own term.
+- **The kernel is the quadratic form:** field c of v x ~v is
+  Σ_j x_j Q_cj(v), each Q_cj a sum of ±v_a v_b. The generator reads the
+  Q_cj off the spec's coefficients after cancellation, computes each
+  product v_a v_b once, and then the entries and the fields. The cost is
+  (#products + #entries) multiplications: 35 for a PGA3D motor on a
+  point, where gax's plain kernel has 38 and its unit kernel 33.
+- **Equality law** `.ok`: each field equals the spec's coefficient, by
+  `Norm.eq`, and the generated `K.<kind>.cong` joins the fields into the
+  record equality. Tag: **proof**, assuming the normaliser's ring laws.
 - **Zero laws** `.zero_<blade>`, one per blade where the spec's tree has a
   coefficient outside the result kind, such as the grade-1 part of a
   motor acting on a point. Each states that the coefficient is zero in every
@@ -188,6 +194,7 @@ Each one must fail to check. The gate fails if any passes.
 | `kernel_sign.bend` | a PGA3D kernel with one sign flipped equals the spec | kernels |
 | `norm_wrong.bend` | (x + y)² = x² + y² over any commutative ring | normaliser |
 | `transform_support.bend` | a motor moves a point to one with x = 0 | sandwiches |
+| `transform_kernel_sign.bend` | the PGA3D motor-on-point kernel with one sign flipped in its weight entry equals the spec | sandwich kernels |
 
 ## Examples (`tests/`)
 
