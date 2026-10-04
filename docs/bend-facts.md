@@ -255,3 +255,37 @@ Nothing is filed; per your decision the notes live in [upstream-notes.md](upstre
 | 16 threads | 56–60 ms | 52–80 ms |
 
 In this harness the mirror kernels are as fast as gax's optimised kernel: the multiplications are not the bottleneck, and clang folds the sign noise. The checksums differ in the last digits (74445530000 against 74445520000) because the two compute different expressions: the mirror one is not drift-tolerant. Optimised kernels (Phase 3) matter for exactness and drift more than for speed here.
+
+## Q13. The generated quadratic-form sandwich (2026-10-04)
+
+`bench/q13_generated_sandwich.bend` runs the Q5 workload (2²⁶ points, one
+motor) with the generated, proven `Motor.transform.Point` (35 multiplies,
+ADR-003). Measured the same afternoon, on the same machine, against the Q5
+programs with gax's 33-multiply unit kernel:
+
+| run | gax unit kernel, C | gax unit kernel, Bend (q05) | generated kernel, Bend (q13) | mirror composition (q11) |
+|---|---|---|---|---|
+| 1 thread | 0.304–0.310 s | 288–295 ms | **162–176 ms** | 341–354 ms |
+| 16 threads | — | 46–53 ms | **30–34 ms** | 53–57 ms |
+
+At 2²⁸ points with the hip branch (`bend-hip`):
+
+| run | gax unit kernel (q05) | generated kernel (q13) |
+|---|---|---|
+| CPU, default threads | 210–233 ms | 130–141 ms |
+| `!`, HIP | 10–13 ms | 10–12 ms |
+
+- **Why it is faster here:** every product of motor coefficients and every
+  matrix entry depends only on the motor, which is the same for all points,
+  so clang hoists them out of the leaf loop. What remains per point is 13
+  multiplies. gax's unit kernel interleaves point and motor terms earlier.
+  With a different motor per point the advantage shrinks to 35 against 33
+  multiplies; this harness does not measure that case.
+- **On the GPU both take the same time.** At 2²⁸ the device is no longer
+  bound by multiplications.
+- **The sums differ** in the last digits (74445530000 against 74445520000):
+  the two kernels compute different expressions of the same polynomial.
+- **The hip branch** (2.0.24) cannot parse `src/spec.bend`, whose `Sig`
+  type uses a later feature. So the GPU run uses `build/q13_standalone.bend`:
+  the benchmark with the `Motor` and `Point` records and the generated
+  kernel copied in verbatim, and `run(16n, …)` for 2²⁸.

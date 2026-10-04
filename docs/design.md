@@ -300,6 +300,10 @@ modulo u~u = 1 and for optimised kernels.
   52; gax's plain kernel takes 38 and its unit kernel 33).
 - With every sandwich field proven by `Norm.eq`, the PGA3D proofs file
   checks in 9.6 s and STA's in 9.3 s; the whole gate takes 44 s.
+- Speed (bend-facts Q13, 2²⁶ points, one motor): 162–176 ms on one thread
+  and 30–34 ms on 16, against 288–295 ms and 46–53 ms for gax's unit
+  kernel in Bend and 0.30 s for it in C. Clang hoists the motor-only half
+  out of the loop.
 
 ### What it costs
 
