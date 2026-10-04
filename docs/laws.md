@@ -234,6 +234,14 @@ The CGA3D API (`api/cga3d.bend`) is tested the same way in
 - incidence survives a motion: P·S stays below 1e-4 after a turn and a
   translation.
 
+The VGA3D API (`api/vga3d.bend`, rotors) and the PGA2D API
+(`api/pga2d.bend`, points, lines, motors) are tested the same way:
+- `tests/vga3d_api.bend`: a right-handed quarter turn; the rotor between
+  two directions; log∘exp; sqrt²; renormalize_fast.
+- `tests/pga2d_api.bend`: a translation; quarter turns about the origin
+  and about a point (counterclockwise); the motion between two points;
+  log∘exp for a rotation and a translation.
+
 `Normed<A>` (gax's `Unit<M>`; Base already has a `Unit`) is the
 certificate. Over F32 it is a trust boundary: only the API's constructors
 make one.
