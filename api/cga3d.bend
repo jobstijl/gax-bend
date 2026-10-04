@@ -72,3 +72,92 @@ def Scalar.s(x: K.Scalar<F32>) -> F32:
 
 def Point.distance2(p: K.Vector<F32>, q: K.Vector<F32>) -> F32:
   (F32.neg(2.0) * Scalar.s(G.Vector.dot.Vector(Point.unitized(p), Point.unitized(q))) : F32)
+
+# Lines, point pairs and flat points
+# ----------------------------------
+
+def eo() -> K.Vector<F32>:
+  K.Vector{0.0, 0.0, 0.0, 1.0, 0.0}
+
+def ei() -> K.Vector<F32>:
+  K.Vector{0.0, 0.0, 0.0, 0.0, 1.0}
+
+# the line through two points: p ^ q ^ ei (direct form)
+def Line.through(p: K.Vector<F32>, q: K.Vector<F32>) -> K.Trivector<F32>:
+  G.Bivector.wedge.Vector(G.Vector.wedge.Vector(p, q), ei())
+
+# where a line meets a sphere or a plane (both in dual form): s ⌋ l, a
+# point pair for a sphere, a flat point (p ^ ei) for a plane
+def Line.meet(s: K.Vector<F32>, l: K.Trivector<F32>) -> K.Bivector<F32>:
+  G.Vector.lc.Trivector(s, l)
+
+# b² of a point pair: positive when its two points are real
+def PointPair.square(+b: K.Bivector<F32>) -> F32:
+  Scalar.s(G.Bivector.scalar_product.Bivector(b, b))
+
+def PointPair.real(+b: K.Bivector<F32>) -> Bool:
+  F32.is_lt(0.0, PointPair.square(b))
+
+def Odd.vector.of(x: K.Odd<F32>) -> K.Vector<F32>:
+  Odd.vector(x)
+
+# the two points of a real point pair b = p ^ q, unitized:
+# p = (b - √(b²))(ei ⌋ b) and q = (b + √(b²))(ei ⌋ b), up to scale
+def PointPair.points(+b: K.Bivector<F32>) -> K.Vector<F32> & K.Vector<F32>:
+  +v = G.Vector.lc.Bivector(ei(), b)
+  +bv = Odd.vector(G.Bivector.gp.Vector(b, v))
+  +rv = G.Scalar.gp.Vector(K.Scalar{F32.sqrt(PointPair.square(b))}, v)
+  (Point.unitized(G.Vector.sub.Vector(bv, rv)), Point.unitized(G.Vector.add.Vector(bv, rv)))
+
+def Point.of_flat(v: K.Vector<F32>) -> K.Vector<F32>:
+  match v:
+    case K.Vector{a, b, c, +o, i}:
+      Point.xyz((a / o : F32), (b / o : F32), (c / o : F32))
+
+# the point of a flat point f = p ^ ei: eo ⌋ f is p's position plus eo
+def FlatPoint.point(f: K.Bivector<F32>) -> K.Vector<F32>:
+  Point.of_flat(G.Vector.lc.Bivector(eo(), f))
+
+# the centre of a sphere (dual form)
+def Sphere.center(s: K.Vector<F32>) -> K.Vector<F32>:
+  Point.of_flat(s)
+
+# Directions
+# ----------
+# A direction is a vector with no eo and no ei part: a point at infinity's
+# Euclidean part.
+
+def Direction.xyz(x: F32, y: F32, z: F32) -> K.Vector<F32>:
+  K.Vector{x, y, z, 0.0, 0.0}
+
+def Direction.dot(a: K.Vector<F32>, b: K.Vector<F32>) -> F32:
+  Scalar.s(G.Vector.dot.Vector(a, b))
+
+def Direction.unit(v: K.Vector<F32>) -> K.Vector<F32>:
+  match v:
+    case K.Vector{+a, +b, +c, o, i}:
+      +n = F32.sqrt((a * a + b * b + c * c : F32))
+      K.Vector{(a / n : F32), (b / n : F32), (c / n : F32), 0.0, 0.0}
+
+# the unit direction from point p to point q
+def Direction.of(v: K.Vector<F32>) -> K.Vector<F32>:
+  match v:
+    case K.Vector{a, b, c, o, i}:
+      Direction.unit(K.Vector{a, b, c, 0.0, 0.0})
+
+def Direction.between(p: K.Vector<F32>, q: K.Vector<F32>) -> K.Vector<F32>:
+  Direction.of(G.Vector.sub.Vector(Point.unitized(q), Point.unitized(p)))
+
+# a direction scaled by k (a colour dimmed, a step lengthened)
+def Direction.scaled(k: F32, d: K.Vector<F32>) -> K.Vector<F32>:
+  G.Scalar.gp.Vector(K.Scalar{k}, d)
+
+# the translation along a direction (by its length)
+def Motor.along(d: K.Vector<F32>) -> U.Normed<K.Motor<F32>>:
+  match d:
+    case K.Vector{a, b, c, o, i}:
+      Motor.translation(a, b, c)
+
+# p moved by the direction d
+def Point.moved(p: K.Vector<F32>, d: K.Vector<F32>) -> K.Vector<F32>:
+  Motor.apply(Motor.along(d), p)

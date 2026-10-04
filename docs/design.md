@@ -381,7 +381,9 @@ e1∧e₋ + e1∧e₊), and the coefficients of eo carry ½.
   the earlier form were 47.6 MB), split into `proofs.bend` (the
   change-of-basis laws) and 21 files of 60 kernels (`proofs_2.bend` and
   on), so a failure points at a part.
-- **Checking takes 4136 s** (the whole set as one file, 3.7 GB peak). A
+- **Checking takes 4136 s** as one file (3.7 GB peak), and `tools/gate.sh
+  --full` takes 4905 s in all, 55 min of it for `proofs_22.bend`: the
+  last 19 kernels, sandwiches by Even and Odd on the largest kinds. A
   32×32 Multivector product alone takes 17 s. So `tools/gate.sh` skips
   CGA3D's proofs and says so; `tools/gate.sh --full` checks them.
 

@@ -74,6 +74,24 @@ operands (`G.Point.vee.Point`, `G.Motor.transform.Point`,
 `G.Line.lc.Plane`), so a product that does not exist is a missing name. The
 API (`P`) adds the constructors and numerics.
 
+## Demo
+
+`demos/raytrace.bend` ray-traces three balls on a floor in CGA3D: each ray
+is the line through the eye and a pixel's point, meets a sphere in a point
+pair and the floor in a flat point, and is shaded by a dot product of
+directions, with shadow rays. It renders into Bend's quadtree `Image`, one
+fork per quadrant, and writes a PPM:
+
+```sh
+bend demos/raytrace.bend -o build/rt && build/rt build/raytrace.ppm   # 256x256, ~30 ms
+```
+
+![raytrace](demos/raytrace.png)
+
+What the library gained so that the demo needs no raw square roots or
+coordinate arithmetic is in [docs/friction.md](docs/friction.md).
+`tests/raytrace_pixels.bend` checks four of its pixels.
+
 GPU runs use the upstream `hip` branch: `. tools/env-hip.sh`, then `bend-hip`.
 See bend-facts, "Pins".
 
@@ -96,6 +114,7 @@ proofs/           the lemmas behind PROOF.bend (base, leaf, add, sgn by hand;
 tests/            example tests (`#|` expected output) and negative controls
 bench/            benchmarks (Bend against C)
 examples/         small programs using the API, checked by the gate
+demos/            the CGA3D ray tracer (Phase 4 demo)
 spikes/           Phase 0 experiments, kept as evidence for bend-facts
 tools/            env, the 16 GB cap, the gate
 docs/             facts, design (ADRs), laws, upstream notes
