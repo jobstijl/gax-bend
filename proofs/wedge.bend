@@ -1,0 +1,167 @@
+# Outer and regressive products, and the complements.
+
+import Base
+import ../src/ring.bend as R
+import ../src/spec.bend as S
+import ./base.bend as B
+import ./leaf.bend as L
+import ./add.bend as A
+import ./flags.bend as F
+import ./sgn.bend as G
+import ./gp.bend as P
+import ./gp_assoc.bend as PA
+
+# The outer product
+# -----------------
+
+# the outer product is the geometric product of the zero metric, flags and all
+def Wedge.gp0(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, +d: Nat, +f: Bool, +n: Bool, x: S.MV(T, d), y: S.MV(T, d))
+  -> {S.MV.wedgef(~T, ~add, ~mul, ~neg, d, f, n, x, y) == S.MV.gpf(~T, ~add, ~mul, ~neg, d, f, n, x, y, S.Sig.zero(d)) : S.MV(T, d)}:
+  match d:
+    case 0n:
+      match x:
+        case S.LZ{}:
+          {==}
+        case S.L{a}:
+          match y:
+            case S.LZ{}:
+              {==}
+            case S.L{b}:
+              {==}
+    case 1n+p:
+      match x:
+        case S.NZ{}:
+          {==}
+        case S.N{+x1, +x2}:
+          match y:
+            case S.NZ{}:
+              {==}
+            case S.N{+y1, +y2}:
+              P.Mk.cong(T, p,
+                S.MV.add(~T, ~add, p, S.MV.wedgef(~T, ~add, ~mul, ~neg, p, f, Bool.xor(n, f), x1, y2), S.MV.wedgef(~T, ~add, ~mul, ~neg, p, Bool.not(f), n, x2, y1)),
+                S.MV.add(~T, ~add, p, S.MV.gpf(~T, ~add, ~mul, ~neg, p, f, Bool.xor(n, f), x1, y2, S.Sig.zero(p)), S.MV.gpf(~T, ~add, ~mul, ~neg, p, Bool.not(f), n, x2, y1, S.Sig.zero(p))),
+                S.MV.wedgef(~T, ~add, ~mul, ~neg, p, f, n, x2, y2), S.MV.gpf(~T, ~add, ~mul, ~neg, p, f, n, x2, y2, S.Sig.zero(p)),
+                A.Add.cong(~T, ~add, p, S.MV.wedgef(~T, ~add, ~mul, ~neg, p, f, Bool.xor(n, f), x1, y2), S.MV.gpf(~T, ~add, ~mul, ~neg, p, f, Bool.xor(n, f), x1, y2, S.Sig.zero(p)),
+                  S.MV.wedgef(~T, ~add, ~mul, ~neg, p, Bool.not(f), n, x2, y1), S.MV.gpf(~T, ~add, ~mul, ~neg, p, Bool.not(f), n, x2, y1, S.Sig.zero(p)),
+                  Wedge.gp0(~T, ~add, ~mul, ~neg, p, f, Bool.xor(n, f), x1, y2), Wedge.gp0(~T, ~add, ~mul, ~neg, p, Bool.not(f), n, x2, y1)),
+                Wedge.gp0(~T, ~add, ~mul, ~neg, p, f, n, x2, y2))
+
+# the outer product is associative: it is the geometric product of the
+# zero metric, which is associative
+def Wedge.assoc(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~add_assoc: R.Ring.Assoc(T, add), ~add_comm: R.Ring.Comm(T, add),
+  ~mul_assoc: R.Ring.Assoc(T, mul), ~dist_l: R.Ring.DistL(T, add, mul), ~dist_r: R.Ring.DistR(T, add, mul),
+  ~neg_add: R.Ring.NegAdd(T, add, neg), ~neg_neg: R.Ring.NegNeg(T, neg),
+  ~neg_mul_l: R.Ring.NegMulL(T, mul, neg), ~neg_mul_r: R.Ring.NegMulR(T, mul, neg),
+  +d: Nat, +x: S.MV(T, d), +y: S.MV(T, d), +z: S.MV(T, d))
+  -> {S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z) == S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z)) : S.MV(T, d)}:
+    Equal.trans(S.MV(T, d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z)), S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z)),
+      Equal.trans(S.MV(T, d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), y, z)), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z)),
+        Equal.trans(S.MV(T, d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, y), z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), y, z)),
+          Equal.trans(S.MV(T, d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, y), z),
+            Wedge.gp0(~T, ~add, ~mul, ~neg, d, False{}, False{}, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), z),
+            P.Gp.cong(~T, ~add, ~mul, ~neg, d, False{}, False{}, S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, y), z, z, S.Sig.zero(d), Wedge.gp0(~T, ~add, ~mul, ~neg, d, False{}, False{}, x, y), {==})),
+          PA.Gp.assoc(~T, ~add, ~mul, ~neg, ~add_assoc, ~add_comm, ~mul_assoc, ~dist_l, ~dist_r, ~neg_add, ~neg_neg, ~neg_mul_l, ~neg_mul_r, d, False{}, False{}, False{}, False{}, x, y, z, S.Sig.zero(d))),
+        P.Gp.cong(~T, ~add, ~mul, ~neg, d, False{}, False{}, x, x, S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), y, z), S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z), S.Sig.zero(d), {==}, Equal.sym(S.MV(T, d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), y, z),
+          Wedge.gp0(~T, ~add, ~mul, ~neg, d, False{}, False{}, y, z)))),
+      Equal.sym(S.MV(T, d), S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z)), S.MV.gp(~T, ~add, ~mul, ~neg, d, S.Sig.zero(d), x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z)),
+        Wedge.gp0(~T, ~add, ~mul, ~neg, d, False{}, False{}, x, S.MV.wedge(~T, ~add, ~mul, ~neg, d, y, z))))
+
+# The complements
+# ---------------
+
+# J_L after J_R, with their flags: lcf(n, f, rcf(m, g, x)) is the grade sign
+# (n xor m, f xor g)
+def Comp.lr(~T: Data, ~neg: T -> T, ~neg_neg: R.Ring.NegNeg(T, neg), +d: Nat, +n: Bool, +f: Bool, +m: Bool, +g: Bool, x: S.MV(T, d))
+  -> {S.MV.lcf(~T, ~neg, d, n, f, S.MV.rcf(~T, ~neg, d, m, g, x)) == S.MV.sgn(~T, ~neg, d, Bool.xor(n, m), Bool.xor(f, g), False{}, x) : S.MV(T, d)}:
+  match d:
+    case 0n:
+      match x:
+        case S.LZ{}:
+          {==}
+        case S.L{a}:
+          B.Leaf.cong(T, S.Ring.negf(~T, ~neg, n, S.Ring.negf(~T, ~neg, m, a)), S.Ring.negf(~T, ~neg, Bool.xor(n, m), a),
+            L.Negf.negf(~T, ~neg, ~neg_neg, n, m, a))
+    case 1n+p:
+      match x:
+        case S.NZ{}:
+          {==}
+        case S.N{x1, x2}:
+          B.Node.cong2(S.MV(T, p), S.MV.lcf(~T, ~neg, p, Bool.xor(n, f), f, S.MV.rcf(~T, ~neg, p, Bool.xor(m, g), g, x1)), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(n, m), Bool.xor(f, g)), Bool.xor(Bool.xor(f, g), False{}), False{}, x1), S.MV.lcf(~T, ~neg, p, n, Bool.not(f), S.MV.rcf(~T, ~neg, p, m, Bool.not(g), x2)), S.MV.sgn(~T, ~neg, p, Bool.xor(n, m), Bool.xor(f, g), False{}, x2),
+              Equal.trans(S.MV(T, p), S.MV.lcf(~T, ~neg, p, Bool.xor(n, f), f, S.MV.rcf(~T, ~neg, p, Bool.xor(m, g), g, x1)), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(n, f), Bool.xor(m, g)), Bool.xor(f, g), False{}, x1), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(n, m), Bool.xor(f, g)), Bool.xor(Bool.xor(f, g), False{}), False{}, x1),
+                Comp.lr(~T, ~neg, ~neg_neg, p, Bool.xor(n, f), f, Bool.xor(m, g), g, x1),
+                G.Sgn.flag(~T, ~neg, p, Bool.xor(Bool.xor(n, f), Bool.xor(m, g)), Bool.xor(Bool.xor(n, m), Bool.xor(f, g)), Bool.xor(f, g), Bool.xor(Bool.xor(f, g), False{}), False{}, x1, F.Flag.lr_n(n, f, m, g), Equal.sym(Bool, Bool.xor(Bool.xor(f, g), False{}), Bool.xor(f, g),
+                  F.Flag.lr_xf(f, g)))),
+              Equal.trans(S.MV(T, p), S.MV.lcf(~T, ~neg, p, n, Bool.not(f), S.MV.rcf(~T, ~neg, p, m, Bool.not(g), x2)), S.MV.sgn(~T, ~neg, p, Bool.xor(n, m), Bool.xor(Bool.not(f), Bool.not(g)), False{}, x2), S.MV.sgn(~T, ~neg, p, Bool.xor(n, m), Bool.xor(f, g), False{}, x2),
+                Comp.lr(~T, ~neg, ~neg_neg, p, n, Bool.not(f), m, Bool.not(g), x2),
+                G.Sgn.flag(~T, ~neg, p, Bool.xor(n, m), Bool.xor(n, m), Bool.xor(Bool.not(f), Bool.not(g)), Bool.xor(f, g), False{}, x2, {==}, Equal.trans(Bool, Bool.xor(Bool.not(f), Bool.not(g)), Bool.xor(Bool.xor(f, g), False{}), Bool.xor(f, g), F.Flag.lr_f(f, g), F.Flag.lr_xf(f, g)))))
+
+# the parity of d
+def Comp.par(d: Nat) -> Bool:
+  match d:
+    case 0n:
+      False{}
+    case 1n+p:
+      Bool.not(Comp.par(p))
+
+# J_R after J_L, with their flags: the involution between them does not
+# cancel, so the sign picks up the parity of d when f xor g
+def Comp.rl(~T: Data, ~neg: T -> T, ~neg_neg: R.Ring.NegNeg(T, neg), +d: Nat, +n: Bool, +f: Bool, +m: Bool, +g: Bool, x: S.MV(T, d))
+  -> {S.MV.rcf(~T, ~neg, d, n, f, S.MV.lcf(~T, ~neg, d, m, g, x)) == S.MV.sgn(~T, ~neg, d, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(d), Bool.xor(f, g))), Bool.xor(f, g), False{}, x) : S.MV(T, d)}:
+  match d:
+    case 0n:
+      match x:
+        case S.LZ{}:
+          {==}
+        case S.L{+a}:
+          B.Leaf.cong(T, S.Ring.negf(~T, ~neg, n, S.Ring.negf(~T, ~neg, m, a)), S.Ring.negf(~T, ~neg, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(0n), Bool.xor(f, g))), a),
+            Equal.trans(T, S.Ring.negf(~T, ~neg, n, S.Ring.negf(~T, ~neg, m, a)), S.Ring.negf(~T, ~neg, Bool.xor(n, m), a),
+              S.Ring.negf(~T, ~neg, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(0n), Bool.xor(f, g))), a),
+              L.Negf.negf(~T, ~neg, ~neg_neg, n, m, a),
+              L.Negf.flag(~T, ~neg, Bool.xor(n, m), Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(0n), Bool.xor(f, g))), a,
+                Equal.sym(Bool, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(0n), Bool.xor(f, g))), Bool.xor(n, m),
+    F.Flag.rl_0(n, m, Bool.xor(f, g))))))
+    case 1n+p:
+      match x:
+        case S.NZ{}:
+          {==}
+        case S.N{x1, x2}:
+          B.Node.cong2(S.MV(T, p), S.MV.rcf(~T, ~neg, p, n, Bool.not(f), S.MV.lcf(~T, ~neg, p, m, Bool.not(g), x1)), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(1n+p), Bool.xor(f, g))), Bool.xor(f, g)), Bool.xor(Bool.xor(f, g), False{}), False{}, x1), S.MV.rcf(~T, ~neg, p, Bool.xor(n, f), f, S.MV.lcf(~T, ~neg, p, Bool.xor(m, g), g, x2)), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(1n+p), Bool.xor(f, g))), Bool.xor(f, g), False{}, x2),
+              Equal.trans(S.MV(T, p), S.MV.rcf(~T, ~neg, p, n, Bool.not(f), S.MV.lcf(~T, ~neg, p, m, Bool.not(g), x1)), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(p), Bool.xor(Bool.not(f), Bool.not(g)))), Bool.xor(Bool.not(f), Bool.not(g)), False{}, x1), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(1n+p), Bool.xor(f, g))), Bool.xor(f, g)), Bool.xor(Bool.xor(f, g), False{}), False{}, x1),
+                Comp.rl(~T, ~neg, ~neg_neg, p, n, Bool.not(f), m, Bool.not(g), x1),
+                G.Sgn.flag(~T, ~neg, p, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(p), Bool.xor(Bool.not(f), Bool.not(g)))), Bool.xor(Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(1n+p), Bool.xor(f, g))), Bool.xor(f, g)), Bool.xor(Bool.not(f), Bool.not(g)), Bool.xor(Bool.xor(f, g), False{}), False{}, x1, F.Flag.rl_1(n, f, m, g, Comp.par(p)), F.Flag.lr_f(f, g))),
+              Equal.trans(S.MV(T, p), S.MV.rcf(~T, ~neg, p, Bool.xor(n, f), f, S.MV.lcf(~T, ~neg, p, Bool.xor(m, g), g, x2)), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(Bool.xor(n, f), Bool.xor(m, g)), Bool.and(Comp.par(p), Bool.xor(f, g))), Bool.xor(f, g), False{}, x2), S.MV.sgn(~T, ~neg, p, Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(1n+p), Bool.xor(f, g))), Bool.xor(f, g), False{}, x2),
+                Comp.rl(~T, ~neg, ~neg_neg, p, Bool.xor(n, f), f, Bool.xor(m, g), g, x2),
+                G.Sgn.flag(~T, ~neg, p, Bool.xor(Bool.xor(Bool.xor(n, f), Bool.xor(m, g)), Bool.and(Comp.par(p), Bool.xor(f, g))), Bool.xor(Bool.xor(n, m), Bool.and(Comp.par(1n+p), Bool.xor(f, g))), Bool.xor(f, g), Bool.xor(f, g), False{}, x2, F.Flag.rl_2(n, f, m, g, Comp.par(p)), {==})))
+
+def Comp.lcomp_rcomp(~T: Data, ~neg: T -> T, ~neg_neg: R.Ring.NegNeg(T, neg), +d: Nat, +x: S.MV(T, d))
+  -> {S.MV.lcomp(~T, ~neg, d, S.MV.rcomp(~T, ~neg, d, x)) == x : S.MV(T, d)}:
+  Equal.trans(S.MV(T, d), S.MV.lcomp(~T, ~neg, d, S.MV.rcomp(~T, ~neg, d, x)), S.MV.sgn(~T, ~neg, d, False{}, False{}, False{}, x), x,
+    Comp.lr(~T, ~neg, ~neg_neg, d, False{}, False{}, False{}, False{}, x), G.Sgn.id(~T, ~neg, d, x))
+
+def Comp.rcomp_lcomp(~T: Data, ~neg: T -> T, ~neg_neg: R.Ring.NegNeg(T, neg), +d: Nat, +x: S.MV(T, d))
+  -> {S.MV.rcomp(~T, ~neg, d, S.MV.lcomp(~T, ~neg, d, x)) == x : S.MV(T, d)}:
+  Equal.trans(S.MV(T, d), S.MV.rcomp(~T, ~neg, d, S.MV.lcomp(~T, ~neg, d, x)), S.MV.sgn(~T, ~neg, d, Bool.and(Comp.par(d), False{}), False{}, False{}, x), x,
+    Comp.rl(~T, ~neg, ~neg_neg, d, False{}, False{}, False{}, False{}, x),
+    Equal.trans(S.MV(T, d), S.MV.sgn(~T, ~neg, d, Bool.and(Comp.par(d), False{}), False{}, False{}, x), S.MV.sgn(~T, ~neg, d, False{}, False{}, False{}, x), x,
+      G.Sgn.flag(~T, ~neg, d, Bool.and(Comp.par(d), False{}), False{}, False{}, False{}, False{}, x, F.Flag.and_f(Comp.par(d)), {==}),
+      G.Sgn.id(~T, ~neg, d, x)))
+
+# the right complement of a regressive product is the outer product of the
+# right complements
+def Comp.rcomp_vee(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~neg_neg: R.Ring.NegNeg(T, neg), +d: Nat, +x: S.MV(T, d), +y: S.MV(T, d))
+  -> {S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, x, y)) == S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y)) : S.MV(T, d)}:
+  Comp.rcomp_lcomp(~T, ~neg, ~neg_neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y)))
+
+# the regressive product is associative
+def Vee.assoc(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~add_assoc: R.Ring.Assoc(T, add), ~add_comm: R.Ring.Comm(T, add),
+  ~mul_assoc: R.Ring.Assoc(T, mul), ~dist_l: R.Ring.DistL(T, add, mul), ~dist_r: R.Ring.DistR(T, add, mul),
+  ~neg_add: R.Ring.NegAdd(T, add, neg), ~neg_neg: R.Ring.NegNeg(T, neg),
+  ~neg_mul_l: R.Ring.NegMulL(T, mul, neg), ~neg_mul_r: R.Ring.NegMulR(T, mul, neg),
+  +d: Nat, +x: S.MV(T, d), +y: S.MV(T, d), +z: S.MV(T, d))
+  -> {S.MV.vee(~T, ~add, ~mul, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, x, y), z) == S.MV.vee(~T, ~add, ~mul, ~neg, d, x, S.MV.vee(~T, ~add, ~mul, ~neg, d, y, z)) : S.MV(T, d)}:
+    Equal.trans(S.MV(T, d), S.MV.lcomp(~T, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, x, y)), S.MV.rcomp(~T, ~neg, d, z))), S.MV.lcomp(~T, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z)))), S.MV.lcomp(~T, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, y, z)))),
+      Equal.trans(S.MV(T, d), S.MV.lcomp(~T, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, x, y)), S.MV.rcomp(~T, ~neg, d, z))), S.MV.lcomp(~T, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y)), S.MV.rcomp(~T, ~neg, d, z))), S.MV.lcomp(~T, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z)))),
+        Equal.cong(S.MV(T, d), S.MV(T, d), w => S.MV.lcomp(~T, ~neg, d, w), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, x, y)), S.MV.rcomp(~T, ~neg, d, z)), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y)), S.MV.rcomp(~T, ~neg, d, z)), B.Eq.cong2(S.MV(T, d), S.MV(T, d), S.MV(T, d), u => v => S.MV.wedge(~T, ~add, ~mul, ~neg, d, u, v), S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, x, y)), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y)), S.MV.rcomp(~T, ~neg, d, z), S.MV.rcomp(~T, ~neg, d, z), Comp.rcomp_vee(~T, ~add, ~mul, ~neg, ~neg_neg, d, x, y), {==})),
+        Equal.cong(S.MV(T, d), S.MV(T, d), w => S.MV.lcomp(~T, ~neg, d, w), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y)), S.MV.rcomp(~T, ~neg, d, z)), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z))), Wedge.assoc(~T, ~add, ~mul, ~neg, ~add_assoc, ~add_comm, ~mul_assoc, ~dist_l, ~dist_r, ~neg_add, ~neg_neg, ~neg_mul_l, ~neg_mul_r, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z)))),
+      Equal.cong(S.MV(T, d), S.MV(T, d), w => S.MV.lcomp(~T, ~neg, d, w), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z))), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, y, z))), B.Eq.cong2(S.MV(T, d), S.MV(T, d), S.MV(T, d), u => v => S.MV.wedge(~T, ~add, ~mul, ~neg, d, u, v), S.MV.rcomp(~T, ~neg, d, x), S.MV.rcomp(~T, ~neg, d, x), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z)), S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, y, z)), {==}, Equal.sym(S.MV(T, d), S.MV.rcomp(~T, ~neg, d, S.MV.vee(~T, ~add, ~mul, ~neg, d, y, z)), S.MV.wedge(~T, ~add, ~mul, ~neg, d, S.MV.rcomp(~T, ~neg, d, y), S.MV.rcomp(~T, ~neg, d, z)),
+        Comp.rcomp_vee(~T, ~add, ~mul, ~neg, ~neg_neg, d, y, z)))))

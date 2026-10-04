@@ -214,7 +214,6 @@ law reverse_gp:
   for ~add: T -> T -> T
   for ~mul: T -> T -> T
   for ~neg: T -> T
-  for ~add_assoc: R.Ring.Assoc(T, add)
   for ~add_comm: R.Ring.Comm(T, add)
   for ~mul_comm: R.Ring.Comm(T, mul)
   for ~neg_add: R.Ring.NegAdd(T, add, neg)

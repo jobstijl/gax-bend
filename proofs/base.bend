@@ -154,3 +154,21 @@ def Bool.xor_swap4(a: Bool, b: Bool, c: Bool, d: Bool)
       {==}
     case True{} True{} True{} True{}:
       {==}
+
+# Refutation
+# ----------
+
+def Bool.disc(b: Bool) -> Type:
+  match b:
+    case False{}:
+      Empty
+    case True{}:
+      Unit
+
+def Bool.tf.empty(e: {True{} == False{} : Bool}) -> Empty:
+  %e : Bool.disc(_)
+  Unit{}
+
+# True is not False: anything follows
+def Bool.tf(-A: Type, e: {True{} == False{} : Bool}) -> A:
+  Empty.absurd(A, Bool.tf.empty(e))

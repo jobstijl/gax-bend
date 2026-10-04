@@ -449,3 +449,637 @@ def Flag.as_u3n(n1: Bool, n2: Bool, f1: Bool, f2: Bool) -> {Bool.xor(n1, Bool.no
       {==}
     case True{} True{} True{} True{}:
       {==}
+
+def Flag.lr_n(n: Bool, f: Bool, m: Bool, g: Bool) -> {Bool.xor(Bool.xor(n, f), Bool.xor(m, g)) == Bool.xor(Bool.xor(n, m), Bool.xor(f, g)) : Bool}:
+  match n f m g:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.lr_f(f: Bool, g: Bool) -> {Bool.xor(Bool.not(f), Bool.not(g)) == Bool.xor(Bool.xor(f, g), False{}) : Bool}:
+  match f g:
+    case False{} False{}:
+      {==}
+    case False{} True{}:
+      {==}
+    case True{} False{}:
+      {==}
+    case True{} True{}:
+      {==}
+
+def Flag.lr_xf(a: Bool, b: Bool) -> {Bool.xor(Bool.xor(a, b), False{}) == Bool.xor(a, b) : Bool}:
+  match a b:
+    case False{} False{}:
+      {==}
+    case False{} True{}:
+      {==}
+    case True{} False{}:
+      {==}
+    case True{} True{}:
+      {==}
+
+def Flag.rl_1(n: Bool, f: Bool, m: Bool, g: Bool, P: Bool) -> {Bool.xor(Bool.xor(n, m), Bool.and(P, Bool.xor(Bool.not(f), Bool.not(g)))) == Bool.xor(Bool.xor(Bool.xor(n, m), Bool.and(Bool.not(P), Bool.xor(f, g))), Bool.xor(f, g)) : Bool}:
+  match n f m g P:
+    case False{} False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} False{} True{}:
+      {==}
+    case False{} False{} False{} True{} False{}:
+      {==}
+    case False{} False{} False{} True{} True{}:
+      {==}
+    case False{} False{} True{} False{} False{}:
+      {==}
+    case False{} False{} True{} False{} True{}:
+      {==}
+    case False{} False{} True{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{} False{}:
+      {==}
+    case False{} True{} False{} False{} True{}:
+      {==}
+    case False{} True{} False{} True{} False{}:
+      {==}
+    case False{} True{} False{} True{} True{}:
+      {==}
+    case False{} True{} True{} False{} False{}:
+      {==}
+    case False{} True{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} False{} True{}:
+      {==}
+    case True{} False{} False{} True{} False{}:
+      {==}
+    case True{} False{} False{} True{} True{}:
+      {==}
+    case True{} False{} True{} False{} False{}:
+      {==}
+    case True{} False{} True{} False{} True{}:
+      {==}
+    case True{} False{} True{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{} False{}:
+      {==}
+    case True{} True{} False{} False{} True{}:
+      {==}
+    case True{} True{} False{} True{} False{}:
+      {==}
+    case True{} True{} False{} True{} True{}:
+      {==}
+    case True{} True{} True{} False{} False{}:
+      {==}
+    case True{} True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{} True{}:
+      {==}
+
+def Flag.rl_2(n: Bool, f: Bool, m: Bool, g: Bool, P: Bool) -> {Bool.xor(Bool.xor(Bool.xor(n, f), Bool.xor(m, g)), Bool.and(P, Bool.xor(f, g))) == Bool.xor(Bool.xor(n, m), Bool.and(Bool.not(P), Bool.xor(f, g))) : Bool}:
+  match n f m g P:
+    case False{} False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} False{} True{}:
+      {==}
+    case False{} False{} False{} True{} False{}:
+      {==}
+    case False{} False{} False{} True{} True{}:
+      {==}
+    case False{} False{} True{} False{} False{}:
+      {==}
+    case False{} False{} True{} False{} True{}:
+      {==}
+    case False{} False{} True{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{} False{}:
+      {==}
+    case False{} True{} False{} False{} True{}:
+      {==}
+    case False{} True{} False{} True{} False{}:
+      {==}
+    case False{} True{} False{} True{} True{}:
+      {==}
+    case False{} True{} True{} False{} False{}:
+      {==}
+    case False{} True{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} False{} True{}:
+      {==}
+    case True{} False{} False{} True{} False{}:
+      {==}
+    case True{} False{} False{} True{} True{}:
+      {==}
+    case True{} False{} True{} False{} False{}:
+      {==}
+    case True{} False{} True{} False{} True{}:
+      {==}
+    case True{} False{} True{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{} False{}:
+      {==}
+    case True{} True{} False{} False{} True{}:
+      {==}
+    case True{} True{} False{} True{} False{}:
+      {==}
+    case True{} True{} False{} True{} True{}:
+      {==}
+    case True{} True{} True{} False{} False{}:
+      {==}
+    case True{} True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{} True{}:
+      {==}
+
+def Flag.rl_0(n: Bool, m: Bool, b: Bool) -> {Bool.xor(Bool.xor(n, m), Bool.and(False{}, b)) == Bool.xor(n, m) : Bool}:
+  match n m b:
+    case False{} False{} False{}:
+      {==}
+    case False{} False{} True{}:
+      {==}
+    case False{} True{} False{}:
+      {==}
+    case False{} True{} True{}:
+      {==}
+    case True{} False{} False{}:
+      {==}
+    case True{} False{} True{}:
+      {==}
+    case True{} True{} False{}:
+      {==}
+    case True{} True{} True{}:
+      {==}
+
+def Flag.and_f(b: Bool) -> {Bool.and(b, False{}) == False{} : Bool}:
+  match b:
+    case False{}:
+      {==}
+    case True{}:
+      {==}
+
+def Flag.iv_t(k: Bool) -> {Bool.xor(k, True{}) == Bool.not(k) : Bool}:
+  match k:
+    case False{}:
+      {==}
+    case True{}:
+      {==}
+
+def Flag.iv_tt(k: Bool) -> {Bool.xor(Bool.xor(k, True{}), True{}) == k : Bool}:
+  match k:
+    case False{}:
+      {==}
+    case True{}:
+      {==}
+
+def Flag.iv_f(f: Bool) -> {Bool.xor(f, False{}) == f : Bool}:
+  match f:
+    case False{}:
+      {==}
+    case True{}:
+      {==}
+
+def Flag.iv_c(m: Bool, n: Bool) -> {Bool.xor(m, n) == Bool.xor(n, m) : Bool}:
+  match m n:
+    case False{} False{}:
+      {==}
+    case False{} True{}:
+      {==}
+    case True{} False{}:
+      {==}
+    case True{} True{}:
+      {==}
+
+def Flag.rv_A0(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(False{}, Bool.xor(a, True{})) == Bool.xor(True{}, a) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_A1(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(Bool.xor(Bool.xor(Bool.xor(m, a), Bool.xor(n, f)), False{}), False{}) == Bool.xor(Bool.xor(Bool.xor(m, n), Bool.xor(a, f)), False{}) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_A2(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(Bool.xor(a, True{}), f) == Bool.xor(Bool.xor(a, f), True{}) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_B1(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(Bool.xor(Bool.xor(Bool.xor(m, a), n), False{}), False{}) == Bool.xor(Bool.xor(Bool.xor(Bool.xor(m, n), False{}), False{}), a) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_B2(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(Bool.xor(a, True{}), Bool.not(f)) == Bool.xor(a, f) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_CQP0(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(False{}, a) == Bool.xor(True{}, Bool.xor(a, True{})) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_CQP1(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(Bool.xor(Bool.xor(m, Bool.xor(n, f)), False{}), False{}) == Bool.xor(Bool.xor(Bool.xor(Bool.xor(m, n), False{}), Bool.xor(a, f)), a) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_CQP2(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(a, Bool.not(f)) == Bool.xor(Bool.xor(a, f), True{}) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_CQN0(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(False{}, a) == Bool.xor(True{}, Bool.xor(a, True{})) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_CQN1(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(Bool.xor(Bool.xor(m, Bool.not(Bool.xor(n, f))), False{}), False{}) == Bool.xor(Bool.xor(Bool.not(Bool.xor(Bool.xor(m, n), False{})), Bool.xor(a, f)), a) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
+
+def Flag.rv_CQN2(m: Bool, a: Bool, n: Bool, f: Bool) -> {Bool.xor(a, Bool.not(f)) == Bool.xor(Bool.xor(a, f), True{}) : Bool}:
+  match m a n f:
+    case False{} False{} False{} False{}:
+      {==}
+    case False{} False{} False{} True{}:
+      {==}
+    case False{} False{} True{} False{}:
+      {==}
+    case False{} False{} True{} True{}:
+      {==}
+    case False{} True{} False{} False{}:
+      {==}
+    case False{} True{} False{} True{}:
+      {==}
+    case False{} True{} True{} False{}:
+      {==}
+    case False{} True{} True{} True{}:
+      {==}
+    case True{} False{} False{} False{}:
+      {==}
+    case True{} False{} False{} True{}:
+      {==}
+    case True{} False{} True{} False{}:
+      {==}
+    case True{} False{} True{} True{}:
+      {==}
+    case True{} True{} False{} False{}:
+      {==}
+    case True{} True{} False{} True{}:
+      {==}
+    case True{} True{} True{} False{}:
+      {==}
+    case True{} True{} True{} True{}:
+      {==}
