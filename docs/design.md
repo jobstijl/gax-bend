@@ -432,6 +432,13 @@ sources are in [numerics.md](numerics.md).
   √k·u.
 - The software float's rounding proof is the largest single piece of work
   in the plan.
+- The theorem is stated over computed operations fadd, fmul within ε of
+  exact, not over a rounding function. rnd∘add is one instance, and
+  F32.add is one directly. This is what lets a kernel law be a `{==}`
+  instantiation.
+- Per-kernel laws: 18 MB of generated source (`algebras/*/err.bend`,
+  7189 laws, mostly the repeated hypothesis list) and about 3 minutes of
+  gate time.
 
 ### Measured, not adopted
 

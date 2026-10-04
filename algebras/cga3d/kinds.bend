@@ -29,6 +29,11 @@ def Scalar.fields(-T: Data, x: Scalar<T>) -> List<&2, T>:
     case Scalar{s}:
       [s]
 
+def Scalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Scalar<A>) -> Scalar<B>:
+  match x:
+    case Scalar{s}:
+      Scalar{f(s)}
+
 type Vector<-T: Data> is Data:
   Vector{e1: T, e2: T, e3: T, eo: T, ei: T}
 
@@ -74,6 +79,11 @@ def Vector.fields(-T: Data, x: Vector<T>) -> List<&2, T>:
   match x:
     case Vector{e1, e2, e3, eo, ei}:
       [e1, e2, e3, eo, ei]
+
+def Vector.map(~A: Data, ~B: Data, ~f: A -> B, x: Vector<A>) -> Vector<B>:
+  match x:
+    case Vector{e1, e2, e3, eo, ei}:
+      Vector{f(e1), f(e2), f(e3), f(eo), f(ei)}
 
 type Twist<-T: Data> is Data:
   Twist{e23: T, e31: T, e12: T, e1i: T, e2i: T, e3i: T}
@@ -126,6 +136,11 @@ def Twist.fields(-T: Data, x: Twist<T>) -> List<&2, T>:
   match x:
     case Twist{e23, e31, e12, e1i, e2i, e3i}:
       [e23, e31, e12, e1i, e2i, e3i]
+
+def Twist.map(~A: Data, ~B: Data, ~f: A -> B, x: Twist<A>) -> Twist<B>:
+  match x:
+    case Twist{e23, e31, e12, e1i, e2i, e3i}:
+      Twist{f(e23), f(e31), f(e12), f(e1i), f(e2i), f(e3i)}
 
 type Bivector<-T: Data> is Data:
   Bivector{e23: T, e31: T, e12: T, e1o: T, e2o: T, e3o: T, e1i: T, e2i: T, e3i: T, eoi: T}
@@ -203,6 +218,11 @@ def Bivector.fields(-T: Data, x: Bivector<T>) -> List<&2, T>:
     case Bivector{e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi}:
       [e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi]
 
+def Bivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Bivector<A>) -> Bivector<B>:
+  match x:
+    case Bivector{e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi}:
+      Bivector{f(e23), f(e31), f(e12), f(e1o), f(e2o), f(e3o), f(e1i), f(e2i), f(e3i), f(eoi)}
+
 type Trivector<-T: Data> is Data:
   Trivector{e23o: T, e31o: T, e12o: T, e23i: T, e31i: T, e12i: T, e1oi: T, e2oi: T, e3oi: T, e123: T}
 
@@ -279,6 +299,11 @@ def Trivector.fields(-T: Data, x: Trivector<T>) -> List<&2, T>:
     case Trivector{e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123}:
       [e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123]
 
+def Trivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Trivector<A>) -> Trivector<B>:
+  match x:
+    case Trivector{e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123}:
+      Trivector{f(e23o), f(e31o), f(e12o), f(e23i), f(e31i), f(e12i), f(e1oi), f(e2oi), f(e3oi), f(e123)}
+
 type Quadvector<-T: Data> is Data:
   Quadvector{e23oi: T, e31oi: T, e12oi: T, e123o: T, e123i: T}
 
@@ -325,6 +350,11 @@ def Quadvector.fields(-T: Data, x: Quadvector<T>) -> List<&2, T>:
     case Quadvector{e23oi, e31oi, e12oi, e123o, e123i}:
       [e23oi, e31oi, e12oi, e123o, e123i]
 
+def Quadvector.map(~A: Data, ~B: Data, ~f: A -> B, x: Quadvector<A>) -> Quadvector<B>:
+  match x:
+    case Quadvector{e23oi, e31oi, e12oi, e123o, e123i}:
+      Quadvector{f(e23oi), f(e31oi), f(e12oi), f(e123o), f(e123i)}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e123oi: T}
 
@@ -346,6 +376,11 @@ def Pseudoscalar.fields(-T: Data, x: Pseudoscalar<T>) -> List<&2, T>:
   match x:
     case Pseudoscalar{e123oi}:
       [e123oi]
+
+def Pseudoscalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Pseudoscalar<A>) -> Pseudoscalar<B>:
+  match x:
+    case Pseudoscalar{e123oi}:
+      Pseudoscalar{f(e123oi)}
 
 type Motor<-T: Data> is Data:
   Motor{s: T, e23: T, e31: T, e12: T, e1i: T, e2i: T, e3i: T, e123i: T}
@@ -410,6 +445,11 @@ def Motor.fields(-T: Data, x: Motor<T>) -> List<&2, T>:
   match x:
     case Motor{s, e23, e31, e12, e1i, e2i, e3i, e123i}:
       [s, e23, e31, e12, e1i, e2i, e3i, e123i]
+
+def Motor.map(~A: Data, ~B: Data, ~f: A -> B, x: Motor<A>) -> Motor<B>:
+  match x:
+    case Motor{s, e23, e31, e12, e1i, e2i, e3i, e123i}:
+      Motor{f(s), f(e23), f(e31), f(e12), f(e1i), f(e2i), f(e3i), f(e123i)}
 
 type Even<-T: Data> is Data:
   Even{s: T, e23: T, e31: T, e12: T, e1o: T, e2o: T, e3o: T, e1i: T, e2i: T, e3i: T, eoi: T, e23oi: T, e31oi: T, e12oi: T, e123o: T, e123i: T}
@@ -523,6 +563,11 @@ def Even.fields(-T: Data, x: Even<T>) -> List<&2, T>:
     case Even{s, e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi, e23oi, e31oi, e12oi, e123o, e123i}:
       [s, e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi, e23oi, e31oi, e12oi, e123o, e123i]
 
+def Even.map(~A: Data, ~B: Data, ~f: A -> B, x: Even<A>) -> Even<B>:
+  match x:
+    case Even{s, e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi, e23oi, e31oi, e12oi, e123o, e123i}:
+      Even{f(s), f(e23), f(e31), f(e12), f(e1o), f(e2o), f(e3o), f(e1i), f(e2i), f(e3i), f(eoi), f(e23oi), f(e31oi), f(e12oi), f(e123o), f(e123i)}
+
 type Odd<-T: Data> is Data:
   Odd{e1: T, e2: T, e3: T, eo: T, ei: T, e23o: T, e31o: T, e12o: T, e23i: T, e31i: T, e12i: T, e1oi: T, e2oi: T, e3oi: T, e123: T, e123oi: T}
 
@@ -634,6 +679,11 @@ def Odd.fields(-T: Data, x: Odd<T>) -> List<&2, T>:
   match x:
     case Odd{e1, e2, e3, eo, ei, e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123, e123oi}:
       [e1, e2, e3, eo, ei, e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123, e123oi]
+
+def Odd.map(~A: Data, ~B: Data, ~f: A -> B, x: Odd<A>) -> Odd<B>:
+  match x:
+    case Odd{e1, e2, e3, eo, ei, e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123, e123oi}:
+      Odd{f(e1), f(e2), f(e3), f(eo), f(ei), f(e23o), f(e31o), f(e12o), f(e23i), f(e31i), f(e12i), f(e1oi), f(e2oi), f(e3oi), f(e123), f(e123oi)}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e1: T, e2: T, e3: T, eo: T, ei: T, e23: T, e31: T, e12: T, e1o: T, e2o: T, e3o: T, e1i: T, e2i: T, e3i: T, eoi: T, e23o: T, e31o: T, e12o: T, e23i: T, e31i: T, e12i: T, e1oi: T, e2oi: T, e3oi: T, e123: T, e23oi: T, e31oi: T, e12oi: T, e123o: T, e123i: T, e123oi: T}
@@ -842,6 +892,11 @@ def Multivector.fields(-T: Data, x: Multivector<T>) -> List<&2, T>:
   match x:
     case Multivector{s, e1, e2, e3, eo, ei, e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi, e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123, e23oi, e31oi, e12oi, e123o, e123i, e123oi}:
       [s, e1, e2, e3, eo, ei, e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi, e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123, e23oi, e31oi, e12oi, e123o, e123i, e123oi]
+
+def Multivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Multivector<A>) -> Multivector<B>:
+  match x:
+    case Multivector{s, e1, e2, e3, eo, ei, e23, e31, e12, e1o, e2o, e3o, e1i, e2i, e3i, eoi, e23o, e31o, e12o, e23i, e31i, e12i, e1oi, e2oi, e3oi, e123, e23oi, e31oi, e12oi, e123o, e123i, e123oi}:
+      Multivector{f(s), f(e1), f(e2), f(e3), f(eo), f(ei), f(e23), f(e31), f(e12), f(e1o), f(e2o), f(e3o), f(e1i), f(e2i), f(e3i), f(eoi), f(e23o), f(e31o), f(e12o), f(e23i), f(e31i), f(e12i), f(e1oi), f(e2oi), f(e3oi), f(e123), f(e23oi), f(e31oi), f(e12oi), f(e123o), f(e123i), f(e123oi)}
 
 # Every kind widened to the full basis
 

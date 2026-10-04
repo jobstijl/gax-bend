@@ -100,13 +100,13 @@ def Er.OH() -> String:
   "~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),\n  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},\n  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool}"
 
 def Er.RNDH() -> String:
-  "~rnd: T -> T, ~rnd_ok: E.Ord.Rnd(T, add, mul, neg, abs, pos, eps, rnd)"
+  "~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Rel(T, add, mul, neg, abs, pos, eps, add, fadd), ~fmul_ok: E.Ord.Rel(T, add, mul, neg, abs, pos, eps, mul, fmul)"
 
 def Er.ETAH() -> String:
   "~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool}"
 
 def Er.RNDUH() -> String:
-  "~rnda: T -> T, ~rndm: T -> T, ~rnda_ok: E.Ord.RndU(T, add, mul, neg, abs, pos, eps, eta_a, rnda), ~rndm_ok: E.Ord.RndU(T, add, mul, neg, abs, pos, eps, eta_m, rndm)"
+  "~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul)"
 
 def Er.ALL() -> String:
   D.cat([Er.OPSD(), ",\n  ", Er.RH(), ",\n  ", Er.OH()])
@@ -168,13 +168,14 @@ def Er.order() -> String:
   +xy = Er.add("x", Er.neg("y"))
   +xyy = Er.add(xy, "y")
   D.cat(["# The rounding error of every term (ADR-005, docs/numerics.md): for an
-# ordered commutative ring T and a rounding function rnd satisfying the
-# standard model |rnd(x) - x| <= eps |x|,
-#   |fl(t) - eval(t)| <= h(k(t)) absev(t),
-# with h(k) = (1 + eps)^k - 1 (src/err.bend). With underflow, additions
-# and products round within eps |x| + eta_a and eps |x| + eta_m, and the
-# bound gains the absolute term D(t). Order is positivity: a <= b means
-# pos(b - a), and each step is a ring identity (the normaliser) over
+# ordered commutative ring T and computed operations fadd, fmul within eps
+# of the exact ones (|fadd(x, y) - (x + y)| <= eps |x + y|, the standard
+# model), the term evaluated with them is within
+#   |computed(t) - eval(t)| <= h(k(t)) absev(t)
+# of its exact value, with h(k) = (1 + eps)^k - 1 (src/err.bend). With
+# underflow, the operations are within eps |x| + eta_a and eps |x| + eta_m,
+# and the bound gains the absolute term D(t). Order is positivity: a <= b
+# means pos(b - a), and each step is a ring identity (the normaliser) over
 # nonnegative pieces.
 
 import Base
@@ -318,10 +319,10 @@ def Er.EV(+t: String) -> String:
   D.cat(["N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, ", t, ")"])
 
 def Er.FL(+t: String) -> String:
-  D.cat(["E.Tm.fl(~T, ~zero, ~add, ~mul, ~neg, ~rnd, env, ", t, ")"])
+  D.cat(["N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, env, ", t, ")"])
 
 def Er.FLU(+t: String) -> String:
-  D.cat(["E.Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, ", t, ")"])
+  D.cat(["N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, env, ", t, ")"])
 
 def Er.AB(+t: String) -> String:
   D.cat(["E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, ", t, ")"])
@@ -391,7 +392,7 @@ def Ev.le(", all, ", ", env, ", t: N.Tm) -> ", Er.LE(Er.ab(Er.EV("t")), Er.AB("t
 # -----------
 
 def Er.callR(+name: String, args: List<&2, String>) -> String:
-  D.cat([name, "(", Er.A(), ", ~rnd, ~rnd_ok, env, ", D.sep(args, ", "), ")"])
+  D.cat([name, "(", Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, ", D.sep(args, ", "), ")"])
 
 def Er.ETAA() -> String:
   "~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m"
@@ -400,7 +401,7 @@ def Er.callD(+name: String, args: List<&2, String>) -> String:
   D.cat([name, "(", Er.A(), ", ", Er.ETAA(), ", env, ", D.sep(args, ", "), ")"])
 
 def Er.callU(+name: String, args: List<&2, String>) -> String:
-  D.cat([name, "(", Er.A(), ", ", Er.ETAA(), ", ~rnda, ~rndm, ~rnda_ok, ~rndm_ok, env, ", D.sep(args, ", "), ")"])
+  D.cat([name, "(", Er.A(), ", ", Er.ETAA(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, ", D.sep(args, ", "), ")"])
 
 def Er.Mx() -> String:
   D.cat(["Nat.max(", Er.K("a"), ", ", Er.K("b"), ")"])
@@ -462,10 +463,10 @@ def Er.b.add() -> String:
   +hla = Er.call("H.max_l", [Er.K("a"), Er.K("b")])
   +hrb = Er.call("H.max_r", [Er.K("a"), Er.K("b")])
   +s = Er.add(fa, fb)
-  +rs = D.cat(["rnd(", s, ")"])
+  +rs = D.cat(["fadd(", fa, ", ", fb, ")"])
   +r = Er.add(rs, Er.neg(s))
   +e2 = D.cat(["tri(", r, ", ", Er.add(xa, xb), ")"])
-  +e3 = Er.call("Le.add", [Er.ab(r), Er.mul("eps", Er.ab(s)), Er.ab(Er.add(xa, xb)), Er.add(Er.ab(xa), Er.ab(xb)), D.cat(["rnd_ok(", s, ")"]), D.cat(["tri(", xa, ", ", xb, ")"])])
+  +e3 = Er.call("Le.add", [Er.ab(r), Er.mul("eps", Er.ab(s)), Er.ab(Er.add(xa, xb)), Er.add(Er.ab(xa), Er.ab(xb)), D.cat(["fadd_ok(", fa, ", ", fb, ")"]), D.cat(["tri(", xa, ", ", xb, ")"])])
   +sbt = Er.add(Er.add(Er.mul(hm, a), a), Er.add(Er.mul(hm, b), b))
   +sb = Er.trans(Er.ab(s), Er.add(Er.ab(fa), Er.ab(fb)), sbt, D.cat(["tri(", fa, ", ", fb, ")"]), Er.call("Le.add", [Er.ab(fa), Er.add(Er.mul(hm, a), a), Er.ab(fb), Er.add(Er.mul(hm, b), b), Er.fbound(fa, ea, a, ha, hm, ba, va, hla, pa), Er.fbound(fb, eb, b, hb, hm, bb, vb, hrb, pb)]))
   +es = Er.call("Le.scale", ["eps", Er.ab(s), sbt, "pos_eps", sb])
@@ -502,12 +503,12 @@ def Er.b.mul() -> String:
   +vb = Er.callE("Ev.le", ["b"])
   +pa = Er.callE("Absev.pos", ["a"])
   +s = Er.mul(fa, fb)
-  +rs = D.cat(["rnd(", s, ")"])
+  +rs = D.cat(["fmul(", fa, ", ", fb, ")"])
   +r = Er.add(rs, Er.neg(s))
   +t1 = Er.mul(xa, fb)
   +t2 = Er.mul(ea, xb)
   +m2 = D.cat(["tri(", r, ", ", Er.add(t1, t2), ")"])
-  +m3 = Er.call("Le.add", [Er.ab(r), Er.mul("eps", Er.ab(s)), Er.ab(Er.add(t1, t2)), Er.add(Er.ab(t1), Er.ab(t2)), D.cat(["rnd_ok(", s, ")"]), D.cat(["tri(", t1, ", ", t2, ")"])])
+  +m3 = Er.call("Le.add", [Er.ab(r), Er.mul("eps", Er.ab(s)), Er.ab(Er.add(t1, t2)), Er.add(Er.ab(t1), Er.ab(t2)), D.cat(["fmul_ok(", fa, ", ", fb, ")"]), D.cat(["tri(", t1, ", ", t2, ")"])])
   +fbt = Er.add(Er.mul(hb, b), b)
   +fat = Er.add(Er.mul(ha, a), a)
   +fbb = Er.trans(Er.ab(fb), Er.add(Er.ab(xb), Er.ab(eb)), fbt, Er.call("Le.split", [fb, eb]), Er.call("Le.add", [Er.ab(xb), Er.mul(hb, b), Er.ab(eb), b, bb, vb]))
@@ -552,7 +553,8 @@ def Er.bound() -> String:
 # The theorem
 # -----------
 
-# |fl(t) - eval(t)| <= h(k(t)) absev(t)
+# |computed(t) - eval(t)| <= h(k(t)) absev(t), additions computed by fadd
+# and products by fmul, each within eps |x| of exact
 def Err.bound(", Er.ALL(), ", ", Er.RNDH(), ", ", Er.ENV(), ", t: N.Tm) -> ", Er.LE(Er.ab(Er.add(Er.FL("t"), Er.neg(Er.EV("t")))), Er.mul(Er.H(Er.K("t")), Er.AB("t"))), ":
   match t:
     case N.TVar{+i}:
@@ -665,7 +667,7 @@ def Er.u.add() -> String:
   +hla = Er.call("H.max_l", [Er.K("a"), Er.K("b")])
   +hrb = Er.call("H.max_r", [Er.K("a"), Er.K("b")])
   +s = Er.add(fa, fb)
-  +rs = D.cat(["rnda(", s, ")"])
+  +rs = D.cat(["fadd(", fa, ", ", fb, ")"])
   +r = Er.add(rs, Er.neg(s))
   +at : List<&2, String> = ["eps", hm, a, b, da, db, "eta_a"]
   +famd = p(p(m(v(1n), v(2n)), v(4n)), v(2n))
@@ -685,7 +687,7 @@ def Er.u.add() -> String:
   +ga = Er.add(Er.mul(h1, Er.add(a, b)), dadd)
   +e2 = D.cat(["tri(", r, ", ", Er.add(xa, xb), ")"])
   +es = Er.add(Er.mul("eps", Er.ab(s)), "eta_a")
-  +e3 = Er.call("Le.add", [Er.ab(r), es, Er.ab(Er.add(xa, xb)), Er.add(Er.ab(xa), Er.ab(xb)), D.cat(["rnda_ok(", s, ")"]), D.cat(["tri(", xa, ", ", xb, ")"])])
+  +e3 = Er.call("Le.add", [Er.ab(r), es, Er.ab(Er.add(xa, xb)), Er.add(Er.ab(xa), Er.ab(xb)), D.cat(["fadd_ok(", fa, ", ", fb, ")"]), D.cat(["tri(", xa, ", ", xb, ")"])])
   +sb = Er.trans(Er.ab(s), Er.add(Er.ab(fa), Er.ab(fb)), sbt, D.cat(["tri(", fa, ", ", fb, ")"]),
     Er.call("Le.add", [Er.ab(fa), fam, Er.ab(fb), fbm,
       Er.trans(Er.ab(fa), Er.add(Er.add(Er.mul(ha, a), da), a), fam, Er.fbnd(fa, ea, a, ha, da, ba, va), Er.raise2(a, ha, hm, da, hla, pa)),
@@ -723,7 +725,7 @@ def Er.u.mul() -> String:
   +pa = Er.callE("Absev.pos", ["a"])
   +pda = Er.callD("D.pos", ["a"])
   +s = Er.mul(fa, fb)
-  +rs = D.cat(["rndm(", s, ")"])
+  +rs = D.cat(["fmul(", fa, ", ", fb, ")"])
   +r = Er.add(rs, Er.neg(s))
   +t1 = Er.mul(xa, fb)
   +t2 = Er.mul(ea, xb)
@@ -753,7 +755,7 @@ def Er.u.mul() -> String:
   +hdb = Er.add(Er.mul(hb, b), db)
   +m2 = D.cat(["tri(", r, ", ", Er.add(t1, t2), ")"])
   +es = Er.add(Er.mul("eps", Er.ab(s)), "eta_m")
-  +m3 = Er.call("Le.add", [Er.ab(r), es, Er.ab(Er.add(t1, t2)), Er.add(Er.ab(t1), Er.ab(t2)), D.cat(["rndm_ok(", s, ")"]), D.cat(["tri(", t1, ", ", t2, ")"])])
+  +m3 = Er.call("Le.add", [Er.ab(r), es, Er.ab(Er.add(t1, t2)), Er.add(Er.ab(t1), Er.ab(t2)), D.cat(["fmul_ok(", fa, ", ", fb, ")"]), D.cat(["tri(", t1, ", ", t2, ")"])])
   +fab = Er.fbnd(fa, ea, a, ha, da, ba, va)
   +fbb = Er.fbnd(fb, eb, b, hb, db, bb, vb)
   +phda = Er.pos_add(Er.mul(ha, a), da, Er.pos_mul(ha, a, Er.call("H.pos", [Er.K("a")]), pa), pda)
@@ -786,8 +788,8 @@ def Er.bound_u() -> String:
   +xa = Er.add(fa, Er.neg(ea))
   +hda = Er.add(Er.mul(Er.Ha(), Er.AB("a")), Er.DD("a"))
   D.cat(["
-# |fl(t) - eval(t)| <= h(k(t)) absev(t) + D(t), additions rounded by rnda
-# and products by rndm, each within eps |x| + its eta
+# |computed(t) - eval(t)| <= h(k(t)) absev(t) + D(t), additions computed by
+# fadd and products by fmul, each within eps |x| + its eta
 def Err.bound_u(", Er.ALL(), ", ", Er.ETAH(), ", ", Er.RNDUH(), ", ", Er.ENV(), ", t: N.Tm) -> ", Er.LE(Er.ab(Er.add(Er.FLU("t"), Er.neg(Er.EV("t")))), Er.add(Er.mul(Er.H(Er.K("t")), Er.AB("t")), Er.DD("t"))), ":
   match t:
     case N.TVar{+i}:
@@ -802,5 +804,25 @@ def Err.bound_u(", Er.ALL(), ", ", Er.ETAH(), ", ", Er.RNDUH(), ", ", Er.ENV(), 
       ", Er.trans(Er.ab(Er.add(Er.neg(fa), Er.neg(Er.neg(ea)))), Er.ab(xa), hda, Er.negstep(fa, ea), Er.callU("Err.bound_u", ["a"])), "
 "])
 
+# Kernels
+# -------
+
+def Er.fields() -> String:
+  D.cat(["
+# Kernels
+# -------
+
+# every field of a kernel at once: the kernel's outputs are terms ts over
+# its inputs env (algebras/*/err.bend reads a kernel as its terms)
+def Err.fields(", Er.ALL(), ", ", Er.RNDH(), ", ", Er.ENV(), ", ts: List<&2, N.Tm>)
+  -> E.Err.Fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, E.Tm.evals(~T, ~zero, ~fadd, ~fmul, ~neg, env, ts), E.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, ts),
+    E.Tm.absevs(~T, ~zero, ~add, ~mul, ~abs, env, ts), E.Tm.ks(ts)):
+  match ts:
+    case Nil{}:
+      Unit{}
+    case +t <> r:
+      (", Er.callR("Err.bound", ["t"]), ", ", Er.callR("Err.fields", ["r"]), ")
+"])
+
 def Er.text() -> String:
-  D.cat([Er.order(), Er.hs(), Er.terms(), Er.bound(), Er.dpos(), Er.bound_u()])
+  D.cat([Er.order(), Er.hs(), Er.terms(), Er.bound(), Er.dpos(), Er.bound_u(), Er.fields()])

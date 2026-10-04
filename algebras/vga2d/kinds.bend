@@ -33,6 +33,16 @@ def Scalar.cong(-T: Data, -a0: T, -b0: T,
   %e0 : {Scalar{a0} == Scalar{_} : Scalar<T>}
   {==}
 
+def Scalar.fields(-T: Data, x: Scalar<T>) -> List<&2, T>:
+  match x:
+    case Scalar{s}:
+      [s]
+
+def Scalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Scalar<A>) -> Scalar<B>:
+  match x:
+    case Scalar{s}:
+      Scalar{f(s)}
+
 type Vector<-T: Data> is Data:
   Vector{e1: T, e2: T}
 
@@ -66,6 +76,16 @@ def Vector.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
   %e1 : {Vector{a0, a1} == Vector{a0, _} : Vector<T>}
   {==}
 
+def Vector.fields(-T: Data, x: Vector<T>) -> List<&2, T>:
+  match x:
+    case Vector{e1, e2}:
+      [e1, e2]
+
+def Vector.map(~A: Data, ~B: Data, ~f: A -> B, x: Vector<A>) -> Vector<B>:
+  match x:
+    case Vector{e1, e2}:
+      Vector{f(e1), f(e2)}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e12: T}
 
@@ -91,6 +111,16 @@ def Pseudoscalar.cong(-T: Data, -a0: T, -b0: T,
   -> {Pseudoscalar{a0} == Pseudoscalar{b0} : Pseudoscalar<T>}:
   %e0 : {Pseudoscalar{a0} == Pseudoscalar{_} : Pseudoscalar<T>}
   {==}
+
+def Pseudoscalar.fields(-T: Data, x: Pseudoscalar<T>) -> List<&2, T>:
+  match x:
+    case Pseudoscalar{e12}:
+      [e12]
+
+def Pseudoscalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Pseudoscalar<A>) -> Pseudoscalar<B>:
+  match x:
+    case Pseudoscalar{e12}:
+      Pseudoscalar{f(e12)}
 
 type Rotor<-T: Data> is Data:
   Rotor{s: T, e12: T}
@@ -124,6 +154,16 @@ def Rotor.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
   %e0 : {Rotor{a0, a1} == Rotor{_, b1} : Rotor<T>}
   %e1 : {Rotor{a0, a1} == Rotor{a0, _} : Rotor<T>}
   {==}
+
+def Rotor.fields(-T: Data, x: Rotor<T>) -> List<&2, T>:
+  match x:
+    case Rotor{s, e12}:
+      [s, e12]
+
+def Rotor.map(~A: Data, ~B: Data, ~f: A -> B, x: Rotor<A>) -> Rotor<B>:
+  match x:
+    case Rotor{s, e12}:
+      Rotor{f(s), f(e12)}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e1: T, e2: T, e12: T}
@@ -171,3 +211,13 @@ def Multivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -
   %e2 : {Multivector{a0, a1, a2, a3} == Multivector{a0, a1, _, b3} : Multivector<T>}
   %e3 : {Multivector{a0, a1, a2, a3} == Multivector{a0, a1, a2, _} : Multivector<T>}
   {==}
+
+def Multivector.fields(-T: Data, x: Multivector<T>) -> List<&2, T>:
+  match x:
+    case Multivector{s, e1, e2, e12}:
+      [s, e1, e2, e12]
+
+def Multivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Multivector<A>) -> Multivector<B>:
+  match x:
+    case Multivector{s, e1, e2, e12}:
+      Multivector{f(s), f(e1), f(e2), f(e12)}

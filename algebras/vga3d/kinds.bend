@@ -33,6 +33,16 @@ def Scalar.cong(-T: Data, -a0: T, -b0: T,
   %e0 : {Scalar{a0} == Scalar{_} : Scalar<T>}
   {==}
 
+def Scalar.fields(-T: Data, x: Scalar<T>) -> List<&2, T>:
+  match x:
+    case Scalar{s}:
+      [s]
+
+def Scalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Scalar<A>) -> Scalar<B>:
+  match x:
+    case Scalar{s}:
+      Scalar{f(s)}
+
 type Vector<-T: Data> is Data:
   Vector{e1: T, e2: T, e3: T}
 
@@ -72,6 +82,16 @@ def Vector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -b0: T, -b1: T, -b2: T,
   %e1 : {Vector{a0, a1, a2} == Vector{a0, _, b2} : Vector<T>}
   %e2 : {Vector{a0, a1, a2} == Vector{a0, a1, _} : Vector<T>}
   {==}
+
+def Vector.fields(-T: Data, x: Vector<T>) -> List<&2, T>:
+  match x:
+    case Vector{e1, e2, e3}:
+      [e1, e2, e3]
+
+def Vector.map(~A: Data, ~B: Data, ~f: A -> B, x: Vector<A>) -> Vector<B>:
+  match x:
+    case Vector{e1, e2, e3}:
+      Vector{f(e1), f(e2), f(e3)}
 
 type Bivector<-T: Data> is Data:
   Bivector{e23: T, e31: T, e12: T}
@@ -113,6 +133,16 @@ def Bivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -b0: T, -b1: T, -b2: T,
   %e2 : {Bivector{a0, a1, a2} == Bivector{a0, a1, _} : Bivector<T>}
   {==}
 
+def Bivector.fields(-T: Data, x: Bivector<T>) -> List<&2, T>:
+  match x:
+    case Bivector{e23, e31, e12}:
+      [e23, e31, e12]
+
+def Bivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Bivector<A>) -> Bivector<B>:
+  match x:
+    case Bivector{e23, e31, e12}:
+      Bivector{f(e23), f(e31), f(e12)}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e123: T}
 
@@ -138,6 +168,16 @@ def Pseudoscalar.cong(-T: Data, -a0: T, -b0: T,
   -> {Pseudoscalar{a0} == Pseudoscalar{b0} : Pseudoscalar<T>}:
   %e0 : {Pseudoscalar{a0} == Pseudoscalar{_} : Pseudoscalar<T>}
   {==}
+
+def Pseudoscalar.fields(-T: Data, x: Pseudoscalar<T>) -> List<&2, T>:
+  match x:
+    case Pseudoscalar{e123}:
+      [e123]
+
+def Pseudoscalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Pseudoscalar<A>) -> Pseudoscalar<B>:
+  match x:
+    case Pseudoscalar{e123}:
+      Pseudoscalar{f(e123)}
 
 type Paravector<-T: Data> is Data:
   Paravector{s: T, e1: T, e2: T, e3: T}
@@ -186,6 +226,16 @@ def Paravector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b
   %e3 : {Paravector{a0, a1, a2, a3} == Paravector{a0, a1, a2, _} : Paravector<T>}
   {==}
 
+def Paravector.fields(-T: Data, x: Paravector<T>) -> List<&2, T>:
+  match x:
+    case Paravector{s, e1, e2, e3}:
+      [s, e1, e2, e3]
+
+def Paravector.map(~A: Data, ~B: Data, ~f: A -> B, x: Paravector<A>) -> Paravector<B>:
+  match x:
+    case Paravector{s, e1, e2, e3}:
+      Paravector{f(s), f(e1), f(e2), f(e3)}
+
 type Rotor<-T: Data> is Data:
   Rotor{s: T, e23: T, e31: T, e12: T}
 
@@ -233,6 +283,16 @@ def Rotor.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T,
   %e3 : {Rotor{a0, a1, a2, a3} == Rotor{a0, a1, a2, _} : Rotor<T>}
   {==}
 
+def Rotor.fields(-T: Data, x: Rotor<T>) -> List<&2, T>:
+  match x:
+    case Rotor{s, e23, e31, e12}:
+      [s, e23, e31, e12]
+
+def Rotor.map(~A: Data, ~B: Data, ~f: A -> B, x: Rotor<A>) -> Rotor<B>:
+  match x:
+    case Rotor{s, e23, e31, e12}:
+      Rotor{f(s), f(e23), f(e31), f(e12)}
+
 type Odd<-T: Data> is Data:
   Odd{e1: T, e2: T, e3: T, e123: T}
 
@@ -279,6 +339,16 @@ def Odd.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T, -
   %e2 : {Odd{a0, a1, a2, a3} == Odd{a0, a1, _, b3} : Odd<T>}
   %e3 : {Odd{a0, a1, a2, a3} == Odd{a0, a1, a2, _} : Odd<T>}
   {==}
+
+def Odd.fields(-T: Data, x: Odd<T>) -> List<&2, T>:
+  match x:
+    case Odd{e1, e2, e3, e123}:
+      [e1, e2, e3, e123]
+
+def Odd.map(~A: Data, ~B: Data, ~f: A -> B, x: Odd<A>) -> Odd<B>:
+  match x:
+    case Odd{e1, e2, e3, e123}:
+      Odd{f(e1), f(e2), f(e3), f(e123)}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e1: T, e2: T, e3: T, e23: T, e31: T, e12: T, e123: T}
@@ -354,3 +424,13 @@ def Multivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -
   %e6 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7} == Multivector{a0, a1, a2, a3, a4, a5, _, b7} : Multivector<T>}
   %e7 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7} == Multivector{a0, a1, a2, a3, a4, a5, a6, _} : Multivector<T>}
   {==}
+
+def Multivector.fields(-T: Data, x: Multivector<T>) -> List<&2, T>:
+  match x:
+    case Multivector{s, e1, e2, e3, e23, e31, e12, e123}:
+      [s, e1, e2, e3, e23, e31, e12, e123]
+
+def Multivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Multivector<A>) -> Multivector<B>:
+  match x:
+    case Multivector{s, e1, e2, e3, e23, e31, e12, e123}:
+      Multivector{f(s), f(e1), f(e2), f(e3), f(e23), f(e31), f(e12), f(e123)}

@@ -3,7 +3,8 @@
 #   1. `bend PROOF.bend` prints ALL PROOFS CHECK,
 #   2. algebras/ and the generated proofs/ modules are what the generators
 #      write (tools/regen.sh --check),
-#   3. every generated algebras/*/proofs.bend checks (kernel == spec), and
+#   3. every generated algebras/*/proofs.bend checks (kernel == spec), every
+#      algebras/*/err.bend checks (each kernel's rounding-error bound), and
 #      every algebras/*/f32.bend checks,
 #   4. every tests/*.bend and examples/*.bend prints exactly the `#|` lines
 #      it ends with,
@@ -11,6 +12,7 @@
 # Usage: tools/gate.sh [-q] [--full]
 #   -q      one line per failure only
 #   --full  also check the slow proof files (CGA3D's, about an hour).
+#           Every err.bend is checked in every tier (CSTA's takes 94 s).
 #   --csta  also check CSTA's proof files (estimated at about 10 hours;
 #           not yet run in full). Without these flags they are counted as
 #           skipped.
@@ -46,9 +48,10 @@ else
 fi
 
 skipped=0
-for f in algebras/*/proofs.bend algebras/*/proofs_*.bend; do
+for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend; do
   [ -e "$f" ] || continue
   case "$f" in
+    */err.bend) ;;
     "$SLOW"*) if [ -z "$full" ]; then skipped=$((skipped + 1)); continue; fi ;;
     "$SLOWER"*) if [ -z "$csta" ]; then skipped=$((skipped + 1)); continue; fi ;;
   esac

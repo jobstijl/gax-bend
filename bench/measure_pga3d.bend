@@ -10,6 +10,7 @@
 # err / (u absev), the growth seen against the worst case k.
 import Base
 import ../num/df32.bend as D
+import ../src/err.bend as E
 import ../algebras/pga3d/kinds.bend as K
 import ../algebras/pga3d/ops.bend as O
 
@@ -34,45 +35,6 @@ def line(+s: U32, +o: U32) -> K.Line<F32>:
 # Instantiations
 def dfa(x: F32) -> D.DF:
   D.DF.abs(D.DF.of(x))
-
-def Dep.add(a: Nat, b: Nat) -> Nat:
-  1n+Nat.max(a, b)
-
-def Dep.mul(a: Nat, b: Nat) -> Nat:
-  1n+Nat.add(a, b)
-
-def Dep.id(a: Nat) -> Nat:
-  a
-
-def Motor.map(~A: Data, ~B: Data, ~f: A -> B, m: K.Motor<A>) -> K.Motor<B>:
-  match m:
-    case K.Motor{a, b, c, d, e, g, h, i}:
-      K.Motor{f(a), f(b), f(c), f(d), f(e), f(g), f(h), f(i)}
-
-def Point.map(~A: Data, ~B: Data, ~f: A -> B, p: K.Point<A>) -> K.Point<B>:
-  match p:
-    case K.Point{a, b, c, d}:
-      K.Point{f(a), f(b), f(c), f(d)}
-
-def Line.map(~A: Data, ~B: Data, ~f: A -> B, p: K.Line<A>) -> K.Line<B>:
-  match p:
-    case K.Line{a, b, c, d, e, g}:
-      K.Line{f(a), f(b), f(c), f(d), f(e), f(g)}
-
-def Motor.l(-T: Data, m: K.Motor<T>) -> List<&2, T>:
-  match m:
-    case K.Motor{a, b, c, d, e, g, h, i}:
-      [a, b, c, d, e, g, h, i]
-
-def Point.l(-T: Data, p: K.Point<T>) -> List<&2, T>:
-  match p:
-    case K.Point{a, b, c, d}:
-      [a, b, c, d]
-
-def Line.l(-T: Data, p: K.Line<T>) -> List<&2, T>:
-  match p:
-    case K.Line{a, b, c, d, e, g}:
-      [a, b, c, d, e, g]
 
 # Accumulating the report
 type Acc is Data:
@@ -111,36 +73,36 @@ def Nat.maxl(xs: List<&2, Nat>) -> Nat:
 
 # Kernels
 def mtp.k() -> List<&2, Nat>:
-  Point.l(Nat, O.Motor.transform.Point(~Nat, ~0n, ~Dep.add, ~Dep.mul, ~Dep.id, K.Motor{0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n}, K.Point{0n, 0n, 0n, 0n}))
+  K.Point.fields(Nat, O.Motor.transform.Point(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Motor{0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n}, K.Point{0n, 0n, 0n, 0n}))
 
 def mtp.one(+s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
   +m = motor(s, 0)
   +p = point(s, 8)
-  Acc.fields(Point.l(F32, O.Motor.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, p)),
-    Point.l(D.DF, O.Motor.transform.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, Motor.map(~F32, ~D.DF, ~D.DF.of, m), Point.map(~F32, ~D.DF, ~D.DF.of, p))),
-    Point.l(D.DF, O.Motor.transform.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, Motor.map(~F32, ~D.DF, ~dfa, m), Point.map(~F32, ~D.DF, ~dfa, p))),
+  Acc.fields(K.Point.fields(F32, O.Motor.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, p)),
+    K.Point.fields(D.DF, O.Motor.transform.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, K.Motor.map(~F32, ~D.DF, ~D.DF.of, m), K.Point.map(~F32, ~D.DF, ~D.DF.of, p))),
+    K.Point.fields(D.DF, O.Motor.transform.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, K.Motor.map(~F32, ~D.DF, ~dfa, m), K.Point.map(~F32, ~D.DF, ~dfa, p))),
     ks, a)
 
 def mm.k() -> List<&2, Nat>:
-  Motor.l(Nat, O.Motor.gp.Motor(~Nat, ~0n, ~Dep.add, ~Dep.mul, ~Dep.id, K.Motor{0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n}, K.Motor{0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n}))
+  K.Motor.fields(Nat, O.Motor.gp.Motor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Motor{0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n}, K.Motor{0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n}))
 
 def mm.one(+s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
   +x = motor(s, 0)
   +y = motor(s, 8)
-  Acc.fields(Motor.l(F32, O.Motor.gp.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, x, y)),
-    Motor.l(D.DF, O.Motor.gp.Motor(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, Motor.map(~F32, ~D.DF, ~D.DF.of, x), Motor.map(~F32, ~D.DF, ~D.DF.of, y))),
-    Motor.l(D.DF, O.Motor.gp.Motor(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, Motor.map(~F32, ~D.DF, ~dfa, x), Motor.map(~F32, ~D.DF, ~dfa, y))),
+  Acc.fields(K.Motor.fields(F32, O.Motor.gp.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, x, y)),
+    K.Motor.fields(D.DF, O.Motor.gp.Motor(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, K.Motor.map(~F32, ~D.DF, ~D.DF.of, x), K.Motor.map(~F32, ~D.DF, ~D.DF.of, y))),
+    K.Motor.fields(D.DF, O.Motor.gp.Motor(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, K.Motor.map(~F32, ~D.DF, ~dfa, x), K.Motor.map(~F32, ~D.DF, ~dfa, y))),
     ks, a)
 
 def pvp.k() -> List<&2, Nat>:
-  Line.l(Nat, O.Point.vee.Point(~Nat, ~0n, ~Dep.add, ~Dep.mul, ~Dep.id, K.Point{0n, 0n, 0n, 0n}, K.Point{0n, 0n, 0n, 0n}))
+  K.Line.fields(Nat, O.Point.vee.Point(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Point{0n, 0n, 0n, 0n}, K.Point{0n, 0n, 0n, 0n}))
 
 def pvp.one(+s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
   +x = point(s, 0)
   +y = point(s, 8)
-  Acc.fields(Line.l(F32, O.Point.vee.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, x, y)),
-    Line.l(D.DF, O.Point.vee.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, Point.map(~F32, ~D.DF, ~D.DF.of, x), Point.map(~F32, ~D.DF, ~D.DF.of, y))),
-    Line.l(D.DF, O.Point.vee.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, Point.map(~F32, ~D.DF, ~dfa, x), Point.map(~F32, ~D.DF, ~dfa, y))),
+  Acc.fields(K.Line.fields(F32, O.Point.vee.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, x, y)),
+    K.Line.fields(D.DF, O.Point.vee.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, K.Point.map(~F32, ~D.DF, ~D.DF.of, x), K.Point.map(~F32, ~D.DF, ~D.DF.of, y))),
+    K.Line.fields(D.DF, O.Point.vee.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, K.Point.map(~F32, ~D.DF, ~dfa, x), K.Point.map(~F32, ~D.DF, ~dfa, y))),
     ks, a)
 
 def run.mtp(n: Nat, +s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:

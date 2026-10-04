@@ -33,6 +33,16 @@ def Scalar.cong(-T: Data, -a0: T, -b0: T,
   %e0 : {Scalar{a0} == Scalar{_} : Scalar<T>}
   {==}
 
+def Scalar.fields(-T: Data, x: Scalar<T>) -> List<&2, T>:
+  match x:
+    case Scalar{s}:
+      [s]
+
+def Scalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Scalar<A>) -> Scalar<B>:
+  match x:
+    case Scalar{s}:
+      Scalar{f(s)}
+
 type Vector<-T: Data> is Data:
   Vector{e0: T, e1: T, e2: T, e3: T}
 
@@ -79,6 +89,16 @@ def Vector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T
   %e2 : {Vector{a0, a1, a2, a3} == Vector{a0, a1, _, b3} : Vector<T>}
   %e3 : {Vector{a0, a1, a2, a3} == Vector{a0, a1, a2, _} : Vector<T>}
   {==}
+
+def Vector.fields(-T: Data, x: Vector<T>) -> List<&2, T>:
+  match x:
+    case Vector{e0, e1, e2, e3}:
+      [e0, e1, e2, e3]
+
+def Vector.map(~A: Data, ~B: Data, ~f: A -> B, x: Vector<A>) -> Vector<B>:
+  match x:
+    case Vector{e0, e1, e2, e3}:
+      Vector{f(e0), f(e1), f(e2), f(e3)}
 
 type Bivector<-T: Data> is Data:
   Bivector{e10: T, e20: T, e30: T, e23: T, e31: T, e12: T}
@@ -141,6 +161,16 @@ def Bivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -b0:
   %e5 : {Bivector{a0, a1, a2, a3, a4, a5} == Bivector{a0, a1, a2, a3, a4, _} : Bivector<T>}
   {==}
 
+def Bivector.fields(-T: Data, x: Bivector<T>) -> List<&2, T>:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      [e10, e20, e30, e23, e31, e12]
+
+def Bivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Bivector<A>) -> Bivector<B>:
+  match x:
+    case Bivector{e10, e20, e30, e23, e31, e12}:
+      Bivector{f(e10), f(e20), f(e30), f(e23), f(e31), f(e12)}
+
 type Trivector<-T: Data> is Data:
   Trivector{e123: T, e032: T, e013: T, e021: T}
 
@@ -188,6 +218,16 @@ def Trivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2
   %e3 : {Trivector{a0, a1, a2, a3} == Trivector{a0, a1, a2, _} : Trivector<T>}
   {==}
 
+def Trivector.fields(-T: Data, x: Trivector<T>) -> List<&2, T>:
+  match x:
+    case Trivector{e123, e032, e013, e021}:
+      [e123, e032, e013, e021]
+
+def Trivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Trivector<A>) -> Trivector<B>:
+  match x:
+    case Trivector{e123, e032, e013, e021}:
+      Trivector{f(e123), f(e032), f(e013), f(e021)}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e0123: T}
 
@@ -213,6 +253,16 @@ def Pseudoscalar.cong(-T: Data, -a0: T, -b0: T,
   -> {Pseudoscalar{a0} == Pseudoscalar{b0} : Pseudoscalar<T>}:
   %e0 : {Pseudoscalar{a0} == Pseudoscalar{_} : Pseudoscalar<T>}
   {==}
+
+def Pseudoscalar.fields(-T: Data, x: Pseudoscalar<T>) -> List<&2, T>:
+  match x:
+    case Pseudoscalar{e0123}:
+      [e0123]
+
+def Pseudoscalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Pseudoscalar<A>) -> Pseudoscalar<B>:
+  match x:
+    case Pseudoscalar{e0123}:
+      Pseudoscalar{f(e0123)}
 
 type Phasor<-T: Data> is Data:
   Phasor{s: T, e0123: T}
@@ -246,6 +296,16 @@ def Phasor.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
   %e0 : {Phasor{a0, a1} == Phasor{_, b1} : Phasor<T>}
   %e1 : {Phasor{a0, a1} == Phasor{a0, _} : Phasor<T>}
   {==}
+
+def Phasor.fields(-T: Data, x: Phasor<T>) -> List<&2, T>:
+  match x:
+    case Phasor{s, e0123}:
+      [s, e0123]
+
+def Phasor.map(~A: Data, ~B: Data, ~f: A -> B, x: Phasor<A>) -> Phasor<B>:
+  match x:
+    case Phasor{s, e0123}:
+      Phasor{f(s), f(e0123)}
 
 type Even<-T: Data> is Data:
   Even{s: T, e10: T, e20: T, e30: T, e23: T, e31: T, e12: T, e0123: T}
@@ -322,6 +382,16 @@ def Even.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -a6: T, 
   %e7 : {Even{a0, a1, a2, a3, a4, a5, a6, a7} == Even{a0, a1, a2, a3, a4, a5, a6, _} : Even<T>}
   {==}
 
+def Even.fields(-T: Data, x: Even<T>) -> List<&2, T>:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      [s, e10, e20, e30, e23, e31, e12, e0123]
+
+def Even.map(~A: Data, ~B: Data, ~f: A -> B, x: Even<A>) -> Even<B>:
+  match x:
+    case Even{s, e10, e20, e30, e23, e31, e12, e0123}:
+      Even{f(s), f(e10), f(e20), f(e30), f(e23), f(e31), f(e12), f(e0123)}
+
 type Odd<-T: Data> is Data:
   Odd{e0: T, e1: T, e2: T, e3: T, e123: T, e032: T, e013: T, e021: T}
 
@@ -396,6 +466,16 @@ def Odd.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -a6: T, -
   %e6 : {Odd{a0, a1, a2, a3, a4, a5, a6, a7} == Odd{a0, a1, a2, a3, a4, a5, _, b7} : Odd<T>}
   %e7 : {Odd{a0, a1, a2, a3, a4, a5, a6, a7} == Odd{a0, a1, a2, a3, a4, a5, a6, _} : Odd<T>}
   {==}
+
+def Odd.fields(-T: Data, x: Odd<T>) -> List<&2, T>:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      [e0, e1, e2, e3, e123, e032, e013, e021]
+
+def Odd.map(~A: Data, ~B: Data, ~f: A -> B, x: Odd<A>) -> Odd<B>:
+  match x:
+    case Odd{e0, e1, e2, e3, e123, e032, e013, e021}:
+      Odd{f(e0), f(e1), f(e2), f(e3), f(e123), f(e032), f(e013), f(e021)}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e0: T, e1: T, e2: T, e3: T, e10: T, e20: T, e30: T, e23: T, e31: T, e12: T, e123: T, e032: T, e013: T, e021: T, e0123: T}
@@ -527,3 +607,13 @@ def Multivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -
   %e14 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, _, b15} : Multivector<T>}
   %e15 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15} == Multivector{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, _} : Multivector<T>}
   {==}
+
+def Multivector.fields(-T: Data, x: Multivector<T>) -> List<&2, T>:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      [s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123]
+
+def Multivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Multivector<A>) -> Multivector<B>:
+  match x:
+    case Multivector{s, e0, e1, e2, e3, e10, e20, e30, e23, e31, e12, e123, e032, e013, e021, e0123}:
+      Multivector{f(s), f(e0), f(e1), f(e2), f(e3), f(e10), f(e20), f(e30), f(e23), f(e31), f(e12), f(e123), f(e032), f(e013), f(e021), f(e0123)}

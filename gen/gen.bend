@@ -11,6 +11,7 @@ import Base
 import ../src/spec.bend as S
 import ../src/expr.bend as E
 import ../src/norm.bend as N
+import ./proofs/err.bend as ER
 
 # Specs
 # -----
@@ -449,6 +450,15 @@ def Kd.cong(+n: String, +k: Nat) -> String:
     String.join(Cong.eqs(ks), ", "), ")\n  -> {", lhs, " == ", n, "{", String.join(Cong.names("b", "", ks), ", "), "} : ", n, "<T>}:\n",
     Cong.rewrites(n, lhs, ks, ks), "  {==}\n"])
 
+# a kind's fields as a list, and a function mapped over its fields
+def Kd.listing(+n: String, +bls: List<&2, Bl>) -> String:
+  String.concat(["def ", n, ".fields(-T: Data, x: ", n, "<T>) -> List<&2, T>:\n  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "", ""), ", "), "}:\n      [",
+    String.join(Kd.fields(bls, "", ""), ", "), "]\n"])
+
+def Kd.map(+n: String, +bls: List<&2, Bl>) -> String:
+  String.concat(["def ", n, ".map(~A: Data, ~B: Data, ~f: A -> B, x: ", n, "<A>) -> ", n, "<B>:\n  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "", ""), ", "), "}:\n      ",
+    n, "{", String.join(Kd.fields(bls, "f(", ")"), ", "), "}\n"])
+
 # a kind's record, embedding, projection and support-clearing function
 def Kd.module(+d: Nat, +dn: String, k: Kd) -> String:
   match k:
@@ -461,7 +471,8 @@ def Kd.module(+d: Nat, +dn: String, k: Kd) -> String:
         "def ", n, ".of_tree(~T: Data, ~zero: T, ~neg: T -> T, +t: S.MV(T, ", dn, ")) -> ", n, "<T>:\n",
         "  ", n, "{\n    ", String.join(Kd.at(bls, dn), ",\n    "), "}\n\n",
         "def ", n, ".out(-T: Data, t: S.MV(T, ", dn, ")) -> S.MV(T, ", dn, "):\n  ", Kd.clears(bls, dn), "\n\n",
-        String.join(Kd.getters(n, Kd.fields(bls, "", ""), bls), "\n"), "\n", Kd.cong(n, List.length(&2, Bl, bls))])
+        String.join(Kd.getters(n, Kd.fields(bls, "", ""), bls), "\n"), "\n", Kd.cong(n, List.length(&2, Bl, bls)), "\n",
+        Kd.listing(n, bls), "\n", Kd.map(n, bls)])
 
 def Kd.modules(+d: Nat, +dn: String, ks: List<&2, Kd>) -> List<&2, String>:
   match ks:
@@ -475,7 +486,53 @@ def Kd.modules(+d: Nat, +dn: String, ks: List<&2, Kd>) -> List<&2, String>:
 
 # one generated kernel: its source, its proofs, and its multiplication count
 type Ker is Data:
-  Ker{src: String, prf: String, api: String, muls: Nat}
+  Ker{src: String, prf: String, api: String, err: String, muls: Nat}
+
+# a kind's general element over Tm as Bend source: K.<n>{N.TVar{i}, ...}
+def Kd.tvars(bls: List<&2, Bl>, +i: Nat) -> List<&2, String>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case b <> t:
+      ("N.TVar{" ++ Nat.show(i) ++ "n}") <> Kd.tvars(t, 1n+i)
+
+# a zero for every field: the depth semiring's inputs
+def Kd.zeros(bls: List<&2, Bl>) -> List<&2, String>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case b <> t:
+      "0n" <> Kd.zeros(t)
+
+# a kernel's rounding-error law (proofs/err.bend, Err.fields): every output
+# field, computed with fadd and fmul, is within h(k) of its exact value
+# times its absolute size, where the sizes are the kernel run on |inputs|
+# with neg the identity, and k the kernel run in the depth semiring
+def Ker.err(+name: String, +an: String, +abs: List<&2, Bl>, +un: Bool, +bn: String, +bbs: List<&2, Bl>, +cn: String) -> String:
+  +na = List.length(&2, Bl, abs)
+  +args = Bool.pick(String, un, "a: K." ++ an ++ "<T>", "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>")
+  +argn = Bool.pick(String, un, "a", "a, b")
+  +absa = "K." ++ an ++ ".map(~T, ~T, ~abs, a)"
+  +absn = Bool.pick(String, un, absa, absa ++ ", K." ++ bn ++ ".map(~T, ~T, ~abs, b)")
+  +za = "K." ++ an ++ "{" ++ String.join(Kd.zeros(abs), ", ") ++ "}"
+  +zn = Bool.pick(String, un, za, za ++ ", K." ++ bn ++ "{" ++ String.join(Kd.zeros(bbs), ", ") ++ "}")
+  +ta = "K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "}"
+  +tn = Bool.pick(String, un, ta, ta ++ ", K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "}")
+  +pa = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "}"
+  +pat = Bool.pick(String, un, pa, pa ++ " K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "}")
+  +mh = Bool.pick(String, un, "a", "a b")
+  +env = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "a_", ""), Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "b_", ""))), ", ") ++ "]"
+  +o = "O." ++ name
+  String.concat([
+    "def ", name, ".err(", ER.Er.ALL(), ",\n  ", ER.Er.RNDH(), ",\n  ", args, ")\n",
+    "  -> E.Err.Fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~fadd, ~fmul, ~neg, ", argn, ")),\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~add, ~mul, ~neg, ", argn, ")),\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~add, ~mul, ~(x => x), ", absn, ")),\n",
+    "    K.", cn, ".fields(Nat, ", o, "(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), ", zn, "))):\n",
+    "  match ", mh, ":\n    case ", pat, ":\n",
+    "      ER.Err.fields(", ER.Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ", env, ",\n",
+    "        K.", cn, ".fields(N.Tm, ", o, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", tn, ")))\n"])
 
 def Ker.fields(+d: Nat, bls: List<&2, Bl>, +r: S.MV(E.Expr, d)) -> List<&2, E.Expr>:
   match bls:
@@ -523,6 +580,7 @@ def Ker.text(+dn: String, +pre: String, +o: Op, ka: Kd, kb: Kd, kc: Kd, es: List
         String.concat([
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
+        Ker.err(name, an, abs, False{}, bn, bbs, cn),
         Ker.muls(es2)}
 
 def Ker.pick.go(+d: Nat, +dn: String, +pre: String, o: Op, ka: Kd, kb: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
@@ -632,6 +690,7 @@ def Ker1.text(+dn: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.Expr>) -> Ker
         String.concat([
           "def ", name, "(a: K.", an, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.neg, a)\n"]),
+        "",
         Ker.muls(es2)}
 
 def Ker1.pick.go(+d: Nat, +dn: String, o: Op1, ka: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
@@ -781,14 +840,6 @@ def Let.muls(ls: List<&2, Let>) -> Nat:
       0n
     case Let{n, s, m} <> t:
       Nat.add(m, Let.muls(t))
-
-# a kind's general element over Tm as Bend source: K.<n>{N.TVar{i}, ...}
-def Kd.tvars(bls: List<&2, Bl>, +i: Nat) -> List<&2, String>:
-  match bls:
-    case Nil{}:
-      Nil{}
-    case b <> t:
-      ("N.TVar{" ++ Nat.show(i) ++ "n}") <> Kd.tvars(t, 1n+i)
 
 def Sw.spec(+dn: String, +pre: String, +ring: String, +treeops: String, +v: String, x: String) -> String:
   String.concat(["S.MV.gp(", ring, ", ", dn, ", K.", pre, ".sig(), S.MV.gp(", ring, ", ", dn, ", K.", pre, ".sig(), ", v, ", ", x,
@@ -1151,6 +1202,7 @@ def Sw.text(+dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd,
         String.concat([
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n", Pp.api(pp)]),
+        Ker.err(name, an, abs, False{}, bn, bbs, cn),
         muls}
 
 # the product lets in front, their multiplications counted
@@ -1403,6 +1455,7 @@ def Hf.text(+dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd
         String.concat([
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
+        Ker.err(name, an, abs, False{}, bn, bbs, cn),
         Ker.muls(es2)}
 
 def Hf.pick.go(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd, kb: Kd, kc: Kd, +rt: S.MV(N.Tm, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
@@ -1693,8 +1746,7 @@ def Nl.module(+nb: Nb, +ng: List<&2, Nat>, +d: Nat, +dn: String, k: Kd) -> Strin
         "def ", n, ".of_tree(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~half: T, +t: S.MV(T, ", dn, ")) -> ", n, "<T>:\n",
         "  ", n, "{\n    ", String.join(Nl.ofs(nb, ng, dn, bls), ",\n    "), "}\n\n",
         String.join(Kd.getters(n, Kd.fields(bls, "", ""), bls), "\n"), "\n",
-        "def ", n, ".fields(-T: Data, x: ", n, "<T>) -> List<&2, T>:\n  match x:\n    case ", n, "{", String.join(Kd.fields(bls, "", ""), ", "), "}:\n      [",
-        String.join(Kd.fields(bls, "", ""), ", "), "]\n"])
+        Kd.listing(n, bls), "\n", Kd.map(n, bls)])
 
 # the field of a Multivector blade from kind x's fields: the field with the
 # same key (negated if written with the other orientation), else zero
@@ -2110,6 +2162,7 @@ def Nl.text(+dn: String, +pre: String, +nk: NK, ka: Kd, kb: Kd, kc: Kd, +mn: Str
           "def ", name, "(", Bool.pick(String, un, "a: K." ++ an ++ "<F32>", "a: K." ++ an ++ "<F32>, b: K." ++ bn ++ "<F32>"),
           ") -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, ", argn, ")\n", Pp.api(pp)]),
+        Ker.err(name, an, abs, un, bn, bbs, cn),
         muls}
 
 # the law that a kind's projection inverts its embedding: the change of
@@ -2297,35 +2350,56 @@ def Ker.srcs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, m} <> t:
+    case Ker{s, p, a, e, m} <> t:
       s <> Ker.srcs(t)
 
 def Ker.prfs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, m} <> t:
+    case Ker{s, p, a, e, m} <> t:
       p <> Ker.prfs(t)
 
 def Ker.apis(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, m} <> t:
+    case Ker{s, p, a, e, m} <> t:
       a <> Ker.apis(t)
+
+def Str.some(s: String) -> Bool:
+  match s:
+    case SNil{}:
+      False{}
+    case SCon{h, t}:
+      True{}
+
+def Ker.errs.put(+e: String, some: Bool, acc: List<&2, String>) -> List<&2, String>:
+  match some:
+    case True{}:
+      e <> acc
+    case False{}:
+      acc
+
+def Ker.errs(ks: List<&2, Ker>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case Ker{s, p, a, +e, m} <> t:
+      Ker.errs.put(e, Str.some(e), Ker.errs(t))
 
 def Ker.total(ks: List<&2, Ker>) -> Nat:
   match ks:
     case Nil{}:
       0n
-    case Ker{s, p, a, m} <> t:
+    case Ker{s, p, a, e, m} <> t:
       Nat.add(m, Ker.total(t))
 
 # the generated modules of one algebra, and a summary line
 # the generated modules of one algebra: kinds, kernels, proofs (more proof
 # modules, proofs_2.bend and on, when the proofs are split), F32, summary
 type Out is Data:
-  Out{kinds: String, ops: String, proofs: String, more: List<&2, String>, f32: String, summary: String}
+  Out{kinds: String, ops: String, proofs: String, more: List<&2, String>, f32: String, err: String, summary: String}
 
 # the kernels in groups of n (a large algebra's proofs, checked part by part)
 def Ker.chunks(f: Nat, ks: List<&2, Ker>, +n: Nat) -> List<&2, List<&2, Ker>>:
@@ -2349,6 +2423,9 @@ def Ker.chunk.srcs(+hdr: String, cs: List<&2, List<&2, Ker>>) -> List<&2, String
 def Gen.header(name: String) -> String:
   "# Generated by gen/main.bend from the " ++ name ++ " spec (gen/specs.bend).\n# Do not edit: run tools/regen.sh.\n\nimport Base\nimport ../../src/spec.bend as S\n"
 
+def Err.hdr(name: String) -> String:
+  Gen.header(name) ++ "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../src/err.bend as E\nimport ../../proofs/err.bend as ER\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n# Every kernel's rounding error: each output field is within h(k) times its\n# absolute size of the exact value (proofs/err.bend, Err.fields). Unary\n# kernels that only negate are exact and have no law.\n\n"
+
 def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&2, Kd>, +kers: List<&2, Ker>) -> Out:
   +dn = Nat.show(d) ++ "n"
   Out{
@@ -2359,6 +2436,7 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
     Nil{},
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
       "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
+    Err.hdr(name) ++ String.join(Ker.errs(kers), "\n"),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds, ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 
@@ -2391,6 +2469,7 @@ def Nl.out(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: 
     Ker.chunk.srcs(Nl.phdr(name), Ker.chunks(List.length(&2, Ker, kers), kers, 60n)),
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
       "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
+    Err.hdr(name) ++ String.join(Ker.errs(kers), "\n"),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds (null basis), ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 

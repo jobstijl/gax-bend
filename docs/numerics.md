@@ -56,12 +56,15 @@ The ordered-ring laws enter as `~` hypotheses, like the ring laws.
 Inequalities reduce to positivity: b − a is a sum of products of known
 nonnegatives, which the normaliser checks.
 
-**What it says about a kernel.** The kernel's exact value is the spec's
-(the mirror and `.ok` laws). For output k of a product:
-  |ĉₖ − (a·b)ₖ| ≤ h(dₖ + 1) · (|a| ⊛ |b|)ₖ,
-where ⊛ is the sign-stripped product and dₖ the depth of the output's
-addition tree. A sandwich adds one multiplication level. The generator
-emits dₖ and the ⊛ kernel, and a law per kernel instantiates the theorem.
+**What it says about a kernel** (proven: `algebras/*/err.bend`, one law
+per kernel). The kernel's exact value is the spec's (the mirror and `.ok`
+laws). For output i:
+  |ĉᵢ − cᵢ| ≤ h(kᵢ) · (|a| ⊛ |b|)ᵢ,
+where ⊛ is the kernel itself run on |inputs| with neg the identity, and
+kᵢ is the kernel run in the depth semiring (add = 1 + max, mul = 1 + a +
+b) on zero inputs. No second implementation is involved. Each law matches
+the operands and calls the generic `Err.fields` on the kernel's own terms
+(the kernel run at T = Tm); conversion does the rest.
 
 **For the hardware.** The theorem holds for every `rnd` satisfying the
 model. It applies to native F32 under the hypothesis that the hardware
@@ -188,6 +191,8 @@ and it does.
 1. `Tm.fl`, `Tm.abs`, k and h, and the theorem over an ordered ring with
    an abstract `rnd` (no underflow), then the η term. **Done.**
 2. Per-kernel corollaries from the generator (dₖ, the ⊛ kernel).
+   **Done**, without underflow; the underflow form (`Err.bound_u`) has
+   no per-kernel law yet.
 3. Dyadic numbers and the exact oracle; a measurement report per algebra.
 4. The software float: faithful rounding proven against the model, then
    correct rounding. The largest piece; recent Lean work (TorchLean's

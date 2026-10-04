@@ -1,29 +1,18 @@
 # Rounding error of a term (ADR-005, docs/numerics.md). Exact values live
-# in an ordered commutative ring T; a rounded operation is rnd(a op b) for
-# a rounding function rnd with |rnd(x) - x| <= eps |x| (the standard model,
-# no underflow). For a term t (a reified kernel field, src/norm.bend):
-#   Tm.fl     the rounded evaluation, rnd after every add and mul;
+# in an ordered commutative ring T. The computed operations are fadd and
+# fmul, each within eps of the exact one: |fadd(x, y) - (x + y)| <=
+# eps |x + y| (the standard model; rnd(x + y) is one instance), plus an
+# absolute eta when underflow is counted. For a term t (a reified kernel
+# field, src/norm.bend):
+#   N.Tm.eval at (fadd, fmul)  the computed value; at (add, mul) the exact;
 #   Tm.absev  t with |x| at the leaves and + for -: its absolute size;
 #   Tm.k      the roundings along the worst path;
 #   Err.H     h(k) = (1 + eps)^k - 1.
-# proofs/err.bend proves |fl(t) - eval(t)| <= h(k(t)) absev(t).
+# proofs/err.bend proves |computed - exact| <= h(k(t)) absev(t).
 # Order is positivity: a <= b means pos(b - a).
 
 import Base
 import ./norm.bend as N
-
-def Tm.fl(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~rnd: T -> T, +env: List<&2, T>, t: N.Tm) -> T:
-  match t:
-    case N.TVar{i}:
-      N.Env.at(~T, ~zero, env, i)
-    case N.TZero{}:
-      zero
-    case N.TAdd{a, b}:
-      rnd(add(Tm.fl(~T, ~zero, ~add, ~mul, ~neg, ~rnd, env, a), Tm.fl(~T, ~zero, ~add, ~mul, ~neg, ~rnd, env, b)))
-    case N.TMul{a, b}:
-      rnd(mul(Tm.fl(~T, ~zero, ~add, ~mul, ~neg, ~rnd, env, a), Tm.fl(~T, ~zero, ~add, ~mul, ~neg, ~rnd, env, b)))
-    case N.TNeg{a}:
-      neg(Tm.fl(~T, ~zero, ~add, ~mul, ~neg, ~rnd, env, a))
 
 def Tm.absev(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~abs: T -> T, +env: List<&2, T>, t: N.Tm) -> T:
   match t:
@@ -85,30 +74,17 @@ def Ord.AbsMul(T: Data, mul: T -> T -> T, abs: T -> T) -> Type:
 def Ord.AbsNeg(T: Data, neg: T -> T, abs: T -> T) -> Type:
   @a: T -> {abs(neg(a)) == abs(a) : T}
 
-# the standard model: |rnd(x) - x| <= eps |x|
-def Ord.Rnd(T: Data, add: T -> T -> T, mul: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool, eps: T, rnd: T -> T) -> Type:
-  @x: T -> {pos(add(mul(eps, abs(x)), neg(abs(add(rnd(x), neg(x)))))) == True{} : Bool}
+# the standard model for a computed operation: |fop(x, y) - op(x, y)| <=
+# eps |op(x, y)|
+def Ord.Rel(T: Data, add: T -> T -> T, mul: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool, eps: T, op: T -> T -> T, fop: T -> T -> T) -> Type:
+  @x: T -> @y: T -> {pos(add(mul(eps, abs(op(x, y))), neg(abs(add(fop(x, y), neg(op(x, y))))))) == True{} : Bool}
 
-# With underflow (docs/numerics.md §1): additions and multiplications round
-# by separate functions, each within eps |x| + eta. IEEE binary32 with
-# gradual underflow has eta = 0 for sums (Hauser 1996) and 2^-150 for
-# products; flushing subnormals to zero makes both 2^-126.
-def Ord.RndU(T: Data, add: T -> T -> T, mul: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool, eps: T, eta: T, rnd: T -> T) -> Type:
-  @x: T -> {pos(add(add(mul(eps, abs(x)), eta), neg(abs(add(rnd(x), neg(x)))))) == True{} : Bool}
-
-# the evaluation with rnda after each addition, rndm after each product
-def Tm.flu(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~rnda: T -> T, ~rndm: T -> T, +env: List<&2, T>, t: N.Tm) -> T:
-  match t:
-    case N.TVar{i}:
-      N.Env.at(~T, ~zero, env, i)
-    case N.TZero{}:
-      zero
-    case N.TAdd{a, b}:
-      rnda(add(Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, a), Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, b)))
-    case N.TMul{a, b}:
-      rndm(mul(Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, a), Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, b)))
-    case N.TNeg{a}:
-      neg(Tm.flu(~T, ~zero, ~add, ~mul, ~neg, ~rnda, ~rndm, env, a))
+# With underflow (docs/numerics.md §1): |fop(x, y) - op(x, y)| <=
+# eps |op(x, y)| + eta. IEEE binary32 with gradual underflow has eta = 0
+# for sums (Hauser 1996) and 2^-150 for products; flushing subnormals to
+# zero makes both 2^-126.
+def Ord.Approx(T: Data, add: T -> T -> T, mul: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool, eps: T, eta: T, op: T -> T -> T, fop: T -> T -> T) -> Type:
+  @x: T -> @y: T -> {pos(add(add(mul(eps, abs(op(x, y))), eta), neg(abs(add(fop(x, y), neg(op(x, y))))))) == True{} : Bool}
 
 # The absolute part of the bound: zero when eta_a = eta_m = 0.
 #   D(a + b) = eta_a + (1 + eps)(D(a) + D(b))
@@ -132,3 +108,56 @@ def Err.D(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~ab
       add(eta_m, add(x, mul(eps, x)))
     case N.TNeg{a}:
       Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, a)
+
+# Kernels: every output field of a kernel is a term, so a kernel's bound
+# is a list of term bounds. Over the terms ts with environment env:
+def Tm.evals(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, +env: List<&2, T>, ts: List<&2, N.Tm>) -> List<&2, T>:
+  match ts:
+    case Nil{}:
+      Nil{}
+    case t <> r:
+      N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) <> Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, r)
+
+def Tm.absevs(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~abs: T -> T, +env: List<&2, T>, ts: List<&2, N.Tm>) -> List<&2, T>:
+  match ts:
+    case Nil{}:
+      Nil{}
+    case t <> r:
+      Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t) <> Tm.absevs(~T, ~zero, ~add, ~mul, ~abs, env, r)
+
+def Tm.ks(ts: List<&2, N.Tm>) -> List<&2, Nat>:
+  match ts:
+    case Nil{}:
+      Nil{}
+    case t <> r:
+      Tm.k(t) <> Tm.ks(r)
+
+# field by field: |f - e| <= h(k) a, for computed fs, exact es, absolute
+# sizes as and depths ks
+def Err.Fields(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~pos: T -> Bool, ~abs: T -> T, ~eps: T,
+  fs: List<&2, T>, es: List<&2, T>, as: List<&2, T>, ks: List<&2, Nat>) -> Type:
+  match fs:
+    case Nil{}:
+      Unit
+    case f <> ft:
+      match es:
+        case Nil{}:
+          Unit
+        case e <> et:
+          match as:
+            case Nil{}:
+              Unit
+            case a <> at:
+              match ks:
+                case Nil{}:
+                  Unit
+                case k <> kt:
+                  {pos(add(mul(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, k), a), neg(abs(add(f, neg(e)))))) == True{} : Bool} & Err.Fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, ft, et, at, kt)
+
+# the depth semiring: a generic kernel run on Nat with these operations
+# and zero inputs computes k for each output field
+def Err.dadd(a: Nat, b: Nat) -> Nat:
+  1n+Nat.max(a, b)
+
+def Err.dmul(a: Nat, b: Nat) -> Nat:
+  1n+Nat.add(a, b)

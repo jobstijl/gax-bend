@@ -33,6 +33,16 @@ def Scalar.cong(-T: Data, -a0: T, -b0: T,
   %e0 : {Scalar{a0} == Scalar{_} : Scalar<T>}
   {==}
 
+def Scalar.fields(-T: Data, x: Scalar<T>) -> List<&2, T>:
+  match x:
+    case Scalar{s}:
+      [s]
+
+def Scalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Scalar<A>) -> Scalar<B>:
+  match x:
+    case Scalar{s}:
+      Scalar{f(s)}
+
 type Line<-T: Data> is Data:
   Line{e1: T, e2: T, e0: T}
 
@@ -72,6 +82,16 @@ def Line.cong(-T: Data, -a0: T, -a1: T, -a2: T, -b0: T, -b1: T, -b2: T,
   %e1 : {Line{a0, a1, a2} == Line{a0, _, b2} : Line<T>}
   %e2 : {Line{a0, a1, a2} == Line{a0, a1, _} : Line<T>}
   {==}
+
+def Line.fields(-T: Data, x: Line<T>) -> List<&2, T>:
+  match x:
+    case Line{e1, e2, e0}:
+      [e1, e2, e0]
+
+def Line.map(~A: Data, ~B: Data, ~f: A -> B, x: Line<A>) -> Line<B>:
+  match x:
+    case Line{e1, e2, e0}:
+      Line{f(e1), f(e2), f(e0)}
 
 type Point<-T: Data> is Data:
   Point{e20: T, e01: T, e12: T}
@@ -113,6 +133,16 @@ def Point.cong(-T: Data, -a0: T, -a1: T, -a2: T, -b0: T, -b1: T, -b2: T,
   %e2 : {Point{a0, a1, a2} == Point{a0, a1, _} : Point<T>}
   {==}
 
+def Point.fields(-T: Data, x: Point<T>) -> List<&2, T>:
+  match x:
+    case Point{e20, e01, e12}:
+      [e20, e01, e12]
+
+def Point.map(~A: Data, ~B: Data, ~f: A -> B, x: Point<A>) -> Point<B>:
+  match x:
+    case Point{e20, e01, e12}:
+      Point{f(e20), f(e01), f(e12)}
+
 type Direction<-T: Data> is Data:
   Direction{e20: T, e01: T}
 
@@ -146,6 +176,16 @@ def Direction.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
   %e1 : {Direction{a0, a1} == Direction{a0, _} : Direction<T>}
   {==}
 
+def Direction.fields(-T: Data, x: Direction<T>) -> List<&2, T>:
+  match x:
+    case Direction{e20, e01}:
+      [e20, e01]
+
+def Direction.map(~A: Data, ~B: Data, ~f: A -> B, x: Direction<A>) -> Direction<B>:
+  match x:
+    case Direction{e20, e01}:
+      Direction{f(e20), f(e01)}
+
 type Pseudoscalar<-T: Data> is Data:
   Pseudoscalar{e012: T}
 
@@ -171,6 +211,16 @@ def Pseudoscalar.cong(-T: Data, -a0: T, -b0: T,
   -> {Pseudoscalar{a0} == Pseudoscalar{b0} : Pseudoscalar<T>}:
   %e0 : {Pseudoscalar{a0} == Pseudoscalar{_} : Pseudoscalar<T>}
   {==}
+
+def Pseudoscalar.fields(-T: Data, x: Pseudoscalar<T>) -> List<&2, T>:
+  match x:
+    case Pseudoscalar{e012}:
+      [e012]
+
+def Pseudoscalar.map(~A: Data, ~B: Data, ~f: A -> B, x: Pseudoscalar<A>) -> Pseudoscalar<B>:
+  match x:
+    case Pseudoscalar{e012}:
+      Pseudoscalar{f(e012)}
 
 type Rotor<-T: Data> is Data:
   Rotor{s: T, e12: T}
@@ -204,6 +254,16 @@ def Rotor.cong(-T: Data, -a0: T, -a1: T, -b0: T, -b1: T,
   %e0 : {Rotor{a0, a1} == Rotor{_, b1} : Rotor<T>}
   %e1 : {Rotor{a0, a1} == Rotor{a0, _} : Rotor<T>}
   {==}
+
+def Rotor.fields(-T: Data, x: Rotor<T>) -> List<&2, T>:
+  match x:
+    case Rotor{s, e12}:
+      [s, e12]
+
+def Rotor.map(~A: Data, ~B: Data, ~f: A -> B, x: Rotor<A>) -> Rotor<B>:
+  match x:
+    case Rotor{s, e12}:
+      Rotor{f(s), f(e12)}
 
 type Translator<-T: Data> is Data:
   Translator{s: T, e20: T, e01: T}
@@ -244,6 +304,16 @@ def Translator.cong(-T: Data, -a0: T, -a1: T, -a2: T, -b0: T, -b1: T, -b2: T,
   %e1 : {Translator{a0, a1, a2} == Translator{a0, _, b2} : Translator<T>}
   %e2 : {Translator{a0, a1, a2} == Translator{a0, a1, _} : Translator<T>}
   {==}
+
+def Translator.fields(-T: Data, x: Translator<T>) -> List<&2, T>:
+  match x:
+    case Translator{s, e20, e01}:
+      [s, e20, e01]
+
+def Translator.map(~A: Data, ~B: Data, ~f: A -> B, x: Translator<A>) -> Translator<B>:
+  match x:
+    case Translator{s, e20, e01}:
+      Translator{f(s), f(e20), f(e01)}
 
 type Motor<-T: Data> is Data:
   Motor{s: T, e12: T, e20: T, e01: T}
@@ -292,6 +362,16 @@ def Motor.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: T,
   %e3 : {Motor{a0, a1, a2, a3} == Motor{a0, a1, a2, _} : Motor<T>}
   {==}
 
+def Motor.fields(-T: Data, x: Motor<T>) -> List<&2, T>:
+  match x:
+    case Motor{s, e12, e20, e01}:
+      [s, e12, e20, e01]
+
+def Motor.map(~A: Data, ~B: Data, ~f: A -> B, x: Motor<A>) -> Motor<B>:
+  match x:
+    case Motor{s, e12, e20, e01}:
+      Motor{f(s), f(e12), f(e20), f(e01)}
+
 type Flector<-T: Data> is Data:
   Flector{e1: T, e2: T, e0: T, e012: T}
 
@@ -338,6 +418,16 @@ def Flector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -b0: T, -b1: T, -b2: 
   %e2 : {Flector{a0, a1, a2, a3} == Flector{a0, a1, _, b3} : Flector<T>}
   %e3 : {Flector{a0, a1, a2, a3} == Flector{a0, a1, a2, _} : Flector<T>}
   {==}
+
+def Flector.fields(-T: Data, x: Flector<T>) -> List<&2, T>:
+  match x:
+    case Flector{e1, e2, e0, e012}:
+      [e1, e2, e0, e012]
+
+def Flector.map(~A: Data, ~B: Data, ~f: A -> B, x: Flector<A>) -> Flector<B>:
+  match x:
+    case Flector{e1, e2, e0, e012}:
+      Flector{f(e1), f(e2), f(e0), f(e012)}
 
 type Multivector<-T: Data> is Data:
   Multivector{s: T, e0: T, e1: T, e2: T, e01: T, e20: T, e12: T, e012: T}
@@ -413,3 +503,13 @@ def Multivector.cong(-T: Data, -a0: T, -a1: T, -a2: T, -a3: T, -a4: T, -a5: T, -
   %e6 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7} == Multivector{a0, a1, a2, a3, a4, a5, _, b7} : Multivector<T>}
   %e7 : {Multivector{a0, a1, a2, a3, a4, a5, a6, a7} == Multivector{a0, a1, a2, a3, a4, a5, a6, _} : Multivector<T>}
   {==}
+
+def Multivector.fields(-T: Data, x: Multivector<T>) -> List<&2, T>:
+  match x:
+    case Multivector{s, e0, e1, e2, e01, e20, e12, e012}:
+      [s, e0, e1, e2, e01, e20, e12, e012]
+
+def Multivector.map(~A: Data, ~B: Data, ~f: A -> B, x: Multivector<A>) -> Multivector<B>:
+  match x:
+    case Multivector{s, e0, e1, e2, e01, e20, e12, e012}:
+      Multivector{f(s), f(e0), f(e1), f(e2), f(e01), f(e20), f(e12), f(e012)}

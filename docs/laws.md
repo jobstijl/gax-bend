@@ -149,6 +149,25 @@ Both are proven by matching the operand records and `{==}`, over any `T`
 and any operations: no ring law is used. Combined with the Layer-S laws
 above, every algebraic law transfers to the kernels.
 
+A third certificate, in `algebras/<name>/err.bend`, bounds the kernel's
+rounding error (**proof**):
+
+- **Error law** `K.err`: for every output field i,
+  |K(fadd, fmul)(a, b)ᵢ − K(a, b)ᵢ| ≤ h(kᵢ) · K(add, mul, id)(|a|, |b|)ᵢ.
+  Here kᵢ is field i of the kernel run in the depth semiring on Nat
+  (`E.Err.dadd`, `E.Err.dmul`), the absolute size is the kernel run on
+  |inputs| with neg the identity, and fadd, fmul are any operations within
+  ε of exact (`E.Ord.Rel`). All three sides are the generated kernel
+  itself at other instantiations, so the bound is computable at run time
+  by the same code.
+
+The proof matches the operand records and calls `Err.fields` on the
+kernel run over `N.Tm` (the kernel's own terms). The checker's
+conversion then identifies each instantiation with the term's
+evaluation. Unary kernels that only negate are exact and have no law;
+that leaves 7189 laws. They check in under three minutes in total (CSTA:
+94 s). Giving the law the wrong terms (operands swapped) fails.
+
 | algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
 |---|---|---|---|---|---|
 | VGA2D | 5 | 280 | 10 | 4 | 606 |
