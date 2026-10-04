@@ -110,22 +110,31 @@ above, every algebraic law transfers to the kernels.
 
 | algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
 |---|---|---|---|---|---|
-| VGA2D | 5 | 245 | 10 | 4 | 506 |
-| VGA3D | 8 | 581 | 24 | 24 | 3157 |
-| PGA2D | 10 | 870 | 60 | 32 | 3143 |
-| PGA3D | 11 | 1037 | 77 | 101 | 9696 |
-| STA | 9 | 722 | 27 | 84 | 8690 |
+| VGA2D | 5 | 280 | 10 | 4 | 606 |
+| VGA3D | 8 | 681 | 24 | 24 | 3941 |
+| PGA2D | 10 | 1023 | 60 | 32 | 3848 |
+| PGA3D | 11 | 1231 | 77 | 101 | 12277 |
+| STA | 9 | 849 | 27 | 84 | 11190 |
 
-The operations are gp, wedge, vee, lc, rc, dot, scalar_product, add, sub
-(any two kinds) and neg, reverse, involute, conjugate, dual (J_R) and
-undual (J_L). The inner products follow gax's blade-pair definitions
-(`src/spec.bend`, "Inner products"): per pair of grades r and s, lc keeps
-grade s − r (r ≤ s), rc grade r − s, dot grade |r − s|, the scalar product
-grade 0. For PGA3D every result kind of gp, wedge, vee, lc, rc, dot and
-scalar_product equals gax's generated type (117, 102, 97, 88, 88, 115 and
-45 pairs); `tests/inner_pga3d.bend` checks values on blades. The
-commutator and anticommutator are not generated yet: gax's are halved,
-and a ring without ½ needs a different definition.
+The operations are gp, wedge, vee, lc, rc, dot, scalar_product,
+commutator, anticommutator, add, sub (any two kinds) and neg, reverse,
+involute, conjugate, dual (J_R) and undual (J_L). The inner products
+follow gax's blade-pair definitions (`src/spec.bend`, "Inner products"):
+per pair of grades r and s, lc keeps grade s − r (r ≤ s), rc grade r − s,
+dot grade |r − s|, the scalar product grade 0. For PGA3D every result kind
+of gp, wedge, vee, lc, rc, dot, scalar_product, commutator and
+anticommutator equals gax's generated type (117, 102, 97, 88, 88, 115, 45,
+85 and 109 pairs). `tests/inner_pga3d.bend` checks values on blades.
+
+**Commutator and anticommutator.** gax's are halved: (xy − yx)/2 and
+(xy + yx)/2. Layer S defines the doubled forms (`MV.commutator2`,
+`MV.anticommutator2`), so no ring needs ½. Every coefficient of a doubled
+form is even, so the generator halves it exactly (one of each pair of equal
+monomials), and the kernel has integer coefficients. Its law `.ok` states
+kernel + kernel = the doubled spec, field by field by `Norm.eq`, plus zero
+laws as for sandwiches. Over a ring without 2-torsion that fixes the
+kernel. The negative control `commutator_not_halved.bend` drops the
+doubling.
 
 **Sandwiches.** `V.transform.X(v, x)` is v x ~v (gax's `transform`), for
 every versor kind V and every kind X:
@@ -195,6 +204,7 @@ Each one must fail to check. The gate fails if any passes.
 | `norm_wrong.bend` | (x + y)² = x² + y² over any commutative ring | normaliser |
 | `transform_support.bend` | a motor moves a point to one with x = 0 | sandwiches |
 | `transform_kernel_sign.bend` | the PGA3D motor-on-point kernel with one sign flipped in its weight entry equals the spec | sandwich kernels |
+| `commutator_not_halved.bend` | the line-line commutator kernel equals xy − yx (not its half) | halved products |
 
 ## Examples (`tests/`)
 

@@ -742,3 +742,108 @@ def Rotor.transform.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
 
 def Rotor.transform.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Rotor.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Pseudoscalar<F32>:
+  O.Vector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Vector.commutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Rotor(a: K.Vector<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Vector.commutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.commutator.Vector(a: K.Pseudoscalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.commutator.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.commutator.Vector(a: K.Rotor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Rotor.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.commutator.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Vector<F32>:
+  O.Rotor.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Multivector.commutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Rotor(a: K.Multivector<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Multivector.commutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Vector(a: K.Scalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Scalar.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Pseudoscalar(a: K.Scalar<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Rotor(a: K.Scalar<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Scalar.anticommutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Scalar.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Vector<F32>:
+  O.Vector.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Rotor(a: K.Vector<F32>, b: K.Rotor<F32>) -> K.Vector<F32>:
+  O.Vector.anticommutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Scalar(a: K.Pseudoscalar<F32>, b: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Pseudoscalar.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Rotor(a: K.Pseudoscalar<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Pseudoscalar.anticommutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Rotor<F32>:
+  O.Pseudoscalar.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.anticommutator.Scalar(a: K.Rotor<F32>, b: K.Scalar<F32>) -> K.Rotor<F32>:
+  O.Rotor.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.anticommutator.Vector(a: K.Rotor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Rotor.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.anticommutator.Pseudoscalar(a: K.Rotor<F32>, b: K.Pseudoscalar<F32>) -> K.Rotor<F32>:
+  O.Rotor.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.anticommutator.Rotor(a: K.Rotor<F32>, b: K.Rotor<F32>) -> K.Rotor<F32>:
+  O.Rotor.anticommutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Rotor.anticommutator.Multivector(a: K.Rotor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Rotor.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Rotor<F32>:
+  O.Multivector.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Rotor(a: K.Multivector<F32>, b: K.Rotor<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Rotor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)

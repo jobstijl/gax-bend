@@ -186,7 +186,7 @@ Negative controls are required per law family.
 
 **Status:** accepted, 2026-10-04. Built for VGA2D, VGA3D, PGA2D, PGA3D and STA: 2083 kernels (gp, wedge, vee, add, sub, neg, reverse, involute, conjugate, dual, undual), each with a mirror law and a support law, plus field getters and an F32 module per algebra. The gate checks them all in about 10 s. Mirror kernels run as fast as gax's optimised sandwich in the Q5 harness (bend-facts Q11).
 
-*Amended 2026-10-04:* the inner products (lc, rc, dot, scalar_product) and the sandwiches (ADR-003) bring it to 3455 kernels.
+*Amended 2026-10-04:* the inner products (lc, rc, dot, scalar_product), the halved commutator and anticommutator, and the sandwiches (ADR-003) bring it to 4064 kernels.
 
 ### Context
 

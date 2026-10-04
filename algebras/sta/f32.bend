@@ -2173,3 +2173,384 @@ def Odd.transform.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
 
 def Odd.transform.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Odd.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Bivector<F32>:
+  O.Vector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Vector.commutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Trivector(a: K.Vector<F32>, b: K.Trivector<F32>) -> K.Pseudoscalar<F32>:
+  O.Vector.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Trivector<F32>:
+  O.Vector.commutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Phasor(a: K.Vector<F32>, b: K.Phasor<F32>) -> K.Trivector<F32>:
+  O.Vector.commutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Vector.commutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Vector.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.commutator.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.commutator.Vector(a: K.Bivector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Bivector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.commutator.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Bivector.commutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.commutator.Trivector(a: K.Bivector<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Bivector.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.commutator.Even(a: K.Bivector<F32>, b: K.Even<F32>) -> K.Bivector<F32>:
+  O.Bivector.commutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.commutator.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Bivector.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.commutator.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Vector(a: K.Trivector<F32>, b: K.Vector<F32>) -> K.Pseudoscalar<F32>:
+  O.Trivector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Bivector(a: K.Trivector<F32>, b: K.Bivector<F32>) -> K.Trivector<F32>:
+  O.Trivector.commutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Trivector(a: K.Trivector<F32>, b: K.Trivector<F32>) -> K.Bivector<F32>:
+  O.Trivector.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Pseudoscalar(a: K.Trivector<F32>, b: K.Pseudoscalar<F32>) -> K.Vector<F32>:
+  O.Trivector.commutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Phasor(a: K.Trivector<F32>, b: K.Phasor<F32>) -> K.Vector<F32>:
+  O.Trivector.commutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Even(a: K.Trivector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Trivector.commutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Odd(a: K.Trivector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Trivector.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.commutator.Multivector(a: K.Trivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Trivector.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.commutator.Vector(a: K.Pseudoscalar<F32>, b: K.Vector<F32>) -> K.Trivector<F32>:
+  O.Pseudoscalar.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.commutator.Trivector(a: K.Pseudoscalar<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Pseudoscalar.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.commutator.Odd(a: K.Pseudoscalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Pseudoscalar.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.commutator.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Odd<F32>:
+  O.Pseudoscalar.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.commutator.Vector(a: K.Phasor<F32>, b: K.Vector<F32>) -> K.Trivector<F32>:
+  O.Phasor.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.commutator.Trivector(a: K.Phasor<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Phasor.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.commutator.Odd(a: K.Phasor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Phasor.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.commutator.Multivector(a: K.Phasor<F32>, b: K.Multivector<F32>) -> K.Odd<F32>:
+  O.Phasor.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.commutator.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Even.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.commutator.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Even.commutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.commutator.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Odd<F32>:
+  O.Even.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.commutator.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Bivector<F32>:
+  O.Even.commutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.commutator.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.commutator.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Even<F32>:
+  O.Odd.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Odd<F32>:
+  O.Odd.commutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Even<F32>:
+  O.Odd.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Odd.commutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Phasor(a: K.Odd<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Odd.commutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Odd.commutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.commutator.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Trivector(a: K.Multivector<F32>, b: K.Trivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Odd<F32>:
+  O.Multivector.commutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Phasor(a: K.Multivector<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Multivector.commutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Even(a: K.Multivector<F32>, b: K.Even<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.commutator.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.commutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Scalar(a: K.Scalar<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Scalar.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Vector(a: K.Scalar<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Scalar.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Bivector(a: K.Scalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Scalar.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Trivector(a: K.Scalar<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Scalar.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Pseudoscalar(a: K.Scalar<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Scalar.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Phasor(a: K.Scalar<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Scalar.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Even(a: K.Scalar<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Scalar.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Odd(a: K.Scalar<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Scalar.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Scalar.anticommutator.Multivector(a: K.Scalar<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Scalar.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Vector<F32>:
+  O.Vector.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Scalar<F32>:
+  O.Vector.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Trivector<F32>:
+  O.Vector.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Trivector(a: K.Vector<F32>, b: K.Trivector<F32>) -> K.Bivector<F32>:
+  O.Vector.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Phasor(a: K.Vector<F32>, b: K.Phasor<F32>) -> K.Vector<F32>:
+  O.Vector.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Vector.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Vector.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.anticommutator.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Scalar(a: K.Bivector<F32>, b: K.Scalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Vector(a: K.Bivector<F32>, b: K.Vector<F32>) -> K.Trivector<F32>:
+  O.Bivector.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Bivector(a: K.Bivector<F32>, b: K.Bivector<F32>) -> K.Phasor<F32>:
+  O.Bivector.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Trivector(a: K.Bivector<F32>, b: K.Trivector<F32>) -> K.Vector<F32>:
+  O.Bivector.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Pseudoscalar(a: K.Bivector<F32>, b: K.Pseudoscalar<F32>) -> K.Bivector<F32>:
+  O.Bivector.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Phasor(a: K.Bivector<F32>, b: K.Phasor<F32>) -> K.Bivector<F32>:
+  O.Bivector.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Even(a: K.Bivector<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Bivector.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Odd(a: K.Bivector<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Bivector.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Bivector.anticommutator.Multivector(a: K.Bivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Bivector.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Scalar(a: K.Trivector<F32>, b: K.Scalar<F32>) -> K.Trivector<F32>:
+  O.Trivector.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Vector(a: K.Trivector<F32>, b: K.Vector<F32>) -> K.Bivector<F32>:
+  O.Trivector.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Bivector(a: K.Trivector<F32>, b: K.Bivector<F32>) -> K.Vector<F32>:
+  O.Trivector.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Trivector(a: K.Trivector<F32>, b: K.Trivector<F32>) -> K.Scalar<F32>:
+  O.Trivector.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Phasor(a: K.Trivector<F32>, b: K.Phasor<F32>) -> K.Trivector<F32>:
+  O.Trivector.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Even(a: K.Trivector<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Trivector.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Odd(a: K.Trivector<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Trivector.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Trivector.anticommutator.Multivector(a: K.Trivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Trivector.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Scalar(a: K.Pseudoscalar<F32>, b: K.Scalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Pseudoscalar.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Bivector(a: K.Pseudoscalar<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Pseudoscalar.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Pseudoscalar(a: K.Pseudoscalar<F32>, b: K.Pseudoscalar<F32>) -> K.Scalar<F32>:
+  O.Pseudoscalar.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Phasor(a: K.Pseudoscalar<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Pseudoscalar.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Even(a: K.Pseudoscalar<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Pseudoscalar.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Pseudoscalar.anticommutator.Multivector(a: K.Pseudoscalar<F32>, b: K.Multivector<F32>) -> K.Even<F32>:
+  O.Pseudoscalar.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Scalar(a: K.Phasor<F32>, b: K.Scalar<F32>) -> K.Phasor<F32>:
+  O.Phasor.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Vector(a: K.Phasor<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Phasor.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Bivector(a: K.Phasor<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Phasor.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Trivector(a: K.Phasor<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Phasor.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Pseudoscalar(a: K.Phasor<F32>, b: K.Pseudoscalar<F32>) -> K.Phasor<F32>:
+  O.Phasor.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Phasor(a: K.Phasor<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Phasor.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Even(a: K.Phasor<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Phasor.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Odd(a: K.Phasor<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Phasor.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Phasor.anticommutator.Multivector(a: K.Phasor<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Phasor.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Even<F32>:
+  O.Even.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Odd<F32>:
+  O.Even.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Even<F32>:
+  O.Even.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Odd<F32>:
+  O.Even.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Even<F32>:
+  O.Even.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Phasor(a: K.Even<F32>, b: K.Phasor<F32>) -> K.Even<F32>:
+  O.Even.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Even.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.anticommutator.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Odd<F32>:
+  O.Odd.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Even<F32>:
+  O.Odd.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Odd<F32>:
+  O.Odd.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Even<F32>:
+  O.Odd.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Phasor(a: K.Odd<F32>, b: K.Phasor<F32>) -> K.Odd<F32>:
+  O.Odd.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Odd<F32>:
+  O.Odd.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Even<F32>:
+  O.Odd.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.anticommutator.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Scalar(a: K.Multivector<F32>, b: K.Scalar<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Vector(a: K.Multivector<F32>, b: K.Vector<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Bivector(a: K.Multivector<F32>, b: K.Bivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Trivector(a: K.Multivector<F32>, b: K.Trivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Pseudoscalar(a: K.Multivector<F32>, b: K.Pseudoscalar<F32>) -> K.Even<F32>:
+  O.Multivector.anticommutator.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Phasor(a: K.Multivector<F32>, b: K.Phasor<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Even(a: K.Multivector<F32>, b: K.Even<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Odd(a: K.Multivector<F32>, b: K.Odd<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Multivector.anticommutator.Multivector(a: K.Multivector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Multivector.anticommutator.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)

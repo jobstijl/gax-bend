@@ -10,7 +10,7 @@ is the semantic reference.
 | layer | what | state |
 |---|---|---|
 | S, the spec | a multivector tree over any dimension, any diagonal signature, any scalar ring | **22 laws proven** ([docs/laws.md](docs/laws.md)); `LAWS.bend` approved |
-| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA: 3455 kernels (products, inner products, sandwiches, unary operations), all proven (`algebras/`) |
+| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA: 4064 kernels (products, inner products, commutators, sandwiches, unary operations), all proven (`algebras/`) |
 | A, the API | PGA2D/3D, VGA3D, CGA3D, STA with geometric nouns and batch APIs | PGA3D started (`api/pga3d.bend`): constructors, exp/log, normalize, sqrt, motions between elements |
 | numbers | exact `Int` (done); dyadics, SoftF32, double-F32, posits | Phase 3 |
 

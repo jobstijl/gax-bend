@@ -476,6 +476,18 @@ def MV.dot(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
   MV.inner(~T, ~add, ~mul, ~neg, IDot{}, d, sig, x, y)
 
+# twice the commutator, xy - yx, and twice the anticommutator, xy + yx.
+# gax's commutator and anticommutator are the halves; their kernels have
+# integer coefficients and are proven equal to these by doubling, so no
+# ring here needs 1/2.
+def MV.commutator2(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.add(~T, ~add, d, MV.gp(~T, ~add, ~mul, ~neg, d, sig, x, y), MV.neg(~T, ~neg, d, MV.gp(~T, ~add, ~mul, ~neg, d, sig, y, x)))
+
+def MV.anticommutator2(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +x: MV(T, d), +y: MV(T, d)) -> MV(T, d):
+  MV.add(~T, ~add, d, MV.gp(~T, ~add, ~mul, ~neg, d, sig, x, y), MV.gp(~T, ~add, ~mul, ~neg, d, sig, y, x))
+
 # the scalar product <x y>_0
 def MV.scalar_product(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   +d: Nat, +sig: Sig(d), x: MV(T, d), y: MV(T, d)) -> MV(T, d):

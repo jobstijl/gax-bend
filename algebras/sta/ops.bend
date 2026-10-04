@@ -10486,3 +10486,1646 @@ def Odd.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> 
         add(mul(b_e123, m13_11), add(mul(b_e032, m13_12), add(mul(b_e013, m13_13), mul(b_e021, m13_14)))),
         add(mul(b_e123, m14_11), add(mul(b_e032, m14_12), add(mul(b_e013, m14_13), mul(b_e021, m14_14)))),
         add(mul(b_s, m15_0), mul(b_e0123, m15_15))}
+
+def Vector.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Bivector{
+        add(mul(a_e1, b_e0), neg(mul(a_e0, b_e1))),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(mul(a_e3, b_e0), neg(mul(a_e0, b_e3))),
+        add(neg(mul(a_e3, b_e2)), mul(a_e2, b_e3)),
+        add(mul(a_e3, b_e1), neg(mul(a_e1, b_e3))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2))}
+
+def Vector.commutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(add(neg(mul(a_e1, b_e10)), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(neg(mul(a_e0, b_e10)), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(neg(mul(a_e0, b_e20)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(neg(mul(a_e0, b_e30)), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23)))}
+
+def Vector.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Trivector<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Pseudoscalar{
+        add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), mul(a_e0, b_e123))}
+
+def Vector.commutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e0123}:
+      K.Trivector{
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Vector.commutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Phasor<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Phasor{+b_s, +b_e0123}:
+      K.Trivector{
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Vector.commutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Even<T>) -> K.Odd<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Odd{
+        add(add(neg(mul(a_e1, b_e10)), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(neg(mul(a_e0, b_e10)), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(neg(mul(a_e0, b_e20)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(neg(mul(a_e0, b_e30)), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Vector.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Even<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        zero,
+        add(mul(a_e1, b_e0), neg(mul(a_e0, b_e1))),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(mul(a_e3, b_e0), neg(mul(a_e0, b_e3))),
+        add(neg(mul(a_e3, b_e2)), mul(a_e2, b_e3)),
+        add(mul(a_e3, b_e1), neg(mul(a_e1, b_e3))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), mul(a_e0, b_e123))}
+
+def Vector.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        zero,
+        add(add(neg(mul(a_e1, b_e10)), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(neg(mul(a_e0, b_e10)), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(neg(mul(a_e0, b_e20)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(neg(mul(a_e0, b_e30)), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        add(mul(a_e1, b_e0), neg(mul(a_e0, b_e1))),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(mul(a_e3, b_e0), neg(mul(a_e0, b_e3))),
+        add(neg(mul(a_e3, b_e2)), mul(a_e2, b_e3)),
+        add(mul(a_e3, b_e1), neg(mul(a_e1, b_e3))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123)),
+        add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), mul(a_e0, b_e123))}
+
+def Bivector.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        add(add(mul(a_e10, b_e1), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(mul(a_e10, b_e0), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(mul(a_e20, b_e0), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(mul(a_e30, b_e0), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2))}
+
+def Bivector.commutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23)))}
+
+def Bivector.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Trivector{
+        add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))),
+        add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))),
+        add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))),
+        add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123)))}
+
+def Bivector.commutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Even<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Bivector{
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23)))}
+
+def Bivector.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        add(add(mul(a_e10, b_e1), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(mul(a_e10, b_e0), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(mul(a_e20, b_e0), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(mul(a_e30, b_e0), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))),
+        add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))),
+        add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))),
+        add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123)))}
+
+def Bivector.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        zero,
+        add(add(mul(a_e10, b_e1), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(mul(a_e10, b_e0), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(mul(a_e20, b_e0), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(mul(a_e30, b_e0), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23))),
+        add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))),
+        add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))),
+        add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))),
+        add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123))),
+        zero}
+
+def Trivector.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Vector<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Pseudoscalar{
+        add(add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Trivector.commutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Bivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Trivector{
+        add(add(mul(a_e032, b_e10), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(mul(a_e123, b_e10), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(mul(a_e123, b_e20), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(mul(a_e123, b_e30), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23)))}
+
+def Trivector.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Trivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Bivector{
+        add(mul(a_e123, b_e032), neg(mul(a_e032, b_e123))),
+        add(mul(a_e123, b_e013), neg(mul(a_e013, b_e123))),
+        add(mul(a_e123, b_e021), neg(mul(a_e021, b_e123))),
+        add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))),
+        add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)),
+        add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032)))}
+
+def Trivector.commutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Pseudoscalar<T>) -> K.Vector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Pseudoscalar{+b_e0123}:
+      K.Vector{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123)}
+
+def Trivector.commutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Phasor<T>) -> K.Vector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Phasor{+b_s, +b_e0123}:
+      K.Vector{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123)}
+
+def Trivector.commutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Even<T>) -> K.Odd<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Odd{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123),
+        add(add(mul(a_e032, b_e10), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(mul(a_e123, b_e10), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(mul(a_e123, b_e20), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(mul(a_e123, b_e30), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23)))}
+
+def Trivector.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Odd<T>) -> K.Even<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        zero,
+        add(mul(a_e123, b_e032), neg(mul(a_e032, b_e123))),
+        add(mul(a_e123, b_e013), neg(mul(a_e013, b_e123))),
+        add(mul(a_e123, b_e021), neg(mul(a_e021, b_e123))),
+        add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))),
+        add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)),
+        add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))),
+        add(add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Trivector.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        zero,
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123),
+        add(mul(a_e123, b_e032), neg(mul(a_e032, b_e123))),
+        add(mul(a_e123, b_e013), neg(mul(a_e013, b_e123))),
+        add(mul(a_e123, b_e021), neg(mul(a_e021, b_e123))),
+        add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))),
+        add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)),
+        add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))),
+        add(add(mul(a_e032, b_e10), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(mul(a_e123, b_e10), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(mul(a_e123, b_e20), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(mul(a_e123, b_e30), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23))),
+        add(add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Pseudoscalar.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Vector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Trivector{
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Pseudoscalar.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Trivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Vector{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021))}
+
+def Pseudoscalar.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021)),
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Pseudoscalar.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Odd{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021)),
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Phasor.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Vector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Trivector{
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Phasor.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Trivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Vector{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021))}
+
+def Phasor.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021)),
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Phasor.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Multivector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Odd{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021)),
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Even.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Vector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Odd{
+        add(add(mul(a_e10, b_e1), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(mul(a_e10, b_e0), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(mul(a_e20, b_e0), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(mul(a_e30, b_e0), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3)}
+
+def Even.commutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23)))}
+
+def Even.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Trivector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021)),
+        add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))),
+        add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))),
+        add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))),
+        add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123)))}
+
+def Even.commutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Even<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Bivector{
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23)))}
+
+def Even.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        add(add(add(mul(a_e0123, b_e123), mul(a_e10, b_e1)), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(add(neg(mul(a_e0123, b_e032)), mul(a_e10, b_e0)), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(add(neg(mul(a_e0123, b_e013)), mul(a_e20, b_e0)), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(add(neg(mul(a_e0123, b_e021)), mul(a_e30, b_e0)), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        add(add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))), neg(mul(a_e0123, b_e0))),
+        add(add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))), mul(a_e0123, b_e1)),
+        add(add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))), mul(a_e0123, b_e2)),
+        add(add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123))), mul(a_e0123, b_e3))}
+
+def Even.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        zero,
+        add(add(add(mul(a_e0123, b_e123), mul(a_e10, b_e1)), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(add(neg(mul(a_e0123, b_e032)), mul(a_e10, b_e0)), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(add(neg(mul(a_e0123, b_e013)), mul(a_e20, b_e0)), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(add(neg(mul(a_e0123, b_e021)), mul(a_e30, b_e0)), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23))),
+        add(add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))), neg(mul(a_e0123, b_e0))),
+        add(add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))), mul(a_e0123, b_e1)),
+        add(add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))), mul(a_e0123, b_e2)),
+        add(add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123))), mul(a_e0123, b_e3)),
+        zero}
+
+def Odd.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Even{
+        zero,
+        add(mul(a_e1, b_e0), neg(mul(a_e0, b_e1))),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(mul(a_e3, b_e0), neg(mul(a_e0, b_e3))),
+        add(neg(mul(a_e3, b_e2)), mul(a_e2, b_e3)),
+        add(mul(a_e3, b_e1), neg(mul(a_e1, b_e3))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        add(add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Odd.commutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Odd{
+        add(add(neg(mul(a_e1, b_e10)), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(neg(mul(a_e0, b_e10)), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(neg(mul(a_e0, b_e20)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(neg(mul(a_e0, b_e30)), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        add(add(mul(a_e032, b_e10), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(mul(a_e123, b_e10), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(mul(a_e123, b_e20), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(mul(a_e123, b_e30), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23)))}
+
+def Odd.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Trivector<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        zero,
+        add(mul(a_e123, b_e032), neg(mul(a_e032, b_e123))),
+        add(mul(a_e123, b_e013), neg(mul(a_e013, b_e123))),
+        add(mul(a_e123, b_e021), neg(mul(a_e021, b_e123))),
+        add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))),
+        add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)),
+        add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))),
+        add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), mul(a_e0, b_e123))}
+
+def Odd.commutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Pseudoscalar{+b_e0123}:
+      K.Odd{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123),
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Odd.commutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Phasor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Phasor{+b_s, +b_e0123}:
+      K.Odd{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123),
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Odd.commutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Even<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Odd{
+        add(add(add(neg(mul(a_e123, b_e0123)), neg(mul(a_e1, b_e10))), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(add(mul(a_e032, b_e0123), neg(mul(a_e0, b_e10))), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(add(mul(a_e013, b_e0123), neg(mul(a_e0, b_e20))), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(add(mul(a_e021, b_e0123), neg(mul(a_e0, b_e30))), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        add(add(add(mul(a_e0, b_e0123), mul(a_e032, b_e10)), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(add(neg(mul(a_e1, b_e0123)), mul(a_e123, b_e10)), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(add(neg(mul(a_e2, b_e0123)), mul(a_e123, b_e20)), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(add(neg(mul(a_e3, b_e0123)), mul(a_e123, b_e30)), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23)))}
+
+def Odd.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        zero,
+        add(add(add(mul(a_e123, b_e032), mul(a_e1, b_e0)), neg(mul(a_e032, b_e123))), neg(mul(a_e0, b_e1))),
+        add(add(add(mul(a_e123, b_e013), mul(a_e2, b_e0)), neg(mul(a_e013, b_e123))), neg(mul(a_e0, b_e2))),
+        add(add(add(mul(a_e123, b_e021), mul(a_e3, b_e0)), neg(mul(a_e021, b_e123))), neg(mul(a_e0, b_e3))),
+        add(add(add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))), neg(mul(a_e3, b_e2))), mul(a_e2, b_e3)),
+        add(add(add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)), mul(a_e3, b_e1)), neg(mul(a_e1, b_e3))),
+        add(add(add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))), neg(mul(a_e2, b_e1))), mul(a_e1, b_e2)),
+        add(add(add(add(add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), neg(mul(a_e123, b_e0))), mul(a_e0, b_e123)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Odd.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        zero,
+        add(add(add(neg(mul(a_e123, b_e0123)), neg(mul(a_e1, b_e10))), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(add(mul(a_e032, b_e0123), neg(mul(a_e0, b_e10))), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(add(mul(a_e013, b_e0123), neg(mul(a_e0, b_e20))), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(add(mul(a_e021, b_e0123), neg(mul(a_e0, b_e30))), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        add(add(add(mul(a_e123, b_e032), mul(a_e1, b_e0)), neg(mul(a_e032, b_e123))), neg(mul(a_e0, b_e1))),
+        add(add(add(mul(a_e123, b_e013), mul(a_e2, b_e0)), neg(mul(a_e013, b_e123))), neg(mul(a_e0, b_e2))),
+        add(add(add(mul(a_e123, b_e021), mul(a_e3, b_e0)), neg(mul(a_e021, b_e123))), neg(mul(a_e0, b_e3))),
+        add(add(add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))), neg(mul(a_e3, b_e2))), mul(a_e2, b_e3)),
+        add(add(add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)), mul(a_e3, b_e1)), neg(mul(a_e1, b_e3))),
+        add(add(add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))), neg(mul(a_e2, b_e1))), mul(a_e1, b_e2)),
+        add(add(add(mul(a_e0, b_e0123), mul(a_e032, b_e10)), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(add(neg(mul(a_e1, b_e0123)), mul(a_e123, b_e10)), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(add(neg(mul(a_e2, b_e0123)), mul(a_e123, b_e20)), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(add(neg(mul(a_e3, b_e0123)), mul(a_e123, b_e30)), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23))),
+        add(add(add(add(add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), neg(mul(a_e123, b_e0))), mul(a_e0, b_e123)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Multivector.commutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        zero,
+        add(add(mul(a_e10, b_e1), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(mul(a_e10, b_e0), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(mul(a_e20, b_e0), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(mul(a_e30, b_e0), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        add(mul(a_e1, b_e0), neg(mul(a_e0, b_e1))),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(mul(a_e3, b_e0), neg(mul(a_e0, b_e3))),
+        add(neg(mul(a_e3, b_e2)), mul(a_e2, b_e3)),
+        add(mul(a_e3, b_e1), neg(mul(a_e1, b_e3))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        neg(mul(a_e0123, b_e0)),
+        mul(a_e0123, b_e1),
+        mul(a_e0123, b_e2),
+        mul(a_e0123, b_e3),
+        add(add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Multivector.commutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        zero,
+        add(add(neg(mul(a_e1, b_e10)), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(neg(mul(a_e0, b_e10)), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(neg(mul(a_e0, b_e20)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(neg(mul(a_e0, b_e30)), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23))),
+        add(add(mul(a_e032, b_e10), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(mul(a_e123, b_e10), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(mul(a_e123, b_e20), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(mul(a_e123, b_e30), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23))),
+        zero}
+
+def Multivector.commutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Trivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Multivector{
+        zero,
+        mul(a_e0123, b_e123),
+        neg(mul(a_e0123, b_e032)),
+        neg(mul(a_e0123, b_e013)),
+        neg(mul(a_e0123, b_e021)),
+        add(mul(a_e123, b_e032), neg(mul(a_e032, b_e123))),
+        add(mul(a_e123, b_e013), neg(mul(a_e013, b_e123))),
+        add(mul(a_e123, b_e021), neg(mul(a_e021, b_e123))),
+        add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))),
+        add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)),
+        add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))),
+        add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))),
+        add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))),
+        add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))),
+        add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123))),
+        add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), mul(a_e0, b_e123))}
+
+def Multivector.commutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Pseudoscalar{+b_e0123}:
+      K.Odd{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123),
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Multivector.commutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Phasor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Phasor{+b_s, +b_e0123}:
+      K.Odd{
+        neg(mul(a_e123, b_e0123)),
+        mul(a_e032, b_e0123),
+        mul(a_e013, b_e0123),
+        mul(a_e021, b_e0123),
+        mul(a_e0, b_e0123),
+        neg(mul(a_e1, b_e0123)),
+        neg(mul(a_e2, b_e0123)),
+        neg(mul(a_e3, b_e0123))}
+
+def Multivector.commutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Even<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Multivector{
+        zero,
+        add(add(add(neg(mul(a_e123, b_e0123)), neg(mul(a_e1, b_e10))), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))),
+        add(add(add(mul(a_e032, b_e0123), neg(mul(a_e0, b_e10))), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))),
+        add(add(add(mul(a_e013, b_e0123), neg(mul(a_e0, b_e20))), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)),
+        add(add(add(mul(a_e021, b_e0123), neg(mul(a_e0, b_e30))), mul(a_e1, b_e31)), neg(mul(a_e2, b_e23))),
+        add(add(add(neg(mul(a_e12, b_e20)), mul(a_e31, b_e30)), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))),
+        add(add(add(mul(a_e12, b_e10), neg(mul(a_e23, b_e30))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)),
+        add(add(add(neg(mul(a_e31, b_e10)), mul(a_e23, b_e20)), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))),
+        add(add(add(mul(a_e30, b_e20), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))),
+        add(add(add(neg(mul(a_e30, b_e10)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e12, b_e23)),
+        add(add(add(mul(a_e20, b_e10), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e31, b_e23))),
+        add(add(add(mul(a_e0, b_e0123), mul(a_e032, b_e10)), mul(a_e013, b_e20)), mul(a_e021, b_e30)),
+        add(add(add(neg(mul(a_e1, b_e0123)), mul(a_e123, b_e10)), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))),
+        add(add(add(neg(mul(a_e2, b_e0123)), mul(a_e123, b_e20)), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)),
+        add(add(add(neg(mul(a_e3, b_e0123)), mul(a_e123, b_e30)), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23))),
+        zero}
+
+def Multivector.commutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Multivector{
+        zero,
+        add(add(add(mul(a_e0123, b_e123), mul(a_e10, b_e1)), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(add(neg(mul(a_e0123, b_e032)), mul(a_e10, b_e0)), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(add(neg(mul(a_e0123, b_e013)), mul(a_e20, b_e0)), mul(a_e12, b_e1)), neg(mul(a_e23, b_e3))),
+        add(add(add(neg(mul(a_e0123, b_e021)), mul(a_e30, b_e0)), neg(mul(a_e31, b_e1))), mul(a_e23, b_e2)),
+        add(add(add(mul(a_e123, b_e032), mul(a_e1, b_e0)), neg(mul(a_e032, b_e123))), neg(mul(a_e0, b_e1))),
+        add(add(add(mul(a_e123, b_e013), mul(a_e2, b_e0)), neg(mul(a_e013, b_e123))), neg(mul(a_e0, b_e2))),
+        add(add(add(mul(a_e123, b_e021), mul(a_e3, b_e0)), neg(mul(a_e021, b_e123))), neg(mul(a_e0, b_e3))),
+        add(add(add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))), neg(mul(a_e3, b_e2))), mul(a_e2, b_e3)),
+        add(add(add(neg(mul(a_e032, b_e021)), mul(a_e021, b_e032)), mul(a_e3, b_e1)), neg(mul(a_e1, b_e3))),
+        add(add(add(mul(a_e032, b_e013), neg(mul(a_e013, b_e032))), neg(mul(a_e2, b_e1))), mul(a_e1, b_e2)),
+        add(add(add(neg(mul(a_e30, b_e021)), neg(mul(a_e20, b_e013))), neg(mul(a_e10, b_e032))), neg(mul(a_e0123, b_e0))),
+        add(add(add(mul(a_e31, b_e021), neg(mul(a_e12, b_e013))), neg(mul(a_e10, b_e123))), mul(a_e0123, b_e1)),
+        add(add(add(neg(mul(a_e23, b_e021)), mul(a_e12, b_e032)), neg(mul(a_e20, b_e123))), mul(a_e0123, b_e2)),
+        add(add(add(mul(a_e23, b_e013), neg(mul(a_e31, b_e032))), neg(mul(a_e30, b_e123))), mul(a_e0123, b_e3)),
+        add(add(add(add(add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), neg(mul(a_e123, b_e0))), mul(a_e0, b_e123)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Multivector.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        zero,
+        add(add(add(add(add(add(add(neg(mul(a_e123, b_e0123)), neg(mul(a_e1, b_e10))), neg(mul(a_e2, b_e20))), neg(mul(a_e3, b_e30))), mul(a_e0123, b_e123)), mul(a_e10, b_e1)), mul(a_e20, b_e2)), mul(a_e30, b_e3)),
+        add(add(add(add(add(add(add(mul(a_e032, b_e0123), neg(mul(a_e0, b_e10))), neg(mul(a_e0123, b_e032))), mul(a_e10, b_e0)), mul(a_e2, b_e12)), neg(mul(a_e3, b_e31))), neg(mul(a_e12, b_e2))), mul(a_e31, b_e3)),
+        add(add(add(add(add(add(add(mul(a_e013, b_e0123), neg(mul(a_e0123, b_e013))), neg(mul(a_e0, b_e20))), mul(a_e20, b_e0)), neg(mul(a_e1, b_e12))), mul(a_e12, b_e1)), mul(a_e3, b_e23)), neg(mul(a_e23, b_e3))),
+        add(add(add(add(add(add(add(mul(a_e021, b_e0123), neg(mul(a_e0123, b_e021))), neg(mul(a_e0, b_e30))), mul(a_e30, b_e0)), mul(a_e1, b_e31)), neg(mul(a_e31, b_e1))), neg(mul(a_e2, b_e23))), mul(a_e23, b_e2)),
+        add(add(add(add(add(add(add(mul(a_e123, b_e032), neg(mul(a_e12, b_e20))), mul(a_e31, b_e30)), mul(a_e1, b_e0)), neg(mul(a_e032, b_e123))), mul(a_e20, b_e12)), neg(mul(a_e30, b_e31))), neg(mul(a_e0, b_e1))),
+        add(add(add(add(add(add(add(mul(a_e123, b_e013), mul(a_e12, b_e10)), neg(mul(a_e23, b_e30))), mul(a_e2, b_e0)), neg(mul(a_e013, b_e123))), neg(mul(a_e10, b_e12))), mul(a_e30, b_e23)), neg(mul(a_e0, b_e2))),
+        add(add(add(add(add(add(add(mul(a_e123, b_e021), neg(mul(a_e31, b_e10))), mul(a_e23, b_e20)), mul(a_e3, b_e0)), neg(mul(a_e021, b_e123))), mul(a_e10, b_e31)), neg(mul(a_e20, b_e23))), neg(mul(a_e0, b_e3))),
+        add(add(add(add(add(add(add(mul(a_e013, b_e021), neg(mul(a_e021, b_e013))), mul(a_e30, b_e20)), neg(mul(a_e20, b_e30))), mul(a_e31, b_e12)), neg(mul(a_e12, b_e31))), neg(mul(a_e3, b_e2))), mul(a_e2, b_e3)),
+        add(add(add(add(add(add(add(neg(mul(a_e032, b_e021)), neg(mul(a_e30, b_e10))), mul(a_e021, b_e032)), mul(a_e10, b_e30)), neg(mul(a_e23, b_e12))), mul(a_e3, b_e1)), mul(a_e12, b_e23)), neg(mul(a_e1, b_e3))),
+        add(add(add(add(add(add(add(mul(a_e032, b_e013), mul(a_e20, b_e10)), neg(mul(a_e013, b_e032))), neg(mul(a_e10, b_e20))), mul(a_e23, b_e31)), neg(mul(a_e2, b_e1))), neg(mul(a_e31, b_e23))), mul(a_e1, b_e2)),
+        add(add(add(add(add(add(add(mul(a_e0, b_e0123), neg(mul(a_e30, b_e021))), neg(mul(a_e20, b_e013))), mul(a_e032, b_e10)), neg(mul(a_e10, b_e032))), mul(a_e013, b_e20)), mul(a_e021, b_e30)), neg(mul(a_e0123, b_e0))),
+        add(add(add(add(add(add(add(neg(mul(a_e1, b_e0123)), mul(a_e31, b_e021)), neg(mul(a_e12, b_e013))), mul(a_e123, b_e10)), neg(mul(a_e10, b_e123))), mul(a_e013, b_e12)), neg(mul(a_e021, b_e31))), mul(a_e0123, b_e1)),
+        add(add(add(add(add(add(add(neg(mul(a_e2, b_e0123)), neg(mul(a_e23, b_e021))), mul(a_e12, b_e032)), mul(a_e123, b_e20)), neg(mul(a_e20, b_e123))), neg(mul(a_e032, b_e12))), mul(a_e021, b_e23)), mul(a_e0123, b_e2)),
+        add(add(add(add(add(add(add(neg(mul(a_e3, b_e0123)), mul(a_e23, b_e013)), neg(mul(a_e31, b_e032))), mul(a_e123, b_e30)), neg(mul(a_e30, b_e123))), mul(a_e032, b_e31)), neg(mul(a_e013, b_e23))), mul(a_e0123, b_e3)),
+        add(add(add(add(add(add(add(mul(a_e3, b_e021), mul(a_e2, b_e013)), mul(a_e1, b_e032)), neg(mul(a_e123, b_e0))), mul(a_e0, b_e123)), neg(mul(a_e032, b_e1))), neg(mul(a_e013, b_e2))), neg(mul(a_e021, b_e3)))}
+
+def Scalar.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3)}
+
+def Scalar.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        mul(a_s, b_e10),
+        mul(a_s, b_e20),
+        mul(a_s, b_e30),
+        mul(a_s, b_e23),
+        mul(a_s, b_e31),
+        mul(a_s, b_e12)}
+
+def Scalar.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Trivector{
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021)}
+
+def Scalar.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Pseudoscalar{+b_e0123}:
+      K.Pseudoscalar{
+        mul(a_s, b_e0123)}
+
+def Scalar.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Phasor{+b_s, +b_e0123}:
+      K.Phasor{
+        mul(a_s, b_s),
+        mul(a_s, b_e0123)}
+
+def Scalar.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        mul(a_s, b_s),
+        mul(a_s, b_e10),
+        mul(a_s, b_e20),
+        mul(a_s, b_e30),
+        mul(a_s, b_e23),
+        mul(a_s, b_e31),
+        mul(a_s, b_e12),
+        mul(a_s, b_e0123)}
+
+def Scalar.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021)}
+
+def Scalar.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e10),
+        mul(a_s, b_e20),
+        mul(a_s, b_e30),
+        mul(a_s, b_e23),
+        mul(a_s, b_e31),
+        mul(a_s, b_e12),
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021),
+        mul(a_s, b_e0123)}
+
+def Vector.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      K.Vector{
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s)}
+
+def Vector.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Scalar{
+        add(add(add(mul(a_e0, b_e0), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3)))}
+
+def Vector.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Trivector{
+        add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)),
+        add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))),
+        add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))),
+        add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12)))}
+
+def Vector.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Trivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Bivector{
+        add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)),
+        add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))),
+        add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)),
+        add(neg(mul(a_e0, b_e032)), neg(mul(a_e1, b_e123))),
+        add(neg(mul(a_e0, b_e013)), neg(mul(a_e2, b_e123))),
+        add(neg(mul(a_e0, b_e021)), neg(mul(a_e3, b_e123)))}
+
+def Vector.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Phasor<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Phasor{+b_s, +b_e0123}:
+      K.Vector{
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s)}
+
+def Vector.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Even<T>) -> K.Odd<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Odd{
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)),
+        add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))),
+        add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))),
+        add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12)))}
+
+def Vector.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Even<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        add(add(add(mul(a_e0, b_e0), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)),
+        add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))),
+        add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)),
+        add(neg(mul(a_e0, b_e032)), neg(mul(a_e1, b_e123))),
+        add(neg(mul(a_e0, b_e013)), neg(mul(a_e2, b_e123))),
+        add(neg(mul(a_e0, b_e021)), neg(mul(a_e3, b_e123))),
+        zero}
+
+def Vector.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(add(add(mul(a_e0, b_e0), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)),
+        add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))),
+        add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)),
+        add(neg(mul(a_e0, b_e032)), neg(mul(a_e1, b_e123))),
+        add(neg(mul(a_e0, b_e013)), neg(mul(a_e2, b_e123))),
+        add(neg(mul(a_e0, b_e021)), neg(mul(a_e3, b_e123))),
+        add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)),
+        add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))),
+        add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))),
+        add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12))),
+        zero}
+
+def Bivector.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Scalar<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Scalar{+b_s}:
+      K.Bivector{
+        mul(a_e10, b_s),
+        mul(a_e20, b_s),
+        mul(a_e30, b_s),
+        mul(a_e23, b_s),
+        mul(a_e31, b_s),
+        mul(a_e12, b_s)}
+
+def Bivector.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Vector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Trivector{
+        add(add(mul(a_e23, b_e1), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(neg(mul(a_e23, b_e0)), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(neg(mul(a_e31, b_e0)), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(neg(mul(a_e12, b_e0)), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2))}
+
+def Bivector.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Bivector<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Phasor{
+        add(add(add(add(add(mul(a_e10, b_e10), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))),
+        add(add(add(add(add(neg(mul(a_e23, b_e10)), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23)))}
+
+def Bivector.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Trivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Vector{
+        add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)),
+        add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))),
+        add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))),
+        add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123)))}
+
+def Bivector.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Pseudoscalar<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Pseudoscalar{+b_e0123}:
+      K.Bivector{
+        mul(a_e23, b_e0123),
+        mul(a_e31, b_e0123),
+        mul(a_e12, b_e0123),
+        neg(mul(a_e10, b_e0123)),
+        neg(mul(a_e20, b_e0123)),
+        neg(mul(a_e30, b_e0123))}
+
+def Bivector.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Phasor<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Phasor{+b_s, +b_e0123}:
+      K.Bivector{
+        add(mul(a_e23, b_e0123), mul(a_e10, b_s)),
+        add(mul(a_e31, b_e0123), mul(a_e20, b_s)),
+        add(mul(a_e12, b_e0123), mul(a_e30, b_s)),
+        add(neg(mul(a_e10, b_e0123)), mul(a_e23, b_s)),
+        add(neg(mul(a_e20, b_e0123)), mul(a_e31, b_s)),
+        add(neg(mul(a_e30, b_e0123)), mul(a_e12, b_s))}
+
+def Bivector.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        add(add(add(add(add(mul(a_e10, b_e10), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))),
+        add(mul(a_e23, b_e0123), mul(a_e10, b_s)),
+        add(mul(a_e31, b_e0123), mul(a_e20, b_s)),
+        add(mul(a_e12, b_e0123), mul(a_e30, b_s)),
+        add(neg(mul(a_e10, b_e0123)), mul(a_e23, b_s)),
+        add(neg(mul(a_e20, b_e0123)), mul(a_e31, b_s)),
+        add(neg(mul(a_e30, b_e0123)), mul(a_e12, b_s)),
+        add(add(add(add(add(neg(mul(a_e23, b_e10)), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23)))}
+
+def Bivector.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)),
+        add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))),
+        add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))),
+        add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))),
+        add(add(mul(a_e23, b_e1), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(neg(mul(a_e23, b_e0)), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(neg(mul(a_e31, b_e0)), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(neg(mul(a_e12, b_e0)), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2))}
+
+def Bivector.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Bivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Bivector{+a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(add(add(add(add(mul(a_e10, b_e10), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))),
+        add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)),
+        add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))),
+        add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))),
+        add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))),
+        add(mul(a_e23, b_e0123), mul(a_e10, b_s)),
+        add(mul(a_e31, b_e0123), mul(a_e20, b_s)),
+        add(mul(a_e12, b_e0123), mul(a_e30, b_s)),
+        add(neg(mul(a_e10, b_e0123)), mul(a_e23, b_s)),
+        add(neg(mul(a_e20, b_e0123)), mul(a_e31, b_s)),
+        add(neg(mul(a_e30, b_e0123)), mul(a_e12, b_s)),
+        add(add(mul(a_e23, b_e1), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(neg(mul(a_e23, b_e0)), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(neg(mul(a_e31, b_e0)), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(neg(mul(a_e12, b_e0)), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2)),
+        add(add(add(add(add(neg(mul(a_e23, b_e10)), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23)))}
+
+def Trivector.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Scalar<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Scalar{+b_s}:
+      K.Trivector{
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s)}
+
+def Trivector.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Vector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Bivector{
+        add(neg(mul(a_e021, b_e2)), mul(a_e013, b_e3)),
+        add(mul(a_e021, b_e1), neg(mul(a_e032, b_e3))),
+        add(neg(mul(a_e013, b_e1)), mul(a_e032, b_e2)),
+        add(neg(mul(a_e032, b_e0)), neg(mul(a_e123, b_e1))),
+        add(neg(mul(a_e013, b_e0)), neg(mul(a_e123, b_e2))),
+        add(neg(mul(a_e021, b_e0)), neg(mul(a_e123, b_e3)))}
+
+def Trivector.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Bivector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Vector{
+        add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)),
+        add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))),
+        add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))),
+        add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12)))}
+
+def Trivector.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Trivector<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Scalar{
+        add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e123, b_e123))}
+
+def Trivector.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Phasor<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Phasor{+b_s, +b_e0123}:
+      K.Trivector{
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s)}
+
+def Trivector.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Even<T>) -> K.Odd<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Odd{
+        add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)),
+        add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))),
+        add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))),
+        add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))),
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s)}
+
+def Trivector.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Odd<T>) -> K.Even<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e123, b_e123)),
+        add(neg(mul(a_e021, b_e2)), mul(a_e013, b_e3)),
+        add(mul(a_e021, b_e1), neg(mul(a_e032, b_e3))),
+        add(neg(mul(a_e013, b_e1)), mul(a_e032, b_e2)),
+        add(neg(mul(a_e032, b_e0)), neg(mul(a_e123, b_e1))),
+        add(neg(mul(a_e013, b_e0)), neg(mul(a_e123, b_e2))),
+        add(neg(mul(a_e021, b_e0)), neg(mul(a_e123, b_e3))),
+        zero}
+
+def Trivector.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Trivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Trivector{+a_e123, +a_e032, +a_e013, +a_e021} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e123, b_e123)),
+        add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)),
+        add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))),
+        add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))),
+        add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))),
+        add(neg(mul(a_e021, b_e2)), mul(a_e013, b_e3)),
+        add(mul(a_e021, b_e1), neg(mul(a_e032, b_e3))),
+        add(neg(mul(a_e013, b_e1)), mul(a_e032, b_e2)),
+        add(neg(mul(a_e032, b_e0)), neg(mul(a_e123, b_e1))),
+        add(neg(mul(a_e013, b_e0)), neg(mul(a_e123, b_e2))),
+        add(neg(mul(a_e021, b_e0)), neg(mul(a_e123, b_e3))),
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s),
+        zero}
+
+def Pseudoscalar.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Scalar{+b_s}:
+      K.Pseudoscalar{
+        mul(a_e0123, b_s)}
+
+def Pseudoscalar.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        mul(a_e0123, b_e23),
+        mul(a_e0123, b_e31),
+        mul(a_e0123, b_e12),
+        neg(mul(a_e0123, b_e10)),
+        neg(mul(a_e0123, b_e20)),
+        neg(mul(a_e0123, b_e30))}
+
+def Pseudoscalar.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Pseudoscalar{+b_e0123}:
+      K.Scalar{
+        neg(mul(a_e0123, b_e0123))}
+
+def Pseudoscalar.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Phasor{+b_s, +b_e0123}:
+      K.Phasor{
+        neg(mul(a_e0123, b_e0123)),
+        mul(a_e0123, b_s)}
+
+def Pseudoscalar.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        neg(mul(a_e0123, b_e0123)),
+        mul(a_e0123, b_e23),
+        mul(a_e0123, b_e31),
+        mul(a_e0123, b_e12),
+        neg(mul(a_e0123, b_e10)),
+        neg(mul(a_e0123, b_e20)),
+        neg(mul(a_e0123, b_e30)),
+        mul(a_e0123, b_s)}
+
+def Pseudoscalar.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Even<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Even{
+        neg(mul(a_e0123, b_e0123)),
+        mul(a_e0123, b_e23),
+        mul(a_e0123, b_e31),
+        mul(a_e0123, b_e12),
+        neg(mul(a_e0123, b_e10)),
+        neg(mul(a_e0123, b_e20)),
+        neg(mul(a_e0123, b_e30)),
+        mul(a_e0123, b_s)}
+
+def Phasor.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Scalar<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Scalar{+b_s}:
+      K.Phasor{
+        mul(a_s, b_s),
+        mul(a_e0123, b_s)}
+
+def Phasor.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Vector{
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3)}
+
+def Phasor.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Bivector{
+        add(mul(a_s, b_e10), mul(a_e0123, b_e23)),
+        add(mul(a_s, b_e20), mul(a_e0123, b_e31)),
+        add(mul(a_s, b_e30), mul(a_e0123, b_e12)),
+        add(neg(mul(a_e0123, b_e10)), mul(a_s, b_e23)),
+        add(neg(mul(a_e0123, b_e20)), mul(a_s, b_e31)),
+        add(neg(mul(a_e0123, b_e30)), mul(a_s, b_e12))}
+
+def Phasor.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Trivector{
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021)}
+
+def Phasor.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Pseudoscalar{+b_e0123}:
+      K.Phasor{
+        neg(mul(a_e0123, b_e0123)),
+        mul(a_s, b_e0123)}
+
+def Phasor.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Phasor{+b_s, +b_e0123}:
+      K.Phasor{
+        add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s)),
+        add(mul(a_s, b_e0123), mul(a_e0123, b_s))}
+
+def Phasor.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s)),
+        add(mul(a_s, b_e10), mul(a_e0123, b_e23)),
+        add(mul(a_s, b_e20), mul(a_e0123, b_e31)),
+        add(mul(a_s, b_e30), mul(a_e0123, b_e12)),
+        add(neg(mul(a_e0123, b_e10)), mul(a_s, b_e23)),
+        add(neg(mul(a_e0123, b_e20)), mul(a_s, b_e31)),
+        add(neg(mul(a_e0123, b_e30)), mul(a_s, b_e12)),
+        add(mul(a_s, b_e0123), mul(a_e0123, b_s))}
+
+def Phasor.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021)}
+
+def Phasor.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Phasor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Phasor{+a_s, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s)),
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        add(mul(a_s, b_e10), mul(a_e0123, b_e23)),
+        add(mul(a_s, b_e20), mul(a_e0123, b_e31)),
+        add(mul(a_s, b_e30), mul(a_e0123, b_e12)),
+        add(neg(mul(a_e0123, b_e10)), mul(a_s, b_e23)),
+        add(neg(mul(a_e0123, b_e20)), mul(a_s, b_e31)),
+        add(neg(mul(a_e0123, b_e30)), mul(a_s, b_e12)),
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021),
+        add(mul(a_s, b_e0123), mul(a_e0123, b_s))}
+
+def Even.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Scalar<T>) -> K.Even<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Scalar{+b_s}:
+      K.Even{
+        mul(a_s, b_s),
+        mul(a_e10, b_s),
+        mul(a_e20, b_s),
+        mul(a_e30, b_s),
+        mul(a_e23, b_s),
+        mul(a_e31, b_s),
+        mul(a_e12, b_s),
+        mul(a_e0123, b_s)}
+
+def Even.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Vector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Odd{
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        add(add(mul(a_e23, b_e1), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(neg(mul(a_e23, b_e0)), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(neg(mul(a_e31, b_e0)), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(neg(mul(a_e12, b_e0)), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2))}
+
+def Even.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Bivector<T>) -> K.Even<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Even{
+        add(add(add(add(add(mul(a_e10, b_e10), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))),
+        add(mul(a_s, b_e10), mul(a_e0123, b_e23)),
+        add(mul(a_s, b_e20), mul(a_e0123, b_e31)),
+        add(mul(a_s, b_e30), mul(a_e0123, b_e12)),
+        add(neg(mul(a_e0123, b_e10)), mul(a_s, b_e23)),
+        add(neg(mul(a_e0123, b_e20)), mul(a_s, b_e31)),
+        add(neg(mul(a_e0123, b_e30)), mul(a_s, b_e12)),
+        add(add(add(add(add(neg(mul(a_e23, b_e10)), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23)))}
+
+def Even.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Trivector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)),
+        add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))),
+        add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))),
+        add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))),
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021)}
+
+def Even.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Pseudoscalar<T>) -> K.Even<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Pseudoscalar{+b_e0123}:
+      K.Even{
+        neg(mul(a_e0123, b_e0123)),
+        mul(a_e23, b_e0123),
+        mul(a_e31, b_e0123),
+        mul(a_e12, b_e0123),
+        neg(mul(a_e10, b_e0123)),
+        neg(mul(a_e20, b_e0123)),
+        neg(mul(a_e30, b_e0123)),
+        mul(a_s, b_e0123)}
+
+def Even.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Phasor<T>) -> K.Even<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Phasor{+b_s, +b_e0123}:
+      K.Even{
+        add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s)),
+        add(mul(a_e23, b_e0123), mul(a_e10, b_s)),
+        add(mul(a_e31, b_e0123), mul(a_e20, b_s)),
+        add(mul(a_e12, b_e0123), mul(a_e30, b_s)),
+        add(neg(mul(a_e10, b_e0123)), mul(a_e23, b_s)),
+        add(neg(mul(a_e20, b_e0123)), mul(a_e31, b_s)),
+        add(neg(mul(a_e30, b_e0123)), mul(a_e12, b_s)),
+        add(mul(a_s, b_e0123), mul(a_e0123, b_s))}
+
+def Even.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Even{
+        add(add(add(add(add(add(add(neg(mul(a_e0123, b_e0123)), mul(a_e10, b_e10)), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(add(add(mul(a_e23, b_e0123), mul(a_s, b_e10)), mul(a_e0123, b_e23)), mul(a_e10, b_s)),
+        add(add(add(mul(a_e31, b_e0123), mul(a_s, b_e20)), mul(a_e0123, b_e31)), mul(a_e20, b_s)),
+        add(add(add(mul(a_e12, b_e0123), mul(a_s, b_e30)), mul(a_e0123, b_e12)), mul(a_e30, b_s)),
+        add(add(add(neg(mul(a_e10, b_e0123)), neg(mul(a_e0123, b_e10))), mul(a_s, b_e23)), mul(a_e23, b_s)),
+        add(add(add(neg(mul(a_e20, b_e0123)), neg(mul(a_e0123, b_e20))), mul(a_s, b_e31)), mul(a_e31, b_s)),
+        add(add(add(neg(mul(a_e30, b_e0123)), neg(mul(a_e0123, b_e30))), mul(a_s, b_e12)), mul(a_e12, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e0123), neg(mul(a_e23, b_e10))), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23))), mul(a_e0123, b_s))}
+
+def Even.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Odd{
+        add(add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)), mul(a_s, b_e0)),
+        add(add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))), mul(a_s, b_e1)),
+        add(add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))), mul(a_s, b_e2)),
+        add(add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))), mul(a_s, b_e3)),
+        add(add(add(mul(a_s, b_e123), mul(a_e23, b_e1)), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(add(mul(a_s, b_e032), neg(mul(a_e23, b_e0))), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(add(mul(a_s, b_e013), neg(mul(a_e31, b_e0))), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(add(mul(a_s, b_e021), neg(mul(a_e12, b_e0))), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2))}
+
+def Even.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(add(add(add(add(add(add(neg(mul(a_e0123, b_e0123)), mul(a_e10, b_e10)), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)), mul(a_s, b_e0)),
+        add(add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))), mul(a_s, b_e1)),
+        add(add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))), mul(a_s, b_e2)),
+        add(add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))), mul(a_s, b_e3)),
+        add(add(add(mul(a_e23, b_e0123), mul(a_s, b_e10)), mul(a_e0123, b_e23)), mul(a_e10, b_s)),
+        add(add(add(mul(a_e31, b_e0123), mul(a_s, b_e20)), mul(a_e0123, b_e31)), mul(a_e20, b_s)),
+        add(add(add(mul(a_e12, b_e0123), mul(a_s, b_e30)), mul(a_e0123, b_e12)), mul(a_e30, b_s)),
+        add(add(add(neg(mul(a_e10, b_e0123)), neg(mul(a_e0123, b_e10))), mul(a_s, b_e23)), mul(a_e23, b_s)),
+        add(add(add(neg(mul(a_e20, b_e0123)), neg(mul(a_e0123, b_e20))), mul(a_s, b_e31)), mul(a_e31, b_s)),
+        add(add(add(neg(mul(a_e30, b_e0123)), neg(mul(a_e0123, b_e30))), mul(a_s, b_e12)), mul(a_e12, b_s)),
+        add(add(add(mul(a_s, b_e123), mul(a_e23, b_e1)), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(add(mul(a_s, b_e032), neg(mul(a_e23, b_e0))), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(add(mul(a_s, b_e013), neg(mul(a_e31, b_e0))), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(add(mul(a_s, b_e021), neg(mul(a_e12, b_e0))), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2)),
+        add(add(add(add(add(add(add(mul(a_s, b_e0123), neg(mul(a_e23, b_e10))), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23))), mul(a_e0123, b_s))}
+
+def Odd.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Scalar<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Scalar{+b_s}:
+      K.Odd{
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s)}
+
+def Odd.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Even{
+        add(add(add(mul(a_e0, b_e0), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        add(neg(mul(a_e021, b_e2)), mul(a_e013, b_e3)),
+        add(mul(a_e021, b_e1), neg(mul(a_e032, b_e3))),
+        add(neg(mul(a_e013, b_e1)), mul(a_e032, b_e2)),
+        add(neg(mul(a_e032, b_e0)), neg(mul(a_e123, b_e1))),
+        add(neg(mul(a_e013, b_e0)), neg(mul(a_e123, b_e2))),
+        add(neg(mul(a_e021, b_e0)), neg(mul(a_e123, b_e3))),
+        zero}
+
+def Odd.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Odd{
+        add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)),
+        add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))),
+        add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))),
+        add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))),
+        add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)),
+        add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))),
+        add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))),
+        add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12)))}
+
+def Odd.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Trivector<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e123, b_e123)),
+        add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)),
+        add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))),
+        add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)),
+        add(neg(mul(a_e0, b_e032)), neg(mul(a_e1, b_e123))),
+        add(neg(mul(a_e0, b_e013)), neg(mul(a_e2, b_e123))),
+        add(neg(mul(a_e0, b_e021)), neg(mul(a_e3, b_e123))),
+        zero}
+
+def Odd.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Phasor<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Phasor{+b_s, +b_e0123}:
+      K.Odd{
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s)}
+
+def Odd.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Even<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Odd{
+        add(add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)), mul(a_e0, b_s)),
+        add(add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))), mul(a_e1, b_s)),
+        add(add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))), mul(a_e2, b_s)),
+        add(add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))), mul(a_e3, b_s)),
+        add(add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)), mul(a_e123, b_s)),
+        add(add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))), mul(a_e032, b_s)),
+        add(add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))), mul(a_e013, b_s)),
+        add(add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12))), mul(a_e021, b_s))}
+
+def Odd.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Even{
+        add(add(add(add(add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e0, b_e0)), mul(a_e123, b_e123)), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        add(add(add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)), neg(mul(a_e021, b_e2))), mul(a_e013, b_e3)),
+        add(add(add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))), mul(a_e021, b_e1)), neg(mul(a_e032, b_e3))),
+        add(add(add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)), neg(mul(a_e013, b_e1))), mul(a_e032, b_e2)),
+        add(add(add(neg(mul(a_e0, b_e032)), neg(mul(a_e032, b_e0))), neg(mul(a_e1, b_e123))), neg(mul(a_e123, b_e1))),
+        add(add(add(neg(mul(a_e0, b_e013)), neg(mul(a_e013, b_e0))), neg(mul(a_e2, b_e123))), neg(mul(a_e123, b_e2))),
+        add(add(add(neg(mul(a_e0, b_e021)), neg(mul(a_e021, b_e0))), neg(mul(a_e3, b_e123))), neg(mul(a_e123, b_e3))),
+        zero}
+
+def Odd.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(add(add(add(add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e0, b_e0)), mul(a_e123, b_e123)), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        add(add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)), mul(a_e0, b_s)),
+        add(add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))), mul(a_e1, b_s)),
+        add(add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))), mul(a_e2, b_s)),
+        add(add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))), mul(a_e3, b_s)),
+        add(add(add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)), neg(mul(a_e021, b_e2))), mul(a_e013, b_e3)),
+        add(add(add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))), mul(a_e021, b_e1)), neg(mul(a_e032, b_e3))),
+        add(add(add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)), neg(mul(a_e013, b_e1))), mul(a_e032, b_e2)),
+        add(add(add(neg(mul(a_e0, b_e032)), neg(mul(a_e032, b_e0))), neg(mul(a_e1, b_e123))), neg(mul(a_e123, b_e1))),
+        add(add(add(neg(mul(a_e0, b_e013)), neg(mul(a_e013, b_e0))), neg(mul(a_e2, b_e123))), neg(mul(a_e123, b_e2))),
+        add(add(add(neg(mul(a_e0, b_e021)), neg(mul(a_e021, b_e0))), neg(mul(a_e3, b_e123))), neg(mul(a_e123, b_e3))),
+        add(add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)), mul(a_e123, b_s)),
+        add(add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))), mul(a_e032, b_s)),
+        add(add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))), mul(a_e013, b_s)),
+        add(add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12))), mul(a_e021, b_s)),
+        zero}
+
+def Multivector.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Scalar{+b_s}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        mul(a_e10, b_s),
+        mul(a_e20, b_s),
+        mul(a_e30, b_s),
+        mul(a_e23, b_s),
+        mul(a_e31, b_s),
+        mul(a_e12, b_s),
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s),
+        mul(a_e0123, b_s)}
+
+def Multivector.anticommutator.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Vector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      K.Multivector{
+        add(add(add(mul(a_e0, b_e0), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e3),
+        add(neg(mul(a_e021, b_e2)), mul(a_e013, b_e3)),
+        add(mul(a_e021, b_e1), neg(mul(a_e032, b_e3))),
+        add(neg(mul(a_e013, b_e1)), mul(a_e032, b_e2)),
+        add(neg(mul(a_e032, b_e0)), neg(mul(a_e123, b_e1))),
+        add(neg(mul(a_e013, b_e0)), neg(mul(a_e123, b_e2))),
+        add(neg(mul(a_e021, b_e0)), neg(mul(a_e123, b_e3))),
+        add(add(mul(a_e23, b_e1), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(neg(mul(a_e23, b_e0)), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(neg(mul(a_e31, b_e0)), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(neg(mul(a_e12, b_e0)), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2)),
+        zero}
+
+def Multivector.anticommutator.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Bivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      K.Multivector{
+        add(add(add(add(add(mul(a_e10, b_e10), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))),
+        add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)),
+        add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))),
+        add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))),
+        add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))),
+        add(mul(a_s, b_e10), mul(a_e0123, b_e23)),
+        add(mul(a_s, b_e20), mul(a_e0123, b_e31)),
+        add(mul(a_s, b_e30), mul(a_e0123, b_e12)),
+        add(neg(mul(a_e0123, b_e10)), mul(a_s, b_e23)),
+        add(neg(mul(a_e0123, b_e20)), mul(a_s, b_e31)),
+        add(neg(mul(a_e0123, b_e30)), mul(a_s, b_e12)),
+        add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)),
+        add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))),
+        add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))),
+        add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12))),
+        add(add(add(add(add(neg(mul(a_e23, b_e10)), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23)))}
+
+def Multivector.anticommutator.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Trivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e123, b_e123)),
+        add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)),
+        add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))),
+        add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))),
+        add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))),
+        add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)),
+        add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))),
+        add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)),
+        add(neg(mul(a_e0, b_e032)), neg(mul(a_e1, b_e123))),
+        add(neg(mul(a_e0, b_e013)), neg(mul(a_e2, b_e123))),
+        add(neg(mul(a_e0, b_e021)), neg(mul(a_e3, b_e123))),
+        mul(a_s, b_e123),
+        mul(a_s, b_e032),
+        mul(a_s, b_e013),
+        mul(a_s, b_e021),
+        zero}
+
+def Multivector.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Even<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Pseudoscalar{+b_e0123}:
+      K.Even{
+        neg(mul(a_e0123, b_e0123)),
+        mul(a_e23, b_e0123),
+        mul(a_e31, b_e0123),
+        mul(a_e12, b_e0123),
+        neg(mul(a_e10, b_e0123)),
+        neg(mul(a_e20, b_e0123)),
+        neg(mul(a_e30, b_e0123)),
+        mul(a_s, b_e0123)}
+
+def Multivector.anticommutator.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Phasor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Phasor{+b_s, +b_e0123}:
+      K.Multivector{
+        add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s)),
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e3, b_s),
+        add(mul(a_e23, b_e0123), mul(a_e10, b_s)),
+        add(mul(a_e31, b_e0123), mul(a_e20, b_s)),
+        add(mul(a_e12, b_e0123), mul(a_e30, b_s)),
+        add(neg(mul(a_e10, b_e0123)), mul(a_e23, b_s)),
+        add(neg(mul(a_e20, b_e0123)), mul(a_e31, b_s)),
+        add(neg(mul(a_e30, b_e0123)), mul(a_e12, b_s)),
+        mul(a_e123, b_s),
+        mul(a_e032, b_s),
+        mul(a_e013, b_s),
+        mul(a_e021, b_s),
+        add(mul(a_s, b_e0123), mul(a_e0123, b_s))}
+
+def Multivector.anticommutator.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Even<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      K.Multivector{
+        add(add(add(add(add(add(add(neg(mul(a_e0123, b_e0123)), mul(a_e10, b_e10)), mul(a_e20, b_e20)), mul(a_e30, b_e30)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e23, b_e23))), mul(a_s, b_s)),
+        add(add(add(mul(a_e021, b_e12), mul(a_e013, b_e31)), mul(a_e032, b_e23)), mul(a_e0, b_s)),
+        add(add(add(neg(mul(a_e021, b_e20)), mul(a_e013, b_e30)), neg(mul(a_e123, b_e23))), mul(a_e1, b_s)),
+        add(add(add(mul(a_e021, b_e10), neg(mul(a_e032, b_e30))), neg(mul(a_e123, b_e31))), mul(a_e2, b_s)),
+        add(add(add(neg(mul(a_e013, b_e10)), mul(a_e032, b_e20)), neg(mul(a_e123, b_e12))), mul(a_e3, b_s)),
+        add(add(add(mul(a_e23, b_e0123), mul(a_s, b_e10)), mul(a_e0123, b_e23)), mul(a_e10, b_s)),
+        add(add(add(mul(a_e31, b_e0123), mul(a_s, b_e20)), mul(a_e0123, b_e31)), mul(a_e20, b_s)),
+        add(add(add(mul(a_e12, b_e0123), mul(a_s, b_e30)), mul(a_e0123, b_e12)), mul(a_e30, b_s)),
+        add(add(add(neg(mul(a_e10, b_e0123)), neg(mul(a_e0123, b_e10))), mul(a_s, b_e23)), mul(a_e23, b_s)),
+        add(add(add(neg(mul(a_e20, b_e0123)), neg(mul(a_e0123, b_e20))), mul(a_s, b_e31)), mul(a_e31, b_s)),
+        add(add(add(neg(mul(a_e30, b_e0123)), neg(mul(a_e0123, b_e30))), mul(a_s, b_e12)), mul(a_e12, b_s)),
+        add(add(add(mul(a_e3, b_e12), mul(a_e2, b_e31)), mul(a_e1, b_e23)), mul(a_e123, b_s)),
+        add(add(add(mul(a_e3, b_e20), neg(mul(a_e2, b_e30))), neg(mul(a_e0, b_e23))), mul(a_e032, b_s)),
+        add(add(add(neg(mul(a_e3, b_e10)), mul(a_e1, b_e30)), neg(mul(a_e0, b_e31))), mul(a_e013, b_s)),
+        add(add(add(mul(a_e2, b_e10), neg(mul(a_e1, b_e20))), neg(mul(a_e0, b_e12))), mul(a_e021, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e0123), neg(mul(a_e23, b_e10))), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23))), mul(a_e0123, b_s))}
+
+def Multivector.anticommutator.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Odd<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      K.Multivector{
+        add(add(add(add(add(add(add(neg(mul(a_e021, b_e021)), neg(mul(a_e013, b_e013))), neg(mul(a_e032, b_e032))), mul(a_e0, b_e0)), mul(a_e123, b_e123)), neg(mul(a_e1, b_e1))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))),
+        add(add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)), mul(a_s, b_e0)),
+        add(add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e23, b_e123))), mul(a_s, b_e1)),
+        add(add(add(mul(a_e10, b_e021), neg(mul(a_e30, b_e032))), neg(mul(a_e31, b_e123))), mul(a_s, b_e2)),
+        add(add(add(neg(mul(a_e10, b_e013)), mul(a_e20, b_e032)), neg(mul(a_e12, b_e123))), mul(a_s, b_e3)),
+        add(add(add(neg(mul(a_e2, b_e021)), mul(a_e3, b_e013)), neg(mul(a_e021, b_e2))), mul(a_e013, b_e3)),
+        add(add(add(mul(a_e1, b_e021), neg(mul(a_e3, b_e032))), mul(a_e021, b_e1)), neg(mul(a_e032, b_e3))),
+        add(add(add(neg(mul(a_e1, b_e013)), mul(a_e2, b_e032)), neg(mul(a_e013, b_e1))), mul(a_e032, b_e2)),
+        add(add(add(neg(mul(a_e0, b_e032)), neg(mul(a_e032, b_e0))), neg(mul(a_e1, b_e123))), neg(mul(a_e123, b_e1))),
+        add(add(add(neg(mul(a_e0, b_e013)), neg(mul(a_e013, b_e0))), neg(mul(a_e2, b_e123))), neg(mul(a_e123, b_e2))),
+        add(add(add(neg(mul(a_e0, b_e021)), neg(mul(a_e021, b_e0))), neg(mul(a_e3, b_e123))), neg(mul(a_e123, b_e3))),
+        add(add(add(mul(a_s, b_e123), mul(a_e23, b_e1)), mul(a_e31, b_e2)), mul(a_e12, b_e3)),
+        add(add(add(mul(a_s, b_e032), neg(mul(a_e23, b_e0))), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)),
+        add(add(add(mul(a_s, b_e013), neg(mul(a_e31, b_e0))), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))),
+        add(add(add(mul(a_s, b_e021), neg(mul(a_e12, b_e0))), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2)),
+        zero}
+
+def Multivector.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e3, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e123, +a_e032, +a_e013, +a_e021, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      K.Multivector{
+        add(add(add(add(add(add(add(add(add(add(add(add(add(add(add(neg(mul(a_e0123, b_e0123)), neg(mul(a_e021, b_e021))), neg(mul(a_e013, b_e013))), mul(a_e10, b_e10)), neg(mul(a_e032, b_e032))), mul(a_e20, b_e20)), mul(a_e30, b_e30)), mul(a_e0, b_e0)), mul(a_e123, b_e123)), neg(mul(a_e12, b_e12))), neg(mul(a_e31, b_e31))), neg(mul(a_e1, b_e1))), neg(mul(a_e23, b_e23))), neg(mul(a_e2, b_e2))), neg(mul(a_e3, b_e3))), mul(a_s, b_s)),
+        add(add(add(add(add(add(add(mul(a_e12, b_e021), mul(a_e31, b_e013)), mul(a_e23, b_e032)), mul(a_s, b_e0)), mul(a_e021, b_e12)), mul(a_e013, b_e31)), mul(a_e032, b_e23)), mul(a_e0, b_s)),
+        add(add(add(add(add(add(add(neg(mul(a_e20, b_e021)), mul(a_e30, b_e013)), neg(mul(a_e021, b_e20))), mul(a_e013, b_e30)), neg(mul(a_e23, b_e123))), mul(a_s, b_e1)), neg(mul(a_e123, b_e23))), mul(a_e1, b_s)),
+        add(add(add(add(add(add(add(mul(a_e10, b_e021), mul(a_e021, b_e10)), neg(mul(a_e30, b_e032))), neg(mul(a_e032, b_e30))), neg(mul(a_e31, b_e123))), neg(mul(a_e123, b_e31))), mul(a_s, b_e2)), mul(a_e2, b_s)),
+        add(add(add(add(add(add(add(neg(mul(a_e10, b_e013)), neg(mul(a_e013, b_e10))), mul(a_e20, b_e032)), mul(a_e032, b_e20)), neg(mul(a_e12, b_e123))), neg(mul(a_e123, b_e12))), mul(a_s, b_e3)), mul(a_e3, b_s)),
+        add(add(add(add(add(add(add(mul(a_e23, b_e0123), neg(mul(a_e2, b_e021))), mul(a_e3, b_e013)), mul(a_s, b_e10)), mul(a_e0123, b_e23)), neg(mul(a_e021, b_e2))), mul(a_e013, b_e3)), mul(a_e10, b_s)),
+        add(add(add(add(add(add(add(mul(a_e31, b_e0123), mul(a_e1, b_e021)), neg(mul(a_e3, b_e032))), mul(a_s, b_e20)), mul(a_e0123, b_e31)), mul(a_e021, b_e1)), neg(mul(a_e032, b_e3))), mul(a_e20, b_s)),
+        add(add(add(add(add(add(add(mul(a_e12, b_e0123), neg(mul(a_e1, b_e013))), mul(a_e2, b_e032)), mul(a_s, b_e30)), mul(a_e0123, b_e12)), neg(mul(a_e013, b_e1))), mul(a_e032, b_e2)), mul(a_e30, b_s)),
+        add(add(add(add(add(add(add(neg(mul(a_e10, b_e0123)), neg(mul(a_e0123, b_e10))), neg(mul(a_e0, b_e032))), neg(mul(a_e032, b_e0))), neg(mul(a_e1, b_e123))), neg(mul(a_e123, b_e1))), mul(a_s, b_e23)), mul(a_e23, b_s)),
+        add(add(add(add(add(add(add(neg(mul(a_e20, b_e0123)), neg(mul(a_e0, b_e013))), neg(mul(a_e0123, b_e20))), neg(mul(a_e013, b_e0))), neg(mul(a_e2, b_e123))), mul(a_s, b_e31)), neg(mul(a_e123, b_e2))), mul(a_e31, b_s)),
+        add(add(add(add(add(add(add(neg(mul(a_e30, b_e0123)), neg(mul(a_e0, b_e021))), neg(mul(a_e0123, b_e30))), neg(mul(a_e021, b_e0))), neg(mul(a_e3, b_e123))), mul(a_s, b_e12)), neg(mul(a_e123, b_e3))), mul(a_e12, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e123), mul(a_e3, b_e12)), mul(a_e2, b_e31)), mul(a_e23, b_e1)), mul(a_e1, b_e23)), mul(a_e31, b_e2)), mul(a_e12, b_e3)), mul(a_e123, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e032), mul(a_e3, b_e20)), neg(mul(a_e2, b_e30))), neg(mul(a_e23, b_e0))), neg(mul(a_e0, b_e23))), neg(mul(a_e30, b_e2))), mul(a_e20, b_e3)), mul(a_e032, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e013), neg(mul(a_e3, b_e10))), mul(a_e1, b_e30)), neg(mul(a_e31, b_e0))), neg(mul(a_e0, b_e31))), mul(a_e30, b_e1)), neg(mul(a_e10, b_e3))), mul(a_e013, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e021), mul(a_e2, b_e10)), neg(mul(a_e1, b_e20))), neg(mul(a_e12, b_e0))), neg(mul(a_e0, b_e12))), neg(mul(a_e20, b_e1))), mul(a_e10, b_e2)), mul(a_e021, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e0123), neg(mul(a_e23, b_e10))), neg(mul(a_e31, b_e20))), neg(mul(a_e12, b_e30))), neg(mul(a_e30, b_e12))), neg(mul(a_e20, b_e31))), neg(mul(a_e10, b_e23))), mul(a_e0123, b_s))}

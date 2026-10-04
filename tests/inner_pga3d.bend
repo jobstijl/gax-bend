@@ -2,6 +2,8 @@
 # definitions: e1 | e1 = 1; e1 ⌋ e12 = e2; e12 ⌊ e2 = e1; e12 | e12 = -1;
 # e1 | e123 = e23 (the fat dot of a vector and a trivector); the scalar
 # product of e12 with itself is -1; e0 squares to 0, so e0 | e0 = 0.
+# The halved products: e12 x e1 = (e12 e1 - e1 e12)/2 = -e2, and
+# e1 o e1 = (e1 e1 + e1 e1)/2 = 1.
 import Base
 import ../src/int.bend as I
 import ../algebras/pga3d/kinds.bend as K
@@ -52,6 +54,8 @@ def main() -> IO(Unit):
     IO.print(Line.show(O.Plane.dot.Point(~I.Int, ~z(), ~I.Int.add, ~I.Int.mul, ~I.Int.neg, e1(), e123())))
     IO.print(Scalar.show(O.Line.scalar_product.Line(~I.Int, ~z(), ~I.Int.add, ~I.Int.mul, ~I.Int.neg, e12(), e12())))
     IO.print(Scalar.show(O.Plane.dot.Plane(~I.Int, ~z(), ~I.Int.add, ~I.Int.mul, ~I.Int.neg, e0(), e0())))
+    IO.print(Plane.show(O.Line.commutator.Plane(~I.Int, ~z(), ~I.Int.add, ~I.Int.mul, ~I.Int.neg, e12(), e1())))
+    IO.print(Scalar.show(O.Plane.anticommutator.Plane(~I.Int, ~z(), ~I.Int.add, ~I.Int.mul, ~I.Int.neg, e1(), e1())))
 #|1
 #|[0, 1, 0; 0]
 #|[1, 0, 0; 0]
@@ -59,3 +63,5 @@ def main() -> IO(Unit):
 #|[1, 0, 0; 0, 0, 0]
 #|-1
 #|0
+#|[0, -1, 0; 0]
+#|1

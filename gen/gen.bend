@@ -1142,6 +1142,234 @@ def Sw.table(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig:
     case Kd{+n, r, bls} <> t:
       Sw.table(d, dn, pre, names, sig, ks, vs, t, Sw.row.if(d, dn, pre, names, sig, ks, Kd{n, r, bls}, Kd.named(n, vs), acc))
 
+# Halved products
+# ---------------
+# x.commutator.y = (xy - yx)/2 and x.anticommutator.y = (xy + yx)/2 (gax's
+# definitions). Layer S has the doubled forms; every coefficient of those
+# is even, so the generator halves it by dropping one of each pair of equal
+# monomials, and the kernel has integer coefficients. The law .ok states
+# kernel + kernel = the doubled spec, field by field by Norm.eq.
+
+type HOp is Data:
+  HComm{}
+  HAnti{}
+
+def HOp.name(o: HOp) -> String:
+  match o:
+    case HComm{}:
+      "commutator"
+    case HAnti{}:
+      "anticommutator"
+
+def HOp.fn(o: HOp) -> String:
+  match o:
+    case HComm{}:
+      "S.MV.commutator2"
+    case HAnti{}:
+      "S.MV.anticommutator2"
+
+def HOp.tm(+d: Nat, +sig: S.Sig(d), o: HOp, +x: S.MV(N.Tm, d), +y: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  match o:
+    case HComm{}:
+      S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+    case HAnti{}:
+      S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, x, y)
+
+def Mono.same(a: N.Mono, b: N.Mono) -> Bool:
+  match a b:
+    case N.Mono{s, vs} N.Mono{t, ws}:
+      Bool.and(Bool.not(Bool.xor(s, t)), N.Vs.eq(vs, ws))
+
+type Taken is Data:
+  TNone{}
+  TSome{rest: List<&2, N.Mono>}
+
+def Taken.cons(p: N.Mono, tk: Taken) -> Taken:
+  match tk:
+    case TNone{}:
+      TNone{}
+    case TSome{r}:
+      TSome{p <> r}
+
+# ps without the first monomial equal to m, if there is one
+def Ms.take(+m: N.Mono, ps: List<&2, N.Mono>) -> Taken:
+  match ps:
+    case Nil{}:
+      TNone{}
+    case +p <> +t:
+      Bool.pick(Taken, Mono.same(m, p), TSome{t}, Taken.cons(p, Ms.take(m, t)))
+
+# the pending monomials, and one of each pair found so far
+type Hs is Data:
+  Hs{ps: List<&2, N.Mono>, out: List<&2, N.Mono>}
+
+def Ms.half.step(+m: N.Mono, ps: List<&2, N.Mono>, out: List<&2, N.Mono>, tk: Taken) -> Hs:
+  match tk:
+    case TNone{}:
+      Hs{m <> ps, out}
+    case TSome{r}:
+      Hs{r, m <> out}
+
+def Ms.half.next(+m: N.Mono, st: Hs) -> Hs:
+  match st:
+    case Hs{+ps, out}:
+      Ms.half.step(m, ps, out, Ms.take(m, ps))
+
+def Ms.half.go(l: List<&2, N.Mono>, st: Hs) -> Hs:
+  match l:
+    case Nil{}:
+      st
+    case m <> t:
+      Ms.half.go(t, Ms.half.next(m, st))
+
+# half of a list whose monomials come in equal pairs
+def Hs.out(st: Hs) -> List<&2, N.Mono>:
+  match st:
+    case Hs{ps, out}:
+      List.reverse(&2, N.Mono, out)
+
+def Ms.half(l: List<&2, N.Mono>) -> List<&2, N.Mono>:
+  Hs.out(Ms.half.go(l, Hs{Nil{}, Nil{}}))
+
+# a bilinear monomial x_a y_b as a term of the kernel
+def Hf.term(s: Bool, vs: List<&2, Nat>, +xs: List<&2, String>, +ys: List<&2, String>, +na: Nat) -> E.Expr:
+  match vs:
+    case Nil{}:
+      E.EZero{}
+    case a <> t1:
+      match t1:
+        case Nil{}:
+          E.EZero{}
+        case b <> t2:
+          Qf.signed(s, E.EMul{E.EVar{Gen.nth(xs, a)}, E.EVar{Gen.nth(ys, Nat.sub(b, na))}})
+
+def Hf.sum(ms: List<&2, N.Mono>, +xs: List<&2, String>, +ys: List<&2, String>, +na: Nat, acc: E.Expr) -> E.Expr:
+  match ms:
+    case Nil{}:
+      acc
+    case N.Mono{s, vs} <> t:
+      Hf.sum(t, xs, ys, na, E.EAdd{acc, Hf.term(s, vs, xs, ys, na)})
+
+def Hf.field(ms: List<&2, N.Mono>, +xs: List<&2, String>, +ys: List<&2, String>, +na: Nat) -> E.Expr:
+  match ms:
+    case Nil{}:
+      E.EZero{}
+    case N.Mono{s, vs} <> t:
+      Hf.sum(t, xs, ys, na, Hf.term(s, vs, xs, ys, na))
+
+def Hf.fields(+d: Nat, bls: List<&2, Bl>, +rt: S.MV(N.Tm, d), +xs: List<&2, String>, +ys: List<&2, String>, +na: Nat) -> List<&2, E.Expr>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case Bl{n, q, s, g} <> t:
+      Hf.field(Ms.half(N.Norm.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, q, s, rt))), xs, ys, na) <> Hf.fields(d, t, rt, xs, ys, na)
+
+def Hf.spec(+dn: String, +pre: String, +fn: String, +ring: String, x: String, y: String) -> String:
+  String.concat([fn, "(", ring, ", ", dn, ", K.", pre, ".sig(), ", x, ", ", y, ")"])
+
+# one field's equation: the doubled spec against kernel + kernel
+def Hf.cf(+dn: String, +name: String, +cn: String, +env: String, +specr: String, +spect: String, +recs: String, +recst: String, b: Bl) -> Cf:
+  match b:
+    case Bl{f, q, s, g}:
+      +at = ", " ++ dn ++ ", " ++ Path.show(q) ++ ", " ++ Bool.show.ctor(s) ++ ", "
+      +get = "K." ++ cn ++ "." ++ f
+      +kt = "O." ++ name ++ "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, " ++ recst ++ ")"
+      Cf{
+        "S.MV.at(~T, ~zero, ~neg" ++ at ++ specr ++ ")",
+        get ++ "(T, O." ++ cn ++ ".add." ++ cn ++ "(~T, ~zero, ~add, ~mul, ~neg, O." ++ name ++ "(~T, ~zero, ~add, ~mul, ~neg, " ++ recs ++ "), O." ++ name ++ "(~T, ~zero, ~add, ~mul, ~neg, " ++ recs ++ ")))",
+        String.concat(["NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n          ",
+          "S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg", at, spect, "),\n          ",
+          get, "(N.Tm, O.", cn, ".add.", cn, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", kt, ", ", kt, ")),\n          {==})"])}
+
+def Hf.cfs(+dn: String, +name: String, +cn: String, +env: String, +specr: String, +spect: String, +recs: String, +recst: String, bls: List<&2, Bl>) -> List<&2, Cf>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case b <> t:
+      Hf.cf(dn, name, cn, env, specr, spect, recs, recst, b) <> Hf.cfs(dn, name, cn, env, specr, spect, recs, recst, t)
+
+def Hf.text(+dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd, kb: Kd, kc: Kd, es: List<&2, E.Expr>, outs: List<&2, List<&2, Bool>>) -> Ker:
+  match ka kb kc:
+    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, +cbs}:
+      +name = an ++ "." ++ HOp.name(o) ++ "." ++ bn
+      +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
+      +hyps = {"~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,\n  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),\n  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),\n  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg)" : String}
+      +args = "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>"
+      +ra = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "}"
+      +rb = "K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "}"
+      +pat = ra ++ " " ++ rb
+      +ppat = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "+a_", ""), ", ") ++ "} K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "+b_", ""), ", ") ++ "}"
+      +env = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "a_", ""), Kd.fields(bbs, "b_", "")), ", ") ++ "]"
+      +ring = {"~T, ~add, ~mul, ~neg" : String}
+      +spec = Hf.spec(dn, pre, HOp.fn(o), ring, "K." ++ an ++ ".tree(~T, ~neg, a)", "K." ++ bn ++ ".tree(~T, ~neg, b)")
+      +specr = Hf.spec(dn, pre, HOp.fn(o), ring, "K." ++ an ++ ".tree(~T, ~neg, " ++ ra ++ ")", "K." ++ bn ++ ".tree(~T, ~neg, " ++ rb ++ ")")
+      +na = List.length(&2, Bl, abs)
+      +ta = "K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "}"
+      +tb = "K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "}"
+      +spect = Hf.spec(dn, pre, HOp.fn(o), "~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg",
+        "K." ++ an ++ ".tree(~N.Tm, ~N.Tm.neg, " ++ ta ++ ")", "K." ++ bn ++ ".tree(~N.Tm, ~N.Tm.neg, " ++ tb ++ ")")
+      +cfs = Hf.cfs(dn, name, cn, env, specr, spect, ra ++ ", " ++ rb, ta ++ ", " ++ tb, cbs)
+      +es2 = es
+      Ker{
+        String.concat([
+          "def ", name, "(", ops, ", ", args, ") -> K.", cn, "<T>:\n",
+          "  match a b:\n    case ", ppat, ":\n",
+          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
+        String.concat([
+          "def ", name, ".ok(", hyps, ", ", args, ")\n",
+          "  -> {K.", cn, ".of_tree(~T, ~zero, ~neg, ", spec, ") == O.", cn, ".add.", cn, "(~T, ~zero, ~add, ~mul, ~neg, O.", name,
+          "(~T, ~zero, ~add, ~mul, ~neg, a, b), O.", name, "(~T, ~zero, ~add, ~mul, ~neg, a, b)) : K.", cn, "<T>}:\n",
+          "  match a b:\n    case ", ppat, ":\n",
+          "      K.", cn, ".cong(T,\n        ", String.join(Cf.ls(cfs), ",\n        "), ",\n        ",
+          String.join(Cf.rs(cfs), ",\n        "), ",\n        ", String.join(Cf.ps(cfs), ",\n        "), ")\n",
+          String.concat(Sw.zeros(dn, name, names, hyps ++ ", " ++ args, pat, env, spec, spect, outs))]),
+        String.concat([
+          "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
+          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
+        Ker.muls(es2)}
+
+def Hf.pick.go(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd, kb: Kd, kc: Kd, +rt: S.MV(N.Tm, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match ka kb kc:
+    case Kd{an, ar, +abs} Kd{bn, br, +bbs} Kd{cn, cr, +cbs}:
+      Some{Hf.text(dn, pre, names, o, Kd{an, ar, abs}, Kd{bn, br, bbs}, Kd{cn, cr, cbs},
+        Hf.fields(d, cbs, rt, Kd.fields(abs, "a_", ""), Kd.fields(bbs, "b_", ""), List.length(&2, Bl, abs)), Supp.outside(all, cbs))}
+
+def Hf.pick(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd, kb: Kd, b: Best, +rt: S.MV(N.Tm, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match b:
+    case BNone{}:
+      None{}
+    case BSome{kc, a, s}:
+      Hf.pick.go(d, dn, pre, names, o, ka, kb, kc, rt, all)
+
+def Hf.make.go(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +ks: List<&2, Kd>, +o: HOp, ka: Kd, kb: Kd, live: List<&2, List<&2, Bool>>,
+  +rt: S.MV(N.Tm, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match live:
+    case Nil{}:
+      None{}
+    case +h <> +t:
+      Hf.pick(d, dn, pre, names, o, ka, kb, Best.scan(ks, h <> t, BNone{}), rt, all)
+
+def Hf.make(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, +o: HOp, ka: Kd, kb: Kd) -> Maybe<&2, Ker>:
+  match ka kb:
+    case Kd{an, ar, +abs} Kd{bn, br, +bbs}:
+      +rt = HOp.tm(d, sig, o, SymT.tree(d, abs, 0n), SymT.tree(d, bbs, List.length(&2, Bl, abs)))
+      +all = MV.leaves(N.Tm, d, Nil{}, rt)
+      Hf.make.go(d, dn, pre, names, ks, o, Kd{an, ar, abs}, Kd{bn, br, bbs}, Supp.live(d, all, rt), rt, all)
+
+def Hf.row(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, +o: HOp, +ka: Kd, kbs: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kbs:
+    case Nil{}:
+      acc
+    case kb <> t:
+      Hf.row(d, dn, pre, names, sig, ks, o, ka, t, Ker.push(Hf.make(d, dn, pre, names, sig, ks, o, ka, kb), acc))
+
+def Hf.table(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, +o: HOp, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kas:
+    case Nil{}:
+      acc
+    case ka <> t:
+      Hf.table(d, dn, pre, names, sig, ks, o, t, Hf.row(d, dn, pre, names, sig, ks, o, ka, ks, acc))
+
 # Tables and files
 # ----------------
 
@@ -1233,5 +1461,6 @@ def Gen.out(s: GSpec, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
       +ks = Gen.kinds(d, gens, kinds)
       +dn = Nat.show(d) ++ "n"
       Gen.out.go(name, pre, d, sig, ks,
-        List.reverse(&2, Ker, Sw.table(d, dn, pre, gens, sig, ks, vs, ks,
-          Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))
+        List.reverse(&2, Ker, Hf.table(d, dn, pre, gens, sig, ks, HAnti{}, ks, Hf.table(d, dn, pre, gens, sig, ks, HComm{}, ks,
+          Sw.table(d, dn, pre, gens, sig, ks, vs, ks,
+            Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))))

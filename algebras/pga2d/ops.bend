@@ -8527,3 +8527,1401 @@ def Flector.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T
         add(mul(b_e01, m5_4), add(mul(b_e20, m5_5), mul(b_e12, m5_6))),
         mul(b_e12, m6_6),
         mul(b_e012, m7_7)}
+
+def Line.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Line<T>) -> K.Point<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Point{
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2))}
+
+def Line.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Point<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Line{
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Line.commutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Direction<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Direction{+b_e20, +b_e01}:
+      K.Line{
+        zero,
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Line.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Rotor<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Rotor{+b_s, +b_e12}:
+      K.Line{
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        zero}
+
+def Line.commutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Translator<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Line{
+        zero,
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Line.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Motor<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Line{
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Line.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Flector<T>) -> K.Point<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Point{
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2))}
+
+def Line.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)),
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        zero}
+
+def Point.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Point.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        zero}
+
+def Point.commutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Point.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Rotor<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Point.commutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Translator<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Point.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Motor<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Point{
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        zero}
+
+def Point.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Flector<T>) -> K.Line<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Line{
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Point.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2))),
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        zero,
+        zero}
+
+def Direction.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        zero,
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Direction.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Direction.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Rotor<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Direction.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Motor<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Direction.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Flector<T>) -> K.Line<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Line{
+        zero,
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Direction.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2))),
+        zero,
+        zero,
+        mul(a_e20, b_e12),
+        neg(mul(a_e01, b_e12)),
+        zero,
+        zero}
+
+def Rotor.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        zero}
+
+def Rotor.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Rotor.commutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Rotor.commutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Translator<T>) -> K.Point<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Rotor.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Motor<T>) -> K.Point<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Rotor.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Flector<T>) -> K.Line<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Line{
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        zero}
+
+def Rotor.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        zero,
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        neg(mul(a_e12, b_e20)),
+        mul(a_e12, b_e01),
+        zero,
+        zero}
+
+def Translator.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        zero,
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Translator.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Translator.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Rotor<T>) -> K.Point<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Translator.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Motor<T>) -> K.Point<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Translator.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Flector<T>) -> K.Line<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Line{
+        zero,
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Translator.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2))),
+        zero,
+        zero,
+        mul(a_e20, b_e12),
+        neg(mul(a_e01, b_e12)),
+        zero,
+        zero}
+
+def Motor.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Motor.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        zero}
+
+def Motor.commutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Motor.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Rotor<T>) -> K.Point<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Point{
+        neg(mul(a_e01, b_e12)),
+        mul(a_e20, b_e12),
+        zero}
+
+def Motor.commutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Translator<T>) -> K.Point<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e12, b_e01),
+        neg(mul(a_e12, b_e20)),
+        zero}
+
+def Motor.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Motor<T>) -> K.Point<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Point{
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        zero}
+
+def Motor.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Flector<T>) -> K.Line<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Line{
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2)))}
+
+def Motor.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2))),
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        zero,
+        zero}
+
+def Flector.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Line<T>) -> K.Point<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Point{
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2))}
+
+def Flector.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Point<T>) -> K.Line<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Line{
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Flector.commutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Direction<T>) -> K.Line<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Line{
+        zero,
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Flector.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Rotor<T>) -> K.Line<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Line{
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        zero}
+
+def Flector.commutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Translator<T>) -> K.Line<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Line{
+        zero,
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Flector.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Motor<T>) -> K.Line<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Line{
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20))}
+
+def Flector.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Flector<T>) -> K.Point<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Point{
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2))}
+
+def Flector.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)),
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        zero}
+
+def Multivector.commutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2))),
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        zero}
+
+def Multivector.commutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)),
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        zero,
+        zero}
+
+def Multivector.commutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)),
+        zero,
+        zero,
+        neg(mul(a_e12, b_e20)),
+        mul(a_e12, b_e01),
+        zero,
+        zero}
+
+def Multivector.commutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        zero,
+        zero,
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        mul(a_e20, b_e12),
+        neg(mul(a_e01, b_e12)),
+        zero,
+        zero}
+
+def Multivector.commutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)),
+        zero,
+        zero,
+        neg(mul(a_e12, b_e20)),
+        mul(a_e12, b_e01),
+        zero,
+        zero}
+
+def Multivector.commutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)),
+        neg(mul(a_e2, b_e12)),
+        mul(a_e1, b_e12),
+        add(neg(mul(a_e12, b_e20)), mul(a_e20, b_e12)),
+        add(mul(a_e12, b_e01), neg(mul(a_e01, b_e12))),
+        zero,
+        zero}
+
+def Multivector.commutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        zero,
+        add(mul(a_e01, b_e1), neg(mul(a_e20, b_e2))),
+        mul(a_e12, b_e2),
+        neg(mul(a_e12, b_e1)),
+        add(neg(mul(a_e1, b_e0)), mul(a_e0, b_e1)),
+        add(mul(a_e2, b_e0), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        zero}
+
+def Multivector.commutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        add(add(add(neg(mul(a_e1, b_e01)), mul(a_e2, b_e20)), mul(a_e01, b_e1)), neg(mul(a_e20, b_e2))),
+        add(neg(mul(a_e2, b_e12)), mul(a_e12, b_e2)),
+        add(mul(a_e1, b_e12), neg(mul(a_e12, b_e1))),
+        add(add(add(neg(mul(a_e12, b_e20)), neg(mul(a_e1, b_e0))), mul(a_e20, b_e12)), mul(a_e0, b_e1)),
+        add(add(add(mul(a_e12, b_e01), mul(a_e2, b_e0)), neg(mul(a_e01, b_e12))), neg(mul(a_e0, b_e2))),
+        add(neg(mul(a_e2, b_e1)), mul(a_e1, b_e2)),
+        zero}
+
+def Scalar.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Scalar{+b_s}:
+      K.Scalar{
+        mul(a_s, b_s)}
+
+def Scalar.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Line<T>) -> K.Line<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Line{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e0)}
+
+def Scalar.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        mul(a_s, b_e20),
+        mul(a_s, b_e01),
+        mul(a_s, b_e12)}
+
+def Scalar.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_s, b_e20),
+        mul(a_s, b_e01),
+        zero}
+
+def Scalar.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Pseudoscalar{+b_e012}:
+      K.Pseudoscalar{
+        mul(a_s, b_e012)}
+
+def Scalar.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Rotor{+b_s, +b_e12}:
+      K.Rotor{
+        mul(a_s, b_s),
+        mul(a_s, b_e12)}
+
+def Scalar.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        mul(a_s, b_s),
+        mul(a_s, b_e20),
+        mul(a_s, b_e01)}
+
+def Scalar.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        mul(a_s, b_s),
+        mul(a_s, b_e12),
+        mul(a_s, b_e20),
+        mul(a_s, b_e01)}
+
+def Scalar.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e0),
+        mul(a_s, b_e012)}
+
+def Scalar.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Scalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Scalar{+a_s} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e01),
+        mul(a_s, b_e20),
+        mul(a_s, b_e12),
+        mul(a_s, b_e012)}
+
+def Line.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Scalar<T>) -> K.Line<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Scalar{+b_s}:
+      K.Line{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e0, b_s)}
+
+def Line.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Line<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Scalar{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2))}
+
+def Line.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Point<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Pseudoscalar{
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12))}
+
+def Line.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Direction<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Direction{+b_e20, +b_e01}:
+      K.Pseudoscalar{
+        add(mul(a_e2, b_e01), mul(a_e1, b_e20))}
+
+def Line.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Pseudoscalar<T>) -> K.Point<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Pseudoscalar{+b_e012}:
+      K.Point{
+        mul(a_e1, b_e012),
+        mul(a_e2, b_e012),
+        zero}
+
+def Line.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Rotor<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Rotor{+b_s, +b_e12}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e0, b_s),
+        mul(a_e0, b_e12)}
+
+def Line.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Translator<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e0, b_s),
+        add(mul(a_e2, b_e01), mul(a_e1, b_e20))}
+
+def Line.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Motor<T>) -> K.Flector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e0, b_s),
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12))}
+
+def Line.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Flector<T>) -> K.Translator<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Translator{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        mul(a_e1, b_e012),
+        mul(a_e2, b_e012)}
+
+def Line.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Line{+a_e1, +a_e2, +a_e0} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e2, b_e012),
+        mul(a_e1, b_e012),
+        zero,
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12))}
+
+def Point.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Scalar<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Scalar{+b_s}:
+      K.Point{
+        mul(a_e20, b_s),
+        mul(a_e01, b_s),
+        mul(a_e12, b_s)}
+
+def Point.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Line<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Pseudoscalar{
+        add(add(mul(a_e12, b_e0), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Point.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Point<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Scalar{
+        neg(mul(a_e12, b_e12))}
+
+def Point.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Pseudoscalar<T>) -> K.Line<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Pseudoscalar{+b_e012}:
+      K.Line{
+        zero,
+        zero,
+        neg(mul(a_e12, b_e012))}
+
+def Point.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        neg(mul(a_e12, b_e12)),
+        mul(a_e12, b_s),
+        mul(a_e20, b_s),
+        mul(a_e01, b_s)}
+
+def Point.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Translator<T>) -> K.Point<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e20, b_s),
+        mul(a_e01, b_s),
+        mul(a_e12, b_s)}
+
+def Point.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        neg(mul(a_e12, b_e12)),
+        mul(a_e12, b_s),
+        mul(a_e20, b_s),
+        mul(a_e01, b_s)}
+
+def Point.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        zero,
+        zero,
+        neg(mul(a_e12, b_e012)),
+        add(add(mul(a_e12, b_e0), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Point.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Point{+a_e20, +a_e01, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        neg(mul(a_e12, b_e12)),
+        neg(mul(a_e12, b_e012)),
+        zero,
+        zero,
+        mul(a_e01, b_s),
+        mul(a_e20, b_s),
+        mul(a_e12, b_s),
+        add(add(mul(a_e12, b_e0), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Direction.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Scalar<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Point{
+        mul(a_e20, b_s),
+        mul(a_e01, b_s),
+        zero}
+
+def Direction.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Line<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Pseudoscalar{
+        add(mul(a_e20, b_e1), mul(a_e01, b_e2))}
+
+def Direction.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Rotor<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Point{
+        mul(a_e20, b_s),
+        mul(a_e01, b_s),
+        zero}
+
+def Direction.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Translator<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e20, b_s),
+        mul(a_e01, b_s),
+        zero}
+
+def Direction.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Motor<T>) -> K.Point<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Point{
+        mul(a_e20, b_s),
+        mul(a_e01, b_s),
+        zero}
+
+def Direction.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Flector<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Pseudoscalar{
+        add(mul(a_e20, b_e1), mul(a_e01, b_e2))}
+
+def Direction.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Direction<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Direction{+a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(a_e01, b_s),
+        mul(a_e20, b_s),
+        zero,
+        add(mul(a_e20, b_e1), mul(a_e01, b_e2))}
+
+def Pseudoscalar.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Scalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Scalar{+b_s}:
+      K.Pseudoscalar{
+        mul(a_e012, b_s)}
+
+def Pseudoscalar.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Line<T>) -> K.Point<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Point{
+        mul(a_e012, b_e1),
+        mul(a_e012, b_e2),
+        zero}
+
+def Pseudoscalar.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Point<T>) -> K.Line<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Line{
+        zero,
+        zero,
+        neg(mul(a_e012, b_e12))}
+
+def Pseudoscalar.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Rotor<T>) -> K.Flector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Flector{
+        zero,
+        zero,
+        neg(mul(a_e012, b_e12)),
+        mul(a_e012, b_s)}
+
+def Pseudoscalar.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Translator<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Pseudoscalar{
+        mul(a_e012, b_s)}
+
+def Pseudoscalar.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Motor<T>) -> K.Flector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Flector{
+        zero,
+        zero,
+        neg(mul(a_e012, b_e12)),
+        mul(a_e012, b_s)}
+
+def Pseudoscalar.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Flector<T>) -> K.Point<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Point{
+        mul(a_e012, b_e1),
+        mul(a_e012, b_e2),
+        zero}
+
+def Pseudoscalar.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Pseudoscalar<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Pseudoscalar{+a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        zero,
+        neg(mul(a_e012, b_e12)),
+        zero,
+        zero,
+        mul(a_e012, b_e2),
+        mul(a_e012, b_e1),
+        zero,
+        mul(a_e012, b_s)}
+
+def Rotor.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Scalar{+b_s}:
+      K.Rotor{
+        mul(a_s, b_s),
+        mul(a_e12, b_s)}
+
+def Rotor.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e0),
+        mul(a_e12, b_e0)}
+
+def Rotor.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        neg(mul(a_e12, b_e12)),
+        mul(a_s, b_e12),
+        mul(a_s, b_e20),
+        mul(a_s, b_e01)}
+
+def Rotor.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_s, b_e20),
+        mul(a_s, b_e01),
+        zero}
+
+def Rotor.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Pseudoscalar{+b_e012}:
+      K.Flector{
+        zero,
+        zero,
+        neg(mul(a_e12, b_e012)),
+        mul(a_s, b_e012)}
+
+def Rotor.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>) -> K.Rotor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Rotor{+b_s, +b_e12}:
+      K.Rotor{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s))}
+
+def Rotor.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        mul(a_s, b_s),
+        mul(a_e12, b_s),
+        mul(a_s, b_e20),
+        mul(a_s, b_e01)}
+
+def Rotor.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        mul(a_s, b_e20),
+        mul(a_s, b_e01)}
+
+def Rotor.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        add(neg(mul(a_e12, b_e012)), mul(a_s, b_e0)),
+        add(mul(a_s, b_e012), mul(a_e12, b_e0))}
+
+def Rotor.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Rotor{+a_s, +a_e12} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(neg(mul(a_e12, b_e012)), mul(a_s, b_e0)),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e01),
+        mul(a_s, b_e20),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        add(mul(a_s, b_e012), mul(a_e12, b_e0))}
+
+def Translator.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Scalar<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Translator{
+        mul(a_s, b_s),
+        mul(a_e20, b_s),
+        mul(a_e01, b_s)}
+
+def Translator.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e0),
+        add(mul(a_e20, b_e1), mul(a_e01, b_e2))}
+
+def Translator.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Point<T>) -> K.Point<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Point{
+        mul(a_s, b_e20),
+        mul(a_s, b_e01),
+        mul(a_s, b_e12)}
+
+def Translator.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_s, b_e20),
+        mul(a_s, b_e01),
+        zero}
+
+def Translator.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Pseudoscalar{
+        mul(a_s, b_e012)}
+
+def Translator.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        mul(a_s, b_s),
+        mul(a_s, b_e12),
+        mul(a_e20, b_s),
+        mul(a_e01, b_s)}
+
+def Translator.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Translator<T>) -> K.Translator<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Translator{
+        mul(a_s, b_s),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        add(mul(a_s, b_e01), mul(a_e01, b_s))}
+
+def Translator.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        mul(a_s, b_s),
+        mul(a_s, b_e12),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        add(mul(a_s, b_e01), mul(a_e01, b_s))}
+
+def Translator.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e0),
+        add(add(mul(a_s, b_e012), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Translator.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Translator{+a_s, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        add(mul(a_s, b_e01), mul(a_e01, b_s)),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        mul(a_s, b_e12),
+        add(add(mul(a_s, b_e012), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Motor.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Scalar<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Scalar{+b_s}:
+      K.Motor{
+        mul(a_s, b_s),
+        mul(a_e12, b_s),
+        mul(a_e20, b_s),
+        mul(a_e01, b_s)}
+
+def Motor.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Line<T>) -> K.Flector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_s, b_e0),
+        add(add(mul(a_e12, b_e0), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Motor.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Point<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Motor{
+        neg(mul(a_e12, b_e12)),
+        mul(a_s, b_e12),
+        mul(a_s, b_e20),
+        mul(a_s, b_e01)}
+
+def Motor.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Direction<T>) -> K.Point<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Direction{+b_e20, +b_e01}:
+      K.Point{
+        mul(a_s, b_e20),
+        mul(a_s, b_e01),
+        zero}
+
+def Motor.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Pseudoscalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Pseudoscalar{+b_e012}:
+      K.Flector{
+        zero,
+        zero,
+        neg(mul(a_e12, b_e012)),
+        mul(a_s, b_e012)}
+
+def Motor.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Rotor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Rotor{+b_s, +b_e12}:
+      K.Motor{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        mul(a_e20, b_s),
+        mul(a_e01, b_s)}
+
+def Motor.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Translator<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Motor{
+        mul(a_s, b_s),
+        mul(a_e12, b_s),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        add(mul(a_s, b_e01), mul(a_e01, b_s))}
+
+def Motor.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Motor<T>) -> K.Motor<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Motor{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        add(mul(a_s, b_e01), mul(a_e01, b_s))}
+
+def Motor.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Flector<T>) -> K.Flector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Flector{
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        add(neg(mul(a_e12, b_e012)), mul(a_s, b_e0)),
+        add(add(add(mul(a_s, b_e012), mul(a_e12, b_e0)), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Motor.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Motor{+a_s, +a_e12, +a_e20, +a_e01} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(neg(mul(a_e12, b_e012)), mul(a_s, b_e0)),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        add(mul(a_s, b_e01), mul(a_e01, b_s)),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        add(add(add(mul(a_s, b_e012), mul(a_e12, b_e0)), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Flector.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Scalar<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Scalar{+b_s}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e0, b_s),
+        mul(a_e012, b_s)}
+
+def Flector.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Line<T>) -> K.Translator<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Translator{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        mul(a_e012, b_e1),
+        mul(a_e012, b_e2)}
+
+def Flector.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Point<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Flector{
+        zero,
+        zero,
+        neg(mul(a_e012, b_e12)),
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12))}
+
+def Flector.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Direction<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Pseudoscalar{
+        add(mul(a_e2, b_e01), mul(a_e1, b_e20))}
+
+def Flector.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Pseudoscalar<T>) -> K.Point<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Pseudoscalar{+b_e012}:
+      K.Point{
+        mul(a_e1, b_e012),
+        mul(a_e2, b_e012),
+        zero}
+
+def Flector.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Rotor<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        add(neg(mul(a_e012, b_e12)), mul(a_e0, b_s)),
+        add(mul(a_e0, b_e12), mul(a_e012, b_s))}
+
+def Flector.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Translator<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e0, b_s),
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e012, b_s))}
+
+def Flector.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Motor<T>) -> K.Flector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Flector{
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        add(neg(mul(a_e012, b_e12)), mul(a_e0, b_s)),
+        add(add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12)), mul(a_e012, b_s))}
+
+def Flector.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Flector<T>) -> K.Translator<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Translator{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        add(mul(a_e1, b_e012), mul(a_e012, b_e1)),
+        add(mul(a_e2, b_e012), mul(a_e012, b_e2))}
+
+def Flector.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Flector{+a_e1, +a_e2, +a_e0, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        add(neg(mul(a_e012, b_e12)), mul(a_e0, b_s)),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        add(mul(a_e2, b_e012), mul(a_e012, b_e2)),
+        add(mul(a_e1, b_e012), mul(a_e012, b_e1)),
+        zero,
+        add(add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12)), mul(a_e012, b_s))}
+
+def Multivector.anticommutator.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Scalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Scalar{+b_s}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e01, b_s),
+        mul(a_e20, b_s),
+        mul(a_e12, b_s),
+        mul(a_e012, b_s)}
+
+def Multivector.anticommutator.Line(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Line<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Line{+b_e1, +b_e2, +b_e0}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        mul(a_s, b_e0),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        mul(a_e012, b_e2),
+        mul(a_e012, b_e1),
+        zero,
+        add(add(mul(a_e12, b_e0), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Multivector.anticommutator.Point(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Point<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Point{+b_e20, +b_e01, +b_e12}:
+      K.Multivector{
+        neg(mul(a_e12, b_e12)),
+        neg(mul(a_e012, b_e12)),
+        zero,
+        zero,
+        mul(a_s, b_e01),
+        mul(a_s, b_e20),
+        mul(a_s, b_e12),
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12))}
+
+def Multivector.anticommutator.Direction(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Direction<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Direction{+b_e20, +b_e01}:
+      K.Multivector{
+        zero,
+        zero,
+        zero,
+        zero,
+        mul(a_s, b_e01),
+        mul(a_s, b_e20),
+        zero,
+        add(mul(a_e2, b_e01), mul(a_e1, b_e20))}
+
+def Multivector.anticommutator.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Pseudoscalar<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Pseudoscalar{+b_e012}:
+      K.Multivector{
+        zero,
+        neg(mul(a_e12, b_e012)),
+        zero,
+        zero,
+        mul(a_e2, b_e012),
+        mul(a_e1, b_e012),
+        zero,
+        mul(a_s, b_e012)}
+
+def Multivector.anticommutator.Rotor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Rotor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Rotor{+b_s, +b_e12}:
+      K.Multivector{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(neg(mul(a_e012, b_e12)), mul(a_e0, b_s)),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        mul(a_e01, b_s),
+        mul(a_e20, b_s),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        add(mul(a_e0, b_e12), mul(a_e012, b_s))}
+
+def Multivector.anticommutator.Translator(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Translator<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Translator{+b_s, +b_e20, +b_e01}:
+      K.Multivector{
+        mul(a_s, b_s),
+        mul(a_e0, b_s),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        add(mul(a_s, b_e01), mul(a_e01, b_s)),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        mul(a_e12, b_s),
+        add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e012, b_s))}
+
+def Multivector.anticommutator.Motor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Motor<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Motor{+b_s, +b_e12, +b_e20, +b_e01}:
+      K.Multivector{
+        add(neg(mul(a_e12, b_e12)), mul(a_s, b_s)),
+        add(neg(mul(a_e012, b_e12)), mul(a_e0, b_s)),
+        mul(a_e1, b_s),
+        mul(a_e2, b_s),
+        add(mul(a_s, b_e01), mul(a_e01, b_s)),
+        add(mul(a_s, b_e20), mul(a_e20, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        add(add(add(mul(a_e2, b_e01), mul(a_e1, b_e20)), mul(a_e0, b_e12)), mul(a_e012, b_s))}
+
+def Multivector.anticommutator.Flector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Flector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Flector{+b_e1, +b_e2, +b_e0, +b_e012}:
+      K.Multivector{
+        add(mul(a_e1, b_e1), mul(a_e2, b_e2)),
+        add(neg(mul(a_e12, b_e012)), mul(a_s, b_e0)),
+        mul(a_s, b_e1),
+        mul(a_s, b_e2),
+        add(mul(a_e2, b_e012), mul(a_e012, b_e2)),
+        add(mul(a_e1, b_e012), mul(a_e012, b_e1)),
+        zero,
+        add(add(add(mul(a_s, b_e012), mul(a_e12, b_e0)), mul(a_e20, b_e1)), mul(a_e01, b_e2))}
+
+def Multivector.anticommutator.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Multivector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Multivector{+a_s, +a_e0, +a_e1, +a_e2, +a_e01, +a_e20, +a_e12, +a_e012} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e01, +b_e20, +b_e12, +b_e012}:
+      K.Multivector{
+        add(add(add(neg(mul(a_e12, b_e12)), mul(a_e1, b_e1)), mul(a_e2, b_e2)), mul(a_s, b_s)),
+        add(add(add(neg(mul(a_e12, b_e012)), mul(a_s, b_e0)), neg(mul(a_e012, b_e12))), mul(a_e0, b_s)),
+        add(mul(a_s, b_e1), mul(a_e1, b_s)),
+        add(mul(a_s, b_e2), mul(a_e2, b_s)),
+        add(add(add(mul(a_e2, b_e012), mul(a_s, b_e01)), mul(a_e012, b_e2)), mul(a_e01, b_s)),
+        add(add(add(mul(a_e1, b_e012), mul(a_s, b_e20)), mul(a_e012, b_e1)), mul(a_e20, b_s)),
+        add(mul(a_s, b_e12), mul(a_e12, b_s)),
+        add(add(add(add(add(add(add(mul(a_s, b_e012), mul(a_e2, b_e01)), mul(a_e1, b_e20)), mul(a_e12, b_e0)), mul(a_e0, b_e12)), mul(a_e20, b_e1)), mul(a_e01, b_e2)), mul(a_e012, b_s))}
