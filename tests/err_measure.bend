@@ -1,5 +1,5 @@
-# The rounding-error theorem's bound, k u absev (proofs/err.bend), holds
-# for F32 on sampled inputs: 20000 per kernel, PGA3D products and CGA3D
+# The rounding-error theorem's bound, k u absev (proofs/err.bend), and the
+# tracked bound (Err.track, api/track.bend) hold for F32 on sampled inputs: 20000 per kernel, PGA3D products and CGA3D
 # distances far from the origin. The control shows the check can fail:
 # the worst case comes within a factor 4 of the bound. The bench files
 # print the full figures.
@@ -7,10 +7,12 @@ import Base
 import ../bench/measure_pga3d.bend as P
 import ../bench/measure_cga3d.bend as C
 
+# within t of the theorem's bound, and within the tracked bound
+# (api/track.bend, from computed quantities only)
 def okp(+t: F32, a: P.Acc) -> Bool:
   match a:
-    case P.Acc{mx, sum, n, grow}:
-      F32.is_le(mx, t)
+    case P.Acc{mx, sum, n, grow, trk}:
+      Bool.and(F32.is_le(mx, t), F32.is_le(trk, 1.0))
 
 def okc(a: C.Acc) -> Bool:
   match a:

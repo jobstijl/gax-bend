@@ -11,6 +11,7 @@
 import Base
 import ../num/df32.bend as D
 import ../src/err.bend as E
+import ../api/track.bend as TR
 import ../algebras/pga3d/kinds.bend as K
 import ../algebras/pga3d/ops.bend as O
 
@@ -38,31 +39,33 @@ def dfa(x: F32) -> D.DF:
 
 # Accumulating the report
 type Acc is Data:
-  Acc{mx: F32, sum: F32, n: F32, grow: F32}
+  Acc{mx: F32, sum: F32, n: F32, grow: F32, trk: F32}
 
-def Acc.one(+r: F32, +g: F32, a: Acc) -> Acc:
+def Acc.one(+r: F32, +g: F32, +t: F32, a: Acc) -> Acc:
   match a:
-    case Acc{mx, sum, n, grow}:
-      Acc{F32.max(mx, r), (sum + r : F32), (n + 1.0 : F32), F32.max(grow, g)}
+    case Acc{mx, sum, n, grow, trk}:
+      Acc{F32.max(mx, r), (sum + r : F32), (n + 1.0 : F32), F32.max(grow, g), F32.max(trk, t)}
 
-# one field: err = |f - e|, unit = u absev, bound = k unit
-def Acc.field(+f: F32, e: D.DF, ab: D.DF, +k: Nat, +a: Acc) -> Acc:
+# one field: err = |f - e|, unit = u absev, bound = k unit, and the tracked
+# bound from computed quantities, Track.factor(k) A^ (api/track.bend)
+def Acc.field(+f: F32, e: D.DF, ab: D.DF, +ah: F32, +k: Nat, +a: Acc) -> Acc:
   +err = D.DF.to_f32(D.DF.abs(D.DF.sub(D.DF.of(f), e)))
   +unit = (5.9604645e-8 * D.DF.to_f32(ab) : F32)
   +bound = (U32.to_f32(U32.from_nat(k)) * unit : F32)
-  Bool.pick(Acc, F32.is_lt(0.0, bound), Acc.one((err / bound : F32), (err / unit : F32), a), a)
+  +tb = (TR.Track.factor(k) * ah : F32)
+  Bool.pick(Acc, F32.is_lt(0.0, bound), Acc.one((err / bound : F32), (err / unit : F32), (err / tb : F32), a), a)
 
-def Acc.fields(fs: List<&2, F32>, es: List<&2, D.DF>, as: List<&2, D.DF>, ks: List<&2, Nat>, a: Acc) -> Acc:
-  match fs es as ks:
-    case f <> ft e <> et b <> bt k <> kt:
-      Acc.fields(ft, et, bt, kt, Acc.field(f, e, b, k, a))
-    case _ _ _ _:
+def Acc.fields(fs: List<&2, F32>, es: List<&2, D.DF>, as: List<&2, D.DF>, hs: List<&2, F32>, ks: List<&2, Nat>, a: Acc) -> Acc:
+  match fs es as hs ks:
+    case f <> ft e <> et b <> bt h <> ht k <> kt:
+      Acc.fields(ft, et, bt, ht, kt, Acc.field(f, e, b, h, k, a))
+    case _ _ _ _ _:
       a
 
 def Acc.show(+name: String, a: Acc, kmax: Nat) -> String:
   match a:
-    case Acc{mx, sum, +n, grow}:
-      name ++ ": max err/bound " ++ F32.show(mx) ++ ", mean " ++ F32.show((sum / n : F32)) ++ ", max err/(u absev) " ++ F32.show(grow) ++ " (k up to " ++ Nat.show(kmax) ++ ")"
+    case Acc{mx, sum, +n, grow, trk}:
+      name ++ ": max err/bound " ++ F32.show(mx) ++ ", mean " ++ F32.show((sum / n : F32)) ++ ", max err/(u absev) " ++ F32.show(grow) ++ ", max err/tracked " ++ F32.show(trk) ++ " (k up to " ++ Nat.show(kmax) ++ ")"
 
 def Nat.maxl(xs: List<&2, Nat>) -> Nat:
   match xs:
@@ -81,6 +84,7 @@ def mtp.one(+s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
   Acc.fields(K.Point.fields(F32, O.Motor.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, m, p)),
     K.Point.fields(D.DF, O.Motor.transform.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, K.Motor.map(~F32, ~D.DF, ~D.DF.of, m), K.Point.map(~F32, ~D.DF, ~D.DF.of, p))),
     K.Point.fields(D.DF, O.Motor.transform.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, K.Motor.map(~F32, ~D.DF, ~dfa, m), K.Point.map(~F32, ~D.DF, ~dfa, p))),
+    K.Point.fields(F32, O.Motor.transform.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~(w => w), K.Motor.map(~F32, ~F32, ~F32.abs, m), K.Point.map(~F32, ~F32, ~F32.abs, p))),
     ks, a)
 
 def mm.k() -> List<&2, Nat>:
@@ -92,6 +96,7 @@ def mm.one(+s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
   Acc.fields(K.Motor.fields(F32, O.Motor.gp.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, x, y)),
     K.Motor.fields(D.DF, O.Motor.gp.Motor(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, K.Motor.map(~F32, ~D.DF, ~D.DF.of, x), K.Motor.map(~F32, ~D.DF, ~D.DF.of, y))),
     K.Motor.fields(D.DF, O.Motor.gp.Motor(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, K.Motor.map(~F32, ~D.DF, ~dfa, x), K.Motor.map(~F32, ~D.DF, ~dfa, y))),
+    K.Motor.fields(F32, O.Motor.gp.Motor(~F32, ~0.0, ~F32.add, ~F32.mul, ~(w => w), K.Motor.map(~F32, ~F32, ~F32.abs, x), K.Motor.map(~F32, ~F32, ~F32.abs, y))),
     ks, a)
 
 def pvp.k() -> List<&2, Nat>:
@@ -103,6 +108,7 @@ def pvp.one(+s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
   Acc.fields(K.Line.fields(F32, O.Point.vee.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, x, y)),
     K.Line.fields(D.DF, O.Point.vee.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.neg, K.Point.map(~F32, ~D.DF, ~D.DF.of, x), K.Point.map(~F32, ~D.DF, ~D.DF.of, y))),
     K.Line.fields(D.DF, O.Point.vee.Point(~D.DF, ~D.DF.zero(), ~D.DF.add, ~D.DF.mul, ~D.DF.id, K.Point.map(~F32, ~D.DF, ~dfa, x), K.Point.map(~F32, ~D.DF, ~dfa, y))),
+    K.Line.fields(F32, O.Point.vee.Point(~F32, ~0.0, ~F32.add, ~F32.mul, ~(w => w), K.Point.map(~F32, ~F32, ~F32.abs, x), K.Point.map(~F32, ~F32, ~F32.abs, y))),
     ks, a)
 
 def run.mtp(n: Nat, +s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
@@ -127,7 +133,7 @@ def run.pvp(n: Nat, +s: U32, +ks: List<&2, Nat>, a: Acc) -> Acc:
       run.pvp(j, (s + 1 : U32), ks, pvp.one(s, ks, a))
 
 def acc0() -> Acc:
-  Acc{0.0, 0.0, 0.0, 0.0}
+  Acc{0.0, 0.0, 0.0, 0.0, 0.0}
 
 def main() -> IO(Unit):
   do IO<Unit>:

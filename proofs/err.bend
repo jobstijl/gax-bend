@@ -326,3 +326,115 @@ def Err.fields(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T
       Unit{}
     case +t <> r:
       (Err.bound(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, t), Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, r))
+
+# Tracking
+# --------
+
+def Strip.k(+t: N.Tm) -> {E.Tm.k(E.Tm.strip(t)) == E.Tm.k(t) : Nat}:
+  match t:
+    case N.TVar{i}:
+      {==}
+    case N.TZero{}:
+      {==}
+    case N.TAdd{+a, +b}:
+      Equal.trans(Nat, 1n+Nat.max(E.Tm.k(E.Tm.strip(a)), E.Tm.k(E.Tm.strip(b))), 1n+Nat.max(E.Tm.k(a), E.Tm.k(E.Tm.strip(b))), 1n+Nat.max(E.Tm.k(a), E.Tm.k(b)),
+        Equal.cong(Nat, Nat, w => 1n+Nat.max(w, E.Tm.k(E.Tm.strip(b))), E.Tm.k(E.Tm.strip(a)), E.Tm.k(a), Strip.k(a)),
+        Equal.cong(Nat, Nat, w => 1n+Nat.max(E.Tm.k(a), w), E.Tm.k(E.Tm.strip(b)), E.Tm.k(b), Strip.k(b)))
+    case N.TMul{+a, +b}:
+      Equal.trans(Nat, 1n+Nat.add(E.Tm.k(E.Tm.strip(a)), E.Tm.k(E.Tm.strip(b))), 1n+Nat.add(E.Tm.k(a), E.Tm.k(E.Tm.strip(b))), 1n+Nat.add(E.Tm.k(a), E.Tm.k(b)),
+        Equal.cong(Nat, Nat, w => 1n+Nat.add(w, E.Tm.k(E.Tm.strip(b))), E.Tm.k(E.Tm.strip(a)), E.Tm.k(a), Strip.k(a)),
+        Equal.cong(Nat, Nat, w => 1n+Nat.add(E.Tm.k(a), w), E.Tm.k(E.Tm.strip(b)), E.Tm.k(b), Strip.k(b)))
+    case N.TNeg{+a}:
+      Strip.k(a)
+
+def Env.abs_at(~T: Data, ~zero: T, ~abs: T -> T, ~abs_zero: {abs(zero) == zero : T}, +env: List<&2, T>, +i: Nat)
+  -> {N.Env.at(~T, ~zero, E.Env.abs(~T, ~abs, env), i) == abs(N.Env.at(~T, ~zero, env, i)) : T}:
+  match env:
+    case Nil{}:
+      Equal.sym(T, abs(zero), zero, abs_zero)
+    case x <> rest:
+      match i:
+        case 0n:
+          {==}
+        case 1n+j:
+          Env.abs_at(~T, ~zero, ~abs, ~abs_zero, rest, j)
+
+def T.cong2(~T: Data, ~op: T -> T -> T, -a1: T, -a2: T, -b1: T, -b2: T, e1: {a1 == a2 : T}, e2: {b1 == b2 : T}) -> {op(a1, b1) == op(a2, b2) : T}:
+  %e1 : {op(a1, b1) == op(_, b2) : T}
+  %e2 : {op(a1, b1) == op(a1, _) : T}
+  {==}
+
+# the stripped term at |leaves| is the absolute size
+def Strip.eval(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~abs: T -> T, ~abs_zero: {abs(zero) == zero : T}, +env: List<&2, T>, t: N.Tm)
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)) == E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t) : T}:
+  match t:
+    case N.TVar{+i}:
+      Env.abs_at(~T, ~zero, ~abs, ~abs_zero, env, i)
+    case N.TZero{}:
+      {==}
+    case N.TAdd{+a, +b}:
+      T.cong2(~T, ~add, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(a)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, a),
+        N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(b)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, b),
+        Strip.eval(~T, ~zero, ~add, ~mul, ~neg, ~abs, ~abs_zero, env, a), Strip.eval(~T, ~zero, ~add, ~mul, ~neg, ~abs, ~abs_zero, env, b))
+    case N.TMul{+a, +b}:
+      T.cong2(~T, ~mul, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(a)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, a),
+        N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(b)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, b),
+        Strip.eval(~T, ~zero, ~add, ~mul, ~neg, ~abs, ~abs_zero, env, a), Strip.eval(~T, ~zero, ~add, ~mul, ~neg, ~abs, ~abs_zero, env, b))
+    case N.TNeg{+a}:
+      Strip.eval(~T, ~zero, ~add, ~mul, ~neg, ~abs, ~abs_zero, env, a)
+
+# and its own absolute size is the same
+def Strip.absev(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~abs: T -> T, ~abs_zero: {abs(zero) == zero : T}, ~abs_abs: E.Ord.AbsAbs(T, abs), +env: List<&2, T>, t: N.Tm)
+  -> {E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)) == E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t) : T}:
+  match t:
+    case N.TVar{+i}:
+      Equal.trans(T, abs(N.Env.at(~T, ~zero, E.Env.abs(~T, ~abs, env), i)), abs(abs(N.Env.at(~T, ~zero, env, i))), abs(N.Env.at(~T, ~zero, env, i)),
+        Equal.cong(T, T, w => abs(w), N.Env.at(~T, ~zero, E.Env.abs(~T, ~abs, env), i), abs(N.Env.at(~T, ~zero, env, i)), Env.abs_at(~T, ~zero, ~abs, ~abs_zero, env, i)),
+        abs_abs(N.Env.at(~T, ~zero, env, i)))
+    case N.TZero{}:
+      {==}
+    case N.TAdd{+a, +b}:
+      T.cong2(~T, ~add, E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, E.Env.abs(~T, ~abs, env), E.Tm.strip(a)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, a),
+        E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, E.Env.abs(~T, ~abs, env), E.Tm.strip(b)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, b),
+        Strip.absev(~T, ~zero, ~add, ~mul, ~abs, ~abs_zero, ~abs_abs, env, a), Strip.absev(~T, ~zero, ~add, ~mul, ~abs, ~abs_zero, ~abs_abs, env, b))
+    case N.TMul{+a, +b}:
+      T.cong2(~T, ~mul, E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, E.Env.abs(~T, ~abs, env), E.Tm.strip(a)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, a),
+        E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, E.Env.abs(~T, ~abs, env), E.Tm.strip(b)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, b),
+        Strip.absev(~T, ~zero, ~add, ~mul, ~abs, ~abs_zero, ~abs_abs, env, a), Strip.absev(~T, ~zero, ~add, ~mul, ~abs, ~abs_zero, ~abs_abs, env, b))
+    case N.TNeg{+a}:
+      Strip.absev(~T, ~zero, ~add, ~mul, ~abs, ~abs_zero, ~abs_abs, env, a)
+
+def Track.size(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool}, ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Rel(T, add, mul, neg, abs, pos, eps, add, fadd), ~fmul_ok: E.Ord.Rel(T, add, mul, neg, abs, pos, eps, mul, fmul), ~abs_abs: E.Ord.AbsAbs(T, abs), +env: List<&2, T>, +t: N.Tm)
+  -> {pos(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t))))))) == True{} : Bool}:
+  e1 = Strip.eval(~T, ~zero, ~add, ~mul, ~neg, ~abs, ~abs_zero, env, t)
+  e2 = Strip.absev(~T, ~zero, ~add, ~mul, ~abs, ~abs_zero, ~abs_abs, env, t)
+  e3 = Equal.cong(Nat, T, w => E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, w), E.Tm.k(E.Tm.strip(t)), E.Tm.k(t), Strip.k(t))
+  %e1 : {pos(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(_)))))) == True{} : Bool}
+  %e2 : {pos(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), _), neg(abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))))) == True{} : Bool}
+  %e3 : {pos(add(mul(_, E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))), neg(abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))))) == True{} : Bool}
+  Err.bound(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))
+
+# |computed(t) - eval(t)| (1 - h) <= h A^, with A^ the stripped term computed
+# at |leaves|: a bound from computed quantities, given h = h(k(t)) <= 1
+def Err.track(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool}, ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Rel(T, add, mul, neg, abs, pos, eps, add, fadd), ~fmul_ok: E.Ord.Rel(T, add, mul, neg, abs, pos, eps, mul, fmul), ~abs_abs: E.Ord.AbsAbs(T, abs), ~le_abs: E.Ord.LeAbs(T, add, neg, abs, pos), +env: List<&2, T>, +t: N.Tm,
+  hl: {pos(add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))) == True{} : Bool}) -> {pos(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))), neg(mul(abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, env, t), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t)))), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)))))))) == True{} : Bool}:
+  +b1 = Err.bound(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, t)
+  +b2 = Track.size(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ~abs_abs, env, t)
+  +b3 = Le.trans(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))), abs(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), le_abs(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))))), Le.trans(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, abs(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))))), abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), Le.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, abs(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))))), abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)))), Equal.trans(T, abs(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))))), abs(neg(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t))))), abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)))), Equal.cong(T, T, w => abs(w), add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))), neg(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)))), NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)], N.TAdd{N.TVar{1n}, N.TNeg{N.TVar{0n}}}, N.TNeg{N.TAdd{N.TVar{0n}, N.TNeg{N.TVar{1n}}}}, {==})), abs_neg(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)))))), b2))
+  +e4 = Equal.trans(T, add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))))), add(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), one)))), add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), one], N.TAdd{N.TVar{0n}, N.TNeg{N.TMul{N.TVar{1n}, N.TAdd{N.TVar{3n}, N.TNeg{N.TVar{2n}}}}}}, N.TAdd{N.TAdd{N.TMul{N.TVar{2n}, N.TVar{1n}}, N.TNeg{N.TAdd{N.TVar{1n}, N.TNeg{N.TVar{0n}}}}}, N.TAdd{N.TVar{1n}, N.TNeg{N.TMul{N.TVar{1n}, N.TVar{3n}}}}}, {==}), Equal.trans(T, add(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), one)))), add(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), zero), add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), Equal.cong(T, T, w => add(add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), w), add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), one))), zero, Equal.trans(T, add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), one))), add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t))), zero, Equal.cong(T, T, w => add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(w)), mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), one), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), u(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t))), inv(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)))), NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))))))], N.TAdd{N.TVar{0n}, N.TZero{}}, N.TVar{0n}, {==})))
+  +b4 = Pos.rw(~T, ~pos, add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))))), Equal.sym(T, add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), neg(mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))))), add(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), neg(add(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), neg(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)))))), e4), b3)
+  +b5 = Le.scale_r(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)))), abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, env, t), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t)))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), hl, b1)
+  +b6 = Le.trans(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, mul(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)))))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))), Le.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, mul(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)))))), NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))], N.TMul{N.TMul{N.TVar{0n}, N.TVar{1n}}, N.TVar{2n}}, N.TMul{N.TVar{0n}, N.TMul{N.TVar{1n}, N.TVar{2n}}}, {==})), Le.scale(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), mul(E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))), N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t)), H.pos(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, E.Tm.k(t)), b4))
+  Le.trans(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, mul(abs(add(N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, env, t), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t)))), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))), mul(mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), E.Tm.absev(~T, ~zero, ~add, ~mul, ~abs, env, t)), add(one, neg(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t))))), mul(E.Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, E.Tm.k(t)), N.Tm.eval(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strip(t))), b5, b6)

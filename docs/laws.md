@@ -185,6 +185,7 @@ concrete ordered ring for every theorem stated over one.
 | `Err.bound` | for every term t: \|fl(t) − eval(t)\| ≤ h(k(t)) · absev(t), with h(k) = (1+ε)ᵏ − 1, k the roundings on the worst path (an add counts 1 + max, a product 1 + sum), absev the sign-stripped evaluation | the ring laws of `Norm.zero`; an order given by a positivity predicate closed under + and ×, with \|·\| nonnegative, the triangle inequality, \|ab\| = \|a\|\|b\|, \|−a\| = \|a\|, \|0\| = 0; a rounding function with \|rnd(x) − x\| ≤ ε\|x\| | proof | `proofs/err.bend` |
 | `Err.bound_u` | with underflow: \|fl(t) − eval(t)\| ≤ h(k(t)) · absev(t) + D(t), where additions round by rnda and products by rndm, and D (`Err.D`) adds η_a or η_m at each rounding and carries the children's D through (1+ε) | as `Err.bound`, but \|rnda(x) − x\| ≤ ε\|x\| + η_a and \|rndm(x) − x\| ≤ ε\|x\| + η_m, with η_a, η_m ≥ 0 | proof | `proofs/err.bend` |
 | `D.pos` | D(t) ≥ 0 | as above | proof | `proofs/err.bend` |
+| `Err.track` | \|fl(t) − eval(t)\| (1 − h) ≤ h · Â, with Â the negation-free term computed with fadd, fmul at \|leaves\|: a bound from computed quantities | as `Err.bound`, plus \|\|x\|\| = \|x\|, x ≤ \|x\|, and 1 − h(k) ≥ 0 | proof | `proofs/err.bend` |
 | `Ev.le` | \|eval(t)\| ≤ absev(t) | as above | proof | `proofs/err.bend` |
 | `H.add` | h(a + b) = h(a) + h(b) + h(a)h(b) | ring laws | proof | `proofs/err.bend` |
 

@@ -167,9 +167,18 @@ and it does.
 
 ## 3. Track (optional, after 1 and 2)
 
-- **A running bound:** the ⊛ kernel next to each kernel, times h(dₖ + 1),
-  rounded upward. It costs about 2× and is sound by the same theorem plus
-  a lemma bounding the computed absolute sum.
+- **A running bound (proven, `Err.track`):** the absolute-size kernel is
+  computed at F32 too, Â (the kernel on |inputs| with neg the identity).
+  Then
+    |ĉ − c| · (1 − h(k)) ≤ h(k) · Â.
+  The proof applies the theorem to the absolute-size term itself, which
+  gives A·(1 − h) ≤ Â, and chains it with the main bound. It needs two
+  more order facts, ||x|| = |x| and x ≤ |x|, both easy for Int and Dy.
+  `api/track.bend` turns this into a factor, `Track.factor(k)` ≥ h/(1 − h),
+  so B = factor · Â, at about twice the kernel's cost. Measured in
+  `bench/measure_pga3d.bend`: err/B is at most 0.96 over 300 000 samples,
+  as tight as the exact-size bound. `tests/err_measure.bend` checks
+  err/B ≤ 1 in the gate.
 - **A type for it:** `Approx(b)`, a value with an erased proof that its
   error is at most b. Kernel signatures then compose bounds the way
   NumFuzz composes its grades, but in the absolute / |e|abs metric:
@@ -200,7 +209,8 @@ and it does.
 4. The software float: faithful rounding proven against the model, then
    correct rounding. The largest piece; recent Lean work (TorchLean's
    IEEE32Exec, FloatLib, Tunnell's FP) is the closest reference.
-5. Running bounds and `Approx`; compensated and exact-accumulator kernels.
+5. Running bounds (**done**: `Err.track`, `api/track.bend`) and `Approx`;
+   compensated and exact-accumulator kernels.
 
 ## Survey (2015–2026), what each contributes here
 

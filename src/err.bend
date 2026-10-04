@@ -161,3 +161,38 @@ def Err.dadd(a: Nat, b: Nat) -> Nat:
 
 def Err.dmul(a: Nat, b: Nat) -> Nat:
   1n+Nat.add(a, b)
+
+# Tracking (docs/numerics.md §3): the bound from computed quantities only.
+# The absolute size A = absev(t) is not computed exactly at run time; what
+# is computed is A^ = the term evaluated with fadd and fmul on |leaves|,
+# negation dropped. proofs/err.bend (Err.track) shows
+#   |computed(t) - eval(t)| (1 - h) <= h A^,   h = h(k(t)) < 1.
+
+def Ord.AbsAbs(T: Data, abs: T -> T) -> Type:
+  @a: T -> {abs(abs(a)) == abs(a) : T}
+
+# a <= |a|
+def Ord.LeAbs(T: Data, add: T -> T -> T, neg: T -> T, abs: T -> T, pos: T -> Bool) -> Type:
+  @a: T -> {pos(add(abs(a), neg(a))) == True{} : Bool}
+
+# t with its negations dropped
+def Tm.strip(t: N.Tm) -> N.Tm:
+  match t:
+    case N.TVar{i}:
+      N.TVar{i}
+    case N.TZero{}:
+      N.TZero{}
+    case N.TAdd{a, b}:
+      N.TAdd{Tm.strip(a), Tm.strip(b)}
+    case N.TMul{a, b}:
+      N.TMul{Tm.strip(a), Tm.strip(b)}
+    case N.TNeg{a}:
+      Tm.strip(a)
+
+# |x| for every variable
+def Env.abs(~T: Data, ~abs: T -> T, env: List<&2, T>) -> List<&2, T>:
+  match env:
+    case Nil{}:
+      Nil{}
+    case x <> t:
+      abs(x) <> Env.abs(~T, ~abs, t)
