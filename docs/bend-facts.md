@@ -356,3 +356,15 @@ single job.
   after 9 minutes. With ε a parameter assuming only pos(ε), the same check
   takes 1.4 s (`tests/dyadic_ring.bend`). So state theorems over symbolic
   constants and let concrete values arrive at run time.
+- **Templates are specialised at their concrete arguments.** Passing
+  `~23n` to a `~p1` binder makes the checker specialise. For the binary32
+  rounding theorem that meant expanding 2²⁴ and hitting 16 GB. The same
+  theorem with symbolic p1 checks in under a second (`tests/f32_model.bend`).
+  Merely checking `{==}` on a term containing `Dy.rne(24n, x)` overflows
+  the stack the same way. Concrete formats therefore stay symbolic in
+  proofs and become concrete at run time only.
+- **Base's Nat operations are native at run time; your own are not.**
+  `Nat.add`, `mul`, `sub`, `div`, `mod`, `is_lt` and `double` handle 2⁴⁰
+  instantly. A structurally recursive `Nat.lt` or `half` takes n steps
+  and overflows the stack near 2²⁴. And `Bool.pick` evaluates both arms
+  at run time, so a recursion under a pick runs to the end of its fuel.

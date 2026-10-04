@@ -59,16 +59,21 @@ def Tr.up(t: Tr, +b: Nat, +w: Nat) -> Tr:
     case Tr{+s, q, +r, +wr, wq}:
       Tr{1n+s, q, Nat.add(Nat.double(r), b), Nat.add(Nat.double(wr), Nat.monus(1n, b)), Bool.pick(Nat, Nat.is_eq(s, 0n), D.Nat.half(w), wq)}
 
-def Tr.go(fuel: Nat, +p: Nat, +n: Nat) -> Tr:
+# lt is n < 2^p, passed in: a match, so the recursion runs only while
+# halving is needed (Bool.pick would evaluate both arms)
+def Tr.go(fuel: Nat, +p: Nat, +n: Nat, lt: Bool) -> Tr:
   match fuel:
     case 0n:
       Tr{0n, n, 0n, 0n, 0n}
     case 1n+f:
-      Bool.pick(Tr, Nat.lt(n, Nat.pow2(p)), Tr{0n, n, 0n, 0n, 0n},
-        Tr.up(Tr.go(f, p, D.Nat.half(n)), Nat.bit(n), Nat.monus(n, Nat.pow2(p))))
+      match lt:
+        case True{}:
+          Tr{0n, n, 0n, 0n, 0n}
+        case False{}:
+          Tr.up(Tr.go(f, p, D.Nat.half(n), Nat.lt(D.Nat.half(n), Nat.pow2(p))), Nat.bit(n), Nat.monus(n, Nat.pow2(p)))
 
 def Tr.of(+p: Nat, +n: Nat) -> Tr:
-  Tr.go(n, p, n)
+  Tr.go(n, p, n, Nat.lt(n, Nat.pow2(p)))
 
 # q 2^s
 def Tr.val(t: Tr) -> Nat:
@@ -122,3 +127,52 @@ def Dy.nadd(p: Nat, x: D.Dy, y: D.Dy) -> D.Dy:
 
 def Dy.nmul(p: Nat, x: D.Dy, y: D.Dy) -> D.Dy:
   Dy.rne(p, D.Dy.mul(x, y))
+
+# Rounding to the grid 2^-k, to nearest, ties to even (binary32 below its
+# smallest normal: k = 149). On n / 2^d with d > k, the shift s = d - k is
+# fixed: n = q 2^s + r with 2^s = r + 1 + wr, by the same halving as Tr.
+def Fx.go(s: Nat, +n: Nat) -> Tr:
+  match s:
+    case 0n:
+      Tr{0n, n, 0n, 0n, 0n}
+    case 1n+j:
+      Tr.up(Fx.go(j, D.Nat.half(n)), Nat.bit(n), 0n)
+
+def Dy.rfix(+k: Nat, +x: D.Dy) -> D.Dy:
+  Bool.pick(D.Dy, Nat.lt(k, D.Dy.den(x)),
+    D.Dy.of(D.Dy.den(x), Int.signed(D.Dy.num(x), Tr.near(Fx.go(Nat.monus(D.Dy.den(x), k), Int.mag(D.Dy.num(x)))))),
+    x)
+
+# a float format's rounding: to p bits in its normal range, to the grid 2^-k
+# below (the proofs keep p and k symbolic: the checker would expand 2^24)
+def Dy.fl(+p: Nat, +k: Nat, big: Bool, +x: D.Dy) -> D.Dy:
+  match big:
+    case True{}:
+      Dy.rne(p, x)
+    case False{}:
+      Dy.rfix(k, x)
+
+# rounding with the range decided by big
+def Dy.flr(~p: Nat, ~k: Nat, ~big: D.Dy -> Bool, +z: D.Dy) -> D.Dy:
+  Dy.fl(p, k, big(z), z)
+
+def Dy.fladd(~p: Nat, ~k: Nat, ~big: D.Dy -> Bool, x: D.Dy, y: D.Dy) -> D.Dy:
+  Dy.flr(~p, ~k, ~big, D.Dy.add(x, y))
+
+def Dy.flmul(~p: Nat, ~k: Nat, ~big: D.Dy -> Bool, x: D.Dy, y: D.Dy) -> D.Dy:
+  Dy.flr(~p, ~k, ~big, D.Dy.mul(x, y))
+
+# |x| >= 2^-126, without aligning exponents: for x = n / 2^d, d <= 126 or
+# |n| >= 2^(d - 126)
+def Dy.big(+x: D.Dy) -> Bool:
+  Bool.pick(Bool, Nat.lt(126n, D.Dy.den(x)), Bool.not(Nat.lt(Int.mag(D.Dy.num(x)), Nat.pow2(Nat.monus(D.Dy.den(x), 126n)))), True{})
+
+# the same, with a plain parameter, to pass as a function
+def Dy.normal(x: D.Dy) -> Bool:
+  Dy.big(x)
+
+# IEEE binary32 rounding of an exact value, finite range: round to nearest
+# even at 24 bits when |x| >= 2^-126, to the grid 2^-149 below
+# (proofs/round.bend: |f32(x) - x| <= 2^-24 |x| + 2^-150 either way)
+def Dy.f32(+x: D.Dy) -> D.Dy:
+  Dy.fl(24n, 149n, Dy.big(x), x)
