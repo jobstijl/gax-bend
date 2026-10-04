@@ -2839,7 +2839,7 @@ def Vector.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       K.Scalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Scalar.tree(~T, ~neg, K.Scalar{b_s})), S.MV.reverse(~T, ~neg, 2n, K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2})))),
         K.Scalar.s(T, O.Vector.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Scalar{b_s})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Scalar.s(N.Tm, O.Vector.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})),
           {==}))
@@ -2850,7 +2850,7 @@ def Vector.transform.Scalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 2n, K.Vector.tree(~T, ~neg, a)))) == zero : T}:
   match a b:
     case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
         {==})
 
@@ -2866,11 +2866,11 @@ def Vector.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2})), S.MV.reverse(~T, ~neg, 2n, K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2})))),
         K.Vector.e1(T, O.Vector.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Vector{b_e1, b_e2})),
         K.Vector.e2(T, O.Vector.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Vector{b_e1, b_e2})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Vector.e1(N.Tm, O.Vector.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Vector.e2(N.Tm, O.Vector.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})),
           {==}))
@@ -2885,7 +2885,7 @@ def Vector.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       K.Pseudoscalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12})), S.MV.reverse(~T, ~neg, 2n, K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2})))),
         K.Pseudoscalar.e12(T, O.Vector.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Pseudoscalar{b_e12})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Pseudoscalar.e12(N.Tm, O.Vector.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})),
           {==}))
@@ -2896,7 +2896,7 @@ def Vector.transform.Pseudoscalar.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T ->
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 2n, K.Vector.tree(~T, ~neg, a)))) == zero : T}:
   match a b:
     case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
         {==})
 
@@ -2912,11 +2912,11 @@ def Vector.transform.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12})), S.MV.reverse(~T, ~neg, 2n, K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2})))),
         K.Rotor.s(T, O.Vector.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12})),
         K.Rotor.e12(T, O.Vector.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Rotor.s(N.Tm, O.Vector.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Rotor.e12(N.Tm, O.Vector.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})),
           {==}))
@@ -2937,19 +2937,19 @@ def Vector.transform.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         K.Multivector.e1(T, O.Vector.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12})),
         K.Multivector.e2(T, O.Vector.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12})),
         K.Multivector.e12(T, O.Vector.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.s(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.e1(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.e2(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.e12(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}))
@@ -2964,7 +2964,7 @@ def Rotor.transform.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       K.Scalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Scalar.tree(~T, ~neg, K.Scalar{b_s})), S.MV.reverse(~T, ~neg, 2n, K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12})))),
         K.Scalar.s(T, O.Rotor.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Scalar{b_s})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Scalar.s(N.Tm, O.Rotor.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})),
           {==}))
@@ -2975,7 +2975,7 @@ def Rotor.transform.Scalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 2n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
   match a b:
     case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
         {==})
 
@@ -2991,11 +2991,11 @@ def Rotor.transform.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2})), S.MV.reverse(~T, ~neg, 2n, K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12})))),
         K.Vector.e1(T, O.Rotor.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2})),
         K.Vector.e2(T, O.Rotor.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Vector.e1(N.Tm, O.Rotor.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Vector.e2(N.Tm, O.Rotor.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})),
           {==}))
@@ -3010,7 +3010,7 @@ def Rotor.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       K.Pseudoscalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12})), S.MV.reverse(~T, ~neg, 2n, K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12})))),
         K.Pseudoscalar.e12(T, O.Rotor.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Pseudoscalar{b_e12})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Pseudoscalar.e12(N.Tm, O.Rotor.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})),
           {==}))
@@ -3021,7 +3021,7 @@ def Rotor.transform.Pseudoscalar.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> 
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 2n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
   match a b:
     case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
         {==})
 
@@ -3037,11 +3037,11 @@ def Rotor.transform.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12})), S.MV.reverse(~T, ~neg, 2n, K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12})))),
         K.Rotor.s(T, O.Rotor.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Rotor{b_s, b_e12})),
         K.Rotor.e12(T, O.Rotor.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Rotor{b_s, b_e12})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Rotor.s(N.Tm, O.Rotor.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Rotor.e12(N.Tm, O.Rotor.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})),
           {==}))
@@ -3062,19 +3062,19 @@ def Rotor.transform.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         K.Multivector.e1(T, O.Rotor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12})),
         K.Multivector.e2(T, O.Rotor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12})),
         K.Multivector.e12(T, O.Rotor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12})),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.s(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.e1(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.e2(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 2n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
           K.Multivector.e12(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})),
           {==}))
@@ -3089,7 +3089,7 @@ def Vector.commutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       K.Pseudoscalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2}))),
         K.Pseudoscalar.e12(T, O.Pseudoscalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Vector{b_e1, b_e2}), O.Vector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           K.Pseudoscalar.e12(N.Tm, O.Pseudoscalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}), O.Vector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3100,7 +3100,7 @@ def Vector.commutator.Vector.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
         {==})
 
@@ -3116,11 +3116,11 @@ def Vector.commutator.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Pseudoscalar{b_e12}), O.Vector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Pseudoscalar{b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Pseudoscalar{b_e12}), O.Vector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Pseudoscalar{b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}), O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}), O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
           {==}))
@@ -3137,11 +3137,11 @@ def Vector.commutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}), O.Vector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}), O.Vector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}), O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}), O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3162,19 +3162,19 @@ def Vector.commutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3191,11 +3191,11 @@ def Pseudoscalar.commutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{a_e12}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Vector{b_e1, b_e2}), O.Pseudoscalar.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Vector{b_e1, b_e2}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Vector{b_e1, b_e2}), O.Pseudoscalar.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}), O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}), O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           {==}))
@@ -3212,11 +3212,11 @@ def Pseudoscalar.commutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T 
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{a_e12}), K.Multivector.tree(~T, ~neg, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}))
@@ -3227,7 +3227,7 @@ def Pseudoscalar.commutator.Multivector.zero_e12(~T: Data, ~zero: T, ~one: T, ~a
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
         {==})
 def Pseudoscalar.commutator.Multivector.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3237,7 +3237,7 @@ def Pseudoscalar.commutator.Multivector.zero_s(~T: Data, ~zero: T, ~one: T, ~add
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
         {==})
 
@@ -3253,11 +3253,11 @@ def Rotor.commutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}), O.Rotor.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}), O.Rotor.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}), O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}), O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3274,11 +3274,11 @@ def Rotor.commutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Multivector.tree(~T, ~neg, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Rotor.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Rotor.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3289,7 +3289,7 @@ def Rotor.commutator.Multivector.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
         {==})
 def Rotor.commutator.Multivector.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3299,7 +3299,7 @@ def Rotor.commutator.Multivector.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> 
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
         {==})
 
@@ -3319,19 +3319,19 @@ def Multivector.commutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}), O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}), O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}), O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3348,11 +3348,11 @@ def Multivector.commutator.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T 
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}), O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}), O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}), O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}), O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
           {==}))
@@ -3363,7 +3363,7 @@ def Multivector.commutator.Pseudoscalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~a
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
         {==})
 def Multivector.commutator.Pseudoscalar.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3373,7 +3373,7 @@ def Multivector.commutator.Pseudoscalar.zero_s(~T: Data, ~zero: T, ~one: T, ~add
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
         {==})
 
@@ -3389,11 +3389,11 @@ def Multivector.commutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}), O.Multivector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}), O.Multivector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}), O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}), O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3404,7 +3404,7 @@ def Multivector.commutator.Rotor.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
         {==})
 def Multivector.commutator.Rotor.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3414,7 +3414,7 @@ def Multivector.commutator.Rotor.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> 
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
         {==})
 
@@ -3434,19 +3434,19 @@ def Multivector.commutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.commutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}))
@@ -3461,7 +3461,7 @@ def Scalar.anticommutator.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       K.Scalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, K.Scalar{a_s}), K.Scalar.tree(~T, ~neg, K.Scalar{b_s}))),
         K.Scalar.s(T, O.Scalar.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Scalar{b_s}), O.Scalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Scalar{b_s}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{1n}}))),
           K.Scalar.s(N.Tm, O.Scalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}), O.Scalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
           {==}))
@@ -3478,11 +3478,11 @@ def Scalar.anticommutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, K.Scalar{a_s}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Vector{b_e1, b_e2}), O.Scalar.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Vector{b_e1, b_e2}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Vector{b_e1, b_e2}), O.Scalar.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}), O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}), O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
           {==}))
@@ -3497,7 +3497,7 @@ def Scalar.anticommutator.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -
       K.Pseudoscalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, K.Scalar{a_s}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12}))),
         K.Pseudoscalar.e12(T, O.Pseudoscalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Pseudoscalar{b_e12}), O.Scalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Pseudoscalar{b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{1n}}))),
           K.Pseudoscalar.e12(N.Tm, O.Pseudoscalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}), O.Scalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
           {==}))
@@ -3514,11 +3514,11 @@ def Scalar.anticommutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Scalar.tree(~T, ~neg, K.Scalar{a_s}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Rotor{b_s, b_e12}), O.Scalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Rotor{b_s, b_e12}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Rotor{b_s, b_e12}), O.Scalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}), O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}), O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           {==}))
@@ -3539,19 +3539,19 @@ def Scalar.anticommutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T ->
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Scalar{a_s}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}))
@@ -3568,11 +3568,11 @@ def Vector.anticommutator.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Scalar.tree(~T, ~neg, K.Scalar{b_s}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Scalar{b_s}), O.Vector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Scalar{b_s}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Scalar{b_s}), O.Vector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Scalar{b_s}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}), O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}), O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
           {==}))
@@ -3587,7 +3587,7 @@ def Vector.anticommutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       K.Scalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2}))),
         K.Scalar.s(T, O.Scalar.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Vector{b_e1, b_e2}), O.Vector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           K.Scalar.s(N.Tm, O.Scalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}), O.Vector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3598,7 +3598,7 @@ def Vector.anticommutator.Vector.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, a), K.Vector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_e1, b_e2],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
         {==})
 
@@ -3614,11 +3614,11 @@ def Vector.anticommutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Vector.tree(~T, ~neg, K.Vector{a_e1, a_e2}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}), O.Vector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}), O.Vector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}), O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}), O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3639,19 +3639,19 @@ def Vector.anticommutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T ->
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Vector{a_e1, a_e2}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3666,7 +3666,7 @@ def Pseudoscalar.anticommutator.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -
       K.Pseudoscalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{a_e12}), K.Scalar.tree(~T, ~neg, K.Scalar{b_s}))),
         K.Pseudoscalar.e12(T, O.Pseudoscalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Scalar{b_s}), O.Pseudoscalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Scalar{b_s}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{1n}}))),
           K.Pseudoscalar.e12(N.Tm, O.Pseudoscalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}), O.Pseudoscalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
           {==}))
@@ -3681,7 +3681,7 @@ def Pseudoscalar.anticommutator.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~ad
       K.Scalar.cong(T,
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{a_e12}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12}))),
         K.Scalar.s(T, O.Scalar.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Pseudoscalar{b_e12}), O.Pseudoscalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Pseudoscalar{b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{1n}}))),
           K.Scalar.s(N.Tm, O.Scalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}), O.Pseudoscalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
           {==}))
@@ -3698,11 +3698,11 @@ def Pseudoscalar.anticommutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T ->
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{a_e12}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Rotor{b_s, b_e12}), O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Rotor{b_s, b_e12}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Rotor{b_s, b_e12}), O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}), O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}), O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
           {==}))
@@ -3719,11 +3719,11 @@ def Pseudoscalar.anticommutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{a_e12}), K.Multivector.tree(~T, ~neg, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Pseudoscalar{a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}), O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
           {==}))
@@ -3734,7 +3734,7 @@ def Pseudoscalar.anticommutator.Multivector.zero_e1(~T: Data, ~zero: T, ~one: T,
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
         {==})
 def Pseudoscalar.anticommutator.Multivector.zero_e2(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3744,7 +3744,7 @@ def Pseudoscalar.anticommutator.Multivector.zero_e2(~T: Data, ~zero: T, ~one: T,
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e12, b_s, b_e1, b_e2, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
         {==})
 
@@ -3760,11 +3760,11 @@ def Rotor.anticommutator.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Scalar.tree(~T, ~neg, K.Scalar{b_s}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Scalar{b_s}), O.Rotor.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Scalar{b_s}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Scalar{b_s}), O.Rotor.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Scalar{b_s}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}), O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}), O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
           {==}))
@@ -3781,11 +3781,11 @@ def Rotor.anticommutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
         S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Vector.tree(~T, ~neg, K.Vector{b_e1, b_e2}))),
         K.Vector.e1(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}), O.Rotor.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}))),
         K.Vector.e2(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}), O.Rotor.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e1(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}), O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           K.Vector.e2(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}), O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3802,11 +3802,11 @@ def Rotor.anticommutator.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T ->
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Pseudoscalar{b_e12}), O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Pseudoscalar{b_e12}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Pseudoscalar{b_e12}), O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Pseudoscalar{b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}), O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}), O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
           {==}))
@@ -3823,11 +3823,11 @@ def Rotor.anticommutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Rotor.tree(~T, ~neg, K.Rotor{a_s, a_e12}), K.Rotor.tree(~T, ~neg, K.Rotor{b_s, b_e12}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Rotor{b_s, b_e12}), O.Rotor.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Rotor{b_s, b_e12}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Rotor{b_s, b_e12}), O.Rotor.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}), O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}), O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
           {==}))
@@ -3848,19 +3848,19 @@ def Rotor.anticommutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> 
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Rotor{a_s, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}), O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3881,19 +3881,19 @@ def Multivector.anticommutator.Scalar.ok(~T: Data, ~zero: T, ~one: T, ~add: T ->
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Scalar{b_s}), O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Scalar{b_s}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Scalar{b_s}), O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Scalar{b_s}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Scalar{b_s}), O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Scalar{b_s}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}), O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}), O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}), O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}), O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
           {==}))
@@ -3914,19 +3914,19 @@ def Multivector.anticommutator.Vector.ok(~T: Data, ~zero: T, ~one: T, ~add: T ->
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}), O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}), O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}), O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Vector{b_e1, b_e2}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Vector.tree(~N.Tm, ~N.Tm.neg, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -3943,11 +3943,11 @@ def Multivector.anticommutator.Pseudoscalar.ok(~T: Data, ~zero: T, ~one: T, ~add
         S.MV.at(~T, ~zero, ~neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}), K.Pseudoscalar.tree(~T, ~neg, K.Pseudoscalar{b_e12}))),
         K.Rotor.s(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}), O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}))),
         K.Rotor.e12(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}), O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Pseudoscalar{b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
           K.Rotor.s(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}), O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
           K.Rotor.e12(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}), O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
           {==}))
@@ -3958,7 +3958,7 @@ def Multivector.anticommutator.Pseudoscalar.zero_e1(~T: Data, ~zero: T, ~one: T,
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
         {==})
 def Multivector.anticommutator.Pseudoscalar.zero_e2(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3968,7 +3968,7 @@ def Multivector.anticommutator.Pseudoscalar.zero_e2(~T: Data, ~zero: T, ~one: T,
   -> {S.MV.at(~T, ~zero, ~neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~T, ~add, ~mul, ~neg, 2n, K.VGA2.sig(), K.Multivector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b))) == zero : T}:
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
-      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
+      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_e12],
         S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}}))),
         {==})
 
@@ -3988,19 +3988,19 @@ def Multivector.anticommutator.Rotor.ok(~T: Data, ~zero: T, ~one: T, ~add: T -> 
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}), O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}), O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}), O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Rotor{b_s, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}), O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
           {==}))
@@ -4021,19 +4021,19 @@ def Multivector.anticommutator.Multivector.ok(~T: Data, ~zero: T, ~one: T, ~add:
         K.Multivector.e1(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e2(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
         K.Multivector.e12(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}), O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, K.Multivector{a_s, a_e1, a_e2, a_e12}, K.Multivector{b_s, b_e1, b_e2, b_e12}))),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.s(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, False{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.e1(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [False{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.e2(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}),
-        NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
           S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 2n, [True{}, True{}], False{}, S.MV.anticommutator2(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 2n, K.VGA2.sig(), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Multivector.tree(~N.Tm, ~N.Tm.neg, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           K.Multivector.e12(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}), O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
           {==}))

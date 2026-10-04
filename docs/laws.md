@@ -85,6 +85,8 @@ in pairs. All of it is structural and runs in the checker on closed terms.
 |---|---|---|---|---|
 | `Norm.zero` | `Norm.left(t) == []` ⇒ eval(t) = 0 | add_assoc, add_comm, zero_l, add_inv, mul_assoc, mul_comm, unit_r, dist_l, neg_add, neg_mul_l, neg_neg | proof | `proofs/norm.bend` |
 | `Norm.eq` | `Norm.left(a − b) == []` ⇒ eval(a) = eval(b) | as `Norm.zero` | proof | `proofs/norm.bend` |
+| `NormS.zero`, `NormS.eq` | as `Norm.zero`/`Norm.eq`, but flattening with an accumulator, merge-sorting the monomials and cancelling neighbours with a stack: O(n log n) | as `Norm.zero` | proof | `proofs/norm.bend` |
+| `NormSH.zero`, `NormSH.eq` | the sorting form of `NormH` | as `NormH` | proof | `proofs/norm.bend` |
 | `NormH.zero`, `NormH.eq` | the same over rings with a half: given h + h = 1 for a variable h, `NormH.left` lifts every monomial to the highest power of h, using m hᵏ = m hᵏ⁺¹ + m hᵏ⁺¹, then cancels | as `Norm.zero`, plus h + h = 1 | proof | `proofs/norm.bend` |
 
 The method is complete for identities whose expanded monomials cancel
@@ -92,8 +94,9 @@ with coefficients ±1, which covers every polynomial identity: a
 coefficient c is c copies of a monomial. `NormH` is complete for
 identities over ℤ[½]: after lifting to a common power hᴺ, a term is zero
 at h = ½ exactly when its monomials cancel. It is what CGA's null basis
-needs (eo = ½(e₋ − e₊)). Its cost is quadratic in the
-number of monomials. Uses: `tests/norm_identities.bend` (positive);
+needs (eo = ½(e₋ − e₊)). `Norm.left` is quadratic in the number of monomials; the generated
+kernel proofs use `NormS`. Measured in the checker (bend-facts Q14):
+4050 monomials take 18.7 s with `Norm` and 3.7 s with `NormS`. Uses: `tests/norm_identities.bend` (positive);
 `tests/neg/norm_wrong.bend` claims (x + y)² = x² + y², and the checker
 reports the two xy monomials left over.
 

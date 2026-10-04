@@ -148,6 +148,14 @@ def Ms.flip(xs: List<&2, Mono>) -> List<&2, Mono>:
     case x <> t:
       Mono.flip(x) <> Ms.flip(t)
 
+# xs negated when s
+def Ms.sflip(s: Bool, xs: List<&2, Mono>) -> List<&2, Mono>:
+  match s:
+    case False{}:
+      xs
+    case True{}:
+      Ms.flip(xs)
+
 # x times each of ys
 def Ms.scale(+x: Mono, ys: List<&2, Mono>) -> List<&2, Mono>:
   match ys:
@@ -255,3 +263,125 @@ def Ms.lift(+v: Nat, +n: Nat, ms: List<&2, Mono>) -> List<&2, Mono>:
 def NormH.left(+v: Nat, t: Tm) -> List<&2, Mono>:
   +ms = Tm.flat(t)
   Ms.cancel(Ms.lift(v, Ms.maxh(v, ms), ms), Nil{})
+
+# Sorting before cancelling
+# -------------------------
+# Ms.cancel is quadratic. For large terms (CGA's sandwiches run to
+# thousands of monomials) NormS flattens with an accumulator, sorts the
+# monomials by their variables with a bottom-up merge sort, and cancels
+# adjacent opposites with a stack in one pass: O(n log n). No recursive
+# call sits inside a choice (Bool.pick computes both arms at run time):
+# the merge takes its next step as a parameter.
+
+# the monomials of t, negated when s, in front of acc
+def Tm.flatx(t: Tm, +s: Bool, acc: List<&2, Mono>) -> List<&2, Mono>:
+  match t:
+    case TVar{i}:
+      Mono{s, [i]} <> acc
+    case TZero{}:
+      acc
+    case TAdd{a, b}:
+      Tm.flatx(a, s, Tm.flatx(b, s, acc))
+    case TMul{a, b}:
+      Ms.app(Ms.sflip(s, Ms.mul(Tm.flatx(a, False{}, Nil{}), Tm.flatx(b, False{}, Nil{}))), acc)
+    case TNeg{a}:
+      Tm.flatx(a, Bool.not(s), acc)
+
+# lexicographic order on sorted variable lists
+def Vs.le(xs: List<&2, Nat>, ys: List<&2, Nat>) -> Bool:
+  match xs ys:
+    case Nil{} ys2:
+      True{}
+    case x <> xt Nil{}:
+      False{}
+    case +x <> xt +y <> yt:
+      Bool.or(Nat.is_lt(x, y), Bool.and(Nat.is_eq(x, y), Vs.le(xt, yt)))
+
+def Mono.le(a: Mono, b: Mono) -> Bool:
+  match a b:
+    case Mono{s, vs} Mono{t, ws}:
+      Vs.le(vs, ws)
+
+# whether the next element of a merge comes from xs
+def Ms.lehd(xs: List<&2, Mono>, ys: List<&2, Mono>) -> Bool:
+  match xs ys:
+    case Nil{} ys2:
+      False{}
+    case x <> xt Nil{}:
+      True{}
+    case x <> xt y <> yt:
+      Mono.le(x, y)
+
+def Ms.merge(+xs: List<&2, Mono>, +ys: List<&2, Mono>, c: Bool) -> List<&2, Mono>:
+  match xs ys:
+    case Nil{} ys2:
+      ys2
+    case x <> xt Nil{}:
+      x <> xt
+    case x <> +xt y <> +yt:
+      match c:
+        case True{}:
+          x <> Ms.merge(xt, ys, Ms.lehd(xt, ys))
+        case False{}:
+          y <> Ms.merge(xs, yt, Ms.lehd(xs, yt))
+
+# sorted runs: one pass merges neighbours
+def Runs.pass(rs: List<&2, List<&2, Mono>>) -> List<&2, List<&2, Mono>>:
+  match rs:
+    case Nil{}:
+      Nil{}
+    case +a <> t:
+      match t:
+        case Nil{}:
+          [a]
+        case +b <> u:
+          Ms.merge(a, b, Ms.lehd(a, b)) <> Runs.pass(u)
+
+def Runs.sort(n: Nat, rs: List<&2, List<&2, Mono>>) -> List<&2, List<&2, Mono>>:
+  match n:
+    case 0n:
+      rs
+    case 1n+k:
+      Runs.sort(k, Runs.pass(rs))
+
+def Runs.cat(rs: List<&2, List<&2, Mono>>) -> List<&2, Mono>:
+  match rs:
+    case Nil{}:
+      Nil{}
+    case r <> t:
+      Ms.app(r, Runs.cat(t))
+
+def Runs.single(xs: List<&2, Mono>) -> List<&2, List<&2, Mono>>:
+  match xs:
+    case Nil{}:
+      Nil{}
+    case x <> t:
+      [x] <> Runs.single(t)
+
+# sorted by variables (32 passes: lists below 2^32)
+def Ms.sort(xs: List<&2, Mono>) -> List<&2, Mono>:
+  Runs.cat(Runs.sort(32n, Runs.single(xs)))
+
+# cancel adjacent opposites with a stack
+def Cs.step(+m: Mono, st: List<&2, Mono>) -> List<&2, Mono>:
+  match st:
+    case Nil{}:
+      [m]
+    case +p <> +t:
+      Bool.pick(List<&2, Mono>, Mono.opp(m, p), t, m <> p <> t)
+
+def Cs.go(l: List<&2, Mono>, st: List<&2, Mono>) -> List<&2, Mono>:
+  match l:
+    case Nil{}:
+      st
+    case m <> t:
+      Cs.go(t, Cs.step(m, st))
+
+# what is left of t after sorting and cancelling: Nil{} means t is zero
+def NormS.left(t: Tm) -> List<&2, Mono>:
+  Cs.go(Ms.sort(Tm.flatx(t, False{}, Nil{})), Nil{})
+
+# the same over rings with a half, h being variable v
+def NormSH.left(+v: Nat, t: Tm) -> List<&2, Mono>:
+  +ms = Tm.flatx(t, False{}, Nil{})
+  Cs.go(Ms.sort(Ms.lift(v, Ms.maxh(v, ms), ms)), Nil{})

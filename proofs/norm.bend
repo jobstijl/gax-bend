@@ -515,3 +515,259 @@ def NormH.eq(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, 
         Equal.cong(T, T, w => add(w, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), zero,
           NormH.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, N.Tm.diff(a, b), hh, ok)),
         z(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))
+
+
+
+# Sorting before cancelling
+# -------------------------
+# NormS flattens with an accumulator, sorts, and cancels with a stack:
+# each step keeps the sum, so the same theorems hold.
+
+def Sgn.zero(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), s: Bool) -> {N.Sgn.ap(~T, ~neg, s, zero) == zero : T}:
+  match s:
+    case False{}:
+      {==}
+    case True{}:
+      Alg.neg_zero(~T, ~zero, ~add, ~neg, ~z, ~inv)
+
+def Sgn.notneg(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), s: Bool, +x: T) -> {N.Sgn.ap(~T, ~neg, Bool.not(s), x) == N.Sgn.ap(~T, ~neg, s, neg(x)) : T}:
+  match s:
+    case False{}:
+      {==}
+    case True{}:
+      Equal.sym(T, neg(neg(x)), x, nn(x))
+
+def Ms.sflip.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, s: Bool, xs: List<&2, N.Mono>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sflip(s, xs)) == N.Sgn.ap(~T, ~neg, s, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs)) : T}:
+  match s:
+    case False{}:
+      {==}
+    case True{}:
+      Ms.flip.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, xs)
+
+def Tm.flatx.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, t: N.Tm, +s: Bool, +acc: List<&2, N.Mono>)
+  -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, s, acc)) == add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)) : T}:
+  match t:
+    case N.TVar{+i}:
+      Equal.cong(T, T, w => add(N.Sgn.ap(~T, ~neg, s, w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), mul(N.Env.at(~T, ~zero, env, i), one), N.Env.at(~T, ~zero, env, i), u(N.Env.at(~T, ~zero, env, i)))
+    case N.TZero{}:
+      Equal.sym(T, add(N.Sgn.ap(~T, ~neg, s, zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc),
+        Equal.trans(T, add(N.Sgn.ap(~T, ~neg, s, zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), add(zero, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc),
+          Equal.cong(T, T, w => add(w, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), N.Sgn.ap(~T, ~neg, s, zero), zero, Sgn.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, s)),
+          z(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc))))
+    case N.TAdd{+a, +b}:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(a, s, N.Tm.flatx(b, s, acc))), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(b, s, acc))), add(N.Sgn.ap(~T, ~neg, s, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)),
+        Tm.flatx.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, s, N.Tm.flatx(b, s, acc)),
+        Equal.trans(T, add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(b, s, acc))), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc))), add(N.Sgn.ap(~T, ~neg, s, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)),
+          Equal.cong(T, T, w => add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(b, s, acc)), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), Tm.flatx.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, b, s, acc)),
+          Equal.trans(T, add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc))), add(add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), add(N.Sgn.ap(~T, ~neg, s, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)),
+            Equal.sym(T, add(add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc))), aa(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc))),
+            Equal.cong(T, T, w => add(w, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), add(N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Sgn.ap(~T, ~neg, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Sgn.ap(~T, ~neg, s, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), Sgn.add(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))))))
+    case N.TMul{+a, +b}:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(N.Ms.sflip(s, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{}))), acc)),
+        add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sflip(s, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{})))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), add(N.Sgn.ap(~T, ~neg, s, mul(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)),
+        Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Ms.sflip(s, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{}))), acc),
+        Equal.cong(T, T, w => add(w, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sflip(s, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{})))), N.Sgn.ap(~T, ~neg, s, mul(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))),
+          Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sflip(s, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{})))),
+            N.Sgn.ap(~T, ~neg, s, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{})))), N.Sgn.ap(~T, ~neg, s, mul(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))),
+            Ms.sflip.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, s, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{}))),
+            Equal.cong(T, T, w => N.Sgn.ap(~T, ~neg, s, w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{}))), mul(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)),
+              Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.mul(N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{}))),
+                mul(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(a, False{}, Nil{})), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(b, False{}, Nil{}))), mul(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)),
+                Ms.mul.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Tm.flatx(a, False{}, Nil{}), N.Tm.flatx(b, False{}, Nil{})),
+                B.Eq.cong2(T, T, T, p => q => mul(p, q), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(a, False{}, Nil{})), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(b, False{}, Nil{})), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+                  Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(a, False{}, Nil{})), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), zero), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), Tm.flatx.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, False{}, Nil{}), Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a))),
+                  Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(b, False{}, Nil{})), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b), zero), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b), Tm.flatx.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, b, False{}, Nil{}), Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))))))
+    case N.TNeg{+a}:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(a, Bool.not(s), acc)), add(N.Sgn.ap(~T, ~neg, Bool.not(s), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), add(N.Sgn.ap(~T, ~neg, s, neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)),
+        Tm.flatx.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, Bool.not(s), acc),
+        Equal.cong(T, T, w => add(w, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, acc)), N.Sgn.ap(~T, ~neg, Bool.not(s), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a)), N.Sgn.ap(~T, ~neg, s, neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a))), Sgn.notneg(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, s, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a))))
+
+def Ms.merge.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +xs: List<&2, N.Mono>, +ys: List<&2, N.Mono>, c: Bool)
+  -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(xs, ys, c)) == add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys)) : T}:
+  match xs ys:
+    case Nil{} +ys2:
+      Equal.sym(T, add(zero, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys2)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys2), z(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys2)))
+    case +x <> +xt Nil{}:
+      Equal.sym(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, x <> xt), zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, x <> xt), Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, x <> xt)))
+    case +x <> +xt +y <> +yt:
+      match c:
+        case True{}:
+          Equal.trans(T, add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(xt, ys, N.Ms.lehd(xt, ys)))), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xt), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys))), add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xt)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys)),
+            Equal.cong(T, T, w => add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(xt, ys, N.Ms.lehd(xt, ys))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xt), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys)), Ms.merge.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, xt, ys, N.Ms.lehd(xt, ys))),
+            Equal.sym(T, add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xt)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys)), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xt), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys))), aa(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xt), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, ys))))
+        case False{}:
+          Equal.trans(T, add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, y), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(xs, yt, N.Ms.lehd(xs, yt)))), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, y), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, yt))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, y), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, yt))),
+            Equal.cong(T, T, w => add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, y), w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(xs, yt, N.Ms.lehd(xs, yt))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, yt)), Ms.merge.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, xs, yt, N.Ms.lehd(xs, yt))),
+            Alg.swap(~T, ~add, ~aa, ~ac, N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, y), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, yt)))
+
+def Runs.pass.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, rs: List<&2, List<&2, N.Mono>>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.pass(rs))) == N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rs)) : T}:
+  match rs:
+    case Nil{}:
+      {==}
+    case +a <> t:
+      match t:
+        case Nil{}:
+          {==}
+        case +b <> +rr:
+          Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(N.Ms.merge(a, b, N.Ms.lehd(a, b)), N.Runs.cat(N.Runs.pass(rr)))), add(add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(a, N.Ms.app(b, N.Runs.cat(rr)))),
+            Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(N.Ms.merge(a, b, N.Ms.lehd(a, b)), N.Runs.cat(N.Runs.pass(rr)))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(a, b, N.Ms.lehd(a, b))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.pass(rr)))),
+              add(add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))),
+              Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Ms.merge(a, b, N.Ms.lehd(a, b)), N.Runs.cat(N.Runs.pass(rr))),
+              B.Eq.cong2(T, T, T, p => q => add(p, q), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.merge(a, b, N.Ms.lehd(a, b))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.pass(rr))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr)),
+                Ms.merge.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, b, N.Ms.lehd(a, b)), Runs.pass.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, rr))),
+            Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(a, N.Ms.app(b, N.Runs.cat(rr)))), add(add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))),
+              Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(a, N.Ms.app(b, N.Runs.cat(rr)))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(b, N.Runs.cat(rr)))), add(add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))),
+                Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, N.Ms.app(b, N.Runs.cat(rr))),
+                Equal.trans(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(b, N.Runs.cat(rr)))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr)))), add(add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))),
+                  Equal.cong(T, T, w => add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app(b, N.Runs.cat(rr))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))), Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, b, N.Runs.cat(rr))),
+                  Equal.sym(T, add(add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr)))), aa(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, a), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, b), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rr))))))))
+
+def Runs.sort.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, n: Nat, +rs: List<&2, List<&2, N.Mono>>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.sort(n, rs))) == N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rs)) : T}:
+  match n:
+    case 0n:
+      {==}
+    case 1n+k:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.sort(k, N.Runs.pass(rs)))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.pass(rs))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(rs)),
+        Runs.sort.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, k, N.Runs.pass(rs)), Runs.pass.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, rs))
+
+def Runs.single.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, xs: List<&2, N.Mono>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.single(xs))) == N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs) : T}:
+  match xs:
+    case Nil{}:
+      {==}
+    case +x <> +t:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.app([x], N.Runs.cat(N.Runs.single(t)))), add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.single(t)))), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)),
+        Ms.app.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, [x], N.Runs.cat(N.Runs.single(t))),
+        B.Eq.cong2(T, T, T, p => q => add(p, q), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), zero), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.single(t))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t),
+          Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, x)), Runs.single.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t)))
+
+def Ms.sort.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +xs: List<&2, N.Mono>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sort(xs)) == N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs) : T}:
+  Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.sort(32n, N.Runs.single(xs)))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Runs.cat(N.Runs.single(xs))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, xs),
+    Runs.sort.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, 32n, N.Runs.single(xs)), Runs.single.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, xs))
+
+def Cs.step.pick(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, c: Bool, +m: N.Mono, +p: N.Mono, +t: List<&2, N.Mono>, e: {N.Mono.opp(m, p) == c : Bool})
+  -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, Bool.pick(List<&2, N.Mono>, c, t, m <> p <> t)) == add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t))) : T}:
+  match c:
+    case True{}:
+      Equal.sym(T, add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t),
+        Equal.trans(T, add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t))), add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t),
+          Equal.sym(T, add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t))), aa(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t))),
+          Equal.trans(T, add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), add(zero, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t),
+            Equal.cong(T, T, w => add(w, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, p)), zero, Mono.opp.sound(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, m, p, e)),
+            z(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)))))
+    case False{}:
+      {==}
+
+def Cs.step.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +m: N.Mono, st: List<&2, N.Mono>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.step(m, st)) == add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)) : T}:
+  match st:
+    case Nil{}:
+      {==}
+    case +p <> +t:
+      Cs.step.pick(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Mono.opp(m, p), m, p, t, {==})
+
+def Cs.go.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, l: List<&2, N.Mono>, +st: List<&2, N.Mono>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.go(l, st)) == add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, l), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)) : T}:
+  match l:
+    case Nil{}:
+      Equal.sym(T, add(zero, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st), z(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)))
+    case +m <> +t:
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.go(t, N.Cs.step(m, st))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.step(m, st))), add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)),
+        Cs.go.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t, N.Cs.step(m, st)),
+        Equal.trans(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.step(m, st))), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st))), add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)),
+          Equal.cong(T, T, w => add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), w), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.step(m, st)), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)), Cs.step.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, m, st)),
+          Equal.trans(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st))), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st))), add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)),
+            Alg.swap(~T, ~add, ~aa, ~ac, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)),
+            Equal.sym(T, add(add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st)), add(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st))), aa(N.Mono.eval(~T, ~zero, ~mul, ~neg, ~one, env, m), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, st))))))
+
+# the flattened, sorted, cancelled sum of a list is its sum
+def Cs.left.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +l: List<&2, N.Mono>) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.go(N.Ms.sort(l), Nil{})) == N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, l) : T}:
+  Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Cs.go(N.Ms.sort(l), Nil{})), add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sort(l)), zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, l),
+    Cs.go.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Ms.sort(l), Nil{}),
+    Equal.trans(T, add(N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sort(l)), zero), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sort(l)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, l),
+      Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.sort(l))), Ms.sort.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, l)))
+
+def Tm.flat0.sum(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +t: N.Tm) -> {N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) : T}:
+  Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), zero), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t),
+    Tm.flatx.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t, False{}, Nil{}), Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t)))
+
+# a term whose sorted monomials cancel is zero
+def NormS.zero(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +t: N.Tm, ok: {N.NormS.left(t) == Nil{} : List<&2, N.Mono>})
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) == zero : T}:
+  Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), zero,
+    Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), Tm.flat0.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t)),
+    Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.NormS.left(t)), zero,
+      Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.NormS.left(t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), Cs.left.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Tm.flatx(t, False{}, Nil{}))),
+      Equal.cong(List<&2, N.Mono>, T, w => N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, w), N.NormS.left(t), Nil{}, ok)))
+
+def Norm.eq.of(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +a: N.Tm, +b: N.Tm, d: {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, N.Tm.diff(a, b)) == zero : T}) -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b) : T}:
+  Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+    Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), zero), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))),
+      Equal.sym(T, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), zero), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a))),
+      Equal.cong(T, T, w => add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), w), zero, add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)),
+        Equal.sym(T, add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), zero,
+          Equal.trans(T, add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), zero, ac(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), inv(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))),
+    Equal.trans(T, add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), add(add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+      Equal.sym(T, add(add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), add(neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), aa(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))),
+      Equal.trans(T, add(add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(zero, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b),
+        Equal.cong(T, T, w => add(w, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)), add(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a), neg(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b))), zero, d),
+        z(N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b)))))
+
+# two terms whose difference's sorted monomials cancel are equal
+def NormS.eq(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +a: N.Tm, +b: N.Tm, ok: {N.NormS.left(N.Tm.diff(a, b)) == Nil{} : List<&2, N.Mono>})
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b) : T}:
+  Norm.eq.of(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, b, NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Tm.diff(a, b), ok))
+
+# the same over rings with a half: given h + h = 1 for variable v
+def NormSH.zero(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +t: N.Tm, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T},
+  ok: {N.NormSH.left(v, t) == Nil{} : List<&2, N.Mono>})
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t) == zero : T}:
+  Equal.trans(T, N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), zero,
+    Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, t), Tm.flat0.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, t)),
+    Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), N.Tm.flatx(t, False{}, Nil{}))), zero,
+      Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), N.Tm.flatx(t, False{}, Nil{}))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Tm.flatx(t, False{}, Nil{})),
+        Ms.lift.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), N.Tm.flatx(t, False{}, Nil{}), hh)),
+      Equal.trans(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), N.Tm.flatx(t, False{}, Nil{}))), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.NormSH.left(v, t)), zero,
+        Equal.sym(T, N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.NormSH.left(v, t)), N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), N.Tm.flatx(t, False{}, Nil{}))),
+          Cs.left.sum(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, N.Ms.lift(v, N.Ms.maxh(v, N.Tm.flatx(t, False{}, Nil{})), N.Tm.flatx(t, False{}, Nil{})))),
+        Equal.cong(List<&2, N.Mono>, T, w => N.Ms.sum(~T, ~zero, ~add, ~mul, ~neg, ~one, env, w), N.NormSH.left(v, t), Nil{}, ok))))
+
+def NormSH.eq(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), +env: List<&2, T>, +v: Nat, +a: N.Tm, +b: N.Tm, +hh: {add(N.Env.at(~T, ~zero, env, v), N.Env.at(~T, ~zero, env, v)) == one : T},
+  ok: {N.NormSH.left(v, N.Tm.diff(a, b)) == Nil{} : List<&2, N.Mono>})
+  -> {N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, a) == N.Tm.eval(~T, ~zero, ~add, ~mul, ~neg, env, b) : T}:
+  Norm.eq.of(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, a, b, NormSH.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, env, v, N.Tm.diff(a, b), hh, ok))

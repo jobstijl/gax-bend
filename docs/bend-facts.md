@@ -289,3 +289,28 @@ At 2²⁸ points with the hip branch (`bend-hip`):
   type uses a later feature. So the GPU run uses `build/q13_standalone.bend`:
   the benchmark with the `Motor` and `Point` records and the generated
   kernel copied in verbatim, and `run(16n, …)` for 2²⁸.
+
+## Q14. The checker's speed on large ring identities (2026-10-04)
+
+`(Σᵢ xᵢ)(Σⱼ yⱼ) = Σᵢⱼ xᵢ yⱼ` for 45 + 45 variables, 4050 monomials,
+proven by `{==}` on the normaliser's output:
+
+| normaliser | 450 | 1800 | 4050 monomials |
+|---|---|---|---|
+| `Norm` (insertion) | 0.58 s | 3.9 s | 18.7 s |
+| `NormS`, first version (left-nested appends, step-machine merge) | — | 2.1 s | 6.9 s |
+| `NormS` (accumulating flatten, merge with its next step as a parameter) | 0.48 s | 1.24 s | 3.7 s |
+
+- **The checker is call-by-need.** `term_wnf` shares every argument in a
+  cell (`bend.ts`, "WNF"), so reusing a `+` argument costs nothing extra,
+  and a `Bool.pick` evaluates only the arm it takes. The compiled program
+  is strict: `pick` computes both arms there. So the normaliser avoids a
+  recursive call inside a `pick`, for the generator's sake.
+- **Where the time went:** in the first version, flattening a left-nested
+  sum appended quadratically (3.2 s of 6.9 s). With an accumulator it is
+  linear, and the sort (O(n log n), about 0.8 ms per monomial here) is
+  what remains.
+- At run time, as the generator uses it, both normalisers finish this
+  example in well under a second.
+- A CGA3D motor-on-vector sandwich has 64 to 68 monomials per diagonal
+  coefficient (`NormSH` leaves 0 to 76), so per-field terms stay small.

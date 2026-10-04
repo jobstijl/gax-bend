@@ -701,7 +701,7 @@ def Supp.live(+d: Nat, ps: List<&2, List<&2, Bool>>, +r: S.MV(N.Tm, d)) -> List<
     case Nil{}:
       Nil{}
     case +p <> t:
-      Supp.keep(p, N.Norm.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, p, False{}, r)), Supp.live(d, t, r))
+      Supp.keep(p, N.NormS.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, p, False{}, r)), Supp.live(d, t, r))
 
 def Supp.out.keep(+p: List<&2, Bool>, inside: Bool, acc: List<&2, List<&2, Bool>>) -> List<&2, List<&2, Bool>>:
   match inside:
@@ -784,7 +784,7 @@ def Sw.zero(+dn: String, +name: String, +names: List<&2, String>, +hd: String, +
     "def ", name, ".zero_", Path.bname(p, names), "(", hd, ")\n",
     "  -> {S.MV.at(~T, ~zero, ~neg, ", dn, ", ", ps, ", False{}, ", spec, ") == zero : T}:\n",
     "  match a b:\n    case ", pat, ":\n",
-    "      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n",
+    "      NP.NormS.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n",
     "        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, ", dn, ", ", ps, ", False{}, ", spect, "),\n",
     "        {==})\n"])
 
@@ -846,7 +846,7 @@ def Qf.rows(+d: Nat, bls: List<&2, Bl>, +rt: S.MV(N.Tm, d), +nv: Nat, +js: List<
     case Nil{}:
       Nil{}
     case Bl{n, q, s, g} <> t:
-      Qf.row(N.Norm.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, q, s, rt)), nv, js) <> Qf.rows(d, t, rt, nv, js)
+      Qf.row(N.NormS.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, q, s, rt)), nv, js) <> Qf.rows(d, t, rt, nv, js)
 
 # the distinct products v_a v_b
 type Pr is Data:
@@ -1005,7 +1005,7 @@ def Sw.cf(+dn: String, +name: String, +cn: String, +env: String, +specr: String,
       Cf{
         "S.MV.at(~T, ~zero, ~neg" ++ at ++ specr ++ ")",
         get ++ "(T, O." ++ name ++ "(~T, ~zero, ~add, ~mul, ~neg, " ++ recs ++ "))",
-        String.concat(["NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n          ",
+        String.concat(["NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n          ",
           "S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg", at, spect, "),\n          ",
           get, "(N.Tm, O.", name, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", recst, ")),\n          {==})"])}
 
@@ -1262,7 +1262,7 @@ def Hf.fields(+d: Nat, bls: List<&2, Bl>, +rt: S.MV(N.Tm, d), +xs: List<&2, Stri
     case Nil{}:
       Nil{}
     case Bl{n, q, s, g} <> t:
-      Hf.field(Ms.half(N.Norm.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, q, s, rt))), xs, ys, na) <> Hf.fields(d, t, rt, xs, ys, na)
+      Hf.field(Ms.half(N.NormS.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, q, s, rt))), xs, ys, na) <> Hf.fields(d, t, rt, xs, ys, na)
 
 def Hf.spec(+dn: String, +pre: String, +fn: String, +ring: String, x: String, y: String) -> String:
   String.concat([fn, "(", ring, ", ", dn, ", K.", pre, ".sig(), ", x, ", ", y, ")"])
@@ -1277,7 +1277,7 @@ def Hf.cf(+dn: String, +name: String, +cn: String, +env: String, +specr: String,
       Cf{
         "S.MV.at(~T, ~zero, ~neg" ++ at ++ specr ++ ")",
         get ++ "(T, O." ++ cn ++ ".add." ++ cn ++ "(~T, ~zero, ~add, ~mul, ~neg, O." ++ name ++ "(~T, ~zero, ~add, ~mul, ~neg, " ++ recs ++ "), O." ++ name ++ "(~T, ~zero, ~add, ~mul, ~neg, " ++ recs ++ ")))",
-        String.concat(["NP.Norm.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n          ",
+        String.concat(["NP.NormS.eq(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n          ",
           "S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg", at, spect, "),\n          ",
           get, "(N.Tm, O.", cn, ".add.", cn, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", kt, ", ", kt, ")),\n          {==})"])}
 
