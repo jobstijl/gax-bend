@@ -111,6 +111,23 @@ kernel proofs use `NormS`. Measured in the checker (bend-facts Q14):
 `tests/neg/norm_wrong.bend` claims (x + y)² = x² + y², and the checker
 reports the two xy monomials left over.
 
+## Exact integers (`src/int.bend`)
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| Nat semiring | + and × associative and commutative, × distributes, 0 and 1 units | nothing | proof | `proofs/nat.bend` |
+| Int ring | every law `src/ring.bend` names that the normaliser takes (`Int.r.*`): + associative, commutative, 0, inverses; × associative, commutative, 1; distributivity; −(a + b), (−a)b, −(−a) | nothing | proof | `proofs/int.bend` |
+| Int order | `Int.pos` closed under + and ×; \|a\| ≥ 0; \|a + b\| ≤ \|a\| + \|b\|; \|ab\| = \|a\|\|b\|; \|−a\| = \|a\|; \|0\| = 0 | nothing | proof | `proofs/int.bend` |
+
+The proofs write every integer as a difference of naturals. `sub_nat`
+ignores a common summand, and every pair is its normal form plus one, so
+each Int law becomes a Nat identity. `tests/int_ring.bend` instantiates the
+generic normaliser at T = Int with these laws and proves (x + y)(x − y) =
+x² − y² for all integers. Int is thus a concrete ordered commutative ring
+for every theorem stated over one. That includes the rounding-error
+theorem, once a rounding with ε > 0 exists, which needs the dyadic numbers
+built on Int.
+
 ## Rounding error (`src/err.bend`, ADR-005)
 
 | law | statement | assumes | tag | proof |

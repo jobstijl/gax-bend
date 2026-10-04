@@ -76,6 +76,21 @@ def Int.is_zero(a: Int) -> Bool:
     case INeg{m}:
       False{}
 
+# the order: nonnegativity, and the absolute value
+def Int.pos(a: Int) -> Bool:
+  match a:
+    case IPos{n}:
+      True{}
+    case INeg{n}:
+      False{}
+
+def Int.abs(a: Int) -> Int:
+  match a:
+    case IPos{n}:
+      IPos{n}
+    case INeg{n}:
+      IPos{1n+n}
+
 def Int.show(a: Int) -> String:
   match a:
     case IPos{n}:
