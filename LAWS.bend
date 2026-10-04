@@ -1,7 +1,7 @@
 # gax-blend: the laws. The human owns this file; PROOF.bend proves it.
 #
-# STATUS: DRAFT for review (Phase 1, 2026-10-04). Until it is approved,
-# Claude may still edit it; afterwards a law changes only by the owner.
+# STATUS: APPROVED 2026-10-04 (the owner delegated the review to Claude).
+# A law changes only with the owner's say; a proof never weakens one.
 #
 # Layer S: the multivector spec (src/spec.bend). Every law holds for every
 # dimension d and every signature sig at once, over any ring: the scalar

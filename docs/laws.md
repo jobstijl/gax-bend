@@ -5,8 +5,8 @@ tag (ADR-001, amendment A2), the ring hypotheses it assumes, and the file
 that proves it. `tools/gate.sh` re-checks all of it: `bend PROOF.bend` must
 print ALL PROOFS CHECK, and every negative control in `tests/neg/` must fail.
 
-**Status (2026-10-04):** 22 of 22 Layer-S laws proven. `LAWS.bend` is still
-a DRAFT awaiting your review.
+**Status (2026-10-04):** 22 of 22 Layer-S laws proven. `LAWS.bend` is
+approved (the owner delegated the review to Claude).
 
 ## Scope of the Layer-S laws
 
@@ -132,9 +132,19 @@ integers, among them:
 
 ## How the proofs were written
 
-The large proof modules were expanded by a throwaway Python script from a
-term-level shorthand: `gp_assoc.bend`, `inv.bend`, `rev.bend`, `gen.bend`
-and `grade.bend`, and the case-checked flag identities in `flags.bend`.
-That script is not part of this repository: it is not trusted, and nothing
-depends on it. Every proof is plain Bend checked by the gate. The Phase 2
-generator, written in Bend, will take over emitting the kernel proofs.
+`proofs/base.bend`, `leaf.bend`, `add.bend` and `sgn.bend` are written by
+hand. The large modules are written by the proof writer in `gen/proofs/`, a
+Bend program that assembles them from a term-level vocabulary
+(`gen/proofs/dsl.bend`):
+- `gp.bend` and `gp_assoc.bend`: the geometric product and its associativity;
+- `wedge.bend`, `scale.bend`, `inv.bend`, `rev.bend`, `gen.bend` and
+  `grade.bend`;
+- `flags.bend`: every Bool flag identity the others use, each proven by
+  checking all cases.
+
+The proof writer is not trusted: what it writes is plain Bend that the gate
+checks like any other proof. `tools/regen.sh` rewrites the modules, and the
+gate fails when the committed ones differ from what it writes
+(`tools/regen.sh --check`). The port from the throwaway Python scripts that
+first expanded these proofs was checked by byte-identical output for all
+nine modules.

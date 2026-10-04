@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # The project gate. Passes only when
 #   1. `bend PROOF.bend` prints ALL PROOFS CHECK,
-#   2. algebras/ is what the generator writes (tools/regen.sh --check),
+#   2. algebras/ and the generated proofs/ modules are what the generators
+#      write (tools/regen.sh --check),
 #   3. every generated algebras/*/proofs.bend checks (kernel == spec), and
 #      every algebras/*/f32.bend checks,
 #   4. every tests/*.bend prints exactly the `#|` lines it ends with,
@@ -22,9 +23,9 @@ else
 fi
 
 if tools/regen.sh --check > /dev/null 2>&1; then
-  say "ok    algebras/ matches the generator"
+  say "ok    algebras/ and proofs/ match the generators"
 else
-  echo "FAIL  algebras/ is stale: run tools/regen.sh"; fail=1
+  echo "FAIL  generated sources are stale: run tools/regen.sh"; fail=1
 fi
 
 for f in algebras/*/proofs.bend; do
