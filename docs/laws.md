@@ -108,16 +108,33 @@ Both are proven by matching the operand records and `{==}`, over any `T`
 and any operations: no ring law is used. Combined with the Layer-S laws
 above, every algebraic law transfers to the kernels.
 
-| algebra | kinds | kernels | multiplications |
-|---|---|---|---|
-| VGA2D | 5 | 149 | 218 |
-| VGA3D | 8 | 347 | 1445 |
-| PGA2D | 10 | 528 | 1519 |
-| PGA3D | 11 | 624 | 4787 |
-| STA | 9 | 435 | 4168 |
+| algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
+|---|---|---|---|---|---|
+| VGA2D | 5 | 159 | 10 | 4 | 298 |
+| VGA3D | 8 | 371 | 24 | 24 | 2102 |
+| PGA2D | 10 | 588 | 60 | 32 | 2404 |
+| PGA3D | 11 | 701 | 77 | 101 | 8373 |
+| STA | 9 | 462 | 27 | 84 | 6200 |
 
 The operations are gp, wedge, vee, add, sub (any two kinds) and neg,
 reverse, involute, conjugate, dual (J_R) and undual (J_L).
+
+**Sandwiches.** `V.transform.X(v, x)` is v x ~v (gax's `transform`), for
+every versor kind V and every kind X:
+- **Mirror law** `.ok`, by `{==}` as above. The kernel binds the
+  coefficients of v x once and multiplies by ~v. After substitution that is
+  the spec's own term.
+- **Zero laws** `.zero_<blade>`, one per blade where the spec's tree has a
+  coefficient outside the result kind, such as the grade-1 part of a
+  motor acting on a point. Each states that the coefficient is zero in every
+  commutative ring, proven by `Norm.zero` on the spec run at `T = Tm`.
+  Tag: **proof**, assuming the normaliser's ring laws.
+- **Result kind:** gax's rule applied to the support that survives
+  cancellation. For PGA3D all 77 pairs agree with gax's generated types.
+- **Example:** `tests/transform_pga3d.bend`, over exact integers, checks
+  a translation, a half turn, a reflection and a moved plane.
+- **Negative control:** `tests/neg/transform_support.bend` claims that the
+  x coefficient of a moved point is zero.
 
 What the certificates do not cover, per ADR-001 item 5:
 - that the chosen result kind is the smallest one;
@@ -141,6 +158,7 @@ Each one must fail to check. The gate fails if any passes.
 | `wedge_grade_off.bend` | e1 ∧ e2 is a 3-vector | grades |
 | `kernel_sign.bend` | a PGA3D kernel with one sign flipped equals the spec | kernels |
 | `norm_wrong.bend` | (x + y)² = x² + y² over any commutative ring | normaliser |
+| `transform_support.bend` | a motor moves a point to one with x = 0 | sandwiches |
 
 ## Examples (`tests/`)
 

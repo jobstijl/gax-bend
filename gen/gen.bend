@@ -10,6 +10,7 @@
 import Base
 import ../src/spec.bend as S
 import ../src/expr.bend as E
+import ../src/norm.bend as N
 
 # Specs
 # -----
@@ -19,9 +20,10 @@ import ../src/expr.bend as E
 type GKind is Data:
   GKind{name: String, res: Bool, blades: List<&2, List<&2, Nat>>}
 
-# an algebra: name, module prefix, generator names, signature, kinds
+# an algebra: name, module prefix, generator names, signature, kinds, and
+# the names of the kinds that are versors (gax's `versor`)
 type GSpec is Data:
-  GSpec{name: String, pre: String, d: Nat, gens: List<&2, String>, sig: S.Sig(d), kinds: List<&2, GKind>}
+  GSpec{name: String, pre: String, d: Nat, gens: List<&2, String>, sig: S.Sig(d), kinds: List<&2, GKind>, versors: List<&2, String>}
 
 # a blade after processing: field name, path, orientation sign, grade
 type Bl is Data:
@@ -584,15 +586,291 @@ def Ker1.make(+d: Nat, +dn: String, +ks: List<&2, Kd>, +o: Op1, ka: Kd) -> Maybe
       +supp = MV.leaves(E.Expr, d, Nil{}, r)
       Ker1.make.go(d, dn, o, Kd{an, ar, abs}, supp, Best.scan(ks, supp, BNone{}), r)
 
-# Tables and files
-# ----------------
-
 def Ker.push(m: Maybe<&2, Ker>, acc: List<&2, Ker>) -> List<&2, Ker>:
   match m:
     case None{}:
       acc
     case Some{k}:
       k <> acc
+
+# Sandwiches
+# ----------
+# V.transform.X(v, x) = v x ~v (gax's transform), for each versor kind V
+# and every kind X. The result kind follows the rule above, applied to the
+# support that survives cancellation (src/norm.bend): a motor moves a
+# point to a point although the spec's term has grade-1 parts, which
+# cancel. The kernel computes v x once, binds its coefficients, and
+# multiplies by ~v. After substitution that is the spec's own term, so the
+# mirror law is {==}. Every blade where the spec's term is nonzero as a
+# tree but outside the result kind gets a law that its coefficient is
+# zero, proven by Norm.zero on the spec run at T = Tm.
+
+# a kind's general element over Tm, its variables numbered from i
+def SymT.tree(+d: Nat, bls: List<&2, Bl>, +i: Nat) -> S.MV(N.Tm, d):
+  match bls:
+    case Nil{}:
+      S.MV.zero(N.Tm, d)
+    case Bl{name, path, sign, g} <> t:
+      S.MV.add(~N.Tm, ~N.Tm.add, d,
+        S.MV.blade(N.Tm, d, path, S.Ring.negf(~N.Tm, ~N.Tm.neg, sign, N.TVar{i})),
+        SymT.tree(d, t, 1n+i))
+
+def Sw.tm(+d: Nat, +sig: S.Sig(d), +v: S.MV(N.Tm, d), x: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig,
+    S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, v, x),
+    S.MV.reverse(~N.Tm, ~N.Tm.neg, d, v))
+
+def Supp.keep(+p: List<&2, Bool>, left: List<&2, N.Mono>, acc: List<&2, List<&2, Bool>>) -> List<&2, List<&2, Bool>>:
+  match left:
+    case Nil{}:
+      acc
+    case m <> t:
+      p <> acc
+
+# the paths among ps whose coefficient in r does not cancel
+def Supp.live(+d: Nat, ps: List<&2, List<&2, Bool>>, +r: S.MV(N.Tm, d)) -> List<&2, List<&2, Bool>>:
+  match ps:
+    case Nil{}:
+      Nil{}
+    case +p <> t:
+      Supp.keep(p, N.Norm.left(S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, p, False{}, r)), Supp.live(d, t, r))
+
+def Supp.out.keep(+p: List<&2, Bool>, inside: Bool, acc: List<&2, List<&2, Bool>>) -> List<&2, List<&2, Bool>>:
+  match inside:
+    case True{}:
+      acc
+    case False{}:
+      p <> acc
+
+# the paths among ps outside the blades bls
+def Supp.outside(ps: List<&2, List<&2, Bool>>, +bls: List<&2, Bl>) -> List<&2, List<&2, Bool>>:
+  match ps:
+    case Nil{}:
+      Nil{}
+    case +p <> t:
+      Supp.out.keep(p, Path.in(p, bls), Supp.outside(t, bls))
+
+def Path.digit(b: Bool, +n: String) -> String:
+  match b:
+    case True{}:
+      n
+    case False{}:
+      ""
+
+def Path.digits(p: List<&2, Bool>, names: List<&2, String>) -> String:
+  match p:
+    case Nil{}:
+      ""
+    case b <> t:
+      match names:
+        case Nil{}:
+          ""
+        case n <> nt:
+          Path.digit(b, n) ++ Path.digits(t, nt)
+
+# a blade's name from its path: s for the scalar, else e and the generators
+def Path.bname.go(g: Nat, ds: String) -> String:
+  match g:
+    case 0n:
+      "s"
+    case 1n+h:
+      "e" ++ ds
+
+def Path.bname(+p: List<&2, Bool>, names: List<&2, String>) -> String:
+  Path.bname.go(Path.grade(p), Path.digits(p, names))
+
+def Ex.has(+n: String, e: E.Expr) -> Bool:
+  match e:
+    case E.EVar{m}:
+      String.eq(m, n)
+    case E.EZero{}:
+      False{}
+    case E.EAdd{a, b}:
+      Bool.or(Ex.has(n, a), Ex.has(n, b))
+    case E.EMul{a, b}:
+      Bool.or(Ex.has(n, a), Ex.has(n, b))
+    case E.ENeg{a}:
+      Ex.has(n, a)
+
+def Exs.has(+n: String, es: List<&2, E.Expr>) -> Bool:
+  match es:
+    case Nil{}:
+      False{}
+    case e <> t:
+      Bool.or(Ex.has(n, e), Exs.has(n, t))
+
+def Sw.tname(k: Nat) -> String:
+  "t" ++ Nat.show(k)
+
+# the tree with a variable t<k> at the k-th of the paths ps
+def Sw.vars(+d: Nat, ps: List<&2, List<&2, Bool>>, +k: Nat) -> S.MV(E.Expr, d):
+  match ps:
+    case Nil{}:
+      S.MV.zero(E.Expr, d)
+    case p <> t:
+      S.MV.add(~E.Expr, ~E.Expr.add, d, S.MV.blade(E.Expr, d, p, E.EVar{Sw.tname(k)}), Sw.vars(d, t, 1n+k))
+
+# a let binding, the multiplications it costs, kept only if the fields use it
+type Let is Data:
+  Let{src: String, muls: Nat}
+
+def Sw.let.keep(+k: Nat, e: E.Expr, used: Bool, acc: List<&2, Let>) -> List<&2, Let>:
+  match used:
+    case False{}:
+      acc
+    case True{}:
+      +e2 = e
+      Let{"      +" ++ Sw.tname(k) ++ " = " ++ E.Expr.show(e2) ++ "\n", E.Expr.muls(e2)} <> acc
+
+def Sw.lets(+d: Nat, ps: List<&2, List<&2, Bool>>, +k: Nat, +x: S.MV(E.Expr, d), +es: List<&2, E.Expr>) -> List<&2, Let>:
+  match ps:
+    case Nil{}:
+      Nil{}
+    case p <> t:
+      Sw.let.keep(k, S.MV.at(~E.Expr, ~E.EZero{}, ~E.Expr.neg, d, p, False{}, x), Exs.has(Sw.tname(k), es), Sw.lets(d, t, 1n+k, x, es))
+
+def Let.srcs(ls: List<&2, Let>) -> String:
+  match ls:
+    case Nil{}:
+      ""
+    case Let{s, m} <> t:
+      s ++ Let.srcs(t)
+
+def Let.muls(ls: List<&2, Let>) -> Nat:
+  match ls:
+    case Nil{}:
+      0n
+    case Let{s, m} <> t:
+      Nat.add(m, Let.muls(t))
+
+# a kind's general element over Tm as Bend source: K.<n>{N.TVar{i}, ...}
+def Kd.tvars(bls: List<&2, Bl>, +i: Nat) -> List<&2, String>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case b <> t:
+      ("N.TVar{" ++ Nat.show(i) ++ "n}") <> Kd.tvars(t, 1n+i)
+
+def Sw.spec(+dn: String, +pre: String, +ring: String, +treeops: String, +v: String, x: String) -> String:
+  String.concat(["S.MV.gp(", ring, ", ", dn, ", K.", pre, ".sig(), S.MV.gp(", ring, ", ", dn, ", K.", pre, ".sig(), ", v, ", ", x,
+    "), S.MV.reverse(", treeops, ", ", dn, ", ", v, "))"])
+
+# the zero law of one blade outside the result kind
+def Sw.zero(+dn: String, +name: String, +names: List<&2, String>, +hd: String, +pat: String, +env: String, +spec: String, +spect: String, +p: List<&2, Bool>) -> String:
+  +ps = Path.show(p)
+  String.concat([
+    "def ", name, ".zero_", Path.bname(p, names), "(", hd, ")\n",
+    "  -> {S.MV.at(~T, ~zero, ~neg, ", dn, ", ", ps, ", False{}, ", spec, ") == zero : T}:\n",
+    "  match a b:\n    case ", pat, ":\n",
+    "      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ", env, ",\n",
+    "        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, ", dn, ", ", ps, ", False{}, ", spect, "),\n",
+    "        {==})\n"])
+
+def Sw.zeros(+dn: String, +name: String, +names: List<&2, String>, +hd: String, +pat: String, +env: String, +spec: String, +spect: String, ps: List<&2, List<&2, Bool>>) -> List<&2, String>:
+  match ps:
+    case Nil{}:
+      Nil{}
+    case p <> t:
+      Sw.zero(dn, name, names, hd, pat, env, spec, spect, p) <> Sw.zeros(dn, name, names, hd, pat, env, spec, spect, t)
+
+def Sw.text(+dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd, kc: Kd, ls: List<&2, Let>, es: List<&2, E.Expr>, outs: List<&2, List<&2, Bool>>) -> Ker:
+  match ka kb kc:
+    case Kd{+an, ar, +abs} Kd{+bn, br, +bbs} Kd{+cn, cr, cbs}:
+      +name = an ++ ".transform." ++ bn
+      +ops = {"~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T" : String}
+      +hyps = {"~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,\n  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),\n  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),\n  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg)" : String}
+      +args = "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>"
+      +pat = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "} K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "}"
+      +env = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "a_", ""), Kd.fields(bbs, "b_", "")), ", ") ++ "]"
+      +spec = Sw.spec(dn, pre, "~T, ~add, ~mul, ~neg", "~T, ~neg", "K." ++ an ++ ".tree(~T, ~neg, a)", "K." ++ bn ++ ".tree(~T, ~neg, b)")
+      +na = List.length(&2, Bl, abs)
+      +spect = Sw.spec(dn, pre, "~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg", "~N.Tm, ~N.Tm.neg",
+        "K." ++ an ++ ".tree(~N.Tm, ~N.Tm.neg, K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "})",
+        "K." ++ bn ++ ".tree(~N.Tm, ~N.Tm.neg, K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "})")
+      +es2 = es
+      +ls2 = ls
+      Ker{
+        String.concat([
+          "def ", name, "(", ops, ", ", args, ") -> K.", cn, "<T>:\n",
+          "  match a b:\n    case K.", an, "{", String.join(Kd.fields(abs, "+a_", ""), ", "), "} K.", bn, "{",
+          String.join(Kd.fields(bbs, "+b_", ""), ", "), "}:\n",
+          Let.srcs(ls2),
+          "      K.", cn, "{\n        ", String.join(Ker.show(es2), ",\n        "), "}\n"]),
+        String.concat([
+          "def ", name, ".ok(", ops, ", ", args, ")\n",
+          "  -> {K.", cn, ".of_tree(~T, ~zero, ~neg, ", spec, ") == O.", name, "(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.", cn, "<T>}:\n",
+          "  match a b:\n    case ", pat, ":\n      {==}\n",
+          String.concat(Sw.zeros(dn, name, names, hyps ++ ", " ++ args, pat, env, spec, spect, outs))]),
+        String.concat([
+          "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
+          "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
+        Nat.add(Let.muls(ls2), Ker.muls(es2))}
+
+def Sw.pick.go(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd, kc: Kd, +ps: List<&2, List<&2, Bool>>,
+  +x: S.MV(E.Expr, d), +r: S.MV(E.Expr, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match kc:
+    case Kd{cn, cr, +cbs}:
+      +es = Ker.fields(d, cbs, r)
+      Some{Sw.text(dn, pre, names, ka, kb, Kd{cn, cr, cbs}, Sw.lets(d, ps, 0n, x, es), es, Supp.outside(all, cbs))}
+
+def Sw.pick(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd, b: Best, +ps: List<&2, List<&2, Bool>>,
+  +x: S.MV(E.Expr, d), +r: S.MV(E.Expr, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match b:
+    case BNone{}:
+      None{}
+    case BSome{kc, a, s}:
+      Sw.pick.go(d, dn, pre, names, ka, kb, kc, ps, x, r, all)
+
+def Sw.make.go(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +ks: List<&2, Kd>, ka: Kd, kb: Kd, live: List<&2, List<&2, Bool>>,
+  +ps: List<&2, List<&2, Bool>>, +x: S.MV(E.Expr, d), +r: S.MV(E.Expr, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
+  match live:
+    case Nil{}:
+      None{}
+    case +h <> +t:
+      Sw.pick(d, dn, pre, names, ka, kb, Best.scan(ks, h <> t, BNone{}), ps, x, r, all)
+
+# the sandwich of kind kb by the versor kind ka
+def Sw.make(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, ka: Kd, kb: Kd) -> Maybe<&2, Ker>:
+  match ka kb:
+    case Kd{an, ar, +abs} Kd{bn, br, +bbs}:
+      +rt = Sw.tm(d, sig, SymT.tree(d, abs, 0n), SymT.tree(d, bbs, List.length(&2, Bl, abs)))
+      +all = MV.leaves(N.Tm, d, Nil{}, rt)
+      +va = Sym.tree(d, "a_", abs)
+      +x = Op.run(d, sig, OGp{}, va, Sym.tree(d, "b_", bbs))
+      +ps = MV.leaves(E.Expr, d, Nil{}, x)
+      +r = Op.run(d, sig, OGp{}, Sw.vars(d, ps, 0n), S.MV.reverse(~E.Expr, ~E.Expr.neg, d, va))
+      Sw.make.go(d, dn, pre, names, ks, Kd{an, ar, abs}, Kd{bn, br, bbs}, Supp.live(d, all, rt), ps, x, r, all)
+
+def Kd.named(+n: String, ns: List<&2, String>) -> Bool:
+  match ns:
+    case Nil{}:
+      False{}
+    case m <> t:
+      Bool.or(String.eq(m, n), Kd.named(n, t))
+
+def Sw.row(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, +ka: Kd, kbs: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kbs:
+    case Nil{}:
+      acc
+    case kb <> t:
+      Sw.row(d, dn, pre, names, sig, ks, ka, t, Ker.push(Sw.make(d, dn, pre, names, sig, ks, ka, kb), acc))
+
+def Sw.row.if(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, ka: Kd, versor: Bool, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match versor:
+    case False{}:
+      acc
+    case True{}:
+      Sw.row(d, dn, pre, names, sig, ks, ka, ks, acc)
+
+def Sw.table(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +sig: S.Sig(d), +ks: List<&2, Kd>, +vs: List<&2, String>, kas: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
+  match kas:
+    case Nil{}:
+      acc
+    case Kd{+n, r, bls} <> t:
+      Sw.table(d, dn, pre, names, sig, ks, vs, t, Sw.row.if(d, dn, pre, names, sig, ks, Kd{n, r, bls}, Kd.named(n, vs), acc))
+
+# Tables and files
+# ----------------
 
 def Ker.row(+d: Nat, +dn: String, +pre: String, +sig: S.Sig(d), +ks: List<&2, Kd>, +o: Op, +ka: Kd, kbs: List<&2, Kd>, acc: List<&2, Ker>) -> List<&2, Ker>:
   match kbs:
@@ -670,7 +948,7 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
     String.concat([Gen.header(name), "\ndef ", pre, ".sig() -> S.Sig(", dn, "):\n  ", Sig.show(d, sig), "\n\n",
       String.join(Kd.modules(d, dn, ks), "\n")]),
     String.concat([Gen.header(name), "import ./kinds.bend as K\n\n", String.join(Ker.srcs(kers), "\n")]),
-    String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n", String.join(Ker.prfs(kers), "\n")]),
+    String.concat([Gen.header(name), "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../proofs/norm.bend as NP\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n", String.join(Ker.prfs(kers), "\n")]),
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
       "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds, ", Nat.show(List.length(&2, Ker, kers)),
@@ -678,8 +956,9 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
 
 def Gen.out(s: GSpec, os: List<&2, Op>, us: List<&2, Op1>) -> Out:
   match s:
-    case GSpec{+name, +pre, +d, +gens, +sig, kinds}:
+    case GSpec{+name, +pre, +d, +gens, +sig, kinds, vs}:
       +ks = Gen.kinds(d, gens, kinds)
       +dn = Nat.show(d) ++ "n"
       Gen.out.go(name, pre, d, sig, ks,
-        List.reverse(&2, Ker, Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{}))))
+        List.reverse(&2, Ker, Sw.table(d, dn, pre, gens, sig, ks, vs, ks,
+          Ker1.ops(d, dn, ks, us, Ker.ops(d, dn, pre, sig, ks, os, Nil{})))))

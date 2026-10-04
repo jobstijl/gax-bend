@@ -245,3 +245,69 @@ record kernel matches clang). ADR-001 A1 puts the generator in Bend.
 - **Printing kernels from blade tables (gax-gen's way):** it would need a
   separate proof that the tables equal the spec. Running the spec makes
   that proof `{==}`.
+
+---
+
+## ADR-003: Ring identities by cancellation; sandwiches proven by reflection
+
+**Status:** accepted, 2026-10-04. Built: `src/norm.bend` with
+`proofs/norm.bend` (soundness), and the sandwich kernels of every algebra
+(198 kernels, 245 zero laws).
+
+### Context
+
+A sandwich v x ~v keeps the grade of x, but only because terms such as
+a·b − b·a cancel. So its support law is not `{==}`, and the right result
+kind cannot be read off the symbolic tree. ADR-001 item 4 planned a
+polynomial normaliser for this, and the brief planned it for versor laws
+modulo u~u = 1 and for optimised kernels.
+
+### Decision
+
+1. **Signed monomials, no integer coefficients.** A term (`Tm`) flattens to
+   a list of monomials, each with a sign and a sorted list of variables. A
+   coefficient c is c copies of a monomial. `Norm.left` cancels opposite
+   pairs with a structural pass: each monomial either removes its opposite
+   from the pending list or joins it. The soundness proof then needs only
+   sums of lists, with no integer-to-ring map and no lemma about
+   coefficient arithmetic.
+2. **Completeness:** every identity of commutative rings is found, because
+   the net count of each monomial is what decides it.
+3. **Reflection without printing.** A proof names its term by running the
+   spec at `T = Tm` on variable leaves. The checker computes the term, and
+   `Norm.zero`'s `ok` is `{==}`. The generated proofs stay small: one
+   `Norm.zero` call per blade.
+4. **Hypotheses:** the eleven commutative-ring laws listed in `laws.md`,
+   among them laws with a bare variable on one side (`zero_l`, `unit_r`,
+   `neg_neg`). A2 allows these.
+5. **Kernels** bind the inner product's coefficients as lets: one copy of
+   v x, no common-subexpression search. The mirror law stays `{==}`.
+
+### Numbers
+
+- `proofs/norm.bend` checks in 0.5 s.
+- One PGA3D zero law (motor on point, e1) checks in under 0.5 s with
+  everything it loads (`spikes/q12_transform_support.bend`). Each algebra's
+  whole proofs file, sandwiches included, takes 0.6–2.7 s.
+- PGA3D `Motor.transform.Point` costs 52 multiplications: 20 for v x, 32
+  for (v x) ~v. gax's plain kernel costs 38 and its unit kernel 33.
+
+### What it costs
+
+- Proofs of zero laws assume commutativity, so sandwich support is not
+  claimed over noncommutative rings. It is false there.
+- Cancellation is quadratic in the number of monomials. That is fine for
+  degree-3 sandwich terms; degree-4 or larger identities may need sorting
+  first.
+- Sandwich kernels are about 35% more multiplications than gax's plain
+  ones until the optimised kernels (Phase 3) land. Those will be proven
+  through `Norm.eq`.
+
+### Measured, not adopted
+
+- **Printing the reified term into the proof:** about 30 KB per
+  coefficient. Running the spec at `T = Tm` in the checker costs nothing
+  extra.
+- **Integer coefficients with merge-sorted polynomials** (`spikes/q04b`):
+  faster on large terms, but the soundness proof needs an integer-to-ring
+  map and lemmas about its arithmetic.

@@ -6057,3 +6057,522 @@ def Multivector.undual(~T: Data, ~zero: T, ~neg: T -> T, a: K.Multivector<T>) ->
         neg(a_e2),
         neg(a_e3),
         a_s}
+
+def Vector.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Scalar<T>) -> K.Scalar<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Scalar{+b_s}:
+      +t0 = mul(a_e0, b_s)
+      +t1 = mul(a_e1, b_s)
+      +t2 = mul(a_e2, b_s)
+      +t3 = mul(a_e3, b_s)
+      K.Scalar{
+        add(mul(t0, a_e0), add(neg(mul(t1, a_e1)), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))))}
+
+def Vector.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      +t0 = add(mul(a_e0, b_e1), neg(mul(a_e1, b_e0)))
+      +t1 = add(mul(a_e0, b_e2), neg(mul(a_e2, b_e0)))
+      +t2 = add(mul(a_e0, b_e3), neg(mul(a_e3, b_e0)))
+      +t3 = add(mul(a_e1, b_e2), neg(mul(a_e2, b_e1)))
+      +t4 = add(mul(a_e1, b_e3), neg(mul(a_e3, b_e1)))
+      +t5 = add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))
+      +t6 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      K.Vector{
+        add(add(neg(mul(t0, a_e1)), add(neg(mul(t1, a_e2)), neg(mul(t2, a_e3)))), mul(t6, a_e0)),
+        add(neg(mul(t0, a_e0)), add(add(neg(mul(t3, a_e2)), neg(mul(t4, a_e3))), mul(t6, a_e1))),
+        add(neg(mul(t1, a_e0)), add(mul(t3, a_e1), add(neg(mul(t5, a_e3)), mul(t6, a_e2)))),
+        add(neg(mul(t2, a_e0)), add(mul(t4, a_e1), add(mul(t5, a_e2), mul(t6, a_e3))))}
+
+def Vector.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      +t0 = add(mul(a_e0, b_e12), add(neg(mul(a_e1, neg(b_e20))), mul(a_e2, neg(b_e10))))
+      +t1 = add(mul(a_e0, neg(b_e31)), add(neg(mul(a_e1, neg(b_e30))), mul(a_e3, neg(b_e10))))
+      +t2 = add(mul(a_e0, b_e23), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20))))
+      +t3 = add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30))))
+      +t4 = add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12)))
+      +t5 = add(mul(a_e0, neg(b_e10)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31))))
+      +t6 = add(mul(a_e0, neg(b_e20)), add(neg(mul(a_e1, b_e12)), mul(a_e3, b_e23)))
+      +t7 = add(mul(a_e0, neg(b_e30)), add(neg(mul(a_e1, neg(b_e31))), neg(mul(a_e2, b_e23))))
+      K.Bivector{
+        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), mul(t3, a_e1)), neg(mul(t5, a_e0)))),
+        neg(add(add(mul(t0, a_e1), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), neg(mul(t6, a_e0)))),
+        neg(add(add(mul(t1, a_e1), add(mul(t2, a_e2), mul(t3, a_e3))), neg(mul(t7, a_e0)))),
+        add(mul(t2, a_e0), add(neg(mul(t4, a_e1)), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
+        neg(add(mul(t1, a_e0), add(add(mul(t4, a_e2), mul(t5, a_e3)), neg(mul(t7, a_e1))))),
+        add(mul(t0, a_e0), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), neg(mul(t6, a_e1))))}
+
+def Vector.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
+      +t1 = add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))
+      +t2 = add(mul(a_e1, neg(b_e021)), neg(mul(a_e3, neg(b_e032))))
+      +t3 = add(mul(a_e1, b_e013), mul(a_e2, neg(b_e032)))
+      +t4 = add(mul(a_e0, neg(b_e021)), neg(mul(a_e3, b_e123)))
+      +t5 = add(mul(a_e0, b_e013), mul(a_e2, b_e123))
+      +t6 = add(mul(a_e0, neg(b_e032)), neg(mul(a_e1, b_e123)))
+      K.Trivector{
+        add(neg(mul(t0, a_e0)), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), mul(t6, a_e1))),
+        neg(add(add(neg(mul(t0, a_e1)), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), mul(t6, a_e0))),
+        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), neg(mul(t3, a_e1))), mul(t5, a_e0)),
+        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), neg(mul(t2, a_e1))), mul(t4, a_e0)))}
+
+def Vector.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Pseudoscalar<T>) -> K.Pseudoscalar<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Pseudoscalar{+b_e0123}:
+      +t0 = mul(a_e3, b_e0123)
+      +t1 = neg(mul(a_e2, b_e0123))
+      +t2 = mul(a_e1, b_e0123)
+      +t3 = mul(a_e0, b_e0123)
+      K.Pseudoscalar{
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), mul(t2, a_e1)), neg(mul(t3, a_e0)))}
+
+def Vector.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Phasor{+b_s, +b_e0123}:
+      +t0 = mul(a_e3, b_e0123)
+      +t1 = neg(mul(a_e2, b_e0123))
+      +t2 = mul(a_e1, b_e0123)
+      +t3 = mul(a_e0, b_s)
+      +t4 = mul(a_e0, b_e0123)
+      +t5 = mul(a_e1, b_s)
+      +t6 = mul(a_e2, b_s)
+      +t7 = mul(a_e3, b_s)
+      K.Phasor{
+        add(mul(t3, a_e0), add(neg(mul(t5, a_e1)), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), mul(t2, a_e1)), neg(mul(t4, a_e0)))}
+
+def Vector.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      +t0 = add(mul(a_e0, b_e12), add(neg(mul(a_e1, neg(b_e20))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
+      +t1 = add(mul(a_e0, neg(b_e31)), add(neg(mul(a_e1, neg(b_e30))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
+      +t2 = add(mul(a_e0, b_e23), add(mul(a_e1, b_e0123), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
+      +t3 = add(mul(a_e0, b_s), add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
+      +t4 = add(mul(a_e0, b_e0123), add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
+      +t5 = add(mul(a_e0, neg(b_e10)), add(mul(a_e1, b_s), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
+      +t6 = add(mul(a_e0, neg(b_e20)), add(neg(mul(a_e1, b_e12)), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
+      +t7 = add(mul(a_e0, neg(b_e30)), add(neg(mul(a_e1, neg(b_e31))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
+      K.Even{
+        add(mul(t3, a_e0), add(neg(mul(t5, a_e1)), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
+        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), mul(t3, a_e1)), neg(mul(t5, a_e0)))),
+        neg(add(add(mul(t0, a_e1), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), neg(mul(t6, a_e0)))),
+        neg(add(add(mul(t1, a_e1), add(mul(t2, a_e2), mul(t3, a_e3))), neg(mul(t7, a_e0)))),
+        add(mul(t2, a_e0), add(neg(mul(t4, a_e1)), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
+        neg(add(mul(t1, a_e0), add(add(mul(t4, a_e2), mul(t5, a_e3)), neg(mul(t7, a_e1))))),
+        add(mul(t0, a_e0), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), neg(mul(t6, a_e1)))),
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), mul(t2, a_e1)), neg(mul(t4, a_e0)))}
+
+def Vector.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
+      +t1 = add(mul(a_e0, b_e1), add(neg(mul(a_e1, b_e0)), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
+      +t2 = add(mul(a_e0, b_e2), add(mul(a_e1, neg(b_e021)), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
+      +t3 = add(mul(a_e0, b_e3), add(mul(a_e1, b_e013), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
+      +t4 = add(mul(a_e0, neg(b_e021)), add(mul(a_e1, b_e2), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
+      +t5 = add(mul(a_e0, b_e013), add(mul(a_e1, b_e3), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
+      +t6 = add(mul(a_e0, neg(b_e032)), add(neg(mul(a_e1, b_e123)), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
+      +t7 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      K.Odd{
+        add(add(neg(mul(t1, a_e1)), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))), mul(t7, a_e0)),
+        add(neg(mul(t1, a_e0)), add(add(neg(mul(t4, a_e2)), neg(mul(t5, a_e3))), mul(t7, a_e1))),
+        add(neg(mul(t2, a_e0)), add(mul(t4, a_e1), add(neg(mul(t6, a_e3)), mul(t7, a_e2)))),
+        add(neg(mul(t3, a_e0)), add(mul(t5, a_e1), add(mul(t6, a_e2), mul(t7, a_e3)))),
+        add(neg(mul(t0, a_e0)), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), mul(t6, a_e1))),
+        neg(add(add(neg(mul(t0, a_e1)), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), mul(t6, a_e0))),
+        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), neg(mul(t3, a_e1))), mul(t5, a_e0)),
+        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), neg(mul(t2, a_e1))), mul(t4, a_e0)))}
+
+def Vector.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Vector<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Vector{+a_e0, +a_e1, +a_e2, +a_e3} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
+      +t1 = add(mul(a_e0, b_e12), add(neg(mul(a_e1, neg(b_e20))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
+      +t2 = add(mul(a_e0, neg(b_e31)), add(neg(mul(a_e1, neg(b_e30))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
+      +t3 = add(mul(a_e0, b_e1), add(neg(mul(a_e1, b_e0)), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
+      +t4 = add(mul(a_e0, b_e23), add(mul(a_e1, b_e0123), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
+      +t5 = add(mul(a_e0, b_e2), add(mul(a_e1, neg(b_e021)), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
+      +t6 = add(mul(a_e0, b_e3), add(mul(a_e1, b_e013), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
+      +t7 = add(mul(a_e0, b_s), add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
+      +t8 = add(mul(a_e0, b_e0123), add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
+      +t9 = add(mul(a_e0, neg(b_e021)), add(mul(a_e1, b_e2), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
+      +t10 = add(mul(a_e0, b_e013), add(mul(a_e1, b_e3), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
+      +t11 = add(mul(a_e0, neg(b_e10)), add(mul(a_e1, b_s), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
+      +t12 = add(mul(a_e0, neg(b_e032)), add(neg(mul(a_e1, b_e123)), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
+      +t13 = add(mul(a_e0, neg(b_e20)), add(neg(mul(a_e1, b_e12)), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
+      +t14 = add(mul(a_e0, neg(b_e30)), add(neg(mul(a_e1, neg(b_e31))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
+      +t15 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      K.Multivector{
+        add(mul(t7, a_e0), add(neg(mul(t11, a_e1)), add(neg(mul(t13, a_e2)), neg(mul(t14, a_e3))))),
+        add(add(neg(mul(t3, a_e1)), add(neg(mul(t5, a_e2)), neg(mul(t6, a_e3)))), mul(t15, a_e0)),
+        add(neg(mul(t3, a_e0)), add(add(neg(mul(t9, a_e2)), neg(mul(t10, a_e3))), mul(t15, a_e1))),
+        add(neg(mul(t5, a_e0)), add(mul(t9, a_e1), add(neg(mul(t12, a_e3)), mul(t15, a_e2)))),
+        add(neg(mul(t6, a_e0)), add(mul(t10, a_e1), add(mul(t12, a_e2), mul(t15, a_e3)))),
+        neg(add(add(add(neg(mul(t1, a_e2)), neg(mul(t2, a_e3))), mul(t7, a_e1)), neg(mul(t11, a_e0)))),
+        neg(add(add(mul(t1, a_e1), add(neg(mul(t4, a_e3)), mul(t7, a_e2))), neg(mul(t13, a_e0)))),
+        neg(add(add(mul(t2, a_e1), add(mul(t4, a_e2), mul(t7, a_e3))), neg(mul(t14, a_e0)))),
+        add(mul(t4, a_e0), add(neg(mul(t8, a_e1)), add(mul(t13, a_e3), neg(mul(t14, a_e2))))),
+        neg(add(mul(t2, a_e0), add(add(mul(t8, a_e2), mul(t11, a_e3)), neg(mul(t14, a_e1))))),
+        add(mul(t1, a_e0), add(add(neg(mul(t8, a_e3)), mul(t11, a_e2)), neg(mul(t13, a_e1)))),
+        add(neg(mul(t0, a_e0)), add(add(mul(t9, a_e3), neg(mul(t10, a_e2))), mul(t12, a_e1))),
+        neg(add(add(neg(mul(t0, a_e1)), add(mul(t5, a_e3), neg(mul(t6, a_e2)))), mul(t12, a_e0))),
+        add(add(add(mul(t0, a_e2), mul(t3, a_e3)), neg(mul(t6, a_e1))), mul(t10, a_e0)),
+        neg(add(add(add(neg(mul(t0, a_e3)), mul(t3, a_e2)), neg(mul(t5, a_e1))), mul(t9, a_e0))),
+        add(add(add(mul(t1, a_e3), neg(mul(t2, a_e2))), mul(t4, a_e1)), neg(mul(t8, a_e0)))}
+
+def Even.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Scalar<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Scalar{+b_s}:
+      +t0 = mul(a_e0123, b_s)
+      +t1 = mul(neg(a_e10), b_s)
+      +t2 = mul(neg(a_e20), b_s)
+      +t3 = mul(neg(a_e30), b_s)
+      +t4 = mul(a_e12, b_s)
+      +t5 = mul(neg(a_e31), b_s)
+      +t6 = mul(a_e23, b_s)
+      +t7 = mul(a_s, b_s)
+      K.Phasor{
+        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
+        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+
+def Even.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      +t0 = add(add(add(neg(mul(a_e0123, b_e3)), mul(neg(a_e10), b_e2)), neg(mul(neg(a_e20), b_e1))), mul(a_e12, b_e0))
+      +t1 = add(add(add(mul(a_e0123, b_e2), mul(neg(a_e10), b_e3)), neg(mul(neg(a_e30), b_e1))), mul(neg(a_e31), b_e0))
+      +t2 = add(add(neg(mul(a_e0123, b_e1)), add(mul(neg(a_e20), b_e3), neg(mul(neg(a_e30), b_e2)))), mul(a_e23, b_e0))
+      +t3 = add(add(neg(mul(neg(a_e10), b_e1)), add(neg(mul(neg(a_e20), b_e2)), neg(mul(neg(a_e30), b_e3)))), mul(a_s, b_e0))
+      +t4 = add(neg(mul(a_e0123, b_e0)), add(add(mul(a_e12, b_e3), neg(mul(neg(a_e31), b_e2))), mul(a_e23, b_e1)))
+      +t5 = add(neg(mul(neg(a_e10), b_e0)), add(add(neg(mul(a_e12, b_e2)), neg(mul(neg(a_e31), b_e3))), mul(a_s, b_e1)))
+      +t6 = add(neg(mul(neg(a_e20), b_e0)), add(mul(a_e12, b_e1), add(neg(mul(a_e23, b_e3)), mul(a_s, b_e2))))
+      +t7 = add(neg(mul(neg(a_e30), b_e0)), add(mul(neg(a_e31), b_e1), add(mul(a_e23, b_e2), mul(a_s, b_e3))))
+      K.Vector{
+        add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30)))))),
+        add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31)))))),
+        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
+        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s))))}
+
+def Even.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      +t0 = add(add(mul(neg(a_e10), b_e23), add(neg(mul(neg(a_e20), neg(b_e31))), mul(neg(a_e30), b_e12))), add(add(mul(a_e12, neg(b_e30)), neg(mul(neg(a_e31), neg(b_e20)))), mul(a_e23, neg(b_e10))))
+      +t1 = add(add(neg(mul(a_e0123, b_e23)), add(mul(neg(a_e20), b_e12), mul(neg(a_e30), neg(b_e31)))), add(add(neg(mul(a_e12, neg(b_e20))), neg(mul(neg(a_e31), neg(b_e30)))), mul(a_s, neg(b_e10))))
+      +t2 = add(add(add(mul(a_e0123, neg(b_e31)), neg(mul(neg(a_e10), b_e12))), mul(neg(a_e30), b_e23)), add(mul(a_e12, neg(b_e10)), add(neg(mul(a_e23, neg(b_e30))), mul(a_s, neg(b_e20)))))
+      +t3 = add(add(add(neg(mul(a_e0123, b_e12)), neg(mul(neg(a_e10), neg(b_e31)))), neg(mul(neg(a_e20), b_e23))), add(mul(neg(a_e31), neg(b_e10)), add(mul(a_e23, neg(b_e20)), mul(a_s, neg(b_e30)))))
+      +t4 = add(add(add(mul(a_e0123, neg(b_e30)), neg(mul(neg(a_e10), neg(b_e20)))), mul(neg(a_e20), neg(b_e10))), add(mul(neg(a_e31), b_e23), add(neg(mul(a_e23, neg(b_e31))), mul(a_s, b_e12))))
+      +t5 = add(add(add(neg(mul(a_e0123, neg(b_e20))), neg(mul(neg(a_e10), neg(b_e30)))), mul(neg(a_e30), neg(b_e10))), add(neg(mul(a_e12, b_e23)), add(mul(a_e23, b_e12), mul(a_s, neg(b_e31)))))
+      +t6 = add(add(mul(a_e0123, neg(b_e10)), add(neg(mul(neg(a_e20), neg(b_e30))), mul(neg(a_e30), neg(b_e20)))), add(add(mul(a_e12, neg(b_e31)), neg(mul(neg(a_e31), b_e12))), mul(a_s, b_e23)))
+      +t7 = add(add(mul(neg(a_e10), neg(b_e10)), add(mul(neg(a_e20), neg(b_e20)), mul(neg(a_e30), neg(b_e30)))), add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), neg(mul(a_e23, b_e23))))
+      K.Bivector{
+        neg(add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10))))))),
+        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
+        neg(add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30))))))),
+        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
+        neg(add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31))))))),
+        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12)))))}
+
+def Even.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      +t0 = add(neg(mul(neg(a_e30), b_e123)), add(mul(neg(a_e31), neg(b_e032)), add(neg(mul(a_e23, b_e013)), mul(a_s, neg(b_e021)))))
+      +t1 = add(mul(neg(a_e20), b_e123), add(neg(mul(a_e12, neg(b_e032))), add(mul(a_e23, neg(b_e021)), mul(a_s, b_e013))))
+      +t2 = add(neg(mul(neg(a_e10), b_e123)), add(add(mul(a_e12, b_e013), neg(mul(neg(a_e31), neg(b_e021)))), mul(a_s, neg(b_e032))))
+      +t3 = add(mul(a_e0123, b_e123), add(add(neg(mul(a_e12, neg(b_e021))), neg(mul(neg(a_e31), b_e013))), neg(mul(a_e23, neg(b_e032)))))
+      +t4 = add(add(neg(mul(neg(a_e10), neg(b_e032))), add(mul(neg(a_e20), b_e013), neg(mul(neg(a_e30), neg(b_e021))))), mul(a_s, b_e123))
+      +t5 = add(add(mul(a_e0123, neg(b_e032)), add(neg(mul(neg(a_e20), neg(b_e021))), neg(mul(neg(a_e30), b_e013)))), neg(mul(a_e23, b_e123)))
+      +t6 = add(add(add(neg(mul(a_e0123, b_e013)), mul(neg(a_e10), neg(b_e021))), neg(mul(neg(a_e30), neg(b_e032)))), mul(neg(a_e31), b_e123))
+      +t7 = add(add(add(mul(a_e0123, neg(b_e021)), mul(neg(a_e10), b_e013)), mul(neg(a_e20), neg(b_e032))), neg(mul(a_e12, b_e123)))
+      K.Trivector{
+        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12))))),
+        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
+        add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10)))))),
+        neg(add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123)))))}
+
+def Even.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Pseudoscalar{+b_e0123}:
+      +t0 = mul(a_s, b_e0123)
+      +t1 = neg(mul(a_e23, b_e0123))
+      +t2 = mul(neg(a_e31), b_e0123)
+      +t3 = neg(mul(a_e12, b_e0123))
+      +t4 = mul(neg(a_e30), b_e0123)
+      +t5 = neg(mul(neg(a_e20), b_e0123))
+      +t6 = mul(neg(a_e10), b_e0123)
+      +t7 = neg(mul(a_e0123, b_e0123))
+      K.Phasor{
+        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
+        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+
+def Even.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Phasor{+b_s, +b_e0123}:
+      +t0 = add(mul(a_e0123, b_s), mul(a_s, b_e0123))
+      +t1 = add(mul(neg(a_e10), b_s), neg(mul(a_e23, b_e0123)))
+      +t2 = add(mul(neg(a_e20), b_s), mul(neg(a_e31), b_e0123))
+      +t3 = add(mul(neg(a_e30), b_s), neg(mul(a_e12, b_e0123)))
+      +t4 = add(mul(neg(a_e30), b_e0123), mul(a_e12, b_s))
+      +t5 = add(neg(mul(neg(a_e20), b_e0123)), mul(neg(a_e31), b_s))
+      +t6 = add(mul(neg(a_e10), b_e0123), mul(a_e23, b_s))
+      +t7 = add(neg(mul(a_e0123, b_e0123)), mul(a_s, b_s))
+      K.Phasor{
+        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
+        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+
+def Even.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      +t0 = add(add(add(mul(a_e0123, b_s), mul(neg(a_e10), b_e23)), add(neg(mul(neg(a_e20), neg(b_e31))), mul(neg(a_e30), b_e12))), add(add(mul(a_e12, neg(b_e30)), neg(mul(neg(a_e31), neg(b_e20)))), add(mul(a_e23, neg(b_e10)), mul(a_s, b_e0123))))
+      +t1 = add(add(add(neg(mul(a_e0123, b_e23)), mul(neg(a_e10), b_s)), add(mul(neg(a_e20), b_e12), mul(neg(a_e30), neg(b_e31)))), add(add(neg(mul(a_e12, neg(b_e20))), neg(mul(neg(a_e31), neg(b_e30)))), add(neg(mul(a_e23, b_e0123)), mul(a_s, neg(b_e10)))))
+      +t2 = add(add(add(mul(a_e0123, neg(b_e31)), neg(mul(neg(a_e10), b_e12))), add(mul(neg(a_e20), b_s), mul(neg(a_e30), b_e23))), add(add(mul(a_e12, neg(b_e10)), mul(neg(a_e31), b_e0123)), add(neg(mul(a_e23, neg(b_e30))), mul(a_s, neg(b_e20)))))
+      +t3 = add(add(add(neg(mul(a_e0123, b_e12)), neg(mul(neg(a_e10), neg(b_e31)))), add(neg(mul(neg(a_e20), b_e23)), mul(neg(a_e30), b_s))), add(add(neg(mul(a_e12, b_e0123)), mul(neg(a_e31), neg(b_e10))), add(mul(a_e23, neg(b_e20)), mul(a_s, neg(b_e30)))))
+      +t4 = add(add(add(mul(a_e0123, neg(b_e30)), neg(mul(neg(a_e10), neg(b_e20)))), add(mul(neg(a_e20), neg(b_e10)), mul(neg(a_e30), b_e0123))), add(add(mul(a_e12, b_s), mul(neg(a_e31), b_e23)), add(neg(mul(a_e23, neg(b_e31))), mul(a_s, b_e12))))
+      +t5 = add(add(add(neg(mul(a_e0123, neg(b_e20))), neg(mul(neg(a_e10), neg(b_e30)))), add(neg(mul(neg(a_e20), b_e0123)), mul(neg(a_e30), neg(b_e10)))), add(add(neg(mul(a_e12, b_e23)), mul(neg(a_e31), b_s)), add(mul(a_e23, b_e12), mul(a_s, neg(b_e31)))))
+      +t6 = add(add(add(mul(a_e0123, neg(b_e10)), mul(neg(a_e10), b_e0123)), add(neg(mul(neg(a_e20), neg(b_e30))), mul(neg(a_e30), neg(b_e20)))), add(add(mul(a_e12, neg(b_e31)), neg(mul(neg(a_e31), b_e12))), add(mul(a_e23, b_s), mul(a_s, b_e23))))
+      +t7 = add(add(add(neg(mul(a_e0123, b_e0123)), mul(neg(a_e10), neg(b_e10))), add(mul(neg(a_e20), neg(b_e20)), mul(neg(a_e30), neg(b_e30)))), add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s))))
+      K.Even{
+        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
+        neg(add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10))))))),
+        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
+        neg(add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30))))))),
+        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
+        neg(add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31))))))),
+        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12))))),
+        add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123))))}
+
+def Even.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      +t0 = add(add(add(neg(mul(a_e0123, b_e3)), mul(neg(a_e10), b_e2)), add(neg(mul(neg(a_e20), b_e1)), neg(mul(neg(a_e30), b_e123)))), add(add(mul(a_e12, b_e0), mul(neg(a_e31), neg(b_e032))), add(neg(mul(a_e23, b_e013)), mul(a_s, neg(b_e021)))))
+      +t1 = add(add(add(mul(a_e0123, b_e2), mul(neg(a_e10), b_e3)), add(mul(neg(a_e20), b_e123), neg(mul(neg(a_e30), b_e1)))), add(add(neg(mul(a_e12, neg(b_e032))), mul(neg(a_e31), b_e0)), add(mul(a_e23, neg(b_e021)), mul(a_s, b_e013))))
+      +t2 = add(add(add(neg(mul(a_e0123, b_e1)), neg(mul(neg(a_e10), b_e123))), add(mul(neg(a_e20), b_e3), neg(mul(neg(a_e30), b_e2)))), add(add(mul(a_e12, b_e013), neg(mul(neg(a_e31), neg(b_e021)))), add(mul(a_e23, b_e0), mul(a_s, neg(b_e032)))))
+      +t3 = add(add(add(mul(a_e0123, b_e123), neg(mul(neg(a_e10), b_e1))), add(neg(mul(neg(a_e20), b_e2)), neg(mul(neg(a_e30), b_e3)))), add(add(neg(mul(a_e12, neg(b_e021))), neg(mul(neg(a_e31), b_e013))), add(neg(mul(a_e23, neg(b_e032))), mul(a_s, b_e0))))
+      +t4 = add(add(add(neg(mul(a_e0123, b_e0)), neg(mul(neg(a_e10), neg(b_e032)))), add(mul(neg(a_e20), b_e013), neg(mul(neg(a_e30), neg(b_e021))))), add(add(mul(a_e12, b_e3), neg(mul(neg(a_e31), b_e2))), add(mul(a_e23, b_e1), mul(a_s, b_e123))))
+      +t5 = add(add(add(mul(a_e0123, neg(b_e032)), neg(mul(neg(a_e10), b_e0))), add(neg(mul(neg(a_e20), neg(b_e021))), neg(mul(neg(a_e30), b_e013)))), add(add(neg(mul(a_e12, b_e2)), neg(mul(neg(a_e31), b_e3))), add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1))))
+      +t6 = add(add(add(neg(mul(a_e0123, b_e013)), mul(neg(a_e10), neg(b_e021))), add(neg(mul(neg(a_e20), b_e0)), neg(mul(neg(a_e30), neg(b_e032))))), add(add(mul(a_e12, b_e1), mul(neg(a_e31), b_e123)), add(neg(mul(a_e23, b_e3)), mul(a_s, b_e2))))
+      +t7 = add(add(add(mul(a_e0123, neg(b_e021)), mul(neg(a_e10), b_e013)), add(mul(neg(a_e20), neg(b_e032)), neg(mul(neg(a_e30), b_e0)))), add(add(neg(mul(a_e12, b_e123)), mul(neg(a_e31), b_e1)), add(mul(a_e23, b_e2), mul(a_s, b_e3))))
+      K.Odd{
+        add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t1, neg(neg(a_e31))))), add(neg(mul(t2, neg(a_e23))), mul(t3, a_s))), add(add(neg(mul(t4, a_e0123)), mul(t5, neg(neg(a_e10)))), add(mul(t6, neg(neg(a_e20))), mul(t7, neg(neg(a_e30)))))),
+        add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t1, neg(neg(a_e30))))), add(neg(mul(t2, a_e0123)), mul(t3, neg(neg(a_e10))))), add(add(neg(mul(t4, neg(a_e23))), mul(t5, a_s)), add(mul(t6, neg(a_e12)), mul(t7, neg(neg(a_e31)))))),
+        add(add(add(mul(t0, neg(neg(a_e10))), mul(t1, a_e0123)), add(neg(mul(t2, neg(neg(a_e30)))), mul(t3, neg(neg(a_e20))))), add(add(mul(t4, neg(neg(a_e31))), neg(mul(t5, neg(a_e12)))), add(mul(t6, a_s), mul(t7, neg(a_e23))))),
+        add(add(add(neg(mul(t0, a_e0123)), mul(t1, neg(neg(a_e10)))), add(mul(t2, neg(neg(a_e20))), mul(t3, neg(neg(a_e30))))), add(add(neg(mul(t4, neg(a_e12))), neg(mul(t5, neg(neg(a_e31))))), add(neg(mul(t6, neg(a_e23))), mul(t7, a_s)))),
+        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t1, neg(neg(a_e20))))), add(mul(t2, neg(neg(a_e10))), mul(t3, a_e0123))), add(add(mul(t4, a_s), mul(t5, neg(a_e23))), add(neg(mul(t6, neg(neg(a_e31)))), mul(t7, neg(a_e12))))),
+        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t1, neg(a_e12)))), add(mul(t2, a_s), mul(t3, neg(a_e23)))), add(add(mul(t4, neg(neg(a_e10))), mul(t5, a_e0123)), add(neg(mul(t6, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))))),
+        add(add(add(neg(mul(t0, neg(a_e23))), mul(t1, a_s)), add(mul(t2, neg(a_e12)), mul(t3, neg(neg(a_e31))))), add(add(neg(mul(t4, neg(neg(a_e20)))), neg(mul(t5, neg(neg(a_e30))))), add(neg(mul(t6, a_e0123)), mul(t7, neg(neg(a_e10)))))),
+        neg(add(add(add(mul(t0, a_s), mul(t1, neg(a_e23))), add(neg(mul(t2, neg(neg(a_e31)))), mul(t3, neg(a_e12)))), add(add(mul(t4, neg(neg(a_e30))), neg(mul(t5, neg(neg(a_e20))))), add(mul(t6, neg(neg(a_e10))), mul(t7, a_e0123)))))}
+
+def Even.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Even<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Even{+a_s, +a_e10, +a_e20, +a_e30, +a_e23, +a_e31, +a_e12, +a_e0123} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      +t0 = add(add(add(mul(a_e0123, b_s), mul(neg(a_e10), b_e23)), add(neg(mul(neg(a_e20), neg(b_e31))), mul(neg(a_e30), b_e12))), add(add(mul(a_e12, neg(b_e30)), neg(mul(neg(a_e31), neg(b_e20)))), add(mul(a_e23, neg(b_e10)), mul(a_s, b_e0123))))
+      +t1 = add(add(add(neg(mul(a_e0123, b_e3)), mul(neg(a_e10), b_e2)), add(neg(mul(neg(a_e20), b_e1)), neg(mul(neg(a_e30), b_e123)))), add(add(mul(a_e12, b_e0), mul(neg(a_e31), neg(b_e032))), add(neg(mul(a_e23, b_e013)), mul(a_s, neg(b_e021)))))
+      +t2 = add(add(add(mul(a_e0123, b_e2), mul(neg(a_e10), b_e3)), add(mul(neg(a_e20), b_e123), neg(mul(neg(a_e30), b_e1)))), add(add(neg(mul(a_e12, neg(b_e032))), mul(neg(a_e31), b_e0)), add(mul(a_e23, neg(b_e021)), mul(a_s, b_e013))))
+      +t3 = add(add(add(neg(mul(a_e0123, b_e23)), mul(neg(a_e10), b_s)), add(mul(neg(a_e20), b_e12), mul(neg(a_e30), neg(b_e31)))), add(add(neg(mul(a_e12, neg(b_e20))), neg(mul(neg(a_e31), neg(b_e30)))), add(neg(mul(a_e23, b_e0123)), mul(a_s, neg(b_e10)))))
+      +t4 = add(add(add(neg(mul(a_e0123, b_e1)), neg(mul(neg(a_e10), b_e123))), add(mul(neg(a_e20), b_e3), neg(mul(neg(a_e30), b_e2)))), add(add(mul(a_e12, b_e013), neg(mul(neg(a_e31), neg(b_e021)))), add(mul(a_e23, b_e0), mul(a_s, neg(b_e032)))))
+      +t5 = add(add(add(mul(a_e0123, neg(b_e31)), neg(mul(neg(a_e10), b_e12))), add(mul(neg(a_e20), b_s), mul(neg(a_e30), b_e23))), add(add(mul(a_e12, neg(b_e10)), mul(neg(a_e31), b_e0123)), add(neg(mul(a_e23, neg(b_e30))), mul(a_s, neg(b_e20)))))
+      +t6 = add(add(add(neg(mul(a_e0123, b_e12)), neg(mul(neg(a_e10), neg(b_e31)))), add(neg(mul(neg(a_e20), b_e23)), mul(neg(a_e30), b_s))), add(add(neg(mul(a_e12, b_e0123)), mul(neg(a_e31), neg(b_e10))), add(mul(a_e23, neg(b_e20)), mul(a_s, neg(b_e30)))))
+      +t7 = add(add(add(mul(a_e0123, b_e123), neg(mul(neg(a_e10), b_e1))), add(neg(mul(neg(a_e20), b_e2)), neg(mul(neg(a_e30), b_e3)))), add(add(neg(mul(a_e12, neg(b_e021))), neg(mul(neg(a_e31), b_e013))), add(neg(mul(a_e23, neg(b_e032))), mul(a_s, b_e0))))
+      +t8 = add(add(add(neg(mul(a_e0123, b_e0)), neg(mul(neg(a_e10), neg(b_e032)))), add(mul(neg(a_e20), b_e013), neg(mul(neg(a_e30), neg(b_e021))))), add(add(mul(a_e12, b_e3), neg(mul(neg(a_e31), b_e2))), add(mul(a_e23, b_e1), mul(a_s, b_e123))))
+      +t9 = add(add(add(mul(a_e0123, neg(b_e30)), neg(mul(neg(a_e10), neg(b_e20)))), add(mul(neg(a_e20), neg(b_e10)), mul(neg(a_e30), b_e0123))), add(add(mul(a_e12, b_s), mul(neg(a_e31), b_e23)), add(neg(mul(a_e23, neg(b_e31))), mul(a_s, b_e12))))
+      +t10 = add(add(add(neg(mul(a_e0123, neg(b_e20))), neg(mul(neg(a_e10), neg(b_e30)))), add(neg(mul(neg(a_e20), b_e0123)), mul(neg(a_e30), neg(b_e10)))), add(add(neg(mul(a_e12, b_e23)), mul(neg(a_e31), b_s)), add(mul(a_e23, b_e12), mul(a_s, neg(b_e31)))))
+      +t11 = add(add(add(mul(a_e0123, neg(b_e032)), neg(mul(neg(a_e10), b_e0))), add(neg(mul(neg(a_e20), neg(b_e021))), neg(mul(neg(a_e30), b_e013)))), add(add(neg(mul(a_e12, b_e2)), neg(mul(neg(a_e31), b_e3))), add(neg(mul(a_e23, b_e123)), mul(a_s, b_e1))))
+      +t12 = add(add(add(mul(a_e0123, neg(b_e10)), mul(neg(a_e10), b_e0123)), add(neg(mul(neg(a_e20), neg(b_e30))), mul(neg(a_e30), neg(b_e20)))), add(add(mul(a_e12, neg(b_e31)), neg(mul(neg(a_e31), b_e12))), add(mul(a_e23, b_s), mul(a_s, b_e23))))
+      +t13 = add(add(add(neg(mul(a_e0123, b_e013)), mul(neg(a_e10), neg(b_e021))), add(neg(mul(neg(a_e20), b_e0)), neg(mul(neg(a_e30), neg(b_e032))))), add(add(mul(a_e12, b_e1), mul(neg(a_e31), b_e123)), add(neg(mul(a_e23, b_e3)), mul(a_s, b_e2))))
+      +t14 = add(add(add(mul(a_e0123, neg(b_e021)), mul(neg(a_e10), b_e013)), add(mul(neg(a_e20), neg(b_e032)), neg(mul(neg(a_e30), b_e0)))), add(add(neg(mul(a_e12, b_e123)), mul(neg(a_e31), b_e1)), add(mul(a_e23, b_e2), mul(a_s, b_e3))))
+      +t15 = add(add(add(neg(mul(a_e0123, b_e0123)), mul(neg(a_e10), neg(b_e10))), add(mul(neg(a_e20), neg(b_e20)), mul(neg(a_e30), neg(b_e30)))), add(add(neg(mul(a_e12, b_e12)), neg(mul(neg(a_e31), neg(b_e31)))), add(neg(mul(a_e23, b_e23)), mul(a_s, b_s))))
+      K.Multivector{
+        add(add(add(neg(mul(t0, a_e0123)), mul(t3, neg(neg(a_e10)))), add(mul(t5, neg(neg(a_e20))), mul(t6, neg(neg(a_e30))))), add(add(neg(mul(t9, neg(a_e12))), neg(mul(t10, neg(neg(a_e31))))), add(neg(mul(t12, neg(a_e23))), mul(t15, a_s)))),
+        add(add(add(neg(mul(t1, neg(a_e12))), neg(mul(t2, neg(neg(a_e31))))), add(neg(mul(t4, neg(a_e23))), mul(t7, a_s))), add(add(neg(mul(t8, a_e0123)), mul(t11, neg(neg(a_e10)))), add(mul(t13, neg(neg(a_e20))), mul(t14, neg(neg(a_e30)))))),
+        add(add(add(neg(mul(t1, neg(neg(a_e20)))), neg(mul(t2, neg(neg(a_e30))))), add(neg(mul(t4, a_e0123)), mul(t7, neg(neg(a_e10))))), add(add(neg(mul(t8, neg(a_e23))), mul(t11, a_s)), add(mul(t13, neg(a_e12)), mul(t14, neg(neg(a_e31)))))),
+        add(add(add(mul(t1, neg(neg(a_e10))), mul(t2, a_e0123)), add(neg(mul(t4, neg(neg(a_e30)))), mul(t7, neg(neg(a_e20))))), add(add(mul(t8, neg(neg(a_e31))), neg(mul(t11, neg(a_e12)))), add(mul(t13, a_s), mul(t14, neg(a_e23))))),
+        add(add(add(neg(mul(t1, a_e0123)), mul(t2, neg(neg(a_e10)))), add(mul(t4, neg(neg(a_e20))), mul(t7, neg(neg(a_e30))))), add(add(neg(mul(t8, neg(a_e12))), neg(mul(t11, neg(neg(a_e31))))), add(neg(mul(t13, neg(a_e23))), mul(t14, a_s)))),
+        neg(add(add(add(neg(mul(t0, neg(a_e23))), mul(t3, a_s)), add(mul(t5, neg(a_e12)), mul(t6, neg(neg(a_e31))))), add(add(neg(mul(t9, neg(neg(a_e20)))), neg(mul(t10, neg(neg(a_e30))))), add(neg(mul(t12, a_e0123)), mul(t15, neg(neg(a_e10))))))),
+        neg(add(add(add(mul(t0, neg(neg(a_e31))), neg(mul(t3, neg(a_e12)))), add(mul(t5, a_s), mul(t6, neg(a_e23)))), add(add(mul(t9, neg(neg(a_e10))), mul(t10, a_e0123)), add(neg(mul(t12, neg(neg(a_e30)))), mul(t15, neg(neg(a_e20))))))),
+        neg(add(add(add(neg(mul(t0, neg(a_e12))), neg(mul(t3, neg(neg(a_e31))))), add(neg(mul(t5, neg(a_e23))), mul(t6, a_s))), add(add(neg(mul(t9, a_e0123)), mul(t10, neg(neg(a_e10)))), add(mul(t12, neg(neg(a_e20))), mul(t15, neg(neg(a_e30))))))),
+        add(add(add(mul(t0, neg(neg(a_e10))), mul(t3, a_e0123)), add(neg(mul(t5, neg(neg(a_e30)))), mul(t6, neg(neg(a_e20))))), add(add(mul(t9, neg(neg(a_e31))), neg(mul(t10, neg(a_e12)))), add(mul(t12, a_s), mul(t15, neg(a_e23))))),
+        neg(add(add(add(neg(mul(t0, neg(neg(a_e20)))), neg(mul(t3, neg(neg(a_e30))))), add(neg(mul(t5, a_e0123)), mul(t6, neg(neg(a_e10))))), add(add(neg(mul(t9, neg(a_e23))), mul(t10, a_s)), add(mul(t12, neg(a_e12)), mul(t15, neg(neg(a_e31))))))),
+        add(add(add(mul(t0, neg(neg(a_e30))), neg(mul(t3, neg(neg(a_e20))))), add(mul(t5, neg(neg(a_e10))), mul(t6, a_e0123))), add(add(mul(t9, a_s), mul(t10, neg(a_e23))), add(neg(mul(t12, neg(neg(a_e31)))), mul(t15, neg(a_e12))))),
+        add(add(add(mul(t1, neg(neg(a_e30))), neg(mul(t2, neg(neg(a_e20))))), add(mul(t4, neg(neg(a_e10))), mul(t7, a_e0123))), add(add(mul(t8, a_s), mul(t11, neg(a_e23))), add(neg(mul(t13, neg(neg(a_e31)))), mul(t14, neg(a_e12))))),
+        neg(add(add(add(mul(t1, neg(neg(a_e31))), neg(mul(t2, neg(a_e12)))), add(mul(t4, a_s), mul(t7, neg(a_e23)))), add(add(mul(t8, neg(neg(a_e10))), mul(t11, a_e0123)), add(neg(mul(t13, neg(neg(a_e30)))), mul(t14, neg(neg(a_e20))))))),
+        add(add(add(neg(mul(t1, neg(a_e23))), mul(t2, a_s)), add(mul(t4, neg(a_e12)), mul(t7, neg(neg(a_e31))))), add(add(neg(mul(t8, neg(neg(a_e20)))), neg(mul(t11, neg(neg(a_e30))))), add(neg(mul(t13, a_e0123)), mul(t14, neg(neg(a_e10)))))),
+        neg(add(add(add(mul(t1, a_s), mul(t2, neg(a_e23))), add(neg(mul(t4, neg(neg(a_e31)))), mul(t7, neg(a_e12)))), add(add(mul(t8, neg(neg(a_e30))), neg(mul(t11, neg(neg(a_e20))))), add(mul(t13, neg(neg(a_e10))), mul(t14, a_e0123))))),
+        add(add(add(mul(t0, a_s), mul(t3, neg(a_e23))), add(neg(mul(t5, neg(neg(a_e31)))), mul(t6, neg(a_e12)))), add(add(mul(t9, neg(neg(a_e30))), neg(mul(t10, neg(neg(a_e20))))), add(mul(t12, neg(neg(a_e10))), mul(t15, a_e0123))))}
+
+def Odd.transform.Scalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Scalar<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Scalar{+b_s}:
+      +t0 = mul(neg(a_e021), b_s)
+      +t1 = mul(a_e013, b_s)
+      +t2 = mul(neg(a_e032), b_s)
+      +t3 = mul(a_e0, b_s)
+      +t4 = mul(a_e123, b_s)
+      +t5 = mul(a_e1, b_s)
+      +t6 = mul(a_e2, b_s)
+      +t7 = mul(a_e3, b_s)
+      K.Phasor{
+        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+
+def Odd.transform.Vector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Vector<T>) -> K.Vector<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Vector{+b_e0, +b_e1, +b_e2, +b_e3}:
+      +t0 = add(add(add(mul(neg(a_e021), b_e3), neg(mul(a_e013, b_e2))), mul(neg(a_e032), b_e1)), neg(mul(a_e123, b_e0)))
+      +t1 = add(add(add(neg(mul(neg(a_e021), b_e2)), neg(mul(a_e013, b_e3))), mul(a_e0, b_e1)), neg(mul(a_e1, b_e0)))
+      +t2 = add(add(mul(neg(a_e021), b_e1), add(neg(mul(neg(a_e032), b_e3)), mul(a_e0, b_e2))), neg(mul(a_e2, b_e0)))
+      +t3 = add(add(mul(a_e013, b_e1), add(mul(neg(a_e032), b_e2), mul(a_e0, b_e3))), neg(mul(a_e3, b_e0)))
+      +t4 = add(mul(neg(a_e021), b_e0), add(add(neg(mul(a_e123, b_e3)), mul(a_e1, b_e2)), neg(mul(a_e2, b_e1))))
+      +t5 = add(mul(a_e013, b_e0), add(add(mul(a_e123, b_e2), mul(a_e1, b_e3)), neg(mul(a_e3, b_e1))))
+      +t6 = add(mul(neg(a_e032), b_e0), add(neg(mul(a_e123, b_e1)), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
+      +t7 = add(mul(a_e0, b_e0), add(neg(mul(a_e1, b_e1)), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      K.Vector{
+        add(add(add(mul(t0, neg(a_e123)), neg(mul(t1, a_e1))), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))), add(add(neg(mul(t4, neg(neg(a_e021)))), neg(mul(t5, neg(a_e013)))), add(neg(mul(t6, neg(neg(a_e032)))), mul(t7, a_e0)))),
+        add(add(add(mul(t0, neg(neg(a_e032))), neg(mul(t1, a_e0))), add(neg(mul(t2, neg(neg(a_e021)))), neg(mul(t3, neg(a_e013))))), add(add(neg(mul(t4, a_e2)), neg(mul(t5, a_e3))), add(neg(mul(t6, neg(a_e123))), mul(t7, a_e1)))),
+        add(add(add(neg(mul(t0, neg(a_e013))), mul(t1, neg(neg(a_e021)))), add(neg(mul(t2, a_e0)), neg(mul(t3, neg(neg(a_e032)))))), add(add(mul(t4, a_e1), mul(t5, neg(a_e123))), add(neg(mul(t6, a_e3)), mul(t7, a_e2)))),
+        add(add(add(mul(t0, neg(neg(a_e021))), mul(t1, neg(a_e013))), add(mul(t2, neg(neg(a_e032))), neg(mul(t3, a_e0)))), add(add(neg(mul(t4, neg(a_e123))), mul(t5, a_e1)), add(mul(t6, a_e2), mul(t7, a_e3))))}
+
+def Odd.transform.Bivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Bivector<T>) -> K.Bivector<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Bivector{+b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12}:
+      +t0 = add(add(mul(a_e013, b_e23), add(neg(mul(neg(a_e032), neg(b_e31))), mul(a_e0, b_e12))), add(add(mul(a_e123, neg(b_e30)), neg(mul(a_e1, neg(b_e20)))), mul(a_e2, neg(b_e10))))
+      +t1 = add(add(neg(mul(neg(a_e021), b_e23)), add(mul(neg(a_e032), b_e12), mul(a_e0, neg(b_e31)))), add(add(neg(mul(a_e123, neg(b_e20))), neg(mul(a_e1, neg(b_e30)))), mul(a_e3, neg(b_e10))))
+      +t2 = add(add(add(mul(neg(a_e021), neg(b_e31)), neg(mul(a_e013, b_e12))), mul(a_e0, b_e23)), add(mul(a_e123, neg(b_e10)), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
+      +t3 = add(add(add(neg(mul(neg(a_e021), b_e12)), neg(mul(a_e013, neg(b_e31)))), neg(mul(neg(a_e032), b_e23))), add(mul(a_e1, neg(b_e10)), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
+      +t4 = add(add(add(mul(neg(a_e021), neg(b_e30)), neg(mul(a_e013, neg(b_e20)))), mul(neg(a_e032), neg(b_e10))), add(mul(a_e1, b_e23), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
+      +t5 = add(add(add(neg(mul(neg(a_e021), neg(b_e20))), neg(mul(a_e013, neg(b_e30)))), mul(a_e0, neg(b_e10))), add(neg(mul(a_e123, b_e23)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
+      +t6 = add(add(mul(neg(a_e021), neg(b_e10)), add(neg(mul(neg(a_e032), neg(b_e30))), mul(a_e0, neg(b_e20)))), add(add(mul(a_e123, neg(b_e31)), neg(mul(a_e1, b_e12))), mul(a_e3, b_e23)))
+      +t7 = add(add(mul(a_e013, neg(b_e10)), add(mul(neg(a_e032), neg(b_e20)), mul(a_e0, neg(b_e30)))), add(add(neg(mul(a_e123, b_e12)), neg(mul(a_e1, neg(b_e31)))), neg(mul(a_e2, b_e23))))
+      K.Bivector{
+        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), add(neg(mul(t2, neg(a_e123))), mul(t3, a_e1))), add(add(mul(t4, neg(neg(a_e032))), neg(mul(t5, a_e0))), add(neg(mul(t6, neg(neg(a_e021)))), neg(mul(t7, neg(a_e013))))))),
+        neg(add(add(add(mul(t0, a_e1), mul(t1, neg(a_e123))), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), add(add(neg(mul(t4, neg(a_e013))), mul(t5, neg(neg(a_e021)))), add(neg(mul(t6, a_e0)), neg(mul(t7, neg(neg(a_e032)))))))),
+        neg(add(add(add(neg(mul(t0, neg(a_e123))), mul(t1, a_e1)), add(mul(t2, a_e2), mul(t3, a_e3))), add(add(mul(t4, neg(neg(a_e021))), mul(t5, neg(a_e013))), add(mul(t6, neg(neg(a_e032))), neg(mul(t7, a_e0)))))),
+        add(add(add(mul(t0, neg(a_e013)), neg(mul(t1, neg(neg(a_e021))))), add(mul(t2, a_e0), mul(t3, neg(neg(a_e032))))), add(add(neg(mul(t4, a_e1)), neg(mul(t5, neg(a_e123)))), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
+        neg(add(add(add(neg(mul(t0, neg(neg(a_e032)))), mul(t1, a_e0)), add(mul(t2, neg(neg(a_e021))), mul(t3, neg(a_e013)))), add(add(mul(t4, a_e2), mul(t5, a_e3)), add(mul(t6, neg(a_e123)), neg(mul(t7, a_e1)))))),
+        add(add(add(mul(t0, a_e0), mul(t1, neg(neg(a_e032)))), add(neg(mul(t2, neg(a_e013))), mul(t3, neg(neg(a_e021))))), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), add(neg(mul(t6, a_e1)), neg(mul(t7, neg(a_e123))))))}
+
+def Odd.transform.Trivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Trivector<T>) -> K.Trivector<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Trivector{+b_e123, +b_e032, +b_e013, +b_e021}:
+      +t0 = add(mul(a_e0, b_e123), add(neg(mul(a_e1, neg(b_e032))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
+      +t1 = add(neg(mul(neg(a_e032), b_e123)), add(mul(a_e123, neg(b_e032)), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
+      +t2 = add(mul(a_e013, b_e123), add(add(neg(mul(a_e123, b_e013)), mul(a_e1, neg(b_e021))), neg(mul(a_e3, neg(b_e032)))))
+      +t3 = add(neg(mul(neg(a_e021), b_e123)), add(add(mul(a_e123, neg(b_e021)), mul(a_e1, b_e013)), mul(a_e2, neg(b_e032))))
+      +t4 = add(add(mul(a_e013, neg(b_e032)), add(neg(mul(neg(a_e032), b_e013)), mul(a_e0, neg(b_e021)))), neg(mul(a_e3, b_e123)))
+      +t5 = add(add(neg(mul(neg(a_e021), neg(b_e032))), add(mul(neg(a_e032), neg(b_e021)), mul(a_e0, b_e013))), mul(a_e2, b_e123))
+      +t6 = add(add(add(mul(neg(a_e021), b_e013), neg(mul(a_e013, neg(b_e021)))), mul(a_e0, neg(b_e032))), neg(mul(a_e1, b_e123)))
+      +t7 = add(add(add(neg(mul(neg(a_e021), neg(b_e021))), neg(mul(a_e013, b_e013))), neg(mul(neg(a_e032), neg(b_e032)))), mul(a_e123, b_e123))
+      K.Trivector{
+        add(add(add(neg(mul(t0, a_e0)), neg(mul(t1, neg(neg(a_e032))))), add(mul(t2, neg(a_e013)), neg(mul(t3, neg(neg(a_e021)))))), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), add(mul(t6, a_e1), mul(t7, neg(a_e123))))),
+        neg(add(add(add(neg(mul(t0, a_e1)), neg(mul(t1, neg(a_e123)))), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), add(add(mul(t4, neg(a_e013)), neg(mul(t5, neg(neg(a_e021))))), add(mul(t6, a_e0), mul(t7, neg(neg(a_e032))))))),
+        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), add(mul(t2, neg(a_e123)), neg(mul(t3, a_e1)))), add(add(neg(mul(t4, neg(neg(a_e032)))), mul(t5, a_e0)), add(mul(t6, neg(neg(a_e021))), mul(t7, neg(a_e013))))),
+        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), add(neg(mul(t2, a_e1)), neg(mul(t3, neg(a_e123))))), add(add(mul(t4, a_e0), mul(t5, neg(neg(a_e032)))), add(neg(mul(t6, neg(a_e013))), mul(t7, neg(neg(a_e021)))))))}
+
+def Odd.transform.Pseudoscalar(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Pseudoscalar<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Pseudoscalar{+b_e0123}:
+      +t0 = mul(a_e3, b_e0123)
+      +t1 = neg(mul(a_e2, b_e0123))
+      +t2 = mul(a_e1, b_e0123)
+      +t3 = neg(mul(a_e123, b_e0123))
+      +t4 = mul(a_e0, b_e0123)
+      +t5 = neg(mul(neg(a_e032), b_e0123))
+      +t6 = mul(a_e013, b_e0123)
+      +t7 = neg(mul(neg(a_e021), b_e0123))
+      K.Phasor{
+        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+
+def Odd.transform.Phasor(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Phasor<T>) -> K.Phasor<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Phasor{+b_s, +b_e0123}:
+      +t0 = add(mul(neg(a_e021), b_s), mul(a_e3, b_e0123))
+      +t1 = add(mul(a_e013, b_s), neg(mul(a_e2, b_e0123)))
+      +t2 = add(mul(neg(a_e032), b_s), mul(a_e1, b_e0123))
+      +t3 = add(mul(a_e0, b_s), neg(mul(a_e123, b_e0123)))
+      +t4 = add(mul(a_e0, b_e0123), mul(a_e123, b_s))
+      +t5 = add(neg(mul(neg(a_e032), b_e0123)), mul(a_e1, b_s))
+      +t6 = add(mul(a_e013, b_e0123), mul(a_e2, b_s))
+      +t7 = add(neg(mul(neg(a_e021), b_e0123)), mul(a_e3, b_s))
+      K.Phasor{
+        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+
+def Odd.transform.Even(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Even<T>) -> K.Even<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Even{+b_s, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e0123}:
+      +t0 = add(add(add(mul(neg(a_e021), b_s), mul(a_e013, b_e23)), add(neg(mul(neg(a_e032), neg(b_e31))), mul(a_e0, b_e12))), add(add(mul(a_e123, neg(b_e30)), neg(mul(a_e1, neg(b_e20)))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
+      +t1 = add(add(add(neg(mul(neg(a_e021), b_e23)), mul(a_e013, b_s)), add(mul(neg(a_e032), b_e12), mul(a_e0, neg(b_e31)))), add(add(neg(mul(a_e123, neg(b_e20))), neg(mul(a_e1, neg(b_e30)))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
+      +t2 = add(add(add(mul(neg(a_e021), neg(b_e31)), neg(mul(a_e013, b_e12))), add(mul(neg(a_e032), b_s), mul(a_e0, b_e23))), add(add(mul(a_e123, neg(b_e10)), mul(a_e1, b_e0123)), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
+      +t3 = add(add(add(neg(mul(neg(a_e021), b_e12)), neg(mul(a_e013, neg(b_e31)))), add(neg(mul(neg(a_e032), b_e23)), mul(a_e0, b_s))), add(add(neg(mul(a_e123, b_e0123)), mul(a_e1, neg(b_e10))), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
+      +t4 = add(add(add(mul(neg(a_e021), neg(b_e30)), neg(mul(a_e013, neg(b_e20)))), add(mul(neg(a_e032), neg(b_e10)), mul(a_e0, b_e0123))), add(add(mul(a_e123, b_s), mul(a_e1, b_e23)), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
+      +t5 = add(add(add(neg(mul(neg(a_e021), neg(b_e20))), neg(mul(a_e013, neg(b_e30)))), add(neg(mul(neg(a_e032), b_e0123)), mul(a_e0, neg(b_e10)))), add(add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
+      +t6 = add(add(add(mul(neg(a_e021), neg(b_e10)), mul(a_e013, b_e0123)), add(neg(mul(neg(a_e032), neg(b_e30))), mul(a_e0, neg(b_e20)))), add(add(mul(a_e123, neg(b_e31)), neg(mul(a_e1, b_e12))), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
+      +t7 = add(add(add(neg(mul(neg(a_e021), b_e0123)), mul(a_e013, neg(b_e10))), add(mul(neg(a_e032), neg(b_e20)), mul(a_e0, neg(b_e30)))), add(add(neg(mul(a_e123, b_e12)), neg(mul(a_e1, neg(b_e31)))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
+      K.Even{
+        add(add(add(neg(mul(t0, neg(neg(a_e021)))), neg(mul(t1, neg(a_e013)))), add(neg(mul(t2, neg(neg(a_e032)))), mul(t3, a_e0))), add(add(mul(t4, neg(a_e123)), neg(mul(t5, a_e1))), add(neg(mul(t6, a_e2)), neg(mul(t7, a_e3))))),
+        neg(add(add(add(neg(mul(t0, a_e2)), neg(mul(t1, a_e3))), add(neg(mul(t2, neg(a_e123))), mul(t3, a_e1))), add(add(mul(t4, neg(neg(a_e032))), neg(mul(t5, a_e0))), add(neg(mul(t6, neg(neg(a_e021)))), neg(mul(t7, neg(a_e013))))))),
+        neg(add(add(add(mul(t0, a_e1), mul(t1, neg(a_e123))), add(neg(mul(t2, a_e3)), mul(t3, a_e2))), add(add(neg(mul(t4, neg(a_e013))), mul(t5, neg(neg(a_e021)))), add(neg(mul(t6, a_e0)), neg(mul(t7, neg(neg(a_e032)))))))),
+        neg(add(add(add(neg(mul(t0, neg(a_e123))), mul(t1, a_e1)), add(mul(t2, a_e2), mul(t3, a_e3))), add(add(mul(t4, neg(neg(a_e021))), mul(t5, neg(a_e013))), add(mul(t6, neg(neg(a_e032))), neg(mul(t7, a_e0)))))),
+        add(add(add(mul(t0, neg(a_e013)), neg(mul(t1, neg(neg(a_e021))))), add(mul(t2, a_e0), mul(t3, neg(neg(a_e032))))), add(add(neg(mul(t4, a_e1)), neg(mul(t5, neg(a_e123)))), add(mul(t6, a_e3), neg(mul(t7, a_e2))))),
+        neg(add(add(add(neg(mul(t0, neg(neg(a_e032)))), mul(t1, a_e0)), add(mul(t2, neg(neg(a_e021))), mul(t3, neg(a_e013)))), add(add(mul(t4, a_e2), mul(t5, a_e3)), add(mul(t6, neg(a_e123)), neg(mul(t7, a_e1)))))),
+        add(add(add(mul(t0, a_e0), mul(t1, neg(neg(a_e032)))), add(neg(mul(t2, neg(a_e013))), mul(t3, neg(neg(a_e021))))), add(add(neg(mul(t4, a_e3)), mul(t5, a_e2)), add(neg(mul(t6, a_e1)), neg(mul(t7, neg(a_e123)))))),
+        add(add(add(mul(t0, a_e3), neg(mul(t1, a_e2))), add(mul(t2, a_e1), mul(t3, neg(a_e123)))), add(add(neg(mul(t4, a_e0)), neg(mul(t5, neg(neg(a_e032))))), add(mul(t6, neg(a_e013)), neg(mul(t7, neg(neg(a_e021)))))))}
+
+def Odd.transform.Odd(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Odd<T>) -> K.Odd<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Odd{+b_e0, +b_e1, +b_e2, +b_e3, +b_e123, +b_e032, +b_e013, +b_e021}:
+      +t0 = add(add(add(mul(neg(a_e021), b_e3), neg(mul(a_e013, b_e2))), add(mul(neg(a_e032), b_e1), mul(a_e0, b_e123))), add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e1, neg(b_e032)))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
+      +t1 = add(add(add(neg(mul(neg(a_e021), b_e2)), neg(mul(a_e013, b_e3))), add(neg(mul(neg(a_e032), b_e123)), mul(a_e0, b_e1))), add(add(mul(a_e123, neg(b_e032)), neg(mul(a_e1, b_e0))), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
+      +t2 = add(add(add(mul(neg(a_e021), b_e1), mul(a_e013, b_e123)), add(neg(mul(neg(a_e032), b_e3)), mul(a_e0, b_e2))), add(add(neg(mul(a_e123, b_e013)), mul(a_e1, neg(b_e021))), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
+      +t3 = add(add(add(neg(mul(neg(a_e021), b_e123)), mul(a_e013, b_e1)), add(mul(neg(a_e032), b_e2), mul(a_e0, b_e3))), add(add(mul(a_e123, neg(b_e021)), mul(a_e1, b_e013)), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
+      +t4 = add(add(add(mul(neg(a_e021), b_e0), mul(a_e013, neg(b_e032))), add(neg(mul(neg(a_e032), b_e013)), mul(a_e0, neg(b_e021)))), add(add(neg(mul(a_e123, b_e3)), mul(a_e1, b_e2)), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
+      +t5 = add(add(add(neg(mul(neg(a_e021), neg(b_e032))), mul(a_e013, b_e0)), add(mul(neg(a_e032), neg(b_e021)), mul(a_e0, b_e013))), add(add(mul(a_e123, b_e2), mul(a_e1, b_e3)), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
+      +t6 = add(add(add(mul(neg(a_e021), b_e013), neg(mul(a_e013, neg(b_e021)))), add(mul(neg(a_e032), b_e0), mul(a_e0, neg(b_e032)))), add(add(neg(mul(a_e123, b_e1)), neg(mul(a_e1, b_e123))), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
+      +t7 = add(add(add(neg(mul(neg(a_e021), neg(b_e021))), neg(mul(a_e013, b_e013))), add(neg(mul(neg(a_e032), neg(b_e032))), mul(a_e0, b_e0))), add(add(mul(a_e123, b_e123), neg(mul(a_e1, b_e1))), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      K.Odd{
+        add(add(add(mul(t0, neg(a_e123)), neg(mul(t1, a_e1))), add(neg(mul(t2, a_e2)), neg(mul(t3, a_e3)))), add(add(neg(mul(t4, neg(neg(a_e021)))), neg(mul(t5, neg(a_e013)))), add(neg(mul(t6, neg(neg(a_e032)))), mul(t7, a_e0)))),
+        add(add(add(mul(t0, neg(neg(a_e032))), neg(mul(t1, a_e0))), add(neg(mul(t2, neg(neg(a_e021)))), neg(mul(t3, neg(a_e013))))), add(add(neg(mul(t4, a_e2)), neg(mul(t5, a_e3))), add(neg(mul(t6, neg(a_e123))), mul(t7, a_e1)))),
+        add(add(add(neg(mul(t0, neg(a_e013))), mul(t1, neg(neg(a_e021)))), add(neg(mul(t2, a_e0)), neg(mul(t3, neg(neg(a_e032)))))), add(add(mul(t4, a_e1), mul(t5, neg(a_e123))), add(neg(mul(t6, a_e3)), mul(t7, a_e2)))),
+        add(add(add(mul(t0, neg(neg(a_e021))), mul(t1, neg(a_e013))), add(mul(t2, neg(neg(a_e032))), neg(mul(t3, a_e0)))), add(add(neg(mul(t4, neg(a_e123))), mul(t5, a_e1)), add(mul(t6, a_e2), mul(t7, a_e3)))),
+        add(add(add(neg(mul(t0, a_e0)), neg(mul(t1, neg(neg(a_e032))))), add(mul(t2, neg(a_e013)), neg(mul(t3, neg(neg(a_e021)))))), add(add(mul(t4, a_e3), neg(mul(t5, a_e2))), add(mul(t6, a_e1), mul(t7, neg(a_e123))))),
+        neg(add(add(add(neg(mul(t0, a_e1)), neg(mul(t1, neg(a_e123)))), add(mul(t2, a_e3), neg(mul(t3, a_e2)))), add(add(mul(t4, neg(a_e013)), neg(mul(t5, neg(neg(a_e021))))), add(mul(t6, a_e0), mul(t7, neg(neg(a_e032))))))),
+        add(add(add(mul(t0, a_e2), mul(t1, a_e3)), add(mul(t2, neg(a_e123)), neg(mul(t3, a_e1)))), add(add(neg(mul(t4, neg(neg(a_e032)))), mul(t5, a_e0)), add(mul(t6, neg(neg(a_e021))), mul(t7, neg(a_e013))))),
+        neg(add(add(add(neg(mul(t0, a_e3)), mul(t1, a_e2)), add(neg(mul(t2, a_e1)), neg(mul(t3, neg(a_e123))))), add(add(mul(t4, a_e0), mul(t5, neg(neg(a_e032)))), add(neg(mul(t6, neg(a_e013))), mul(t7, neg(neg(a_e021)))))))}
+
+def Odd.transform.Multivector(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Odd<T>, b: K.Multivector<T>) -> K.Multivector<T>:
+  match a b:
+    case K.Odd{+a_e0, +a_e1, +a_e2, +a_e3, +a_e123, +a_e032, +a_e013, +a_e021} K.Multivector{+b_s, +b_e0, +b_e1, +b_e2, +b_e3, +b_e10, +b_e20, +b_e30, +b_e23, +b_e31, +b_e12, +b_e123, +b_e032, +b_e013, +b_e021, +b_e0123}:
+      +t0 = add(add(add(mul(neg(a_e021), b_e3), neg(mul(a_e013, b_e2))), add(mul(neg(a_e032), b_e1), mul(a_e0, b_e123))), add(add(neg(mul(a_e123, b_e0)), neg(mul(a_e1, neg(b_e032)))), add(mul(a_e2, b_e013), neg(mul(a_e3, neg(b_e021))))))
+      +t1 = add(add(add(mul(neg(a_e021), b_s), mul(a_e013, b_e23)), add(neg(mul(neg(a_e032), neg(b_e31))), mul(a_e0, b_e12))), add(add(mul(a_e123, neg(b_e30)), neg(mul(a_e1, neg(b_e20)))), add(mul(a_e2, neg(b_e10)), mul(a_e3, b_e0123))))
+      +t2 = add(add(add(neg(mul(neg(a_e021), b_e23)), mul(a_e013, b_s)), add(mul(neg(a_e032), b_e12), mul(a_e0, neg(b_e31)))), add(add(neg(mul(a_e123, neg(b_e20))), neg(mul(a_e1, neg(b_e30)))), add(neg(mul(a_e2, b_e0123)), mul(a_e3, neg(b_e10)))))
+      +t3 = add(add(add(neg(mul(neg(a_e021), b_e2)), neg(mul(a_e013, b_e3))), add(neg(mul(neg(a_e032), b_e123)), mul(a_e0, b_e1))), add(add(mul(a_e123, neg(b_e032)), neg(mul(a_e1, b_e0))), add(neg(mul(a_e2, neg(b_e021))), neg(mul(a_e3, b_e013)))))
+      +t4 = add(add(add(mul(neg(a_e021), neg(b_e31)), neg(mul(a_e013, b_e12))), add(mul(neg(a_e032), b_s), mul(a_e0, b_e23))), add(add(mul(a_e123, neg(b_e10)), mul(a_e1, b_e0123)), add(neg(mul(a_e2, neg(b_e30))), mul(a_e3, neg(b_e20)))))
+      +t5 = add(add(add(mul(neg(a_e021), b_e1), mul(a_e013, b_e123)), add(neg(mul(neg(a_e032), b_e3)), mul(a_e0, b_e2))), add(add(neg(mul(a_e123, b_e013)), mul(a_e1, neg(b_e021))), add(neg(mul(a_e2, b_e0)), neg(mul(a_e3, neg(b_e032))))))
+      +t6 = add(add(add(neg(mul(neg(a_e021), b_e123)), mul(a_e013, b_e1)), add(mul(neg(a_e032), b_e2), mul(a_e0, b_e3))), add(add(mul(a_e123, neg(b_e021)), mul(a_e1, b_e013)), add(mul(a_e2, neg(b_e032)), neg(mul(a_e3, b_e0)))))
+      +t7 = add(add(add(neg(mul(neg(a_e021), b_e12)), neg(mul(a_e013, neg(b_e31)))), add(neg(mul(neg(a_e032), b_e23)), mul(a_e0, b_s))), add(add(neg(mul(a_e123, b_e0123)), mul(a_e1, neg(b_e10))), add(mul(a_e2, neg(b_e20)), mul(a_e3, neg(b_e30)))))
+      +t8 = add(add(add(mul(neg(a_e021), neg(b_e30)), neg(mul(a_e013, neg(b_e20)))), add(mul(neg(a_e032), neg(b_e10)), mul(a_e0, b_e0123))), add(add(mul(a_e123, b_s), mul(a_e1, b_e23)), add(neg(mul(a_e2, neg(b_e31))), mul(a_e3, b_e12))))
+      +t9 = add(add(add(mul(neg(a_e021), b_e0), mul(a_e013, neg(b_e032))), add(neg(mul(neg(a_e032), b_e013)), mul(a_e0, neg(b_e021)))), add(add(neg(mul(a_e123, b_e3)), mul(a_e1, b_e2)), add(neg(mul(a_e2, b_e1)), neg(mul(a_e3, b_e123)))))
+      +t10 = add(add(add(neg(mul(neg(a_e021), neg(b_e032))), mul(a_e013, b_e0)), add(mul(neg(a_e032), neg(b_e021)), mul(a_e0, b_e013))), add(add(mul(a_e123, b_e2), mul(a_e1, b_e3)), add(mul(a_e2, b_e123), neg(mul(a_e3, b_e1)))))
+      +t11 = add(add(add(neg(mul(neg(a_e021), neg(b_e20))), neg(mul(a_e013, neg(b_e30)))), add(neg(mul(neg(a_e032), b_e0123)), mul(a_e0, neg(b_e10)))), add(add(neg(mul(a_e123, b_e23)), mul(a_e1, b_s)), add(mul(a_e2, b_e12), mul(a_e3, neg(b_e31)))))
+      +t12 = add(add(add(mul(neg(a_e021), b_e013), neg(mul(a_e013, neg(b_e021)))), add(mul(neg(a_e032), b_e0), mul(a_e0, neg(b_e032)))), add(add(neg(mul(a_e123, b_e1)), neg(mul(a_e1, b_e123))), add(mul(a_e2, b_e3), neg(mul(a_e3, b_e2)))))
+      +t13 = add(add(add(mul(neg(a_e021), neg(b_e10)), mul(a_e013, b_e0123)), add(neg(mul(neg(a_e032), neg(b_e30))), mul(a_e0, neg(b_e20)))), add(add(mul(a_e123, neg(b_e31)), neg(mul(a_e1, b_e12))), add(mul(a_e2, b_s), mul(a_e3, b_e23))))
+      +t14 = add(add(add(neg(mul(neg(a_e021), b_e0123)), mul(a_e013, neg(b_e10))), add(mul(neg(a_e032), neg(b_e20)), mul(a_e0, neg(b_e30)))), add(add(neg(mul(a_e123, b_e12)), neg(mul(a_e1, neg(b_e31)))), add(neg(mul(a_e2, b_e23)), mul(a_e3, b_s))))
+      +t15 = add(add(add(neg(mul(neg(a_e021), neg(b_e021))), neg(mul(a_e013, b_e013))), add(neg(mul(neg(a_e032), neg(b_e032))), mul(a_e0, b_e0))), add(add(mul(a_e123, b_e123), neg(mul(a_e1, b_e1))), add(neg(mul(a_e2, b_e2)), neg(mul(a_e3, b_e3)))))
+      K.Multivector{
+        add(add(add(neg(mul(t1, neg(neg(a_e021)))), neg(mul(t2, neg(a_e013)))), add(neg(mul(t4, neg(neg(a_e032)))), mul(t7, a_e0))), add(add(mul(t8, neg(a_e123)), neg(mul(t11, a_e1))), add(neg(mul(t13, a_e2)), neg(mul(t14, a_e3))))),
+        add(add(add(mul(t0, neg(a_e123)), neg(mul(t3, a_e1))), add(neg(mul(t5, a_e2)), neg(mul(t6, a_e3)))), add(add(neg(mul(t9, neg(neg(a_e021)))), neg(mul(t10, neg(a_e013)))), add(neg(mul(t12, neg(neg(a_e032)))), mul(t15, a_e0)))),
+        add(add(add(mul(t0, neg(neg(a_e032))), neg(mul(t3, a_e0))), add(neg(mul(t5, neg(neg(a_e021)))), neg(mul(t6, neg(a_e013))))), add(add(neg(mul(t9, a_e2)), neg(mul(t10, a_e3))), add(neg(mul(t12, neg(a_e123))), mul(t15, a_e1)))),
+        add(add(add(neg(mul(t0, neg(a_e013))), mul(t3, neg(neg(a_e021)))), add(neg(mul(t5, a_e0)), neg(mul(t6, neg(neg(a_e032)))))), add(add(mul(t9, a_e1), mul(t10, neg(a_e123))), add(neg(mul(t12, a_e3)), mul(t15, a_e2)))),
+        add(add(add(mul(t0, neg(neg(a_e021))), mul(t3, neg(a_e013))), add(mul(t5, neg(neg(a_e032))), neg(mul(t6, a_e0)))), add(add(neg(mul(t9, neg(a_e123))), mul(t10, a_e1)), add(mul(t12, a_e2), mul(t15, a_e3)))),
+        neg(add(add(add(neg(mul(t1, a_e2)), neg(mul(t2, a_e3))), add(neg(mul(t4, neg(a_e123))), mul(t7, a_e1))), add(add(mul(t8, neg(neg(a_e032))), neg(mul(t11, a_e0))), add(neg(mul(t13, neg(neg(a_e021)))), neg(mul(t14, neg(a_e013))))))),
+        neg(add(add(add(mul(t1, a_e1), mul(t2, neg(a_e123))), add(neg(mul(t4, a_e3)), mul(t7, a_e2))), add(add(neg(mul(t8, neg(a_e013))), mul(t11, neg(neg(a_e021)))), add(neg(mul(t13, a_e0)), neg(mul(t14, neg(neg(a_e032)))))))),
+        neg(add(add(add(neg(mul(t1, neg(a_e123))), mul(t2, a_e1)), add(mul(t4, a_e2), mul(t7, a_e3))), add(add(mul(t8, neg(neg(a_e021))), mul(t11, neg(a_e013))), add(mul(t13, neg(neg(a_e032))), neg(mul(t14, a_e0)))))),
+        add(add(add(mul(t1, neg(a_e013)), neg(mul(t2, neg(neg(a_e021))))), add(mul(t4, a_e0), mul(t7, neg(neg(a_e032))))), add(add(neg(mul(t8, a_e1)), neg(mul(t11, neg(a_e123)))), add(mul(t13, a_e3), neg(mul(t14, a_e2))))),
+        neg(add(add(add(neg(mul(t1, neg(neg(a_e032)))), mul(t2, a_e0)), add(mul(t4, neg(neg(a_e021))), mul(t7, neg(a_e013)))), add(add(mul(t8, a_e2), mul(t11, a_e3)), add(mul(t13, neg(a_e123)), neg(mul(t14, a_e1)))))),
+        add(add(add(mul(t1, a_e0), mul(t2, neg(neg(a_e032)))), add(neg(mul(t4, neg(a_e013))), mul(t7, neg(neg(a_e021))))), add(add(neg(mul(t8, a_e3)), mul(t11, a_e2)), add(neg(mul(t13, a_e1)), neg(mul(t14, neg(a_e123)))))),
+        add(add(add(neg(mul(t0, a_e0)), neg(mul(t3, neg(neg(a_e032))))), add(mul(t5, neg(a_e013)), neg(mul(t6, neg(neg(a_e021)))))), add(add(mul(t9, a_e3), neg(mul(t10, a_e2))), add(mul(t12, a_e1), mul(t15, neg(a_e123))))),
+        neg(add(add(add(neg(mul(t0, a_e1)), neg(mul(t3, neg(a_e123)))), add(mul(t5, a_e3), neg(mul(t6, a_e2)))), add(add(mul(t9, neg(a_e013)), neg(mul(t10, neg(neg(a_e021))))), add(mul(t12, a_e0), mul(t15, neg(neg(a_e032))))))),
+        add(add(add(mul(t0, a_e2), mul(t3, a_e3)), add(mul(t5, neg(a_e123)), neg(mul(t6, a_e1)))), add(add(neg(mul(t9, neg(neg(a_e032)))), mul(t10, a_e0)), add(mul(t12, neg(neg(a_e021))), mul(t15, neg(a_e013))))),
+        neg(add(add(add(neg(mul(t0, a_e3)), mul(t3, a_e2)), add(neg(mul(t5, a_e1)), neg(mul(t6, neg(a_e123))))), add(add(mul(t9, a_e0), mul(t10, neg(neg(a_e032)))), add(neg(mul(t12, neg(a_e013))), mul(t15, neg(neg(a_e021))))))),
+        add(add(add(mul(t1, a_e3), neg(mul(t2, a_e2))), add(mul(t4, a_e1), mul(t7, neg(a_e123)))), add(add(neg(mul(t8, a_e0)), neg(mul(t11, neg(neg(a_e032))))), add(mul(t13, neg(a_e013)), neg(mul(t14, neg(neg(a_e021)))))))}

@@ -1312,3 +1312,84 @@ def Odd.undual(a: K.Odd<F32>) -> K.Odd<F32>:
 
 def Multivector.undual(a: K.Multivector<F32>) -> K.Multivector<F32>:
   O.Multivector.undual(~F32, ~0.0, ~F32.neg, a)
+
+def Vector.transform.Scalar(a: K.Vector<F32>, b: K.Scalar<F32>) -> K.Scalar<F32>:
+  O.Vector.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Vector(a: K.Vector<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Vector.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Bivector(a: K.Vector<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Vector.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Trivector(a: K.Vector<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Vector.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Pseudoscalar(a: K.Vector<F32>, b: K.Pseudoscalar<F32>) -> K.Pseudoscalar<F32>:
+  O.Vector.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Phasor(a: K.Vector<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Vector.transform.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Even(a: K.Vector<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Vector.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Odd(a: K.Vector<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Vector.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Vector.transform.Multivector(a: K.Vector<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Vector.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Scalar(a: K.Even<F32>, b: K.Scalar<F32>) -> K.Phasor<F32>:
+  O.Even.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Vector(a: K.Even<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Even.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Bivector(a: K.Even<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Even.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Trivector(a: K.Even<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Even.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Pseudoscalar(a: K.Even<F32>, b: K.Pseudoscalar<F32>) -> K.Phasor<F32>:
+  O.Even.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Phasor(a: K.Even<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Even.transform.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Even(a: K.Even<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Even.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Odd(a: K.Even<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Even.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Even.transform.Multivector(a: K.Even<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Even.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Scalar(a: K.Odd<F32>, b: K.Scalar<F32>) -> K.Phasor<F32>:
+  O.Odd.transform.Scalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Vector(a: K.Odd<F32>, b: K.Vector<F32>) -> K.Vector<F32>:
+  O.Odd.transform.Vector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Bivector(a: K.Odd<F32>, b: K.Bivector<F32>) -> K.Bivector<F32>:
+  O.Odd.transform.Bivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Trivector(a: K.Odd<F32>, b: K.Trivector<F32>) -> K.Trivector<F32>:
+  O.Odd.transform.Trivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Pseudoscalar(a: K.Odd<F32>, b: K.Pseudoscalar<F32>) -> K.Phasor<F32>:
+  O.Odd.transform.Pseudoscalar(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Phasor(a: K.Odd<F32>, b: K.Phasor<F32>) -> K.Phasor<F32>:
+  O.Odd.transform.Phasor(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Even(a: K.Odd<F32>, b: K.Even<F32>) -> K.Even<F32>:
+  O.Odd.transform.Even(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Odd(a: K.Odd<F32>, b: K.Odd<F32>) -> K.Odd<F32>:
+  O.Odd.transform.Odd(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)
+
+def Odd.transform.Multivector(a: K.Odd<F32>, b: K.Multivector<F32>) -> K.Multivector<F32>:
+  O.Odd.transform.Multivector(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)

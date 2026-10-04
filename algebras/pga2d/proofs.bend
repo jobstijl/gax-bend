@@ -3,6 +3,9 @@
 
 import Base
 import ../../src/spec.bend as S
+import ../../src/ring.bend as R
+import ../../src/norm.bend as N
+import ../../proofs/norm.bend as NP
 import ./kinds.bend as K
 import ./ops.bend as O
 
@@ -6340,4 +6343,684 @@ def Multivector.undual.supp(~T: Data, ~neg: T -> T, a: K.Multivector<T>)
   -> {K.Multivector.out(T, S.MV.lcomp(~T, ~neg, 3n, K.Multivector.tree(~T, ~neg, a))) == S.MV.zero(T, 3n) : S.MV(T, 3n)}:
   match a:
     case K.Multivector{a_s, a_e0, a_e1, a_e2, a_e01, a_e20, a_e12, a_e012}:
+      {==}
+
+def Line.transform.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Scalar{b_s}:
+      {==}
+def Line.transform.Scalar.zero_e01(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+def Line.transform.Scalar.zero_e02(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+def Line.transform.Scalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Line.transform.Line.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Line<T>)
+  -> {K.Line.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Line(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Line<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Line{b_e1, b_e2, b_e0}:
+      {==}
+def Line.transform.Line.zero_e012(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Line<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Line{b_e1, b_e2, b_e0}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_e1, b_e2, b_e0],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Line.transform.Point.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Point<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Point(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Point{b_e20, b_e01, b_e12}:
+      {==}
+def Line.transform.Point.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Point<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Point{b_e20, b_e01, b_e12}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_e20, b_e01, b_e12],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Line.transform.Direction.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Direction<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Direction.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Direction(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Direction{b_e20, b_e01}:
+      {==}
+
+def Line.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Pseudoscalar{b_e012}:
+      {==}
+def Line.transform.Pseudoscalar.zero_e0(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Pseudoscalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Pseudoscalar{b_e012}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_e012],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Line.transform.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Rotor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Line.transform.Translator.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Translator<T>)
+  -> {K.Translator.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Translator(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Translator<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Translator{b_s, b_e20, b_e01}:
+      {==}
+def Line.transform.Translator.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Line<T>, b: K.Translator<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Translator{b_s, b_e20, b_e01}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, b_s, b_e20, b_e01],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Line.transform.Motor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Motor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Motor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Motor{b_s, b_e12, b_e20, b_e01}:
+      {==}
+
+def Line.transform.Flector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Flector<T>)
+  -> {K.Flector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Flector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Flector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Flector<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Flector{b_e1, b_e2, b_e0, b_e012}:
+      {==}
+
+def Line.transform.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Line<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Line.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Line.tree(~T, ~neg, a)))) == O.Line.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Line{a_e1, a_e2, a_e0} K.Multivector{b_s, b_e0, b_e1, b_e2, b_e01, b_e20, b_e12, b_e012}:
+      {==}
+
+def Point.transform.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Scalar{b_s}:
+      {==}
+def Point.transform.Scalar.zero_e01(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Point<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e20, a_e01, a_e12, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+def Point.transform.Scalar.zero_e02(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Point<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e20, a_e01, a_e12, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Point.transform.Line.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Line<T>)
+  -> {K.Line.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Line(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Line<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Line{b_e1, b_e2, b_e0}:
+      {==}
+def Point.transform.Line.zero_e012(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Point<T>, b: K.Line<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Line{b_e1, b_e2, b_e0}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e20, a_e01, a_e12, b_e1, b_e2, b_e0],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Point.transform.Point.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Point<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Point(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Point{b_e20, b_e01, b_e12}:
+      {==}
+
+def Point.transform.Direction.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Direction<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Direction.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Direction(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Direction{b_e20, b_e01}:
+      {==}
+
+def Point.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Pseudoscalar{b_e012}:
+      {==}
+
+def Point.transform.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Rotor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Point.transform.Translator.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Translator<T>)
+  -> {K.Translator.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Translator(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Translator<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Translator{b_s, b_e20, b_e01}:
+      {==}
+
+def Point.transform.Motor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Motor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Motor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Motor{b_s, b_e12, b_e20, b_e01}:
+      {==}
+
+def Point.transform.Flector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Flector<T>)
+  -> {K.Flector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Flector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Flector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Flector<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Flector{b_e1, b_e2, b_e0, b_e012}:
+      {==}
+
+def Point.transform.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Point<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Point.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Point.tree(~T, ~neg, a)))) == O.Point.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Point{a_e20, a_e01, a_e12} K.Multivector{b_s, b_e0, b_e1, b_e2, b_e01, b_e20, b_e12, b_e012}:
+      {==}
+
+def Rotor.transform.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      {==}
+def Rotor.transform.Scalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Rotor<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
+        {==})
+
+def Rotor.transform.Line.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Line<T>)
+  -> {K.Line.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Line(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Line<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Line{b_e1, b_e2, b_e0}:
+      {==}
+def Rotor.transform.Line.zero_e012(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Rotor<T>, b: K.Line<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Line{b_e1, b_e2, b_e0}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e1, b_e2, b_e0],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
+        {==})
+
+def Rotor.transform.Point.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Point<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Point(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Point{b_e20, b_e01, b_e12}:
+      {==}
+def Rotor.transform.Point.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Rotor<T>, b: K.Point<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Point{b_e20, b_e01, b_e12}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e20, b_e01, b_e12],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
+        {==})
+
+def Rotor.transform.Direction.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Direction<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Direction.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Direction(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Direction{b_e20, b_e01}:
+      {==}
+
+def Rotor.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e012}:
+      {==}
+def Rotor.transform.Pseudoscalar.zero_e0(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e012}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_e012],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{2n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
+        {==})
+
+def Rotor.transform.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Rotor<T>)
+  -> {K.Rotor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Rotor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Rotor.transform.Translator.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Translator<T>)
+  -> {K.Translator.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Translator(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Translator<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Translator{b_s, b_e20, b_e01}:
+      {==}
+def Rotor.transform.Translator.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Rotor<T>, b: K.Translator<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Translator{b_s, b_e20, b_e01}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, b_s, b_e20, b_e01],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Rotor.tree(~N.Tm, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}})))),
+        {==})
+
+def Rotor.transform.Motor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Motor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Motor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Motor{b_s, b_e12, b_e20, b_e01}:
+      {==}
+
+def Rotor.transform.Flector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Flector<T>)
+  -> {K.Flector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Flector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Flector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Flector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Flector{b_e1, b_e2, b_e0, b_e012}:
+      {==}
+
+def Rotor.transform.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Rotor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Rotor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Rotor.tree(~T, ~neg, a)))) == O.Rotor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e0, b_e1, b_e2, b_e01, b_e20, b_e12, b_e012}:
+      {==}
+
+def Translator.transform.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Scalar{b_s}:
+      {==}
+def Translator.transform.Scalar.zero_e01(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Translator<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e20, a_e01, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+def Translator.transform.Scalar.zero_e02(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Translator<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e20, a_e01, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{3n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Translator.transform.Line.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Line<T>)
+  -> {K.Line.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Line(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Line<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Line{b_e1, b_e2, b_e0}:
+      {==}
+def Translator.transform.Line.zero_e012(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Translator<T>, b: K.Line<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Line{b_e1, b_e2, b_e0}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e20, a_e01, b_e1, b_e2, b_e0],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}}), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}})))),
+        {==})
+
+def Translator.transform.Point.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Point<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Point(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Point{b_e20, b_e01, b_e12}:
+      {==}
+
+def Translator.transform.Direction.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Direction<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Direction.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Direction(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Direction{b_e20, b_e01}:
+      {==}
+
+def Translator.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Pseudoscalar{b_e012}:
+      {==}
+
+def Translator.transform.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Rotor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Translator.transform.Translator.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Translator<T>)
+  -> {K.Translator.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Translator(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Translator<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Translator{b_s, b_e20, b_e01}:
+      {==}
+
+def Translator.transform.Motor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Motor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Motor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Motor{b_s, b_e12, b_e20, b_e01}:
+      {==}
+
+def Translator.transform.Flector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Flector<T>)
+  -> {K.Flector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Flector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Flector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Flector<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Flector{b_e1, b_e2, b_e0, b_e012}:
+      {==}
+
+def Translator.transform.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Translator<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Translator.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Translator.tree(~T, ~neg, a)))) == O.Translator.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Translator{a_s, a_e20, a_e01} K.Multivector{b_s, b_e0, b_e1, b_e2, b_e01, b_e20, b_e12, b_e012}:
+      {==}
+
+def Motor.transform.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Scalar{b_s}:
+      {==}
+def Motor.transform.Scalar.zero_e01(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+def Motor.transform.Scalar.zero_e02(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+def Motor.transform.Scalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Motor.transform.Line.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Line<T>)
+  -> {K.Line.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Line(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Line<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Line{b_e1, b_e2, b_e0}:
+      {==}
+def Motor.transform.Line.zero_e012(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Line<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Line{b_e1, b_e2, b_e0}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_e1, b_e2, b_e0],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Motor.transform.Point.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Point<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Point(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Point{b_e20, b_e01, b_e12}:
+      {==}
+def Motor.transform.Point.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Point<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Point{b_e20, b_e01, b_e12}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_e20, b_e01, b_e12],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Motor.transform.Direction.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Direction<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Direction.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Direction(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Direction{b_e20, b_e01}:
+      {==}
+
+def Motor.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Pseudoscalar{b_e012}:
+      {==}
+def Motor.transform.Pseudoscalar.zero_e0(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Pseudoscalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Pseudoscalar{b_e012}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_e012],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Motor.transform.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Rotor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Motor.transform.Translator.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Translator<T>)
+  -> {K.Translator.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Translator(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Translator<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Translator{b_s, b_e20, b_e01}:
+      {==}
+def Motor.transform.Translator.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Motor<T>, b: K.Translator<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Translator{b_s, b_e20, b_e01}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_s, a_e12, a_e20, a_e01, b_s, b_e20, b_e01],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Motor.tree(~N.Tm, ~N.Tm.neg, K.Motor{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Motor.transform.Motor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Motor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Motor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Motor{b_s, b_e12, b_e20, b_e01}:
+      {==}
+
+def Motor.transform.Flector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Flector<T>)
+  -> {K.Flector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Flector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Flector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Flector<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Flector{b_e1, b_e2, b_e0, b_e012}:
+      {==}
+
+def Motor.transform.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Motor<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Motor.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Motor.tree(~T, ~neg, a)))) == O.Motor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Motor{a_s, a_e12, a_e20, a_e01} K.Multivector{b_s, b_e0, b_e1, b_e2, b_e01, b_e20, b_e12, b_e012}:
+      {==}
+
+def Flector.transform.Scalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Scalar<T>)
+  -> {K.Scalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Scalar<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Scalar{b_s}:
+      {==}
+def Flector.transform.Scalar.zero_e01(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+def Flector.transform.Scalar.zero_e02(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+def Flector.transform.Scalar.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Scalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Scalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Scalar{b_s}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_s],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Scalar.tree(~N.Tm, ~N.Tm.neg, K.Scalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Flector.transform.Line.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Line<T>)
+  -> {K.Line.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Line(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Line<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Line{b_e1, b_e2, b_e0}:
+      {==}
+def Flector.transform.Line.zero_e012(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Line<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Line.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Line{b_e1, b_e2, b_e0}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_e1, b_e2, b_e0],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Line.tree(~N.Tm, ~N.Tm.neg, K.Line{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Flector.transform.Point.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Point<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Point(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Point{b_e20, b_e01, b_e12}:
+      {==}
+def Flector.transform.Point.zero_s(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Point<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Point.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Point{b_e20, b_e01, b_e12}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_e20, b_e01, b_e12],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Point.tree(~N.Tm, ~N.Tm.neg, K.Point{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Flector.transform.Direction.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Direction<T>)
+  -> {K.Point.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Direction.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Direction(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Point<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Direction{b_e20, b_e01}:
+      {==}
+
+def Flector.transform.Pseudoscalar.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Pseudoscalar<T>)
+  -> {K.Pseudoscalar.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Pseudoscalar<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Pseudoscalar{b_e012}:
+      {==}
+def Flector.transform.Pseudoscalar.zero_e0(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Pseudoscalar<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Pseudoscalar.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Pseudoscalar{b_e012}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_e012],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [True{}, False{}, False{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Pseudoscalar.tree(~N.Tm, ~N.Tm.neg, K.Pseudoscalar{N.TVar{4n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Flector.transform.Rotor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Rotor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Rotor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Rotor{b_s, b_e12}:
+      {==}
+
+def Flector.transform.Translator.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Translator<T>)
+  -> {K.Translator.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Translator(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Translator<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Translator{b_s, b_e20, b_e01}:
+      {==}
+def Flector.transform.Translator.zero_e12(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg), a: K.Flector<T>, b: K.Translator<T>)
+  -> {S.MV.at(~T, ~zero, ~neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Translator.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == zero : T}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Translator{b_s, b_e20, b_e01}:
+      NP.Norm.zero(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, [a_e1, a_e2, a_e0, a_e012, b_s, b_e20, b_e01],
+        S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, 3n, [False{}, True{}, True{}], False{}, S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, 3n, K.PGA2.sig(), K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}), K.Translator.tree(~N.Tm, ~N.Tm.neg, K.Translator{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}})), S.MV.reverse(~N.Tm, ~N.Tm.neg, 3n, K.Flector.tree(~N.Tm, ~N.Tm.neg, K.Flector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}})))),
+        {==})
+
+def Flector.transform.Motor.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Motor<T>)
+  -> {K.Motor.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Motor.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Motor(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Motor<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Motor{b_s, b_e12, b_e20, b_e01}:
+      {==}
+
+def Flector.transform.Flector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Flector<T>)
+  -> {K.Flector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Flector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Flector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Flector<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Flector{b_e1, b_e2, b_e0, b_e012}:
+      {==}
+
+def Flector.transform.Multivector.ok(~T: Data, ~zero: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, a: K.Flector<T>, b: K.Multivector<T>)
+  -> {K.Multivector.of_tree(~T, ~zero, ~neg, S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), S.MV.gp(~T, ~add, ~mul, ~neg, 3n, K.PGA2.sig(), K.Flector.tree(~T, ~neg, a), K.Multivector.tree(~T, ~neg, b)), S.MV.reverse(~T, ~neg, 3n, K.Flector.tree(~T, ~neg, a)))) == O.Flector.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b) : K.Multivector<T>}:
+  match a b:
+    case K.Flector{a_e1, a_e2, a_e0, a_e012} K.Multivector{b_s, b_e0, b_e1, b_e2, b_e01, b_e20, b_e12, b_e012}:
       {==}

@@ -22,6 +22,18 @@ type Tm is Data:
   TMul{a: Tm, b: Tm}
   TNeg{a: Tm}
 
+# the ring operations on terms: running a generic operation at T = Tm on
+# variable leaves reifies it, so a proof can name the term without
+# printing it
+def Tm.add(a: Tm, b: Tm) -> Tm:
+  TAdd{a, b}
+
+def Tm.mul(a: Tm, b: Tm) -> Tm:
+  TMul{a, b}
+
+def Tm.neg(a: Tm) -> Tm:
+  TNeg{a}
+
 # variable i of the environment (zero past its end)
 def Env.at(~T: Data, ~zero: T, env: List<&2, T>, i: Nat) -> T:
   match env:
