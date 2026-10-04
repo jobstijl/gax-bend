@@ -17,6 +17,7 @@ import ./proofs/inv.bend as IV
 import ./proofs/rev.bend as RV
 import ./proofs/gen.bend as GN
 import ./proofs/grade.bend as GR
+import ./proofs/versor.bend as VS
 
 # Addition
 # --------
@@ -117,3 +118,14 @@ def Laws.rcomp_vee(T, add, mul, neg, neg_neg, d, x, y):
 
 def Laws.wedge_grade(T, add, mul, neg, d, j, k, x, y, hx, hy):
   GR.Wedge.grade(~T, ~add, ~mul, ~neg, d, False{}, False{}, j, k, x, y, hx, hy)
+
+# Versors
+# -------
+
+def Laws.transform_gp(T, add, mul, neg, add_assoc, add_comm, mul_assoc, mul_comm, dist_l, dist_r, neg_add, neg_neg, neg_mul_l, neg_mul_r, d, sig, m, x, y, nn, h):
+  VS.Versor.gp(~T, ~add, ~mul, ~neg, ~add_assoc, ~add_comm, ~mul_assoc, ~mul_comm, ~dist_l, ~dist_r, ~neg_add, ~neg_neg, ~neg_mul_l, ~neg_mul_r,
+    d, sig, m, x, y, nn, h)
+
+def Laws.transform_compose(T, add, mul, neg, add_assoc, add_comm, mul_assoc, mul_comm, dist_l, dist_r, neg_add, neg_neg, neg_mul_l, neg_mul_r, d, sig, a, b, x):
+  VS.Versor.compose(~T, ~add, ~mul, ~neg, ~add_assoc, ~add_comm, ~mul_assoc, ~mul_comm, ~dist_l, ~dist_r, ~neg_add, ~neg_neg, ~neg_mul_l, ~neg_mul_r,
+    d, sig, a, b, x)

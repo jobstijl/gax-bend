@@ -360,3 +360,58 @@ law wedge_grade:
   for +hx: S.MV.Homog(T, d, j, x)
   for +hy: S.MV.Homog(T, d, k, y)
   S.MV.Homog(T, d, Nat.add(j, k), S.MV.wedge(~T, ~add, ~mul, ~neg, d, x, y))
+
+# Versors
+# -------
+# Added 2026-10-04 (an extension: no earlier law changes). transform(m, x)
+# is the sandwich m x ~m (src/spec.bend).
+
+# LAW: a versor acts as a homomorphism of the geometric product, up to its
+# norm: if ~m m is the scalar nn, (m x ~m)(m y ~m) = nn (m (x y) ~m)
+law transform_gp:
+  for ~T: Data
+  for ~add: T -> T -> T
+  for ~mul: T -> T -> T
+  for ~neg: T -> T
+  for ~add_assoc: R.Ring.Assoc(T, add)
+  for ~add_comm: R.Ring.Comm(T, add)
+  for ~mul_assoc: R.Ring.Assoc(T, mul)
+  for ~mul_comm: R.Ring.Comm(T, mul)
+  for ~dist_l: R.Ring.DistL(T, add, mul)
+  for ~dist_r: R.Ring.DistR(T, add, mul)
+  for ~neg_add: R.Ring.NegAdd(T, add, neg)
+  for ~neg_neg: R.Ring.NegNeg(T, neg)
+  for ~neg_mul_l: R.Ring.NegMulL(T, mul, neg)
+  for ~neg_mul_r: R.Ring.NegMulR(T, mul, neg)
+  for +d: Nat
+  for +sig: S.Sig(d)
+  for +m: S.MV(T, d)
+  for +x: S.MV(T, d)
+  for +y: S.MV(T, d)
+  for +nn: T
+  for h: {S.MV.gp(~T, ~add, ~mul, ~neg, d, sig, S.MV.reverse(~T, ~neg, d, m), m) == S.MV.scalar(T, d, nn) : S.MV(T, d)}
+  {S.MV.gp(~T, ~add, ~mul, ~neg, d, sig, S.MV.transform(~T, ~add, ~mul, ~neg, d, sig, m, x), S.MV.transform(~T, ~add, ~mul, ~neg, d, sig, m, y))
+    == S.MV.scale(~T, ~mul, d, nn, S.MV.transform(~T, ~add, ~mul, ~neg, d, sig, m, S.MV.gp(~T, ~add, ~mul, ~neg, d, sig, x, y))) : S.MV(T, d)}
+
+# LAW: sandwiches compose: a (b x ~b) ~a = (a b) x ~(a b)
+law transform_compose:
+  for ~T: Data
+  for ~add: T -> T -> T
+  for ~mul: T -> T -> T
+  for ~neg: T -> T
+  for ~add_assoc: R.Ring.Assoc(T, add)
+  for ~add_comm: R.Ring.Comm(T, add)
+  for ~mul_assoc: R.Ring.Assoc(T, mul)
+  for ~mul_comm: R.Ring.Comm(T, mul)
+  for ~dist_l: R.Ring.DistL(T, add, mul)
+  for ~dist_r: R.Ring.DistR(T, add, mul)
+  for ~neg_add: R.Ring.NegAdd(T, add, neg)
+  for ~neg_neg: R.Ring.NegNeg(T, neg)
+  for ~neg_mul_l: R.Ring.NegMulL(T, mul, neg)
+  for ~neg_mul_r: R.Ring.NegMulR(T, mul, neg)
+  for +d: Nat
+  for +sig: S.Sig(d)
+  for +a: S.MV(T, d)
+  for +b: S.MV(T, d)
+  for +x: S.MV(T, d)
+  {S.MV.transform(~T, ~add, ~mul, ~neg, d, sig, a, S.MV.transform(~T, ~add, ~mul, ~neg, d, sig, b, x)) == S.MV.transform(~T, ~add, ~mul, ~neg, d, sig, S.MV.gp(~T, ~add, ~mul, ~neg, d, sig, a, b), x) : S.MV(T, d)}

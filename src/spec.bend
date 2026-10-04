@@ -279,6 +279,11 @@ def MV.gp(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   d: Nat, sig: Sig(d), x: MV(T, d), y: MV(T, d)) -> MV(T, d):
   MV.gpf(~T, ~add, ~mul, ~neg, d, False{}, False{}, x, y, sig)
 
+# the sandwich m x ~m: x moved by the versor m (gax's transform)
+def MV.transform(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  +d: Nat, +sig: Sig(d), +m: MV(T, d), x: MV(T, d)) -> MV(T, d):
+  MV.gp(~T, ~add, ~mul, ~neg, d, sig, MV.gp(~T, ~add, ~mul, ~neg, d, sig, m, x), MV.reverse(~T, ~neg, d, m))
+
 # the outer product, (-1)^n * inv^f(x) ^ y: the QZ case of MV.gpf, written
 # without a metric (the law wedge_is_gp_zero ties the two)
 def MV.wedgef(~T: Data, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,

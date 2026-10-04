@@ -5,7 +5,7 @@ tag (ADR-001, amendment A2), the ring hypotheses it assumes, and the file
 that proves it. `tools/gate.sh` re-checks all of it: `bend PROOF.bend` must
 print ALL PROOFS CHECK, and every negative control in `tests/neg/` must fail.
 
-**Status (2026-10-04):** 22 of 22 Layer-S laws proven. `LAWS.bend` is
+**Status (2026-10-04):** 24 of 24 Layer-S laws proven. `LAWS.bend` is
 approved (the owner delegated the review to Claude).
 
 ## Scope of the Layer-S laws
@@ -60,6 +60,17 @@ Commutativity of multiplication is assumed only where a law needs it:
 | `rcomp_lcomp` | J_R(J_L x) = x | neg_neg | proof | `proofs/wedge.bend` `Comp.rl` |
 | `rcomp_vee` | J_R(x ∨ y) = J_R x ∧ J_R y | neg_neg | proof | `proofs/wedge.bend` `Comp.rcomp_vee` |
 | `wedge_grade` | a j-vector ∧ a k-vector is a (j+k)-vector | none | proof | `proofs/grade.bend` `Wedge.grade` |
+| `transform_gp` | ~m m = n ⇒ (m x ~m)(m y ~m) = n (m (x y) ~m): a versor acts as a homomorphism, up to its norm | as gp_assoc, plus mul_comm | proof | `proofs/versor.bend` `Versor.gp` |
+| `transform_compose` | a (b x ~b) ~a = (a b) x ~(a b) | as gp_assoc, plus add_comm, mul_comm | proof | `proofs/versor.bend` `Versor.compose` |
+
+**About `transform_gp`.** The chain is m x (~m m) y ~m by associativity,
+then n times y ~m. That last step holds because y ~m is a product, and
+every product is a canonical tree (no level N{zero, zero}; A3):
+`Gpf.canon`, with `Add.canon` and `Mk.canon` behind it. On a canonical
+tree a scalar acts by scaling (`Gp.scalar`). gax derives the same factor
+per algebra, modulo the versor conditions (its `law-factors.md`); here it
+is one theorem for every dimension and signature. The other products' laws
+(∧, ∨, contractions) are not stated yet.
 
 ## The general lemmas
 
@@ -245,6 +256,7 @@ Each one must fail to check. The gate fails if any passes.
 | `normh_wrong.bend` | h a + h h a = a given h + h = 1 | normaliser with ½ |
 | `transform_support.bend` | a motor moves a point to one with x = 0 | sandwiches |
 | `transform_kernel_sign.bend` | the PGA3D motor-on-point kernel with one sign flipped in its weight entry equals the spec | sandwich kernels |
+| `transform_factor.bend` | (m x ~m)(m y ~m) = m (x y) ~m without the factor ~m m (m = 2 in the plane: 16 against 4) | versor laws |
 | `commutator_not_halved.bend` | the line-line commutator kernel equals xy − yx (not its half) | halved products |
 
 ## Examples (`tests/`)
