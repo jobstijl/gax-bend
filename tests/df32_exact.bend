@@ -16,9 +16,9 @@
 # is Muller and Rideau's bound, 2022). Inputs are double words from TwoSum
 # with exponents in [-30, 30], away from underflow, which the bounds
 # exclude. The 6u^2 and 7u^2 counts show the margin; the control counts
-# inexact products, so the comparison can fail. DWTimesDW's bound is
-# proven (proofs/dw.bend, F32.DWTimesDW below); AccurateDWPlusDW's is
-# tested here.
+# inexact products, so the comparison can fail. Both bounds are also
+# proven: DWTimesDW's in proofs/dw.bend (F32.DWTimesDW below),
+# AccurateDWPlusDW's in proofs/dwadd.bend (F32.AccDW below).
 import Base
 import ../src/int.bend as I
 import ../src/dyadic.bend as D
@@ -28,6 +28,7 @@ import ../num/df32.bend as DF
 import ../proofs/eft.bend as E
 import ../proofs/eft2.bend as E2
 import ../proofs/dw.bend as DW
+import ../proofs/dwadd.bend as DA
 
 # Proven (proofs/eft.bend): binary32 values are A / 2^149 with A an integer
 # that rounds to itself at 24 bits. For those, Fast2Sum (|b| <= |a|) and
@@ -75,6 +76,19 @@ def F32.DWTimesDW(+sx: Bool, +sy: Bool, +A: Nat, +B: Nat, +Dx: Nat, +Dy: Nat, +x
   +fx: {E.Rn(24n, RD.Int.mag(xl)) == RD.Int.mag(xl) : Nat}, +fy: {E.Rn(24n, RD.Int.mag(yl)) == RD.Int.mag(yl) : Nat})
   -> {DW.RelI(23n, DW.Sg(sx, DW.XH(A, Dx)), xl, DW.Sg(sy, DW.XH(B, Dy)), yl) == False{} : Bool}:
   DW.DW1.gen(23n, sx, sy, A, B, Dx, Dy, xl, yl, {==}, hA1, hA, hB1, hB, hx, hy, fx, fy)
+
+# AccurateDWPlusDW at 24 bits, barring underflow and overflow
+# (proofs/dwadd.bend, AccDW.gen): for x and y as in F32.DWTimesDW, the
+# result zh + zl has |zh + zl - (x + y)| (1 - 4u) <= 3u^2 |x + y|,
+# u = 2^-24. RelA is the negation of that inequality, so False is the
+# bound; AccDW.simp turns it into 3u^2 + 13u^3.
+def F32.AccDW(+sx: Bool, +sy: Bool, +A: Nat, +B: Nat, +Dx: Nat, +Dy: Nat, +xl: I.Int, +yl: I.Int,
+  +hA1: {RD.Nat.lt(A, RD.Nat.pow2(23n)) == False{} : Bool}, +hA: {RD.Nat.lt(A, RD.Nat.pow2(24n)) == True{} : Bool},
+  +hB1: {RD.Nat.lt(B, RD.Nat.pow2(23n)) == False{} : Bool}, +hB: {RD.Nat.lt(B, RD.Nat.pow2(24n)) == True{} : Bool},
+  +hx: {RD.Nat.lt(RD.Nat.pow2(Dx), RD.Int.mag(xl)) == False{} : Bool}, +hy: {RD.Nat.lt(RD.Nat.pow2(Dy), RD.Int.mag(yl)) == False{} : Bool},
+  +fx: {E.Rn(24n, RD.Int.mag(xl)) == RD.Int.mag(xl) : Nat}, +fy: {E.Rn(24n, RD.Int.mag(yl)) == RD.Int.mag(yl) : Nat})
+  -> {DA.RelA(23n, DW.Sg(sx, DW.XH(A, Dx)), xl, DW.Sg(sy, DW.XH(B, Dy)), yl) == False{} : Bool}:
+  DA.AccDW.gen(23n, sx, sy, A, B, Dx, Dy, xl, yl, {==}, hA1, hA, hB1, hB, hx, hy, fx, fy)
 
 def hb() -> Nat:
   8388608n

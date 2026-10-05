@@ -7,8 +7,8 @@
 # DWTimesDW (at most 5u²/(1 + u)² with ties to even, Muller and Rideau,
 # TOMS 2022). Here they serve as the reference that F32 kernels are
 # measured against. tests/df32_exact.bend checks both exactly against big
-# dyadics. DWTimesDW's bound is proven in Bend, barring underflow and
-# overflow (proofs/dw.bend, ADR-012); AccurateDWPlusDW's is tested only.
+# dyadics, and both bounds are proven in Bend, barring underflow and
+# overflow (proofs/dw.bend, proofs/dwadd.bend, ADR-012).
 
 import Base
 

@@ -747,14 +747,16 @@ type and its correctly rounded kernels.
 
 ## ADR-012: The double-word bounds are proven on integers, following Muller and Rideau
 
-**Status:** accepted for DWTimesDW, 2026-10-05. AccurateDWPlusDW is still
-tested only (`tests/df32_exact.bend`).
+**Status:** accepted, 2026-10-05.
 
 ### Decision
 
-`proofs/dw.bend` proves DWTimesDW (Algorithm 10, the one `num/df32.bend`
-runs) on the integers rounded to p bits, as ADR-010 does for Dekker's
+`proofs/dw.bend` proves DWTimesDW (Algorithm 10) and `proofs/dwadd.bend`
+proves AccurateDWPlusDW (Algorithm 6), the two `num/df32.bend` runs. Both
+are proven on the integers rounded to p bits, as ADR-010 does for Dekker's
 product.
+
+**DWTimesDW**
 
 - **The statement** is Muller and Rideau's Theorem 2.6 with ties to even:
   |zh + zl − xy| (1 + u)² ≤ 5u² |xy| for p ≥ 6 (`DW1.gen`). It holds for
@@ -778,17 +780,48 @@ product.
     between u and 2u rounds to a multiple of 4u², so cl1 + cl2 is exact.
   - xh = 1 or yh = 1: |η| ≤ 4u² (`Case.one`) against |x|, |y| ≥ 1 − u.
 
+**AccurateDWPlusDW**
+
+- **The statement** is Joldes, Muller and Popescu's Theorem 3.1:
+  |zh + zl − (x + y)| (1 − 4u) ≤ 3u² |x + y| for p ≥ 6 (`AccDW.gen`), so
+  the relative error is below 3u² + 13u³ (`AccDW.simp`). It holds for any
+  signs and exponents. `F32.AccDW` is the binary32 instance.
+- **The model.** The two TwoSums are exact (`proofs/eft.bend`), so η is
+  the error of c = RN(sl + th) plus that of w = RN(tl + vl), once both
+  Fast2Sums are exact (`A.split`). The core works at a scale where u² is
+  an integer (U = 2^p Q is u). Scaling both operands by 2^p reaches that
+  scale (`Sh.A`). Negating both operands (`Neg.A`) and swapping them
+  (`Sym.A`) give xh > 0 and |yh| ≤ xh.
+- **The cases** follow the paper (`AD.core`):
+  - xh + yh = 0: exact (`C0`).
+  - −xh < yh ≤ −xh/2 (`C1`): Sterbenz makes sh exact, so e1 = 0. Line 4
+    is the one Fast2Sum not ordered by magnitude. It is exact because th
+    lies in sh's binade or below: two multiples of 2^k below 2^p 2^k leave
+    s − a on p bits (`F2.bin`). Then either |s + L| ≤ |L| and the sum is
+    exact (Sterbenz again, `C1a.neg`), or relative errors give
+    2^3p |η| ≤ (2^(p+1) + 1) |x + y| (`C1b`).
+  - yh > −xh/2 with xh + yh ≤ 2 − 4u (`C2a`, σ = 1 or 2) or above
+    (`C2b`): both Fast2Sums are ordered by magnitude, and the paper's
+    binade bounds give 2 |η| ≤ 3σu² and |η| ≤ 3u². For |tl + vl| just
+    above 2u, RN rounds to 2u, nearest by `Near` (`E2q`).
+
 ### What it costs
 
 - **Hypotheses.** Ties to even is needed: with ties to zero, Muller and
   Rideau reach 5.49u². xl and yl must be representable, which double words
   are. The proof has no exponent bounds, so binary32 is covered barring
-  underflow and overflow, as for Dekker's product. A zero high part is not
-  covered; there the double word is zero.
-- **Size.** 2 144 lines, which check in about 3 s.
+  underflow and overflow, as for Dekker's product. Both theorems take
+  nonzero high parts; a double word with a zero high part is zero.
+- **Size.** 2 144 lines for DWTimesDW and 2 011 for AccurateDWPlusDW,
+  which check in about 3 s each. The test imports both, so the gate
+  checks them in every tier.
 
 ### Measured, not adopted
 
 - **Joldes, Muller and Popescu's 7u², valid for any tie-breaking rule.**
   It is looser than needed: binary32 rounds ties to even, and on 20 000
   sampled pairs none reaches 6u² (`tests/df32_exact.bend`).
+- **A sum bound nearer the observed worst case.** Joldes, Muller and
+  Popescu report about 2.25u² at most. The best proven bound is still
+  3u²/(1 − 4u), and on 20 000 sampled pairs none passes 3u²
+  (`tests/df32_exact.bend`).

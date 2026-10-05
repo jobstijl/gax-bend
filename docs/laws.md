@@ -322,9 +322,13 @@ On integers rounded to p significant bits by the loop of `src/round.bend`
 | `DW1.int`, `DW1.gen` | DWTimesDW (Algorithm 10): for xh = ±A 2^(Dx+1) with 2^(p−1) ≤ A < 2^p and \|xl\| ≤ 2^Dx, y likewise, \|zh + zl − xy\| (1 + u)² ≤ 5u² \|xy\| (Muller–Rideau, Theorem 2.6). The cases: xh yh ≥ 2 from \|η\| ≤ 9u² (`Case.big`); xh yh < 2 by the sub-cases on \|cl2\|, \|tl1\|, \|tl2\|, 4\|η\| ≤ 20u² (`Small.abs`); xh = 1 or yh = 1, \|η\| ≤ 4u² (`Case.one`) | p ≥ 6, ties to even, xl, yl representable, no exponent bounds | proof | `proofs/dw.bend` |
 | `Tie` | an odd n with 2^p < n < 2^(p+1) rounds to a multiple of 4 (ties to even) | n odd | proof | `proofs/dw.bend` |
 | `F32.DWTimesDW` | the binary32 instance, p = 24 | barring underflow and overflow | proof | `tests/df32_exact.bend` |
+| `F2.bin` | Fast2Sum is exact when \|a\| >= 2^(p−1) 2^k and \|b\| < 2^p 2^k (b in a's binade or below), not only for \|b\| <= \|a\| | a, b representable | proof | `proofs/dwadd.bend` |
+| `AccDW.gen` | AccurateDWPlusDW (Algorithm 6): for x, y as in `DW1.gen`, \|zh + zl − (x + y)\| (1 − 4u) <= 3u² \|x + y\| (Joldes–Muller–Popescu, Theorem 3.1). Cases: xh + yh = 0 (`C0`), Sterbenz (`C1`), xh + yh <= 2 − 4u (`C2a`) or above (`C2b`) | p ≥ 6, xl, yl representable, no exponent bounds | proof | `proofs/dwadd.bend` |
+| `AccDW.simp` | 3u²/(1 − 4u) < 3u² + 13u³ | p ≥ 6 | proof | `proofs/dwadd.bend` |
+| `F32.AccDW` | the binary32 instance, p = 24 | barring underflow and overflow | proof | `tests/df32_exact.bend` |
 
-AccurateDWPlusDW's bound is checked exactly on samples
-(`tests/df32_exact.bend`), not proven.
+Both double-word bounds are also checked exactly on 20 000 sampled pairs
+(`tests/df32_exact.bend`).
 
 ## Dual numbers (`src/dual.bend`, ADR-006)
 

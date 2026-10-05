@@ -220,8 +220,10 @@ and it does.
     overflow. **DWTimesDW's bound is proven** (`proofs/dw.bend`,
     ADR-012): |zh + zl − xy| (1 + u)² ≤ 5u² |xy| for p ≥ 6 with ties to
     even, any signs and exponents, barring underflow and overflow
-    (Muller and Rideau's Theorem 2.6); binary32 is `F32.DWTimesDW`. Still
-    tested only: AccurateDWPlusDW's 3u²/(1 − 4u).
+    (Muller and Rideau's Theorem 2.6); binary32 is `F32.DWTimesDW`.
+    **AccurateDWPlusDW's bound is proven** (`proofs/dwadd.bend`):
+    |zh + zl − (x + y)| (1 − 4u) ≤ 3u² |x + y| for p ≥ 6, any signs and
+    exponents, so below 3u² + 13u³; binary32 is `F32.AccDW`.
   All of them belong to the numbers package.
 - **Not planned:** stochastic arithmetic (CADNA, Verificarlo) as a
   product, since it estimates and does not bound, and proving
