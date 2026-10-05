@@ -204,8 +204,10 @@ and it does.
    no per-kernel law yet.
 3. Dyadic numbers and the exact oracle; a measurement report per algebra.
    **Dyadics done and proven an ordered ring** (`proofs/dyadic.bend`).
-   The oracle is not: run-time Nat is capped at 2⁴⁸ (bend-facts Q16), so
-   exact F32 sums need limbs. The double-F32 reference stays meanwhile.
+   **The exact oracle is done too:** big dyadics on 24-bit limbs
+   (`src/big.bend`, ADR-007), each operation proven to compute its value
+   (`proofs/big.bend`). Exact products, sums and dot products of any
+   binary32 or binary64 inputs fit, past run-time Nat's 2⁴⁸.
 4. The software float: faithful rounding proven against the model, then
    correct rounding. **Started:** truncation to p bits on dyadics is
    proven to meet the model with ε = 2^(1−p) (`proofs/round.bend`). So the
@@ -219,9 +221,20 @@ and it does.
    Native F32 matches it bit for bit on 100 000 products (4 253
    subnormal) and 46 829 sums (`tests/f32_native.bend`), within run-time
    Nat's 2⁴⁸. Recent Lean work (TorchLean's IEEE32Exec, FloatLib,
-   Tunnell's FP) was the reference.
+   Tunnell's FP) was the reference. **SoftF64 done** the same way:
+   `Dy.f64` (53 bits, grid 2⁻¹⁰⁷⁴) meets `Fl.model` with u = 2⁻⁵³,
+   η = 2⁻¹⁰⁷⁵. Its run-time version on big dyadics is proven equal
+   (`Mul64.lk`, `Add64.lk`) and matches 300 Python-computed products and
+   sums bit for bit (`tests/big_f64.bend`). The same limbs give big
+   binary32, which matches native F32 over the whole finite range
+   (`tests/big_f32.bend`).
 5. Running bounds (**done**: `Err.track`, `api/track.bend`) and `Approx`;
-   compensated and exact-accumulator kernels.
+   compensated and exact-accumulator kernels. **Exact accumulator done:**
+   `Bd.dot` is a Kulisch accumulator; rounded once it gives the correctly
+   rounded dot product (`Dot32.lk`, `Dot64.lk`), the error at most
+   u·|x·y| + η whatever the length. A plain F32 loop of length 8 differs
+   from it in 230 of 2 000 random cases. Posits and their quire are next:
+   the quire is this accumulator rounded to a posit.
 
 ## Survey (2015–2026), what each contributes here
 

@@ -176,3 +176,12 @@ def Dy.normal(x: D.Dy) -> Bool:
 # (proofs/round.bend: |f32(x) - x| <= 2^-24 |x| + 2^-150 either way)
 def Dy.f32(+x: D.Dy) -> D.Dy:
   Dy.fl(24n, 149n, Dy.big(x), x)
+
+# |x| >= 2^-emin, for any format: Dy.big is emin = 126
+def Dy.bige(+emin: Nat, +x: D.Dy) -> Bool:
+  Bool.pick(Bool, Nat.lt(emin, D.Dy.den(x)), Bool.not(Nat.lt(Int.mag(D.Dy.num(x)), Nat.pow2(Nat.monus(D.Dy.den(x), emin)))), True{})
+
+# IEEE binary64 rounding, finite range: 53 bits when |x| >= 2^-1022, the grid
+# 2^-1074 below (Fl.model: |f64(x) - x| <= 2^-53 |x| + 2^-1075)
+def Dy.f64(+x: D.Dy) -> D.Dy:
+  Dy.fl(53n, 1074n, Dy.bige(1022n, x), x)

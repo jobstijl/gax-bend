@@ -511,3 +511,52 @@ unchanged, because they are generic in T.
   signature, the generator and Layer S would change, with the mirror
   proofs redone over pairings. Revisit if typed maps prove necessary for
   the API.
+
+## ADR-007: Exact and binary64 arithmetic runs on limbs proven by a value map
+
+**Status:** accepted, 2026-10-05. Answers the brief's SoftF64 and exact
+oracle items, and the accumulator half of "posits with quires".
+
+### Decision
+
+Run-time Nat stops at 2⁴⁸ − 1 (bend-facts Q16). A binary64 product needs
+106 bits, a binary32 sum across the exponent range about 280, and an
+exact accumulator more. So `src/big.bend` has big naturals as limbs in base
+2h, least significant first, and big dyadics as sign, limbs and exponent.
+Each operation uses Base's native Nat operations on limbs. A value map
+`Bn.val` into Nat (unbounded in the checker) states correctness:
+comparison, addition, multiplication, subtraction, halving, parity and
+shifts each commute with it, for limbs below the base, and keep them there
+(`proofs/big.bend`). The base stays symbolic in every proof: the checker
+never sees 2²³.
+
+Rounding on limbs runs the spec's loop (`Tr.go`, `Fx.go`) with limb
+operations. The spec uses fuel n, which no run-time number can hold, so
+the limb loop uses fuel h·(number of limbs), and two lemmas join them:
+the loop's result does not depend on its fuel once n < 2^(p+fuel)
+(`Fuel.go`), and a number of L limbs is below 2^(h·L) (`Val.lt`, from
+2h ≤ 2^h). From there, normal forms, the range test and the two formats
+link to `Dy.f32` and `Dy.f64` (`F32.lk`, `F64.lk`), so `Fl.model`, and
+with it every error theorem, holds for big binary32 and binary64.
+
+### What it costs
+
+- About 2 000 lines of proof for 450 lines of code, and the proofs check
+  in about a second.
+- Speed: a binary64 product takes about 40 limb operations plus a
+  rounding loop of up to 53 halvings over 5 limbs; the 600-operation
+  binary64 test runs in 1.4 s including startup. A reference, not a
+  kernel format: kernels stay native F32.
+- Shifts double one bit at a time (`Bn.shl`), so a sum across a wide
+  exponent gap costs one addition per bit of the gap.
+- Results can carry leading zero limbs; values and comparisons are
+  unaffected.
+
+### Measured, not adopted
+
+- **Binary limbs (base 2):** halving is free and the proofs shorter, but a
+  53-bit product takes 2 809 bit steps instead of about 9 limb products.
+- **The spec's fuel n at run time:** impossible past 2⁴⁸, hence `Fuel.go`.
+- **Proving rounding invariant under scaling** instead of normalising
+  before rounding: it needs the loop's behaviour on 2n, a longer proof
+  than mirroring `Dy.of`.

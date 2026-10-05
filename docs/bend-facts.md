@@ -368,3 +368,27 @@ single job.
   instantly. A structurally recursive `Nat.lt` or `half` takes n steps
   and overflows the stack near 2²⁴. And `Bool.pick` evaluates both arms
   at run time, so a recursion under a pick runs to the end of its fuel.
+
+## Q17. Proof idioms from the big-number work (2026-10-05)
+
+- **A reusable predecessor:** `case 1n+(+j):` binds j as `+` (reusable),
+  where `case 1n+j:` makes it linear and a second use fails with
+  "consumed more than once".
+- **One pattern per scrutinee, and no pair patterns across several.**
+  `match l okt: case (a, b) (c, d):` is rejected. Nest the matches, in
+  binder order: match l, then its components, then okt.
+- **Components of a matched proof pair cannot be marked `+` in the
+  pattern** (inference of the Sigma fails). Bind them plainly and rebind
+  with an annotation: `+lr : {B.Bn.val(h, r) == r2 : Nat} = lr0`. A single
+  equality is Data and can be reused; a pair of equalities is Type and
+  cannot (`+ih can be used many times, so its type must be Data`).
+- **Define before use in a program file.** A `main` that calls a def
+  further down the file fails with "an unfilled law is a dead claim".
+  Moving the def above `main` fixes it.
+- **A normaliser without constants still proves identities with 1.** Put
+  `1n` in the environment as a variable o. The terms then match
+  definitionally (`Nat.add(1n, x)` reduces to `1n+x`). The normaliser
+  sees o as a variable, so supply `o·x = x` as relations where a product
+  needs it (`Cy.bound.go`, `Half.dig`).
+- **Bend has no native F64.** Binary64 is checked against
+  Python-generated cases (`tests/big_f64.bend`).

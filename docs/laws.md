@@ -228,6 +228,37 @@ cancellation, it finds no difference; a control with the low bit flipped
 mismatches on every operation. The samples stay within run-time Nat
 (2⁴⁸): exponents down to 2⁻⁸⁶, and sums of exponents at most 23 apart.
 
+## Big numbers (`src/big.bend`, ADR-007)
+
+Big naturals are limbs in base 2h, least significant first. Every law
+holds for any h ≥ 1; at run time h = 2²³, so limb products with carries
+stay below 2⁴⁸. Each operation commutes with the value map into Nat, for
+limbs below the base (`Bn.ok`), and keeps them there.
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| `Cmp.lt` | `Bn.lt(a, b)` is `val a < val b` | limbs below 2h | proof | `proofs/big.bend` |
+| `Add.val`, `Add.ok` | `val(addc(a, b, c)) = [c] + val a + val b`; limbs stay below 2h | `Add.ok`: limbs below 2h | proof | `proofs/big.bend` |
+| `Mul.val`, `Mul.ok` | `val(mul(a, b)) = val a · val b`; limbs stay below 2h (the carry bound `Cy.bound`) | `Mul.ok`: limbs below 2h | proof | `proofs/big.bend` |
+| `Sub.val`, `Sub.ok` | `val(subb(a, b, br)) + [br] + val b = val a` | `val a ≥ val b + [br]`, limbs below 2h | proof | `proofs/big.bend` |
+| `Half.val`, `Even.val`, `Shl.val`, `Pow2.val`, `Of.val` | halving, parity, b·2ᵏ, 2ᵏ and conversion from Nat commute with the value map | conversion: n < B² | proof | `proofs/big.bend` |
+| `Fuel.go` | the spec's rounding loop gives one result for every fuel f with n < 2^(p+f) | nothing | proof | `proofs/big.bend` |
+| `Of.lk`, `Rne.mag`, `Rfix.mag` | the limb rounding loop (fuel h·limbs, `Val.lt`: val < 2^(h·limbs)) tracks `Tr.of`; its rounded magnitude is `Tr.near(Tr.of(p, val n))`, and on the grid `Tr.near(Fx.go(s, val n))` | limbs below 2h | proof | `proofs/big.bend` |
+| `Bd.mul.lk`, `Bd.add.lk` | big dyadics (sign, limbs, exponent) multiply and add as their values do; sums align to the larger exponent | sums: limbs below 2h | proof | `proofs/big.bend` |
+| `Norm.val`, `Norm.nf` | normalising keeps the value and yields its normal form's denominator and numerator | nothing | proof | `proofs/big.bend` |
+| `F32.lk`, `F64.lk` | `Bd.f32(x)` is `Dy.f32(val x)`; `Bd.f64(x)` is `Dy.f64(val x)` (53 bits from 2⁻¹⁰²², the grid 2⁻¹⁰⁷⁴) | limbs below 2h | proof | `proofs/big.bend` |
+| `Mul32.lk`, `Add32.lk`, `Mul64.lk`, `Add64.lk` | the big binary32/binary64 product and sum are the format's rounding of the exact one, at any operand size, so `Fl.model` holds (binary64: u = 2⁻⁵³, η = 2⁻¹⁰⁷⁵) | limbs below 2h | proof | `proofs/big.bend` |
+| `Dot.lk`, `Dot32.lk`, `Dot64.lk` | `Bd.dot` holds the exact dot product (a Kulisch accumulator); rounded once, it is the correctly rounded dot product, with error at most u·\|x·y\| + η | limbs below 2h | proof | `proofs/big.bend` |
+
+The proofs check in about a second. Two tests run them. `tests/big_f32.bend`
+compares native F32 with big binary32 bit for bit over the whole finite
+range. It finds no difference in 20 000 products, 1 768 of them
+subnormal, and 20 000 sums across any exponent gap. In 2 000 dot products
+of length 8, a plain F32 loop differs from the correctly rounded result
+230 times. `tests/big_f64.bend` matches 300 Python-computed binary64
+products and sums: 42 subnormal products, 21 underflows to zero, 100
+cancelling sums. Each test has a control that fails on every operation.
+
 ## Dual numbers (`src/dual.bend`, ADR-006)
 
 | law | statement | assumes | tag | proof |
