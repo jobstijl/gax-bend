@@ -744,3 +744,51 @@ type and its correctly rounded kernels.
   stays the fast near-correct path.
 - **h = 2^23 for CR**, the base of the binary32 and binary64 tests: it
   made the checker run out of memory on VGA2D's laws (see above).
+
+## ADR-012: The double-word bounds are proven on integers, following Muller and Rideau
+
+**Status:** accepted for DWTimesDW, 2026-10-05. AccurateDWPlusDW is still
+tested only (`tests/df32_exact.bend`).
+
+### Decision
+
+`proofs/dw.bend` proves DWTimesDW (Algorithm 10, the one `num/df32.bend`
+runs) on the integers rounded to p bits, as ADR-010 does for Dekker's
+product.
+
+- **The statement** is Muller and Rideau's Theorem 2.6 with ties to even:
+  |zh + zl − xy| (1 + u)² ≤ 5u² |xy| for p ≥ 6 (`DW1.gen`). It holds for
+  any signs and exponents, xl and yl representable, with no exponent
+  bounds. `F32.DWTimesDW` is the binary32 instance.
+- **The model.** xh = A 2^(D+1) with A in [2^(p−1), 2^p), so u xh is 2^D,
+  u is 2^(2D+p) at the products and u² is 2^(2D). The product's exact
+  error cl1 comes from any exact TwoProd (Dekker's is proven so, ADR-010).
+- **Reductions.** Negating x negates every rounded step (`Neg.eta`), and
+  scaling x by 2^j scales every step (`Sh.eta`). The relative error is
+  therefore that of positive inputs at a common exponent (`Align`).
+  Swapping x and y leaves η unchanged (`Eta.sym`), which halves the
+  mirrored cases.
+- **The cases** follow the paper:
+  - xh yh ≥ 2: |η| ≤ 9u², and a polynomial certificate turns that into
+    the relative bound for p ≥ 6 (`Case.big`, `Big.num`).
+  - xh yh < 2: Lemma 2.10 (A + B < 3·2^(p−1), `L210`), then the
+    sub-cases on |cl2|, |tl1| and |tl2| (`Small.abs`). The errors finer
+    than u² (u²/4, u²/2) are kept four times over (`Eta4`, `ErrS`), so D
+    needs no lower bound. The tie case is `Tie`: an odd multiple of u²
+    between u and 2u rounds to a multiple of 4u², so cl1 + cl2 is exact.
+  - xh = 1 or yh = 1: |η| ≤ 4u² (`Case.one`) against |x|, |y| ≥ 1 − u.
+
+### What it costs
+
+- **Hypotheses.** Ties to even is needed: with ties to zero, Muller and
+  Rideau reach 5.49u². xl and yl must be representable, which double words
+  are. The proof has no exponent bounds, so binary32 is covered barring
+  underflow and overflow, as for Dekker's product. A zero high part is not
+  covered; there the double word is zero.
+- **Size.** 2 144 lines, which check in about 3 s.
+
+### Measured, not adopted
+
+- **Joldes, Muller and Popescu's 7u², valid for any tie-breaking rule.**
+  It is looser than needed: binary32 rounds ties to even, and on 20 000
+  sampled pairs none reaches 6u² (`tests/df32_exact.bend`).

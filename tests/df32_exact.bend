@@ -13,11 +13,12 @@
 # The double-word operations against their published bounds, exactly:
 # AccurateDWPlusDW within 3u^2 and DWTimesDW (Algorithm 10, no FMA) within
 # 5u^2, u = 2^-24 (Joldes, Muller and Popescu 2017; 5u^2 for Algorithm 10
-# is Muller and Rideau's Coq-checked bound, 2022). Inputs are double words
-# from TwoSum with exponents in [-30, 30], away from underflow, which the
-# bounds exclude. The 6u^2 and 7u^2 counts show the margin; the control
-# counts inexact products, so the comparison can fail. These are tests:
-# the proofs of the bounds are Muller and Rideau's, not redone here.
+# is Muller and Rideau's bound, 2022). Inputs are double words from TwoSum
+# with exponents in [-30, 30], away from underflow, which the bounds
+# exclude. The 6u^2 and 7u^2 counts show the margin; the control counts
+# inexact products, so the comparison can fail. DWTimesDW's bound is
+# proven (proofs/dw.bend, F32.DWTimesDW below); AccurateDWPlusDW's is
+# tested here.
 import Base
 import ../src/int.bend as I
 import ../src/dyadic.bend as D
@@ -26,6 +27,7 @@ import ../src/big.bend as B
 import ../num/df32.bend as DF
 import ../proofs/eft.bend as E
 import ../proofs/eft2.bend as E2
+import ../proofs/dw.bend as DW
 
 # Proven (proofs/eft.bend): binary32 values are A / 2^149 with A an integer
 # that rounds to itself at 24 bits. For those, Fast2Sum (|b| <= |a|) and
@@ -58,6 +60,21 @@ def F32.Split(+aa: I.Int, +fa: {E.Rn(24n, RD.Int.mag(aa)) == RD.Int.mag(aa) : Na
 def F32.TwoProd(+k: Nat, +aa: I.Int, +bb: I.Int, +fa: {E.Rn(1n+Nat.add(1n+1n+10n, 1n+10n), RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {E.Rn(1n+Nat.add(1n+1n+10n, 1n+10n), RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
   -> {D.Dy.add(E2.DTP.p(Nat.add(1n+1n+10n, 1n+10n), D.Dy.of(k, aa), D.Dy.of(k, bb)), E2.DTP.e(Nat.add(1n+1n+10n, 1n+10n), 1n+1n+10n, D.Dy.of(k, aa), D.Dy.of(k, bb))) == D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)) : D.Dy}:
   E2.DTwoProd(10n, k, aa, bb, fa, fb)
+
+# DWTimesDW (Algorithm 10) at 24 bits, ties to even, barring underflow and
+# overflow (proofs/dw.bend, DW1.gen): for x = xh + xl with
+# xh = +-A 2^(Dx+1), 2^23 <= A < 2^24 (so u xh is 2^Dx) and |xl| <= 2^Dx a
+# 24-bit integer, and y likewise, the result zh + zl has
+# |zh + zl - x y| (1 + u)^2 <= 5u^2 |x y|, u = 2^-24. RelI is the negation
+# of that inequality, so False is the bound. Binary32 values are A / 2^149
+# (scaling by 2^-149 changes no relative error).
+def F32.DWTimesDW(+sx: Bool, +sy: Bool, +A: Nat, +B: Nat, +Dx: Nat, +Dy: Nat, +xl: I.Int, +yl: I.Int,
+  +hA1: {RD.Nat.lt(A, RD.Nat.pow2(23n)) == False{} : Bool}, +hA: {RD.Nat.lt(A, RD.Nat.pow2(24n)) == True{} : Bool},
+  +hB1: {RD.Nat.lt(B, RD.Nat.pow2(23n)) == False{} : Bool}, +hB: {RD.Nat.lt(B, RD.Nat.pow2(24n)) == True{} : Bool},
+  +hx: {RD.Nat.lt(RD.Nat.pow2(Dx), RD.Int.mag(xl)) == False{} : Bool}, +hy: {RD.Nat.lt(RD.Nat.pow2(Dy), RD.Int.mag(yl)) == False{} : Bool},
+  +fx: {E.Rn(24n, RD.Int.mag(xl)) == RD.Int.mag(xl) : Nat}, +fy: {E.Rn(24n, RD.Int.mag(yl)) == RD.Int.mag(yl) : Nat})
+  -> {DW.RelI(23n, DW.Sg(sx, DW.XH(A, Dx)), xl, DW.Sg(sy, DW.XH(B, Dy)), yl) == False{} : Bool}:
+  DW.DW1.gen(23n, sx, sy, A, B, Dx, Dy, xl, yl, {==}, hA1, hA, hB1, hB, hx, hy, fx, fy)
 
 def hb() -> Nat:
   8388608n

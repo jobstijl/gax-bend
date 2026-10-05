@@ -3,11 +3,12 @@
 # transformations in plain F32 (Bend has no FMA, and contraction is off):
 # TwoSum, Veltkamp's split and Dekker's product. The operations are
 # Joldes, Muller and Popescu's (ACM TOMS 44(2), 2017): AccurateDWPlusDW
-# (relative error below 3u², u = 2^-24) and DWTimesDW (below 5u²), whose
-# bounds Muller and Rideau formalised (TOMS 2022). Here they serve as the
-# reference that F32 kernels are measured against. tests/df32_exact.bend
-# checks them exactly against big dyadics; the bounds' proofs are Muller
-# and Rideau's Coq development, not redone in Bend (docs/numerics.md).
+# (relative error at most 3u²/(1 - 4u) < 3u² + 13u³, u = 2^-24) and
+# DWTimesDW (at most 5u²/(1 + u)² with ties to even, Muller and Rideau,
+# TOMS 2022). Here they serve as the reference that F32 kernels are
+# measured against. tests/df32_exact.bend checks both exactly against big
+# dyadics. DWTimesDW's bound is proven in Bend, barring underflow and
+# overflow (proofs/dw.bend, ADR-012); AccurateDWPlusDW's is tested only.
 
 import Base
 

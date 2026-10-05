@@ -319,8 +319,11 @@ On integers rounded to p significant bits by the loop of `src/round.bend`
 | `TwoProd.odd` | the same at p = 2s − 1, s ≥ 3 (binary64: s = 27) | a, b representable | proof | `proofs/eft3.bend` |
 | `DRf.split`, `DTwoProd` | the same in dyadic arithmetic: the split in a binary format with gradual underflow; Dekker's product in binary rounding with no exponent bounds. `F32.Split` instantiates binary32 for every value, subnormals included; `F32.TwoProd` instantiates p = 24, s = 12, so binary32 barring underflow and overflow | A, B representable | proof | `proofs/eft2.bend`, `tests/df32_exact.bend` |
 | `DTwoProd.odd`; `F64.Split`, `F64.TwoProd` | the binary64 instances: the split with C = 2^27 + 1 for every binary64 value, subnormals included; Dekker's product at 53 bits, barring underflow and overflow | A, B representable | proof | `proofs/eft3.bend`, `tests/big_f64.bend` |
+| `DW1.int`, `DW1.gen` | DWTimesDW (Algorithm 10): for xh = ±A 2^(Dx+1) with 2^(p−1) ≤ A < 2^p and \|xl\| ≤ 2^Dx, y likewise, \|zh + zl − xy\| (1 + u)² ≤ 5u² \|xy\| (Muller–Rideau, Theorem 2.6). The cases: xh yh ≥ 2 from \|η\| ≤ 9u² (`Case.big`); xh yh < 2 by the sub-cases on \|cl2\|, \|tl1\|, \|tl2\|, 4\|η\| ≤ 20u² (`Small.abs`); xh = 1 or yh = 1, \|η\| ≤ 4u² (`Case.one`) | p ≥ 6, ties to even, xl, yl representable, no exponent bounds | proof | `proofs/dw.bend` |
+| `Tie` | an odd n with 2^p < n < 2^(p+1) rounds to a multiple of 4 (ties to even) | n odd | proof | `proofs/dw.bend` |
+| `F32.DWTimesDW` | the binary32 instance, p = 24 | barring underflow and overflow | proof | `tests/df32_exact.bend` |
 
-The double-word bounds are checked exactly on samples
+AccurateDWPlusDW's bound is checked exactly on samples
 (`tests/df32_exact.bend`), not proven.
 
 ## Dual numbers (`src/dual.bend`, ADR-006)
