@@ -1,4 +1,4 @@
-# gax-blend: the proofs of LAWS.bend. `bend PROOF.bend` is the gate: it
+# gax-bend: the proofs of LAWS.bend. `bend PROOF.bend` is the gate: it
 # prints ALL PROOFS CHECK only when every law holds. The lemmas live in
 # proofs/; each def below fills the law of the same name.
 

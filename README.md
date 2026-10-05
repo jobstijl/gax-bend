@@ -1,4 +1,4 @@
-# gax-blend
+# gax-bend
 
 A geometric algebra library for [Bend 2](https://github.com/bendlang/bend):
 fast on Bend's CPU and GPU backends, with its algebra proven in Bend's own

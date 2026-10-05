@@ -1,4 +1,4 @@
-# Bend facts for gax-blend
+# Bend facts for gax-bend
 
 Phase 0, measured on 2026-10-04. Each answer names the spike in `spikes/` (or
 `bench/`) that shows it and quotes what it printed. Re-run any of them with

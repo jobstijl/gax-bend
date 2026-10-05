@@ -1,6 +1,6 @@
 # CGA3D dual and undual are gax's metric-free complements on the null
 # basis (algebras/cga3d: .ok against S.MV.rcomp/lcomp on the raw blade
-# tree). Values against gax's generated code (gax-blend's reference,
+# tree). Values against gax's generated code (gax-bend's reference,
 # crates/gax/src/algebras/cga3d/conversions.rs): Vector -> [1, 2, 3, 5, -4];
 # Twist -> [-4, -5, -6, 0, 0, 0, 1, 2, 3, 0]; Bivector -> [-7, -8, -9, 4,
 # 5, 6, 1, 2, 3, 10]; Trivector -> [7, 8, 9, 4, 5, 6, -1, -2, -3, 10].

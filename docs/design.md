@@ -1,4 +1,4 @@
-# gax-blend design decisions
+# gax-bend design decisions
 
 Each ADR has a status, the decision, the numbers behind it, a "what it costs"
 line, and the ideas that were measured and not adopted. Amendments are dated

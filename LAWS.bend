@@ -1,4 +1,4 @@
-# gax-blend: the laws. The human owns this file; PROOF.bend proves it.
+# gax-bend: the laws. The human owns this file; PROOF.bend proves it.
 #
 # STATUS: APPROVED 2026-10-04 (the owner delegated the review to Claude).
 # A law changes only with the owner's say; a proof never weakens one.
