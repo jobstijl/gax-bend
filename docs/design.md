@@ -825,3 +825,54 @@ product.
   Popescu report about 2.25u² at most. The best proven bound is still
   3u²/(1 − 4u), and on 20 000 sampled pairs none passes 3u²
   (`tests/df32_exact.bend`).
+
+## ADR-013: Equivariance for every kind pair, generated per versor kind
+
+**Status:** accepted, 2026-10-05.
+
+### Decision
+
+`gen/equiv_main.bend` writes `algebras/<name>/equiv_all.bend`: the
+equivariance law (m >> a) op (m >> b) = ±‖m‖² (m >> (a op b)) for every
+∧, ∨, ⌋, ⌊ and · of two single-grade kinds, for each listed versor kind
+(docs/laws.md, "Every kind pair").
+
+- **Kinds the sandwich keeps.** A law compares kernels, so its operands and
+  result must be kinds the generated sandwich maps to themselves. The
+  generator computes the sandwich's kind as the kernel generator does
+  (`Eq.swm`: `Sw.make`'s support for diagonal metrics, `NKS` for the null
+  basis) and keeps the kinds that come back unchanged (`Eq.closed`).
+- **Conditions.** Where m ~m has one part besides the scalar (PGA3D motor
+  and flector: e0123; STA even and odd: e0123), the law takes that part
+  being zero, as the curated laws do (`Rel.eqs`).
+- **STAP and CGA3D take the vector as versor**: its m ~m is a scalar,
+  and `Equiv.compose` extends the vector laws to products of vectors
+  applied in turn.
+- `tools/gate.sh --full` checks every file and diffs them against the
+  generator (`tools/regen.sh --check --equiv`).
+
+### What it costs
+
+- **Generation time.** The generator runs as a native build with an
+  unlimited stack, and takes 26 minutes, nearly all of it CGA3D's
+  null-basis laws, so the default `tools/regen.sh` leaves equiv_all.bend
+  out.
+- **Check time.** VGA2D to STAP check in 1 s to 51 s each, STA in 355 s,
+  CGA3D in 98 s.
+- **Kinds left out.** PGA's Direction, PGA3D's scalar, STA's pseudoscalar
+  and CGA3D's Twist have no laws here, since the sandwich takes them to
+  another kind.
+- **CSTA has no equiv_all.bend** (see below).
+
+### Measured, not adopted
+
+- **Motor, Even and Odd as CGA3D's versors.** A general element's m ~m has
+  several non-scalar parts, so the laws need several conditions, which the
+  one-condition reduction does not take. Generating them ran 37 minutes on
+  CGA3D before it was stopped. STAP's Motor and Odd gave 0 reduced laws.
+- **CSTA's vector laws.** Generating them ran 2.5 hours, after CGA3D's half
+  hour, without finishing (3-hour cap). The gate's `--full` regeneration
+  would take longer still, so CSTA has no equivariance laws.
+- **Every kind as an operand.** The first generated PGA2D file typed the
+  sandwich of a Direction as a Direction and failed to check; the kernel
+  returns a Point.

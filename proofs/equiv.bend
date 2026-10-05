@@ -178,3 +178,24 @@ def Rel.many2(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T,
       Equal.trans(T, add(ev, add(zero, zero)), add(ev, zero), ev,
         Equal.cong(T, T, w => add(ev, w), add(zero, zero), zero, z(zero)),
         NP.Alg.zero_r(~T, ~zero, ~add, ~ac, ~z, ev))))
+
+# Equivariance composes: if the sandwiches by a and by b each carry op up to
+# a scalar (ca, cb), their composite carries it up to ca cb. With
+# Versor.compose (a (b x ~b) ~a = (a b) x ~(a b)) the per-vector laws of
+# algebras/*/equiv_all.bend extend to every product of vectors.
+def Equiv.compose(~T: Data, ~X: Data, ~Y: Data, ~Z: Data, ~mul: T -> T -> T, ~op: X -> Y -> Z, ~sc: T -> Z -> Z,
+  ~ax: X -> X, ~ay: Y -> Y, ~az: Z -> Z, ~bx: X -> X, ~by: Y -> Y, ~bz: Z -> Z, +ca: T, +cb: T,
+  ha: @x: X -> @y: Y -> {op(ax(x), ay(y)) == sc(ca, az(op(x, y))) : Z},
+  hb: @x: X -> @y: Y -> {op(bx(x), by(y)) == sc(cb, bz(op(x, y))) : Z},
+  lin: @c: T -> @z: Z -> {az(sc(c, z)) == sc(c, az(z)) : Z},
+  ss: @z: Z -> {sc(ca, sc(cb, z)) == sc(mul(ca, cb), z) : Z},
+  +x: X, +y: Y)
+  -> {op(ax(bx(x)), ay(by(y))) == sc(mul(ca, cb), az(bz(op(x, y)))) : Z}:
+  +w = bz(op(x, y))
+  Equal.trans(Z, op(ax(bx(x)), ay(by(y))), sc(ca, az(op(bx(x), by(y)))), sc(mul(ca, cb), az(w)),
+    ha(bx(x), by(y)),
+    Equal.trans(Z, sc(ca, az(op(bx(x), by(y)))), sc(ca, az(sc(cb, w))), sc(mul(ca, cb), az(w)),
+      Equal.cong(Z, Z, u => sc(ca, az(u)), op(bx(x), by(y)), sc(cb, w), hb(x, y)),
+      Equal.trans(Z, sc(ca, az(sc(cb, w))), sc(ca, sc(cb, az(w))), sc(mul(ca, cb), az(w)),
+        Equal.cong(Z, Z, u => sc(ca, u), az(sc(cb, w)), sc(cb, az(w)), lin(cb, w)),
+        ss(az(w)))))

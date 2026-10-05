@@ -134,9 +134,38 @@ The set is curated: the joins, meets and contractions of the geometric
 kinds. Under even versors the factor is +‖m‖² throughout, matching gax's
 law-factors table. Negative controls: `tests/neg/equiv_factor.bend` (the
 PGA3D join without ‖m‖²) and `tests/neg/equiv_condition.bend` (the same
-law without its condition) both fail. Every kind pair, odd versors, and
-the null-basis algebras are not covered yet. gp equivariance holds in
-general at Layer S (`transform_gp`).
+law without its condition) both fail. gp equivariance holds in general at
+Layer S (`transform_gp`).
+
+**Every kind pair** (`algebras/<name>/equiv_all.bend`, ADR-013). For each
+listed versor kind, every ∧, ∨, ⌋, ⌊ and · of two single-grade kinds
+whose product is not identically zero. Operands and result must be kinds
+the versor's generated sandwich maps to themselves (`Eq.closed`). Kinds it
+does not are left out: under a general Motor a PGA Direction comes out
+typed as a Point, and a PGA3D scalar as a Motor (m ~m has an e0123 part);
+so are STA's pseudoscalar under Even and Odd and CGA3D's Twist under
+Vector. The factor is +‖m‖², except −‖m‖² on ∨ for odd versors in even
+dimensions.
+
+| algebra | versors | laws | with −‖m‖² | condition | checked in |
+|---|---|---|---|---|---|
+| VGA2D | Rotor, Vector | 30 | 4 (Vector ∨) | none | 1 s |
+| VGA3D | Rotor, Odd | 64 | 0 | none | 8 s |
+| PGA2D | Motor, Flector | 58 | 0 | none | 2 s |
+| PGA3D | Motor, Flector | 80 | 10 (Flector ∨) | e0123 of m ~m = 0 | 46 s |
+| STA | Even, Odd | 36 | 3 (Odd ∨) | e0123 of m ~m = 0 | 355 s |
+| STAP | Vector | 81 | 0 | none | 51 s |
+| CGA3D | Vector | 84 | 0 | none | 98 s |
+
+CSTA has none: generating its vector laws ran 2.5 hours without finishing
+(ADR-013). In STAP and CGA3D the versor is a single vector, for which
+m ~m = m² is a scalar. A general even or odd element there has several more parts in
+m ~m, so its laws need several conditions, and the generator reduces by
+one. Every versor is a product of vectors, and `Equiv.compose`
+(`proofs/equiv.bend`) proves that equivariance composes: if the sandwiches
+by a and by b carry op up to ca and cb, their composite carries it up to
+ca cb. With `Versor.compose` the vector laws extend to any product of
+vectors, applied as successive sandwiches.
 
 ## Exact integers (`src/int.bend`)
 

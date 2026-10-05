@@ -12,6 +12,7 @@
 import Base
 import ../src/spec.bend as S
 import ../src/norm.bend as N
+import ../src/expr.bend as E
 import ./gen.bend as G
 
 # a law: the versor kind v, the operation, the operand kinds a and b, the
@@ -251,7 +252,94 @@ def Ls.ok(l: Ls) -> Bool:
     case Ls{ts, ok}:
       ok
 
-def Eq.law(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> String:
+# the law's text: factor -|m|² when minus, the hypothesis r = 0 when rel
+# names a relation, l for each field
+def Eq.emit(+v: String, +o: G.Op, +a: String, +b: String, +c: String, +p: String, +vb: List<&2, G.Bl>, +ab: List<&2, G.Bl>, +bb: List<&2, G.Bl>,
+  +sbn: String, +minus: Bool, +hasr: Bool, +rn: String, +ls: List<&2, String>, +rvo: String) -> String:
+  +nm = List.length(&2, G.Bl, vb)
+  +na = List.length(&2, G.Bl, ab)
+  +name = v ++ "." ++ G.Op.name(o) ++ "." ++ a ++ "." ++ b
+  +ops = {"~T, ~zero, ~add, ~mul, ~neg" : String}
+  +opst = {"~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg" : String}
+  +rvt = Bool.pick(String, String.eq(rvo, "~T, ~zero, ~neg"), "~N.Tm, ~N.TZero{}, ~N.Tm.neg", opst)
+  +kop = "O." ++ a ++ "." ++ G.Op.name(o) ++ "." ++ b
+  +tm = "K." ++ v ++ "{" ++ String.join(G.Kd.tvars(vb, 0n), ", ") ++ "}"
+  +ta = "K." ++ a ++ "{" ++ String.join(G.Kd.tvars(ab, nm), ", ") ++ "}"
+  +tb = "K." ++ b ++ "{" ++ String.join(G.Kd.tvars(bb, Nat.add(nm, na)), ", ") ++ "}"
+  +vv = "O." ++ v ++ ".gp." ++ v
+  +vr = "O." ++ v ++ ".reverse"
+  +pp = "K." ++ p ++ "."
+  +nrm = pp ++ sbn ++ "(T, " ++ vv ++ "(" ++ ops ++ ", m, " ++ vr ++ "(" ++ rvo ++ ", m)))"
+  +nrmT = pp ++ sbn ++ "(N.Tm, " ++ vv ++ "(" ++ opst ++ ", " ++ tm ++ ", " ++ vr ++ "(" ++ rvt ++ ", " ++ tm ++ ")))"
+  +fac = Bool.pick(String, minus, "neg(mul(" ++ nrm ++ ", x))", "mul(" ++ nrm ++ ", x)")
+  +facT = Bool.pick(String, minus, "N.TNeg{N.TMul{" ++ nrmT ++ ", x}}", "N.TMul{" ++ nrmT ++ ", x}")
+  +hyp = "{" ++ pp ++ rn ++ "(T, " ++ vv ++ "(" ++ ops ++ ", m, " ++ vr ++ "(" ++ rvo ++ ", m))) == zero : T}"
+  +rt = Bool.pick(String, hasr, pp ++ rn ++ "(N.Tm, " ++ vv ++ "(" ++ opst ++ ", " ++ tm ++ ", " ++ vr ++ "(" ++ rvt ++ ", " ++ tm ++ ")))", "N.TZero{}")
+  +env = "[" ++ String.join(List.append(&2, String, G.Kd.fields(vb, "m_", ""), List.append(&2, String, G.Kd.fields(ab, "a_", ""), G.Kd.fields(bb, "b_", ""))), ", ") ++ "]"
+  +pat = "K." ++ v ++ "{" ++ String.join(G.Kd.fields(vb, "m_", ""), ", ") ++ "} K." ++ a ++ "{" ++ String.join(G.Kd.fields(ab, "a_", ""), ", ") ++ "} K." ++ b ++ "{" ++ String.join(G.Kd.fields(bb, "b_", ""), ", ") ++ "}"
+  String.concat([
+    "def ", name, ".equiv(", Eq.ring(), ",\n  m: K.", v, "<T>, a: K.", a, "<T>, b: K.", b, "<T>)\n  -> ",
+    Bool.pick(String, hasr, hyp ++ " -> ", ""),
+    "{K.", c, ".fields(T, ", kop, "(", ops, ", O.", v, ".transform.", a, "(", ops, ", m, a), O.", v, ".transform.", b, "(", ops, ", m, b)))\n",
+    "    == K.", c, ".fields(T, K.", c, ".map(~T, ~T, ~(x => ", fac, "), O.", v, ".transform.", c, "(", ops, ", m, ", kop, "(", ops, ", a, b)))) : List<&2, T>}:\n",
+    "  match m a b:\n    case ", pat, ":\n      ",
+    Bool.pick(String, hasr, "hr => ", ""),
+    "EQ.Rel.eqs(", Eq.ringa(), ", ", env, ",\n",
+    "        K.", c, ".fields(N.Tm, ", kop, "(", opst, ", O.", v, ".transform.", a, "(", opst, ", ", tm, ", ", ta, "), O.", v, ".transform.", b, "(", opst, ", ", tm, ", ", tb, "))),\n",
+    "        K.", c, ".fields(N.Tm, K.", c, ".map(~N.Tm, ~N.Tm, ~(x => ", facT, "), O.", v, ".transform.", c, "(", opst, ", ", tm, ", ", kop, "(", opst, ", ", ta, ", ", tb, ")))),\n",
+    "        [", String.join(ls, ",\n         "), "],\n",
+    "        ", rt, ", {==}, ", Bool.pick(String, hasr, "hr", "{==}"), ")\n"])
+
+def Eq.negs(xs: List<&2, N.Tm>) -> List<&2, N.Tm>:
+  match xs:
+    case Nil{}:
+      Nil{}
+    case x <> t:
+      N.TNeg{x} <> Eq.negs(t)
+
+# the factor's sign (minus) and l for each field
+type Sg is Data:
+  Sg{minus: Bool, ls: List<&2, String>}
+
+# the factor's sign: +|m|² if the remainders vanish, else -|m|², else none.
+# Each step is a match, so a native (strict) build computes the -|m|²
+# remainders only when +|m|² fails, and nothing with two conditions.
+def Eq.sign.mk(lm: Ls) -> Maybe<&2, Sg>:
+  match lm:
+    case Ls{tm, +okm}:
+      Bool.pick(Maybe<&2, Sg>, okm, Some{Sg{True{}, tm}}, None{})
+
+def Eq.sign.m(+lhs: List<&2, N.Tm>, +rhs: List<&2, N.Tm>, +nrmt: N.Tm, +rpoly: List<&2, N.Mono>, +lead: N.Mono) -> Maybe<&2, Sg>:
+  Eq.sign.mk(Eq.ls(lhs, Eq.negs(rhs), nrmt, rpoly, lead))
+
+def Eq.sign.p(lp: Ls, +lhs: List<&2, N.Tm>, +rhs: List<&2, N.Tm>, +nrmt: N.Tm, +rpoly: List<&2, N.Mono>, +lead: N.Mono) -> Maybe<&2, Sg>:
+  match lp:
+    case Ls{tp, okp}:
+      match okp:
+        case True{}:
+          Some{Sg{False{}, tp}}
+        case False{}:
+          Eq.sign.m(lhs, rhs, nrmt, rpoly, lead)
+
+def Eq.sign.nr(one: Bool, +lhs: List<&2, N.Tm>, +rhs: List<&2, N.Tm>, +nrmt: N.Tm, +rpoly: List<&2, N.Mono>, +lead: N.Mono) -> Maybe<&2, Sg>:
+  match one:
+    case False{}:
+      None{}
+    case True{}:
+      Eq.sign.p(Eq.ls(lhs, rhs, nrmt, rpoly, lead), lhs, rhs, nrmt, rpoly, lead)
+
+def Eq.law.fin(+v: String, +o: G.Op, +a: String, +b: String, +c: String, +p: String, +vb: List<&2, G.Bl>, +ab: List<&2, G.Bl>, +bb: List<&2, G.Bl>,
+  +sbn: String, +hasr: Bool, +rn: String, +rvo: String, r: Maybe<&2, Sg>) -> Maybe<&2, String>:
+  match r:
+    case None{}:
+      None{}
+    case Some{sl}:
+      match sl:
+        case Sg{+minus, +ls}:
+          Some{Eq.emit(v, o, a, b, c, p, vb, ab, bb, sbn, minus, hasr, rn, ls, rvo)}
+
+# a law in a diagonal basis, if it reduces (at most one condition)
+def Eq.law(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> Maybe<&2, String>:
   match lw:
     case Law{+v, +o, +a, +b, +c, +p}:
       +vb = G.Kd.bls(G.Kd.find(ks, v))
@@ -274,43 +362,99 @@ def Eq.law(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> String:
       +rel = Rl.first(rels)
       +rpoly = Rl.poly(rel)
       +lead = Ms.last(rpoly, N.Mono{False{}, [0n]})
-      +ls = Eq.ls(lhs, rhs, nrmt, rpoly, lead)
-      +name = v ++ "." ++ G.Op.name(o) ++ "." ++ a ++ "." ++ b
-      +ops = {"~T, ~zero, ~add, ~mul, ~neg" : String}
-      +opst = {"~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg" : String}
-      +kop = "O." ++ a ++ "." ++ G.Op.name(o) ++ "." ++ b
-      +tm = "K." ++ v ++ "{" ++ String.join(G.Kd.tvars(vb, 0n), ", ") ++ "}"
-      +ta = "K." ++ a ++ "{" ++ String.join(G.Kd.tvars(ab, nm), ", ") ++ "}"
-      +tb = "K." ++ b ++ "{" ++ String.join(G.Kd.tvars(bb, Nat.add(nm, na)), ", ") ++ "}"
-      +vv = "O." ++ v ++ ".gp." ++ v
-      +vr = "O." ++ v ++ ".reverse"
-      +pp = "K." ++ p ++ "."
-      +nrm = pp ++ Bl.name(sb) ++ "(T, " ++ vv ++ "(" ++ ops ++ ", m, " ++ vr ++ "(~T, ~zero, ~neg, m)))"
-      +nrmT = pp ++ Bl.name(sb) ++ "(N.Tm, " ++ vv ++ "(" ++ opst ++ ", " ++ tm ++ ", " ++ vr ++ "(~N.Tm, ~N.TZero{}, ~N.Tm.neg, " ++ tm ++ ")))"
-      +hyp = "{" ++ pp ++ Rl.name(rel) ++ "(T, " ++ vv ++ "(" ++ ops ++ ", m, " ++ vr ++ "(~T, ~zero, ~neg, m))) == zero : T}"
-      +rt = Bool.pick(String, Nat.is_eq(nr, 0n), "N.TZero{}", pp ++ Rl.name(rel) ++ "(N.Tm, " ++ vv ++ "(" ++ opst ++ ", " ++ tm ++ ", " ++ vr ++ "(~N.Tm, ~N.TZero{}, ~N.Tm.neg, " ++ tm ++ ")))")
-      +env = "[" ++ String.join(List.append(&2, String, G.Kd.fields(vb, "m_", ""), List.append(&2, String, G.Kd.fields(ab, "a_", ""), G.Kd.fields(bb, "b_", ""))), ", ") ++ "]"
-      +pat = "K." ++ v ++ "{" ++ String.join(G.Kd.fields(vb, "m_", ""), ", ") ++ "} K." ++ a ++ "{" ++ String.join(G.Kd.fields(ab, "a_", ""), ", ") ++ "} K." ++ b ++ "{" ++ String.join(G.Kd.fields(bb, "b_", ""), ", ") ++ "}"
-      +note = Bool.pick(String, Bool.and(Ls.ok(ls), Nat.is_lt(nr, 2n)), "", "# NOT REDUCED: the generator could not divide by the condition\n")
-      String.concat([note,
-        "def ", name, ".equiv(", Eq.ring(), ",\n  m: K.", v, "<T>, a: K.", a, "<T>, b: K.", b, "<T>)\n  -> ",
-        Bool.pick(String, Nat.is_eq(nr, 0n), "", hyp ++ " -> "),
-        "{K.", c, ".fields(T, ", kop, "(", ops, ", O.", v, ".transform.", a, "(", ops, ", m, a), O.", v, ".transform.", b, "(", ops, ", m, b)))\n",
-        "    == K.", c, ".fields(T, K.", c, ".map(~T, ~T, ~(x => mul(", nrm, ", x)), O.", v, ".transform.", c, "(", ops, ", m, ", kop, "(", ops, ", a, b)))) : List<&2, T>}:\n",
-        "  match m a b:\n    case ", pat, ":\n      ",
-        Bool.pick(String, Nat.is_eq(nr, 0n), "", "hr => "),
-        "EQ.Rel.eqs(", Eq.ringa(), ", ", env, ",\n",
-        "        K.", c, ".fields(N.Tm, ", kop, "(", opst, ", O.", v, ".transform.", a, "(", opst, ", ", tm, ", ", ta, "), O.", v, ".transform.", b, "(", opst, ", ", tm, ", ", tb, "))),\n",
-        "        K.", c, ".fields(N.Tm, K.", c, ".map(~N.Tm, ~N.Tm, ~(x => N.TMul{", nrmT, ", x}), O.", v, ".transform.", c, "(", opst, ", ", tm, ", ", kop, "(", opst, ", ", ta, ", ", tb, ")))),\n",
-        "        [", String.join(Ls.texts(ls), ",\n         "), "],\n",
-        "        ", rt, ", {==}, ", Bool.pick(String, Nat.is_eq(nr, 0n), "{==}", "hr"), ")\n"])
+      Eq.law.fin(v, o, a, b, c, p, vb, ab, bb, Bl.name(sb), Bool.not(Nat.is_eq(nr, 0n)), Rl.name(rel), "~T, ~zero, ~neg",
+        Eq.sign.nr(Nat.is_lt(nr, 2n), lhs, rhs, nrmt, rpoly, lead))
+
+# Null-basis algebras: the whole tree, with h = 1/2
+# -------------------------------------------------
+
+# every coefficient of x vanishes, h the variable v
+def Eq.tzh(+v: Nat, +d: Nat, x: S.MV(N.Tm, d)) -> Bool:
+  match d:
+    case 0n:
+      match x:
+        case S.LZ{}:
+          True{}
+        case S.L{a}:
+          List.is_empty(&2, N.Mono, N.NormSH.left(v, a))
+    case 1n+(+q):
+      match x:
+        case S.NZ{}:
+          True{}
+        case S.N{e, r}:
+          Bool.and(Eq.tzh(v, q, e), Eq.tzh(v, q, r))
+
+def Eq.sub(+d: Nat, x: S.MV(N.Tm, d), y: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  S.MV.add(~N.Tm, ~N.Tm.add, d, x, S.MV.neg(~N.Tm, ~N.Tm.neg, d, y))
+
+def Eq.scale(+d: Nat, +sig: S.Sig(d), +k: N.Tm, x: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
+  S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, S.MV.blade(N.Tm, d, Nil{}, k), x)
+
+def Eq.zeros(bls: List<&2, G.Bl>) -> List<&2, String>:
+  match bls:
+    case Nil{}:
+      Nil{}
+    case h <> t:
+      "N.TZero{}" <> Eq.zeros(t)
+
+def Eq.nsign.m(+hv: Nat, +d: Nat, +sig: S.Sig(d), +nrmt: N.Tm, lt: S.MV(N.Tm, d), rtr: S.MV(N.Tm, d), +zs: List<&2, String>) -> Maybe<&2, Sg>:
+  Bool.pick(Maybe<&2, Sg>, Eq.tzh(hv, d, S.MV.add(~N.Tm, ~N.Tm.add, d, lt, Eq.scale(d, sig, nrmt, rtr))), Some{Sg{True{}, zs}}, None{})
+
+def Eq.nsign.p(plus: Bool, +hv: Nat, +d: Nat, +sig: S.Sig(d), +nrmt: N.Tm, lt: S.MV(N.Tm, d), rtr: S.MV(N.Tm, d), +zs: List<&2, String>) -> Maybe<&2, Sg>:
+  match plus:
+    case True{}:
+      Some{Sg{False{}, zs}}
+    case False{}:
+      Eq.nsign.m(hv, d, sig, nrmt, lt, rtr, zs)
+
+# the two sides, once m ~m is known to be a scalar
+def Eq.lawn.sides(scal: Bool, +d: Nat, +sig: S.Sig(d), +o: G.Op, +hv: Nat, +nrmt: N.Tm, +mt: S.MV(N.Tm, d), +at: S.MV(N.Tm, d), +bt: S.MV(N.Tm, d), +zs: List<&2, String>) -> Maybe<&2, Sg>:
+  match scal:
+    case False{}:
+      None{}
+    case True{}:
+      +lt = Eq.run(d, sig, o, G.Sw.tm(d, sig, mt, at), G.Sw.tm(d, sig, mt, bt))
+      +rtr = G.Sw.tm(d, sig, mt, Eq.run(d, sig, o, at, bt))
+      Eq.nsign.p(Eq.tzh(hv, d, Eq.sub(d, lt, Eq.scale(d, sig, nrmt, rtr))), hv, d, sig, nrmt, lt, rtr, zs)
+
+# a law in a null basis: m ~m must be a scalar (no condition), and the two
+# sides equal up to +|m|² or -|m|² on every blade
+def Eq.lawn(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> Maybe<&2, String>:
+  match lw:
+    case Law{+v, +o, +a, +b, +c, +p}:
+      +vb = G.Kd.bls(G.Kd.find(ks, v))
+      +ab = G.Kd.bls(G.Kd.find(ks, a))
+      +bb = G.Kd.bls(G.Kd.find(ks, b))
+      +cb = G.Kd.bls(G.Kd.find(ks, c))
+      +pb = G.Kd.bls(G.Kd.find(ks, p))
+      +nm = List.length(&2, G.Bl, vb)
+      +na = List.length(&2, G.Bl, ab)
+      +hv = Nat.add(Nat.add(nm, na), List.length(&2, G.Bl, bb))
+      +h = {N.TVar{hv} : N.Tm}
+      +mt = G.Nl.symT(nb, ng, d, vb, 0n, h)
+      +pt = S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, mt, S.MV.reverse(~N.Tm, ~N.Tm.neg, d, mt))
+      +nrmt = S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, Nil{}, False{}, pt)
+      Eq.law.fin(v, o, a, b, c, p, vb, ab, bb, Bl.name(Eq.scalar(pb)), False{}, "?", "~T, ~zero, ~add, ~mul, ~neg",
+        Eq.lawn.sides(Eq.tzh(hv, d, Eq.sub(d, pt, S.MV.blade(N.Tm, d, Nil{}, nrmt))), d, sig, o, hv, nrmt, mt, G.Nl.symT(nb, ng, d, ab, nm, h), G.Nl.symT(nb, ng, d, bb, Nat.add(nm, na), h), Eq.zeros(cb)))
+
+def Eq.laws.put(r: Maybe<&2, String>, +name: String, rest: List<&2, String>) -> List<&2, String>:
+  match r:
+    case None{}:
+      ("# NOT REDUCED: " ++ name ++ "\n") <> rest
+    case Some{x}:
+      x <> rest
+
+def Law.name(lw: Law) -> String:
+  match lw:
+    case Law{v, o, a, b, c, p}:
+      v ++ "." ++ G.Op.name(o) ++ "." ++ a ++ "." ++ b
 
 def Eq.laws(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, ls: List<&2, Law>) -> List<&2, String>:
   match ls:
     case Nil{}:
       Nil{}
-    case l <> t:
-      Eq.law(d, sig, ks, l) <> Eq.laws(d, sig, ks, t)
+    case +l <> t:
+      Eq.laws.put(Eq.law(d, sig, ks, l), Law.name(l), Eq.laws(d, sig, ks, t))
 
 def Eq.module(s: G.GSpec, ls: List<&2, Law>) -> String:
   match s:
@@ -347,3 +491,237 @@ def laws.sta() -> List<&2, Law>:
   [ Law{"Even", G.OWedge{}, "Vector", "Vector", "Bivector", "Even"},
     Law{"Even", G.OLc{}, "Vector", "Bivector", "Vector", "Even"},
     Law{"Even", G.OVee{}, "Trivector", "Trivector", "Bivector", "Even"} ]
+
+# Every kind pair
+# ---------------
+# For the given versors, every product (wedge, vee, left and right
+# contraction, dot) of two single-grade kinds that is not identically zero,
+# its result kind chosen as the kernel generator chooses it. A law that
+# does not reduce (two or more conditions, or neither sign) is listed, not
+# written.
+
+type Md is Data:
+  MDiag{}
+  MNul{nb: G.Nb, ng: List<&2, Nat>, mbs: List<&2, G.Bl>}
+
+def Eq.rk(b: G.Best) -> Maybe<&2, String>:
+  match b:
+    case G.BNone{}:
+      None{}
+    case G.BSome{k, a, n}:
+      Some{G.Kd.name(k)}
+
+def Eq.rk.go(+ks: List<&2, G.Kd>, supp: List<&2, List<&2, Bool>>) -> Maybe<&2, String>:
+  match supp:
+    case Nil{}:
+      None{}
+    case +h <> +t:
+      Eq.rk(G.Best.scan(ks, h <> t, G.BNone{}))
+
+def Eq.rkd(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, o: G.Op, ka: G.Kd, kb: G.Kd) -> Maybe<&2, String>:
+  match ka kb:
+    case G.Kd{an, ar, +abs} G.Kd{bn, br, +bbs}:
+      Eq.rk.go(ks, G.MV.leaves(E.Expr, d, Nil{}, G.Op.run(d, sig, o, G.Sym.tree(d, "a_", abs), G.Sym.tree(d, "b_", bbs))))
+
+def Eq.rkn(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +mbs: List<&2, G.Bl>, o: G.Op, ka: G.Kd, kb: G.Kd) -> Maybe<&2, String>:
+  match ka kb:
+    case G.Kd{an, ar, +abs} G.Kd{bn, br, +bbs}:
+      +na = List.length(&2, G.Bl, abs)
+      +hv = Nat.add(na, List.length(&2, G.Bl, bbs))
+      +h = {N.TVar{hv} : N.Tm}
+      Eq.rk.go(ks, G.Nl.supp(nb, ng, d, mbs, G.NK.tm(d, sig, G.NKB{o}, G.Nl.symT(nb, ng, d, abs, 0n, h), G.Nl.symT(nb, ng, d, bbs, na, h)), h, hv))
+
+def Eq.rkm(md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, o: G.Op, ka: G.Kd, kb: G.Kd) -> Maybe<&2, String>:
+  match md:
+    case MDiag{}:
+      Eq.rkd(d, sig, ks, o, ka, kb)
+    case MNul{+nb, +ng, +mbs}:
+      Eq.rkn(nb, ng, d, sig, ks, mbs, o, ka, kb)
+
+def Eq.lawm(md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> Maybe<&2, String>:
+  match md:
+    case MDiag{}:
+      Eq.law(d, sig, ks, lw)
+    case MNul{+nb, +ng, mbs}:
+      Eq.lawn(nb, ng, d, sig, ks, lw)
+
+def Eq.allg(bls: List<&2, G.Bl>, +g: Nat) -> Bool:
+  match bls:
+    case Nil{}:
+      True{}
+    case G.Bl{n, q, s, +h} <> t:
+      Bool.and(Nat.is_eq(h, g), Eq.allg(t, g))
+
+# a single grade, not the scalars
+def Eq.single(bls: List<&2, G.Bl>) -> Bool:
+  match bls:
+    case Nil{}:
+      False{}
+    case G.Bl{n, q, s, +g} <> t:
+      Bool.and(Bool.not(Nat.is_eq(g, 0n)), Eq.allg(t, g))
+
+def Eq.mem(+c: String, xs: List<&2, String>) -> Bool:
+  match xs:
+    case Nil{}:
+      False{}
+    case x <> t:
+      Bool.or(String.eq(x, c), Eq.mem(c, t))
+
+# a single grade, the scalars included
+def Eq.single0(bls: List<&2, G.Bl>) -> Bool:
+  match bls:
+    case Nil{}:
+      False{}
+    case G.Bl{n, q, s, +g} <> t:
+      Eq.allg(t, g)
+
+def Eq.gks(ks: List<&2, G.Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case G.Kd{+n, r, +bls} <> +t:
+      Bool.pick(List<&2, String>, Eq.single0(bls), n <> Eq.gks(t), Eq.gks(t))
+
+def Eq.inter(xs: List<&2, String>, +ys: List<&2, String>) -> List<&2, String>:
+  match xs:
+    case Nil{}:
+      Nil{}
+    case +x <> +t:
+      Bool.pick(List<&2, String>, Eq.mem(x, ys), x <> Eq.inter(t, ys), Eq.inter(t, ys))
+
+def Eq.opks(ks: List<&2, G.Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case G.Kd{+n, r, +bls} <> +t:
+      Bool.pick(List<&2, String>, Eq.single(bls), n <> Eq.opks(t), Eq.opks(t))
+
+def Eq.ops() -> List<&2, G.Op>:
+  [G.OWedge{}, G.OVee{}, G.OLc{}, G.ORc{}, G.ODot{}]
+
+# a law needs its result kind mapped to itself too (cl, the closed kinds)
+def Eq.push(+v: String, +p: String, +o: G.Op, +a: String, +b: String, +cl: List<&2, String>, r: Maybe<&2, String>, +acc: List<&2, Law>) -> List<&2, Law>:
+  match r:
+    case None{}:
+      acc
+    case Some{+c}:
+      Bool.pick(List<&2, Law>, Eq.mem(c, cl), Law{v, o, a, b, c, p} <> acc, acc)
+
+def Eq.auto.b(+md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +v: String, +p: String, +o: G.Op, +a: String, +cl: List<&2, String>, bs: List<&2, String>, acc: List<&2, Law>) -> List<&2, Law>:
+  match bs:
+    case Nil{}:
+      acc
+    case +b <> t:
+      Eq.auto.b(md, d, sig, ks, v, p, o, a, cl, t, Eq.push(v, p, o, a, b, cl, Eq.rkm(md, d, sig, ks, o, G.Kd.find(ks, a), G.Kd.find(ks, b)), acc))
+
+def Eq.auto.a(+md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +v: String, +p: String, +o: G.Op, +cl: List<&2, String>, as: List<&2, String>, +bs: List<&2, String>, acc: List<&2, Law>) -> List<&2, Law>:
+  match as:
+    case Nil{}:
+      acc
+    case +a <> t:
+      Eq.auto.a(md, d, sig, ks, v, p, o, cl, t, bs, Eq.auto.b(md, d, sig, ks, v, p, o, a, cl, bs, acc))
+
+def Eq.auto.o(+md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +v: String, +p: String, os: List<&2, G.Op>, +as: List<&2, String>, +cl: List<&2, String>, acc: List<&2, Law>) -> List<&2, Law>:
+  match os:
+    case Nil{}:
+      acc
+    case +o <> t:
+      Eq.auto.o(md, d, sig, ks, v, p, t, as, cl, Eq.auto.a(md, d, sig, ks, v, p, o, cl, as, as, acc))
+
+def Eq.pv(r: Maybe<&2, String>) -> String:
+  match r:
+    case None{}:
+      "?"
+    case Some{p}:
+      p
+
+# the kind of v x ~v, as the kernel generator picks it (gen/gen.bend,
+# Sw.make, NKS): a kind need not map to itself, as a PGA2D motor takes a
+# Direction to the Point kind
+def Eq.swd(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, kv: G.Kd, kb: G.Kd) -> Maybe<&2, String>:
+  match kv kb:
+    case G.Kd{vn, vr, +vbs} G.Kd{bn, br, +bbs}:
+      +rt = G.Sw.tm(d, sig, G.SymT.tree(d, vbs, 0n), G.SymT.tree(d, bbs, List.length(&2, G.Bl, vbs)))
+      Eq.rk.go(ks, G.Supp.live(d, G.MV.leaves(N.Tm, d, Nil{}, rt), rt))
+
+def Eq.swn(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +mbs: List<&2, G.Bl>, kv: G.Kd, kb: G.Kd) -> Maybe<&2, String>:
+  match kv kb:
+    case G.Kd{an, ar, +abs} G.Kd{bn, br, +bbs}:
+      +na = List.length(&2, G.Bl, abs)
+      +hv = Nat.add(na, List.length(&2, G.Bl, bbs))
+      +h = {N.TVar{hv} : N.Tm}
+      Eq.rk.go(ks, G.Nl.supp(nb, ng, d, mbs, G.NK.tm(d, sig, G.NKS{}, G.Nl.symT(nb, ng, d, abs, 0n, h), G.Nl.symT(nb, ng, d, bbs, na, h)), h, hv))
+
+def Eq.swm(md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, kv: G.Kd, kb: G.Kd) -> Maybe<&2, String>:
+  match md:
+    case MDiag{}:
+      Eq.swd(d, sig, ks, kv, kb)
+    case MNul{+nb, +ng, +mbs}:
+      Eq.swn(nb, ng, d, sig, ks, mbs, kv, kb)
+
+def Eq.keep(r: Maybe<&2, String>, +n: String, +rest: List<&2, String>) -> List<&2, String>:
+  match r:
+    case None{}:
+      rest
+    case Some{m}:
+      Bool.pick(List<&2, String>, String.eq(m, n), n <> rest, rest)
+
+# the kinds the versor kind kv maps to themselves
+def Eq.closed(+md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +kv: G.Kd, ns: List<&2, String>) -> List<&2, String>:
+  match ns:
+    case Nil{}:
+      Nil{}
+    case +n <> t:
+      Eq.keep(Eq.swm(md, d, sig, ks, kv, G.Kd.find(ks, n)), n, Eq.closed(md, d, sig, ks, kv, t))
+
+def Eq.auto.v(+md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, vs: List<&2, String>, +os: List<&2, G.Op>, +as: List<&2, String>, acc: List<&2, Law>) -> List<&2, Law>:
+  match vs:
+    case Nil{}:
+      acc
+    case +v <> t:
+      +p = Eq.pv(Eq.rkm(md, d, sig, ks, G.OGp{}, G.Kd.find(ks, v), G.Kd.find(ks, v)))
+      +cl = Eq.closed(md, d, sig, ks, G.Kd.find(ks, v), Eq.gks(ks))
+      Eq.auto.v(md, d, sig, ks, t, os, as, Eq.auto.o(md, d, sig, ks, v, p, os, Eq.inter(as, cl), cl, acc))
+
+type Res is Data:
+  Res{texts: List<&2, String>, miss: List<&2, String>}
+
+def Eq.collect.add(r: Maybe<&2, String>, +nm: String, rs: Res) -> Res:
+  match r rs:
+    case None{} Res{ts, ms}:
+      Res{ts, nm <> ms}
+    case Some{x} Res{ts, ms}:
+      Res{x <> ts, ms}
+
+def Eq.collect(+md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, ls: List<&2, Law>) -> Res:
+  match ls:
+    case Nil{}:
+      Res{Nil{}, Nil{}}
+    case +l <> t:
+      Eq.collect.add(Eq.lawm(md, d, sig, ks, l), Law.name(l), Eq.collect(md, d, sig, ks, t))
+
+def Eq.module.txt(+name: String, vs: List<&2, String>, r: Res) -> String:
+  match r:
+    case Res{+ts, +ms}:
+      String.concat([G.Gen.header(name),
+        "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../proofs/equiv.bend as EQ\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n",
+        "# Equivariance for every kind pair (gen/equiv.bend, Eq.module.all): for the\n# versors ", String.join(vs, ", "), ", every wedge, vee, left and right\n",
+        "# contraction and dot of two single-grade kinds the versor maps to\n# themselves, that is not identically zero:\n# (m >> a) op (m >> b) == +-|m|² (m >> (a op b)). ",
+        Nat.show(List.length(&2, String, ts)), " laws.\n",
+        Bool.pick(String, List.is_empty(&2, String, ms), "", "# Not reduced, so not written: " ++ String.join(ms, ", ") ++ "\n"),
+        "\n", String.join(ts, "\n")])
+
+def Eq.module.fin(+name: String, +md: Md, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, +vs: List<&2, String>) -> String:
+  Eq.module.txt(name, vs, Eq.collect(md, d, sig, ks, List.reverse(&2, Law, Eq.auto.v(md, d, sig, ks, vs, Eq.ops(), Eq.opks(ks), Nil{}))))
+
+def Eq.module.all(s: G.GSpec, vs: List<&2, String>) -> String:
+  match s:
+    case G.GSpec{+name, pre, +d, +gens, +sig, kinds, vers, nul}:
+      match nul:
+        case G.NoNul{}:
+          Eq.module.fin(name, MDiag{}, d, sig, G.Gen.kinds(d, gens, kinds), vs)
+        case G.Nul{+pn, +mn}:
+          +nb : G.Nb = G.Nb{d, pn, mn}
+          +ng = G.Nb.ng(nb)
+          +ks = G.Nl.kinds(d, gens, ng, kinds)
+          Eq.module.fin(name, MNul{nb, ng, G.Kd.bls(G.Kd.find(ks, "Multivector"))}, d, sig, ks, vs)

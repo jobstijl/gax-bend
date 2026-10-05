@@ -5,7 +5,9 @@
 #      write (tools/regen.sh --check),
 #   3. every generated algebras/*/proofs.bend checks (kernel == spec), every
 #      algebras/*/err.bend checks (each kernel's rounding-error bound), every
-#      algebras/*/equiv.bend checks (equivariance under versors), every
+#      algebras/*/equiv.bend checks (equivariance under versors; every
+#      algebras/*/equiv_all.bend, the laws for every kind pair, only in the
+#      slow tiers), every
 #      algebras/*/lin.bend checks (each kernel's linearity; CGA3D's and
 #      CSTA's only in the slow tiers), every algebras/*/track.bend,
 #      approx.bend and cr.bend checks (each kernel's tracked bound, its bound
@@ -16,7 +18,9 @@
 #   5. every negative control tests/neg/*.bend fails to check.
 # Usage: tools/gate.sh [-q] [--full]
 #   -q      one line per failure only
-#   --full  also check the slow proof files (CGA3D's, about an hour).
+#   --full  also check the slow proof files (CGA3D's, about an hour) and
+#           every equiv_all.bend, and diff equiv_all.bend
+#           against its generator (tools/regen.sh --check --equiv).
 #           Every err.bend is checked in every tier (CSTA's takes 145 s).
 #   --csta  also check CSTA's proof files (1.6 hours, all 25 checked on
 #           2026-10-05). Without these flags they are counted as skipped.
@@ -45,16 +49,19 @@ else
   echo "FAIL  PROOF.bend"; printf '%s\n' "$out" | head -20; fail=1
 fi
 
-if tools/regen.sh --check > /dev/null 2>&1; then
+regen="--check"
+[ -n "$full" ] && regen="--check --equiv"
+if tools/regen.sh $regen > /dev/null 2>&1; then
   say "ok    algebras/ and proofs/ match the generators"
 else
   echo "FAIL  generated sources are stale: run tools/regen.sh"; fail=1
 fi
 
 skipped=0
-for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend algebras/*/equiv.bend algebras/*/lin.bend algebras/*/track.bend algebras/*/approx.bend algebras/*/cr.bend; do
+for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend algebras/*/equiv.bend algebras/*/equiv_all.bend algebras/*/lin.bend algebras/*/track.bend algebras/*/approx.bend algebras/*/cr.bend; do
   [ -e "$f" ] || continue
   case "$f" in
+    */equiv_all.bend) if [ -z "$full" ]; then skipped=$((skipped + 1)); continue; fi ;;
     */err.bend|*/equiv.bend|*/track.bend|*/approx.bend|*/cr.bend) ;;
     "$SLOW"*) if [ -z "$full" ]; then skipped=$((skipped + 1)); continue; fi ;;
     "$SLOWER"*) if [ -z "$csta" ]; then skipped=$((skipped + 1)); continue; fi ;;
@@ -67,7 +74,7 @@ for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend alg
   fi
 done
 
-[ $skipped = 0 ] || echo "skip  $skipped proof files under $SLOW and $SLOWER (slow: tools/gate.sh --full, --csta)"
+[ $skipped = 0 ] || echo "skip  $skipped slow proof files: under $SLOW and $SLOWER, and equiv_all.bend (tools/gate.sh --full, --csta)"
 
 for f in algebras/*/f32.bend; do
   [ -e "$f" ] || continue
