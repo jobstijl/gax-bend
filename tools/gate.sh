@@ -14,9 +14,8 @@
 #   -q      one line per failure only
 #   --full  also check the slow proof files (CGA3D's, about an hour).
 #           Every err.bend is checked in every tier (CSTA's takes 94 s).
-#   --csta  also check CSTA's proof files (estimated at about 10 hours;
-#           not yet run in full). Without these flags they are counted as
-#           skipped.
+#   --csta  also check CSTA's proof files (1.6 hours, all 25 checked on
+#           2026-10-05). Without these flags they are counted as skipped.
 set -u
 cd "$(dirname "$0")/.."
 . tools/env.sh

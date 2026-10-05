@@ -10,7 +10,7 @@ is the semantic reference.
 | layer | what | state |
 |---|---|---|
 | S, the spec | a multivector tree over any dimension, any diagonal signature, any scalar ring | **24 laws proven** ([docs/laws.md](docs/laws.md)); `LAWS.bend` approved |
-| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA, STAP, CGA3D and CSTA (the last two in gax's null basis, through a proven change of basis): 7547 kernels; all proven except CSTA's, whose proofs are generated but not yet checked in full (about 10 h; `algebras/`) |
+| K, kernels | flat per-kind records with straight-line kernels, each proven equal to the spec | **generated** for VGA2D, VGA3D, PGA2D, PGA3D, STA, STAP, CGA3D and CSTA (the last two in gax's null basis, through a proven change of basis): 7547 kernels, all proven (CSTA's in 1.6 h with `--csta`; `algebras/`) |
 | A, the API | PGA2D/3D, VGA3D, CGA3D, STA with geometric nouns and batch APIs | PGA3D (`api/pga3d.bend`): constructors, exp/log, normalize, sqrt, motions between elements; CGA3D (`api/cga3d.bend`): points, spheres, planes, motions; VGA3D rotors and PGA2D motions (`api/vga3d.bend`, `api/pga2d.bend`); STA (`api/sta.bend`): the Lorentz group, with boosts, rotations, and exp/log through complex Study numbers (`api/cx.bend`) |
 | rounding error | one theorem for every term, with and without underflow, and per kernel a law that each output is within h(k)·(kernel on \|inputs\|) of exact | **proven** (`proofs/err.bend`, `algebras/*/err.bend`: 7189 kernel laws, all checked); F32 measured within the bound ([docs/numerics.md](docs/numerics.md)); a proven run-time bound from computed quantities (`Err.track`, `api/track.bend`) |
 | numbers | exact `Int` and dyadic rationals, both proven ordered commutative rings (`proofs/int.bend`, `proofs/dyadic.bend`); double-F32 (`num/df32.bend`, reference arithmetic); rounding to p bits, truncating or to nearest (ties to even, ε = 2^−p), proven to meet the rounding model, so the error theorems hold outright for p-bit arithmetic (`proofs/round.bend`); binary32 rounding with gradual underflow, proven to meet the model with η = 2⁻¹⁵⁰, run by a fast spec proven equal to it (`proofs/fast.bend`) and matched bit for bit by native F32 on 146 829 sampled operations (`tests/f32_native.bend`); posits to come | Phase 3 |
@@ -25,7 +25,7 @@ decisions in [docs/design.md](docs/design.md).
 . tools/env.sh          # bend 2.0.35 and the project's clang on PATH
 tools/gate.sh           # proofs, generated kernels and their error laws, example tests, negative controls (CGA3D's proofs skipped; about 8 min)
 tools/gate.sh --full    # also CGA3D's kernel proofs (about an hour)
-tools/gate.sh --csta    # also CSTA's (estimated 10 hours; not yet run)
+tools/gate.sh --csta    # also CSTA's (1.6 hours)
 tools/regen.sh          # regenerate algebras/ from gen/specs.bend (--check: compare)
 bend tests/spec_pga3d.bend
 ```

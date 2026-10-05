@@ -332,12 +332,11 @@ doubling.
 **STAP and CSTA** (added 2026-10-04). STAP, projective spacetime
 R(3,1,1), goes through the diagonal path; its proofs check in 43 s and are
 in the default gate. CSTA, conformal spacetime R(4,2), goes through the
-null-basis path as CGA3D does. Its proofs are generated but **not yet
-checked in full**: probes take 5 s (vector product), 12 s (motor on
-vector) and 133 s (the 64×64 Multivector product). That puts the whole set
-at about 10 hours, almost all of it in the normaliser (ADR-004, "What it
-costs"). `tools/gate.sh --csta` runs it. Until then CSTA's kernels count
-as **exact-sample**: tests/csta.bend checks values over exact integers. For
+null-basis path as CGA3D does. Its proofs **check in full**: all 25 files,
+1.6 hours in sequence (2026-10-05; the slowest file 20 minutes), almost
+all of it in the normaliser (ADR-004, "What it costs"). Probes had
+predicted 10 hours. `tools/gate.sh --csta` runs it; the default gate
+skips it, and tests/csta.bend also checks values over exact integers. For
 STAP and CSTA, every result kind equals gax's (STAP 598 pairs, CSTA 1068).
 `tests/stap.bend` and `tests/csta.bend` check values. The five other
 algebras were compared again, all equal: VGA2D 200, VGA3D 505, PGA2D 763,
