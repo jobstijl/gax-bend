@@ -190,6 +190,15 @@ and it does.
     precision);
   - correctly rounded kernels through the exact accumulator;
   - double-F32 (Joldes–Muller–Popescu, formalised by Muller–Rideau).
+    **Checked exactly** against big dyadics (`tests/df32_exact.bend`):
+    Fast2Sum, TwoSum, Veltkamp's split and Dekker's product are exact on
+    20 000 pairs over 2⁻¹⁰⁰ to 2⁶⁰ (products outside the range Dekker
+    needs are skipped and counted). On 20 000 double-word pairs,
+    AccurateDWPlusDW stays within 3u² and DWTimesDW within 5u², the bound
+    Muller and Rideau proved in Coq. Those proofs are not redone in Bend:
+    they rest on rounding to nearest being nearest among all floats and on
+    Sterbenz-type grid lemmas, which our model (a relative bound per
+    operation) does not state. That is the next proof step for this item.
   All of them belong to the numbers package.
 - **Not planned:** stochastic arithmetic (CADNA, Verificarlo) as a
   product, since it estimates and does not bound, and proving

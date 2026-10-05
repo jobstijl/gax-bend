@@ -5,8 +5,9 @@
 # Joldes, Muller and Popescu's (ACM TOMS 44(2), 2017): AccurateDWPlusDW
 # (relative error below 3u², u = 2^-24) and DWTimesDW (below 5u²), whose
 # bounds Muller and Rideau formalised (TOMS 2022). Here they serve as the
-# reference that F32 kernels are measured against; their own proofs over
-# a software float come later (docs/numerics.md).
+# reference that F32 kernels are measured against. tests/df32_exact.bend
+# checks them exactly against big dyadics; the bounds' proofs are Muller
+# and Rideau's Coq development, not redone in Bend (docs/numerics.md).
 
 import Base
 
