@@ -213,10 +213,13 @@ and it does.
    nearest, ties to even, is proven with ε = 2^−p, IEEE's unit roundoff
    (`Rne.rel`; `tests/round_err.bend`). Gradual underflow is proven
    too: the format model |fl(x) − x| ≤ 2^−p|x| + 2^−(k+1) (`Fl.model`),
-   with binary32 at p = 24, k = 149. Still to do: a fast executable
-   version of the spec proven equal to it, and native F32 checked against
-   it bit for bit. The largest piece; recent Lean work (TorchLean's
-   IEEE32Exec, FloatLib, Tunnell's FP) is the closest reference.
+   with binary32 at p = 24, k = 149. **Spec + fast + link done:**
+   `src/fast.bend` runs the spec on native Nat operations and
+   `proofs/fast.bend` proves it equal (`L.f32`, `L.mul32`, `L.add32`).
+   Native F32 matches it bit for bit on 100 000 products (4 253
+   subnormal) and 46 829 sums (`tests/f32_native.bend`), within run-time
+   Nat's 2⁴⁸. Recent Lean work (TorchLean's IEEE32Exec, FloatLib,
+   Tunnell's FP) was the reference.
 5. Running bounds (**done**: `Err.track`, `api/track.bend`) and `Approx`;
    compensated and exact-accumulator kernels.
 

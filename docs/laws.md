@@ -186,6 +186,7 @@ concrete ordered ring for every theorem stated over one.
 | `Rne.rel` | for every dyadic z and p ≥ 1: \|rne_p(z) − z\| ≤ 2^(−p) \|z\| (round to nearest, ties to even: IEEE's significand rounding, unit roundoff u = 2^−p) | nothing | proof | `proofs/round.bend` |
 | `Rfix.rel` | rounding to the grid 2^−k (nearest, ties to even): \|rfix_k(z) − z\| ≤ 2^−(k+1) | nothing | proof | `proofs/round.bend` |
 | `Fl.model` | a format rounding to p bits in its normal range and to the grid 2^−k below: \|fl(x) − x\| ≤ 2^−p \|x\| + 2^−(k+1), whatever the range test decides. Binary32 is p = 24, k = 149: u = 2⁻²⁴, η = 2⁻¹⁵⁰ | nothing | proof | `proofs/round.bend` |
+| `L.f32`, `L.mul32`, `L.add32` | the fast binary32 rounding (`src/fast.bend`, Base's native Nat operations) equals `Dy.f32`; the fast product and sum, rounded, equal `Dy.f32` of the exact product and sum. So `Fl.model` holds for the executable spec | nothing | proof | `proofs/fast.bend` |
 
 Truncation halves the magnitude n until it is below 2^p, keeping n = q 2^s
 + r, 2^s = r + 1 + w_r and, once shifted, q = 2^(p−1) + w_q (`Inv`, true
@@ -214,9 +215,18 @@ the format meets the model of `Err.bound_u` with η = 2^−(k+1).
 `tests/f32_model.bend` instantiates `Err.bound_u` in such arithmetic for
 every format. That is the rounding-error theorem for binary32's rounding
 (p = 24, k = 149), with no hypothesis left. Overflow stays outside the
-model, so the theorem covers executions whose results are finite. What
-remains for native F32 is the link: that the hardware rounds this way. A
-differential test checks it on samples (numerics.md, step 4).
+model, so the theorem covers executions whose results are finite.
+
+The spec's halving, parity and comparison recurse, so it takes n steps at
+run time. `src/fast.bend` computes the same functions with Base's native
+Nat operations, and `proofs/fast.bend` proves each equal to its original,
+from four primitive links (`L.half`, `L.even`, `L.lt`, `L.monus`). The
+hardware link is measured, not proven: `tests/f32_native.bend` compares
+native `F32.mul` and `F32.add` with the executable spec, bit for bit. Over
+100 000 products, 4 253 of them subnormal, and 46 829 sums with
+cancellation, it finds no difference; a control with the low bit flipped
+mismatches on every operation. The samples stay within run-time Nat
+(2⁴⁸): exponents down to 2⁻⁸⁶, and sums of exponents at most 23 apart.
 
 ## Dual numbers (`src/dual.bend`, ADR-006)
 
