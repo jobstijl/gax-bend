@@ -222,6 +222,36 @@ def Tm.strip(t: N.Tm) -> N.Tm:
     case N.TNeg{a}:
       Tm.strip(a)
 
+# every field stripped
+def Tm.strips(ts: List<&2, N.Tm>) -> List<&2, N.Tm>:
+  match ts:
+    case Nil{}:
+      Nil{}
+    case t <> r:
+      Tm.strip(t) <> Tm.strips(r)
+
+# field by field, tracked: given h(k) <= 1, |f - e| (1 - h(k)) <= h(k) ah,
+# for computed fs, exact es, computed sizes ahs and depths ks
+def Err.Fields_t(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~pos: T -> Bool, ~abs: T -> T, ~eps: T,
+  fs: List<&2, T>, es: List<&2, T>, ahs: List<&2, T>, ks: List<&2, Nat>) -> Type:
+  match fs:
+    case Nil{}:
+      Unit
+    case f <> ft:
+      match es:
+        case Nil{}:
+          Unit
+        case e <> et:
+          match ahs:
+            case Nil{}:
+              Unit
+            case ah <> at:
+              match ks:
+                case Nil{}:
+                  Unit
+                case k <> kt:
+                  ({pos(add(one, neg(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, k)))) == True{} : Bool} -> {pos(add(mul(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, k), ah), neg(mul(abs(add(f, neg(e))), add(one, neg(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, k))))))) == True{} : Bool}) & Err.Fields_t(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, ft, et, at, kt)
+
 # |x| for every variable
 def Env.abs(~T: Data, ~abs: T -> T, env: List<&2, T>) -> List<&2, T>:
   match env:

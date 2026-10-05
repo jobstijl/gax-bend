@@ -285,7 +285,7 @@ reference first showed that minpos is pattern 1, 2^−192 (1 + 2^−20), not
 five saturating products, and was fixed. Above maxpos the format
 saturates, outside the model, as IEEE overflow is.
 
-## Error-free transformations (`proofs/eft.bend`, `proofs/eft2.bend`, ADR-009, ADR-010)
+## Error-free transformations (`proofs/eft.bend`, `proofs/eft2.bend`, `proofs/eft3.bend`, ADR-009, ADR-010)
 
 On integers rounded to p significant bits by the loop of `src/round.bend`
 (any p; a binary format's values are integers over 2^k):
@@ -304,7 +304,9 @@ On integers rounded to p significant bits by the loop of `src/round.bend`
 | `Split` | Veltkamp: g = RN(C a), d = RN(a - g), hi = RN(g + d), lo = RN(a - hi) with C = 2^s + 1 give lo = a - hi exactly, so hi + lo = a, at any precision and any s | a representable | proof | `proofs/eft2.bend` |
 | `V.hi.grid`, `V.ah.le`, `V.lo.le` | for a in [2^(p-1), 2^p) and 2^p = 2^r 2^s: hi = Ah 2^s with Ah <= 2^r, and 2 \|lo\| <= 2^s | a normalised | proof | `proofs/eft2.bend` |
 | `TwoProd` | Dekker: pi = RN(a b), e1 = RN(RN(ah bh) - pi), e2 = RN(e1 + RN(ah bl)), e3 = RN(e2 + RN(al bh)), e = RN(e3 + RN(al bl)) give pi + e = a b, for p = 2s, s >= 2 | a, b representable | proof | `proofs/eft2.bend` |
+| `TwoProd.odd` | the same at p = 2s − 1, s ≥ 3 (binary64: s = 27) | a, b representable | proof | `proofs/eft3.bend` |
 | `DRf.split`, `DTwoProd` | the same in dyadic arithmetic: the split in a binary format with gradual underflow; Dekker's product in binary rounding with no exponent bounds. `F32.Split` instantiates binary32 for every value, subnormals included; `F32.TwoProd` instantiates p = 24, s = 12, so binary32 barring underflow and overflow | A, B representable | proof | `proofs/eft2.bend`, `tests/df32_exact.bend` |
+| `DTwoProd.odd`; `F64.Split`, `F64.TwoProd` | the binary64 instances: the split with C = 2^27 + 1 for every binary64 value, subnormals included; Dekker's product at 53 bits, barring underflow and overflow | A, B representable | proof | `proofs/eft3.bend`, `tests/big_f64.bend` |
 
 The double-word bounds are checked exactly on samples
 (`tests/df32_exact.bend`), not proven.
@@ -382,6 +384,53 @@ plus D, the absolute term of `Err.bound_u`, for any η_a and η_m, so for
 binary32 with η = 2⁻¹⁵⁰ and b-posits with η = minpos. That is 7189 more.
 Both check in about four minutes (CSTA: 145 s, was 94 s without the
 underflow laws). Giving the law the wrong terms (operands swapped) fails.
+
+A fourth certificate, in `algebras/<name>/track.bend`, is the kernel's
+tracked bound (**proof**, `K.track`, from `Err.fields_t` and `Err.track`):
+for every output field i with h(kᵢ) ≤ 1,
+|K(fadd, fmul)(a, b)ᵢ − K(a, b)ᵢ| · (1 − h(kᵢ)) ≤ h(kᵢ) · Âᵢ, with
+Â = K(fadd, fmul, id)(|a|, |b|), the kernel itself at computed
+operations on |inputs|. It is the bound `api/track.bend` computes at run
+time, stated per kernel. 7189 laws, checked in 2 s (VGA2D) to 124 s
+(CSTA), in every gate tier.
+
+A fifth, in `algebras/<name>/lin.bend`, is linearity (gax family B,
+**proof**): K(a + a′, b) = K(a, b) + K(a′, b) and K(c·a, b) = c·K(a, b)
+(`lin_a`, `sc_a`), and the same in b (`lin_b`, `sc_b`), field by field,
+by the normaliser (`proofs/lin.bend`, `Lin.eqs`). Sums are field-wise
+(`A.plus`), since the add kernel can return a wider kind. Which operands
+get laws:
+- the products are linear in both operands;
+- add and sub are linear only in both at once, so they have none;
+- a sandwich is linear in what it moves (`lin_b`, `sc_b`), not in its
+  versor;
+- unary kernels are linear in their operand.
+
+22 806 laws. They check in 4 s (VGA2D) to 204 s (STAP); CGA3D's (about
+6 minutes) and CSTA's (about 30) run in the slow tiers. Negative
+controls: `tests/neg/lin_add_one_side.bend` (add linear in one operand)
+and `tests/neg/lin_transform_versor.bend` (a sandwich homogeneous in its
+versor) both fail.
+
+A sixth, in `algebras/<name>/approx.bend`, is the kernel on approximate
+inputs (**proof**, `K.approx`, from `Err.fields_a`, ADR-011): if the
+computed inputs a′, b′ are within da, db of exact a, b (field by field,
+`AP.Close`), then for every output field i,
+|K(fadd, fmul)(a′, b′)ᵢ − K(a, b)ᵢ| ≤ h(kᵢ) · A′ᵢ + Dᵢ, with A′ the
+absolute size at a′, b′ and D the kernel itself run in the size-deviation
+semiring (`AP.Ad`) on (|a|, da), (|b|, db). Outputs of one kernel are
+inputs of the next, so bounds compose through a chain of kernels. The
+term-level theorem is `Prop.bound` (|eval(env′, t) − eval(env, t)| ≤
+dev(t)) with `Err.approx` (`proofs/approx.bend`). 7189 laws.
+
+A seventh, in `algebras/<name>/cr.bend`, is correct rounding (**proof**,
+`K.cr`, from `CR.fields`, ADR-011): the kernel run on big dyadics with
+`src/cr.bend`'s operations and rounded once per output (`CR.f32`) is
+`Dy.f32` of the exact output, the kernel's terms evaluated over dyadics.
+`tests/cr_kernels.bend` runs it on 500 PGA3D motor products. Converting
+back to F32 (`CR.to_f32`) is exact on all 4000 outputs, and the result
+is never farther from the exact value than plain F32, which differs from
+it in 699. 7189 laws.
 
 | algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
 |---|---|---|---|---|---|

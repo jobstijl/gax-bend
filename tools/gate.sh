@@ -5,8 +5,12 @@
 #      write (tools/regen.sh --check),
 #   3. every generated algebras/*/proofs.bend checks (kernel == spec), every
 #      algebras/*/err.bend checks (each kernel's rounding-error bound), every
-#      algebras/*/equiv.bend checks (equivariance under versors), and
-#      every algebras/*/f32.bend checks,
+#      algebras/*/equiv.bend checks (equivariance under versors), every
+#      algebras/*/lin.bend checks (each kernel's linearity; CGA3D's and
+#      CSTA's only in the slow tiers), every algebras/*/track.bend,
+#      approx.bend and cr.bend checks (each kernel's tracked bound, its bound
+#      on approximate inputs, its correct rounding), and every
+#      algebras/*/f32.bend checks,
 #   4. every tests/*.bend and examples/*.bend prints exactly the `#|` lines
 #      it ends with,
 #   5. every negative control tests/neg/*.bend fails to check.
@@ -48,10 +52,10 @@ else
 fi
 
 skipped=0
-for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend algebras/*/equiv.bend; do
+for f in algebras/*/proofs.bend algebras/*/proofs_*.bend algebras/*/err.bend algebras/*/equiv.bend algebras/*/lin.bend algebras/*/track.bend algebras/*/approx.bend algebras/*/cr.bend; do
   [ -e "$f" ] || continue
   case "$f" in
-    */err.bend|*/equiv.bend) ;;
+    */err.bend|*/equiv.bend|*/track.bend|*/approx.bend|*/cr.bend) ;;
     "$SLOW"*) if [ -z "$full" ]; then skipped=$((skipped + 1)); continue; fi ;;
     "$SLOWER"*) if [ -z "$csta" ]; then skipped=$((skipped + 1)); continue; fi ;;
   esac

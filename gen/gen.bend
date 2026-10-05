@@ -497,7 +497,7 @@ def Kd.modules(+d: Nat, +dn: String, ks: List<&2, Kd>) -> List<&2, String>:
 
 # one generated kernel: its source, its proofs, and its multiplication count
 type Ker is Data:
-  Ker{src: String, prf: String, api: String, err: String, muls: Nat}
+  Ker{src: String, prf: String, api: String, err: String, lin: String, trk: String, apx: String, crl: String, muls: Nat}
 
 # a kind's general element over Tm as Bend source: K.<n>{N.TVar{i}, ...}
 def Kd.tvars(bls: List<&2, Bl>, +i: Nat) -> List<&2, String>:
@@ -577,6 +577,258 @@ def Ker.err(+name: String, +an: String, +abs: List<&2, Bl>, +un: Bool, +bn: Stri
     "        K.", cn, ".fields(N.Tm, ", o, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", tn, ")))\n\n",
     Ker.erru(name, an, abs, un, bn, bbs, cn)])
 
+# Linearity (proofs/lin.bend, gax family B): K(a + a', b) = K(a, b) +
+# K(a', b) and K(c a, b) = c K(a, b), per operand the kernel is linear in,
+# each proven by the normaliser (Lin.eqs). Add and sub are linear only in
+# both operands at once, a sandwich only in what it moves; they get the
+# laws that hold.
+
+def Op.lin(o: Op) -> Bool:
+  match o:
+    case OAdd{}:
+      False{}
+    case OSub{}:
+      False{}
+    case OGp{}:
+      True{}
+    case OWedge{}:
+      True{}
+    case OVee{}:
+      True{}
+    case OLc{}:
+      True{}
+    case ORc{}:
+      True{}
+    case ODot{}:
+      True{}
+    case OScalar{}:
+      True{}
+
+def Lin.ring() -> String:
+  "~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,\n  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),\n  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),\n  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg)"
+
+def Lin.ringa() -> String:
+  "~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn"
+
+def Lin.kv(+n: String, bls: List<&2, Bl>, +i: Nat) -> String:
+  "K." ++ n ++ "{" ++ String.join(Kd.tvars(bls, i), ", ") ++ "}"
+
+def Lin.kp(+n: String, bls: List<&2, Bl>, +pre: String) -> String:
+  "K." ++ n ++ "{" ++ String.join(Kd.fields(bls, pre, ""), ", ") ++ "}"
+
+def Lin.env(xs: List<&2, List<&2, String>>) -> String:
+  "[" ++ String.join(List.concat(&2, String, xs), ", ") ++ "]"
+
+# one law: its name suffix, parameters, the two sides over T and over Tm
+def Lin.law(+name: String, +sfx: String, +cn: String, +params: String, +lt: String, +rt: String, +mh: String, +pat: String, +env: String, +lm: String, +rm: String) -> String:
+  String.concat([
+    "def ", name, ".", sfx, "(", Lin.ring(), ",\n  ", params, ")\n",
+    "  -> {K.", cn, ".fields(T, ", lt, ")\n    == K.", cn, ".fields(T, ", rt, ") : List<&2, T>}:\n",
+    "  match ", mh, ":\n    case ", pat, ":\n",
+    "      LN.Lin.eqs(", Lin.ringa(), ", ", env, ",\n",
+    "        K.", cn, ".fields(N.Tm, ", lm, "),\n",
+    "        K.", cn, ".fields(N.Tm, ", rm, "),\n",
+    "        {==})\n"])
+
+def Lin.add(+n: String, +ops: String, +x: String, +y: String) -> String:
+  n ++ ".plus(" ++ ops ++ ", " ++ x ++ ", " ++ y ++ ")"
+
+def Lin.sums(xs: List<&2, String>, ys: List<&2, String>) -> List<&2, String>:
+  match xs ys:
+    case x <> xt y <> yt:
+      ("add(" ++ x ++ ", " ++ y ++ ")") <> Lin.sums(xt, yt)
+    case _ _:
+      Nil{}
+
+# a kind's field-wise sum (the add kernel can return a wider kind)
+def Lin.plus(k: Kd) -> String:
+  match k:
+    case Kd{+n, r, +bls}:
+      String.concat([
+        "def ", n, ".plus(~T: Data, ~add: T -> T -> T, a: K.", n, "<T>, b: K.", n, "<T>) -> K.", n, "<T>:\n",
+        "  match a b:\n    case K.", n, "{", String.join(Kd.fields(bls, "a_", ""), ", "), "} K.", n, "{", String.join(Kd.fields(bls, "b_", ""), ", "), "}:\n",
+        "      K.", n, "{", String.join(Lin.sums(Kd.fields(bls, "a_", ""), Kd.fields(bls, "b_", "")), ", "), "}\n"])
+
+def Lin.pluses(ks: List<&2, Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case k <> t:
+      Lin.plus(k) <> Lin.pluses(t)
+
+def Lin.sc(+n: String, +ty: String, +f: String, +x: String) -> String:
+  "K." ++ n ++ ".map(~" ++ ty ++ ", ~" ++ ty ++ ", ~(x => " ++ f ++ "), " ++ x ++ ")"
+
+# a kernel's linearity laws; o3: the kernel takes (~T, ~zero, ~neg) only
+# the kernel applied to x (and y, if binary)
+def Lin.call(+o: String, +ops: String, +un: Bool, +x: String, +y: String) -> String:
+  Bool.pick(String, un, o ++ "(" ++ ops ++ ", " ++ x ++ ")", o ++ "(" ++ ops ++ ", " ++ x ++ ", " ++ y ++ ")")
+
+def Ker.lin(+name: String, +an: String, +abs: List<&2, Bl>, +un: Bool, +bn: String, +bbs: List<&2, Bl>, +cn: String, +o3: Bool, +la: Bool, +lb: Bool) -> String:
+  +na = List.length(&2, Bl, abs)
+  +nb = List.length(&2, Bl, bbs)
+  +o = "O." ++ name
+  +a5 = {"~T, ~zero, ~add, ~mul, ~neg" : String}
+  +m5 = {"~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg" : String}
+  +p5 = {"~T, ~add" : String}
+  +pm = {"~N.Tm, ~N.Tm.add" : String}
+  +kT = Bool.pick(String, o3, "~T, ~zero, ~neg", a5)
+  +kM = Bool.pick(String, o3, "~N.Tm, ~N.TZero{}, ~N.Tm.neg", m5)
+  +af = Kd.fields(abs, "a_", "")
+  +cf = Kd.fields(abs, "c_", "")
+  +bf = Kd.fields(bbs, "b_", "")
+  +df = Kd.fields(bbs, "d_", "")
+  +pa = Lin.kp(an, abs, "a_")
+  +pb = Lin.kp(bn, bbs, "b_")
+  +bp = Bool.pick(String, un, "", ", b: K." ++ bn ++ "<T>")
+  +bpat = Bool.pick(String, un, "", " " ++ pb)
+  +bmh = Bool.pick(String, un, "", " b")
+  +bfs = Bool.pick(List<&2, String>, un, Nil{}, bf)
+  +sca = {"mul(c, x)" : String}
+  +scm = {"N.TMul{N.TVar{0n}, x}" : String}
+  +lina = Bool.pick(String, la, Lin.law(name, "lin_a", cn, "a: K." ++ an ++ "<T>, a2: K." ++ an ++ "<T>" ++ bp,
+      Lin.call(o, kT, un, Lin.add(an, p5, "a", "a2"), "b"), Lin.add(cn, p5, Lin.call(o, kT, un, "a", "b"), Lin.call(o, kT, un, "a2", "b")),
+      "a a2" ++ bmh, pa ++ " " ++ Lin.kp(an, abs, "c_") ++ bpat, Lin.env([af, cf, bfs]),
+      Lin.call(o, kM, un, Lin.add(an, pm, Lin.kv(an, abs, 0n), Lin.kv(an, abs, na)), Lin.kv(bn, bbs, Nat.add(na, na))),
+      Lin.add(cn, pm, Lin.call(o, kM, un, Lin.kv(an, abs, 0n), Lin.kv(bn, bbs, Nat.add(na, na))), Lin.call(o, kM, un, Lin.kv(an, abs, na), Lin.kv(bn, bbs, Nat.add(na, na))))) ++ "\n" ++
+    Lin.law(name, "sc_a", cn, "c: T, a: K." ++ an ++ "<T>" ++ bp,
+      Lin.call(o, kT, un, Lin.sc(an, "T", sca, "a"), "b"), Lin.sc(cn, "T", sca, Lin.call(o, kT, un, "a", "b")),
+      "a" ++ bmh, pa ++ bpat, Lin.env([["c"], af, bfs]),
+      Lin.call(o, kM, un, Lin.sc(an, "N.Tm", scm, Lin.kv(an, abs, 1n)), Lin.kv(bn, bbs, 1n+na)),
+      Lin.sc(cn, "N.Tm", scm, Lin.call(o, kM, un, Lin.kv(an, abs, 1n), Lin.kv(bn, bbs, 1n+na)))), "")
+  +linb = Bool.pick(String, Bool.and(lb, Bool.not(un)), Lin.law(name, "lin_b", cn, "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>, b2: K." ++ bn ++ "<T>",
+      Lin.call(o, kT, un, "a", Lin.add(bn, p5, "b", "b2")), Lin.add(cn, p5, Lin.call(o, kT, un, "a", "b"), Lin.call(o, kT, un, "a", "b2")),
+      "a b b2", pa ++ " " ++ pb ++ " " ++ Lin.kp(bn, bbs, "d_"), Lin.env([af, bf, df]),
+      Lin.call(o, kM, un, Lin.kv(an, abs, 0n), Lin.add(bn, pm, Lin.kv(bn, bbs, na), Lin.kv(bn, bbs, Nat.add(na, nb)))),
+      Lin.add(cn, pm, Lin.call(o, kM, un, Lin.kv(an, abs, 0n), Lin.kv(bn, bbs, na)), Lin.call(o, kM, un, Lin.kv(an, abs, 0n), Lin.kv(bn, bbs, Nat.add(na, nb))))) ++ "\n" ++
+    Lin.law(name, "sc_b", cn, "c: T, a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>",
+      Lin.call(o, kT, un, "a", Lin.sc(bn, "T", sca, "b")), Lin.sc(cn, "T", sca, Lin.call(o, kT, un, "a", "b")),
+      "a b", pa ++ " " ++ pb, Lin.env([["c"], af, bf]),
+      Lin.call(o, kM, un, Lin.kv(an, abs, 1n), Lin.sc(bn, "N.Tm", scm, Lin.kv(bn, bbs, 1n+na))),
+      Lin.sc(cn, "N.Tm", scm, Lin.call(o, kM, un, Lin.kv(an, abs, 1n), Lin.kv(bn, bbs, 1n+na)))), "")
+  Bool.pick(String, Bool.and(la, Bool.and(lb, Bool.not(un))), lina ++ "\n" ++ linb, lina ++ linb)
+
+# a kernel's tracked law (proofs/err.bend, Err.fields_t): every output
+# field, given its h(k) <= 1, has |computed - exact| (1 - h(k)) <= h(k) A^,
+# with A^ the kernel itself run with fadd and fmul on |inputs|, neg the
+# identity: the bound api/track.bend computes at run time
+def Ker.track(+name: String, +an: String, +abs: List<&2, Bl>, +un: Bool, +bn: String, +bbs: List<&2, Bl>, +cn: String) -> String:
+  +na = List.length(&2, Bl, abs)
+  +args = Bool.pick(String, un, "a: K." ++ an ++ "<T>", "a: K." ++ an ++ "<T>, b: K." ++ bn ++ "<T>")
+  +argn = Bool.pick(String, un, "a", "a, b")
+  +absa = "K." ++ an ++ ".map(~T, ~T, ~abs, a)"
+  +absn = Bool.pick(String, un, absa, absa ++ ", K." ++ bn ++ ".map(~T, ~T, ~abs, b)")
+  +za = "K." ++ an ++ "{" ++ String.join(Kd.zeros(abs), ", ") ++ "}"
+  +zn = Bool.pick(String, un, za, za ++ ", K." ++ bn ++ "{" ++ String.join(Kd.zeros(bbs), ", ") ++ "}")
+  +ta = "K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "}"
+  +tn = Bool.pick(String, un, ta, ta ++ ", K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "}")
+  +pa = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "}"
+  +pat = Bool.pick(String, un, pa, pa ++ " K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "}")
+  +mh = Bool.pick(String, un, "a", "a b")
+  +env = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "a_", ""), Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "b_", ""))), ", ") ++ "]"
+  +o = "O." ++ name
+  String.concat([
+    "def ", name, ".track(", ER.Er.ALL(), ",\n  ", ER.Er.RNDH(), ",\n  ", ER.Er.TRH(), ",\n  ", args, ")\n",
+    "  -> E.Err.Fields_t(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~fadd, ~fmul, ~neg, ", argn, ")),\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~add, ~mul, ~neg, ", argn, ")),\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~fadd, ~fmul, ~(x => x), ", absn, ")),\n",
+    "    K.", cn, ".fields(Nat, ", o, "(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), ", zn, "))):\n",
+    "  match ", mh, ":\n    case ", pat, ":\n",
+    "      ER.Err.fields_t(", ER.Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ~abs_abs, ~le_abs, ", env, ",\n",
+    "        K.", cn, ".fields(N.Tm, ", o, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", tn, ")))\n"])
+
+# a kernel's approximation law (proofs/approx.bend, Err.fields_a): run with
+# fadd and fmul on inputs a2 within da of a (and b2 within db of b), every
+# output field is within h(k) A' + D of the exact kernel at a, b: A' the
+# size at the moved inputs, D the kernel run in the size-deviation
+# semiring on (|a|, da), (|b|, db)
+def Ker.approx(+name: String, +an: String, +abs: List<&2, Bl>, +un: Bool, +bn: String, +bbs: List<&2, Bl>, +cn: String) -> String:
+  +na = List.length(&2, Bl, abs)
+  +o = "O." ++ name
+  +args = Bool.pick(String, un, "a2: K." ++ an ++ "<T>, a: K." ++ an ++ "<T>, da: K." ++ an ++ "<T>",
+    "a2: K." ++ an ++ "<T>, a: K." ++ an ++ "<T>, da: K." ++ an ++ "<T>, b2: K." ++ bn ++ "<T>, b: K." ++ bn ++ "<T>, db: K." ++ bn ++ "<T>")
+  +l2 = Bool.pick(String, un, "K." ++ an ++ ".fields(T, a2)", "List.append(&2, T, K." ++ an ++ ".fields(T, a2), K." ++ bn ++ ".fields(T, b2))")
+  +l1 = Bool.pick(String, un, "K." ++ an ++ ".fields(T, a)", "List.append(&2, T, K." ++ an ++ ".fields(T, a), K." ++ bn ++ ".fields(T, b))")
+  +ld = Bool.pick(String, un, "K." ++ an ++ ".fields(T, da)", "List.append(&2, T, K." ++ an ++ ".fields(T, da), K." ++ bn ++ ".fields(T, db))")
+  +a2n = Bool.pick(String, un, "a2", "a2, b2")
+  +a1n = Bool.pick(String, un, "a", "a, b")
+  +absa = "K." ++ an ++ ".map(~T, ~T, ~abs, a2)"
+  +absn = Bool.pick(String, un, absa, absa ++ ", K." ++ bn ++ ".map(~T, ~T, ~abs, b2)")
+  +pra = an ++ ".pair(~T, ~abs, a, da)"
+  +prn = Bool.pick(String, un, pra, pra ++ ", " ++ bn ++ ".pair(~T, ~abs, b, db)")
+  +za = "K." ++ an ++ "{" ++ String.join(Kd.zeros(abs), ", ") ++ "}"
+  +zn = Bool.pick(String, un, za, za ++ ", K." ++ bn ++ "{" ++ String.join(Kd.zeros(bbs), ", ") ++ "}")
+  +ta = "K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "}"
+  +tn = Bool.pick(String, un, ta, ta ++ ", K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "}")
+  +pa = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "p_", ""), ", ") ++ "} K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "} K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "q_", ""), ", ") ++ "}"
+  +pb = " K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "r_", ""), ", ") ++ "} K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "} K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "s_", ""), ", ") ++ "}"
+  +pat = Bool.pick(String, un, pa, pa ++ pb)
+  +mh = Bool.pick(String, un, "a2 a da", "a2 a da b2 b db")
+  +e2 = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "p_", ""), Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "r_", ""))), ", ") ++ "]"
+  +e1 = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "a_", ""), Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "b_", ""))), ", ") ++ "]"
+  +ed = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "q_", ""), Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "s_", ""))), ", ") ++ "]"
+  String.concat([
+    "def ", name, ".approx(", ER.Er.ALL(), ",\n  ", ER.Er.RNDH(), ",\n  ", args, ",\n",
+    "  +hc: {AP.Close(~T, ~add, ~neg, ~abs, ~pos, ", l2, ", ", l1, ", ", ld, ") == True{} : Bool})\n",
+    "  -> AP.Err.Fields_a(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~fadd, ~fmul, ~neg, ", a2n, ")),\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~add, ~mul, ~neg, ", a1n, ")),\n",
+    "    K.", cn, ".fields(T, ", o, "(~T, ~zero, ~add, ~mul, ~(x => x), ", absn, ")),\n",
+    "    K.", cn, ".fields(T, K.", cn, ".map(~AP.Ad<T>, ~T, ~(x => AP.Ad.d(T, x)), ", o, "(~AP.Ad<T>, ~AP.Ad.zero(~T, ~zero), ~(x => y => AP.Ad.add(~T, ~add, x, y)), ~(x => y => AP.Ad.mul(~T, ~add, ~mul, x, y)), ~(x => x), ", prn, "))),\n",
+    "    K.", cn, ".fields(Nat, ", o, "(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), ", zn, "))):\n",
+    "  match ", mh, ":\n    case ", pat, ":\n",
+    "      AR.Err.fields_a(", ER.Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ", e2, ", ", e1, ", ", ed, ", hc,\n",
+    "        K.", cn, ".fields(N.Tm, ", o, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", tn, ")))\n"])
+
+def Apx.ads(xs: List<&2, String>, ds: List<&2, String>) -> List<&2, String>:
+  match xs ds:
+    case x <> xt d <> dt:
+      ("AP.Ad{abs(" ++ x ++ "), " ++ d ++ "}") <> Apx.ads(xt, dt)
+    case _ _:
+      Nil{}
+
+# a kind's (|x|, d) pairs, the size-deviation inputs
+def Apx.pair(k: Kd) -> String:
+  match k:
+    case Kd{+n, r, +bls}:
+      String.concat([
+        "def ", n, ".pair(~T: Data, ~abs: T -> T, x: K.", n, "<T>, d: K.", n, "<T>) -> K.", n, "<AP.Ad<T>>:\n",
+        "  match x d:\n    case K.", n, "{", String.join(Kd.fields(bls, "x_", ""), ", "), "} K.", n, "{", String.join(Kd.fields(bls, "d_", ""), ", "), "}:\n",
+        "      K.", n, "{", String.join(Apx.ads(Kd.fields(bls, "x_", ""), Kd.fields(bls, "d_", "")), ", "), "}\n"])
+
+def Apx.pairs(ks: List<&2, Kd>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case k <> t:
+      Apx.pair(k) <> Apx.pairs(t)
+
+# a kernel's correct-rounding law (proofs/cr.bend, CR.fields): run on big
+# dyadics with the CR operations and rounded once per output, it gives
+# Dy.f32 of the exact output, field by field
+def Ker.cr(+name: String, +an: String, +abs: List<&2, Bl>, +un: Bool, +bn: String, +bbs: List<&2, Bl>, +cn: String) -> String:
+  +na = List.length(&2, Bl, abs)
+  +o = "O." ++ name
+  +args = Bool.pick(String, un, "a: K." ++ an ++ "<B.Bd>", "a: K." ++ an ++ "<B.Bd>, b: K." ++ bn ++ "<B.Bd>")
+  +argn = Bool.pick(String, un, "a", "a, b")
+  +ls = Bool.pick(String, un, "K." ++ an ++ ".fields(B.Bd, a)", "List.append(&2, B.Bd, K." ++ an ++ ".fields(B.Bd, a), K." ++ bn ++ ".fields(B.Bd, b))")
+  +va = "K." ++ an ++ ".map(~B.Bd, ~D.Dy, ~C.CR.val, a)"
+  +vn = Bool.pick(String, un, va, va ++ ", K." ++ bn ++ ".map(~B.Bd, ~D.Dy, ~C.CR.val, b)")
+  +ta = "K." ++ an ++ "{" ++ String.join(Kd.tvars(abs, 0n), ", ") ++ "}"
+  +tn = Bool.pick(String, un, ta, ta ++ ", K." ++ bn ++ "{" ++ String.join(Kd.tvars(bbs, na), ", ") ++ "}")
+  +pa = "K." ++ an ++ "{" ++ String.join(Kd.fields(abs, "a_", ""), ", ") ++ "}"
+  +pat = Bool.pick(String, un, pa, pa ++ " K." ++ bn ++ "{" ++ String.join(Kd.fields(bbs, "b_", ""), ", ") ++ "}")
+  +mh = Bool.pick(String, un, "a", "a b")
+  +env = "[" ++ String.join(List.append(&2, String, Kd.fields(abs, "a_", ""), Bool.pick(List<&2, String>, un, Nil{}, Kd.fields(bbs, "b_", ""))), ", ") ++ "]"
+  String.concat([
+    "def ", name, ".cr(", args, ", +ok: {B.Bd.oks(C.CR.h(), ", ls, ") == True{} : Bool})\n",
+    "  -> {B.Bd.vals(C.CR.h(), K.", cn, ".fields(B.Bd, K.", cn, ".map(~B.Bd, ~B.Bd, ~C.CR.f32, ", o, "(~B.Bd, ~B.Bd.zero(), ~C.CR.add, ~C.CR.mul, ~B.Bd.neg, ", argn, "))))\n",
+    "    == CP.Dy.evs(B.Bd.vals(C.CR.h(), ", ls, "), K.", cn, ".fields(N.Tm, ", o, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", tn, "))) : List<&2, D.Dy>}:\n",
+    "  match ", mh, ":\n    case ", pat, ":\n",
+    "      CP.CR.fields(C.CR.h1(), ", env, ", ok,\n",
+    "        K.", cn, ".fields(N.Tm, ", o, "(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, ", tn, ")))\n"])
+
 def Ker.fields(+d: Nat, bls: List<&2, Bl>, +r: S.MV(E.Expr, d)) -> List<&2, E.Expr>:
   match bls:
     case Nil{}:
@@ -624,6 +876,10 @@ def Ker.text(+dn: String, +pre: String, +o: Op, ka: Kd, kb: Kd, kc: Kd, es: List
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
         Ker.err(name, an, abs, False{}, bn, bbs, cn),
+        Ker.lin(name, an, abs, False{}, bn, bbs, cn, False{}, Op.lin(o), Op.lin(o)),
+        Ker.track(name, an, abs, False{}, bn, bbs, cn),
+        Ker.approx(name, an, abs, False{}, bn, bbs, cn),
+        Ker.cr(name, an, abs, False{}, bn, bbs, cn),
         Ker.muls(es2)}
 
 def Ker.pick.go(+d: Nat, +dn: String, +pre: String, o: Op, ka: Kd, kb: Kd, kc: Kd, +r: S.MV(E.Expr, d)) -> Maybe<&2, Ker>:
@@ -733,6 +989,10 @@ def Ker1.text(+dn: String, +tr: String, +o: Op1, ka: Kd, kc: Kd, es: List<&2, E.
         String.concat([
           "def ", name, "(a: K.", an, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.neg, a)\n"]),
+        "",
+        Ker.lin(name, an, abs, True{}, "", Nil{}, cn, True{}, True{}, False{}),
+        "",
+        "",
         "",
         Ker.muls(es2)}
 
@@ -1246,6 +1506,10 @@ def Sw.text(+dn: String, +pre: String, +names: List<&2, String>, ka: Kd, kb: Kd,
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n", Pp.api(pp)]),
         Ker.err(name, an, abs, False{}, bn, bbs, cn),
+        Ker.lin(name, an, abs, False{}, bn, bbs, cn, False{}, False{}, True{}),
+        Ker.track(name, an, abs, False{}, bn, bbs, cn),
+        Ker.approx(name, an, abs, False{}, bn, bbs, cn),
+        Ker.cr(name, an, abs, False{}, bn, bbs, cn),
         muls}
 
 # the product lets in front, their multiplications counted
@@ -1499,6 +1763,10 @@ def Hf.text(+dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd
           "def ", name, "(a: K.", an, "<F32>, b: K.", bn, "<F32>) -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, a, b)\n"]),
         Ker.err(name, an, abs, False{}, bn, bbs, cn),
+        Ker.lin(name, an, abs, False{}, bn, bbs, cn, False{}, True{}, True{}),
+        Ker.track(name, an, abs, False{}, bn, bbs, cn),
+        Ker.approx(name, an, abs, False{}, bn, bbs, cn),
+        Ker.cr(name, an, abs, False{}, bn, bbs, cn),
         Ker.muls(es2)}
 
 def Hf.pick.go(+d: Nat, +dn: String, +pre: String, +names: List<&2, String>, +o: HOp, ka: Kd, kb: Kd, kc: Kd, +rt: S.MV(N.Tm, d), +all: List<&2, List<&2, Bool>>) -> Maybe<&2, Ker>:
@@ -1941,6 +2209,29 @@ def NK.unary(nk: NK) -> Bool:
     case NKS{}:
       False{}
 
+# the operands each kind of kernel is linear in
+def NK.la(nk: NK) -> Bool:
+  match nk:
+    case NKB{o}:
+      Op.lin(o)
+    case NKH{o}:
+      True{}
+    case NKU{o}:
+      True{}
+    case NKS{}:
+      False{}
+
+def NK.lb(nk: NK) -> Bool:
+  match nk:
+    case NKB{o}:
+      Op.lin(o)
+    case NKH{o}:
+      True{}
+    case NKU{o}:
+      False{}
+    case NKS{}:
+      True{}
+
 def NK.name(nk: NK, +an: String, +bn: String) -> String:
   match nk:
     case NKB{o}:
@@ -2206,6 +2497,10 @@ def Nl.text(+dn: String, +pre: String, +nk: NK, ka: Kd, kb: Kd, kc: Kd, +mn: Str
           ") -> K.", cn, "<F32>:\n",
           "  O.", name, "(~F32, ~0.0, ~F32.add, ~F32.mul, ~F32.neg, ", argn, ")\n", Pp.api(pp)]),
         Ker.err(name, an, abs, un, bn, bbs, cn),
+        Ker.lin(name, an, abs, un, bn, bbs, cn, False{}, NK.la(nk), NK.lb(nk)),
+        Ker.track(name, an, abs, un, bn, bbs, cn),
+        Ker.approx(name, an, abs, un, bn, bbs, cn),
+        Ker.cr(name, an, abs, un, bn, bbs, cn),
         muls}
 
 # the law that a kind's projection inverts its embedding: the change of
@@ -2395,21 +2690,21 @@ def Ker.srcs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, e, m} <> t:
+    case Ker{s, p, a, e, l, t2, x2, c2, m} <> t:
       s <> Ker.srcs(t)
 
 def Ker.prfs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, e, m} <> t:
+    case Ker{s, p, a, e, l, t2, x2, c2, m} <> t:
       p <> Ker.prfs(t)
 
 def Ker.apis(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, e, m} <> t:
+    case Ker{s, p, a, e, l, t2, x2, c2, m} <> t:
       a <> Ker.apis(t)
 
 def Str.some(s: String) -> Bool:
@@ -2430,21 +2725,49 @@ def Ker.errs(ks: List<&2, Ker>) -> List<&2, String>:
   match ks:
     case Nil{}:
       Nil{}
-    case Ker{s, p, a, +e, m} <> t:
+    case Ker{s, p, a, +e, l, t2, x2, c2, m} <> t:
       Ker.errs.put(e, Str.some(e), Ker.errs(t))
+
+def Ker.lins(ks: List<&2, Ker>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case Ker{s, p, a, e, +l, t2, x2, c2, m} <> t:
+      Ker.errs.put(l, Str.some(l), Ker.lins(t))
+
+def Ker.trks(ks: List<&2, Ker>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case Ker{s, p, a, e, l, +t2, x2, c2, m} <> t:
+      Ker.errs.put(t2, Str.some(t2), Ker.trks(t))
+
+def Ker.apxs(ks: List<&2, Ker>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case Ker{s, p, a, e, l, t2, +x2, c2, m} <> t:
+      Ker.errs.put(x2, Str.some(x2), Ker.apxs(t))
+
+def Ker.crs(ks: List<&2, Ker>) -> List<&2, String>:
+  match ks:
+    case Nil{}:
+      Nil{}
+    case Ker{s, p, a, e, l, t2, x2, +c2, m} <> t:
+      Ker.errs.put(c2, Str.some(c2), Ker.crs(t))
 
 def Ker.total(ks: List<&2, Ker>) -> Nat:
   match ks:
     case Nil{}:
       0n
-    case Ker{s, p, a, e, m} <> t:
+    case Ker{s, p, a, e, l, t2, x2, c2, m} <> t:
       Nat.add(m, Ker.total(t))
 
 # the generated modules of one algebra, and a summary line
 # the generated modules of one algebra: kinds, kernels, proofs (more proof
 # modules, proofs_2.bend and on, when the proofs are split), F32, summary
 type Out is Data:
-  Out{kinds: String, ops: String, proofs: String, more: List<&2, String>, f32: String, err: String, summary: String}
+  Out{kinds: String, ops: String, proofs: String, more: List<&2, String>, f32: String, err: String, lin: String, track: String, approx: String, cr: String, summary: String}
 
 # the kernels in groups of n (a large algebra's proofs, checked part by part)
 def Ker.chunks(f: Nat, ks: List<&2, Ker>, +n: Nat) -> List<&2, List<&2, Ker>>:
@@ -2471,6 +2794,18 @@ def Gen.header(name: String) -> String:
 def Err.hdr(name: String) -> String:
   Gen.header(name) ++ "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../src/err.bend as E\nimport ../../proofs/err.bend as ER\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n# Every kernel's rounding error: each output field is within h(k) times its\n# absolute size of the exact value (proofs/err.bend, Err.fields), and with\n# underflow, within that plus D (name.erru, Err.fields_u). Unary kernels\n# that only negate are exact and have no law.\n\n"
 
+def Crl.hdr(name: String) -> String:
+  Gen.header(name) ++ "import ../../src/norm.bend as N\nimport ../../src/dyadic.bend as D\nimport ../../src/round.bend as RD\nimport ../../src/big.bend as B\nimport ../../src/cr.bend as C\nimport ../../proofs/cr.bend as CP\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n# Every kernel correctly rounded (proofs/cr.bend, CR.fields): run on big\n# dyadics with src/cr.bend's operations and rounded once per output, it\n# gives RD.Dy.f32 of the exact output, the kernel's terms evaluated over\n# dyadics (CP.Dy.evs). Unary kernels that only negate have no law.\n\n"
+
+def Apx.hdr(name: String) -> String:
+  Gen.header(name) ++ "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../src/err.bend as E\nimport ../../src/approx.bend as AP\nimport ../../proofs/approx.bend as AR\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n# Every kernel on approximate inputs (proofs/approx.bend, Err.fields_a): run\n# with fadd and fmul on inputs within d of exact ones, each output field is\n# within h(k) A' + D of the exact kernel, A' the size at the computed inputs\n# and D the kernel run in the size-deviation semiring (src/approx.bend).\n# Unary kernels that only negate have no law.\n\n"
+
+def Trk.hdr(name: String) -> String:
+  Gen.header(name) ++ "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../src/err.bend as E\nimport ../../proofs/err.bend as ER\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n# Every kernel's tracked bound (proofs/err.bend, Err.fields_t, Err.track):\n# each output field, given h(k) <= 1, has |computed - exact| (1 - h(k)) <=\n# h(k) A^, A^ the kernel run with fadd and fmul on |inputs| with neg the\n# identity, so a bound from computed quantities (api/track.bend). Unary\n# kernels that only negate are exact and have no law.\n\n"
+
+def Lin.hdr(name: String) -> String:
+  Gen.header(name) ++ "import ../../src/ring.bend as R\nimport ../../src/norm.bend as N\nimport ../../proofs/lin.bend as LN\nimport ./kinds.bend as K\nimport ./ops.bend as O\n\n# Every kernel is linear in each operand it is linear in (proofs/lin.bend,\n# gax family B): K(a + a', b) = K(a, b) + K(a', b), K(c a, b) = c K(a, b),\n# by the normaliser. Add and sub are linear in both operands at once only,\n# a sandwich only in what it moves.\n\n"
+
 def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&2, Kd>, +kers: List<&2, Ker>) -> Out:
   +dn = Nat.show(d) ++ "n"
   Out{
@@ -2482,6 +2817,10 @@ def Gen.out.go(+name: String, +pre: String, +d: Nat, +sig: S.Sig(d), +ks: List<&
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
       "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
     Err.hdr(name) ++ String.join(Ker.errs(kers), "\n"),
+    Lin.hdr(name) ++ "# Field-wise sums\n\n" ++ String.join(Lin.pluses(ks), "\n") ++ "\n# The laws\n\n" ++ String.join(Ker.lins(kers), "\n"),
+    Trk.hdr(name) ++ String.join(Ker.trks(kers), "\n"),
+    Apx.hdr(name) ++ "# Size-deviation inputs\n\n" ++ String.join(Apx.pairs(ks), "\n") ++ "\n# The laws\n\n" ++ String.join(Ker.apxs(kers), "\n"),
+    Crl.hdr(name) ++ String.join(Ker.crs(kers), "\n"),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds, ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 
@@ -2515,6 +2854,10 @@ def Nl.out(+name: String, +pre: String, +d: Nat, +gens: List<&2, String>, +sig: 
     String.concat([Gen.header(name), "import ./kinds.bend as K\nimport ./ops.bend as O\n\n",
       "# Every kernel at F32: the runtime instantiation (ADR-002).\n\n", String.join(Ker.apis(kers), "\n")]),
     Err.hdr(name) ++ String.join(Ker.errs(kers), "\n"),
+    Lin.hdr(name) ++ "# Field-wise sums\n\n" ++ String.join(Lin.pluses(ks), "\n") ++ "\n# The laws\n\n" ++ String.join(Ker.lins(kers), "\n"),
+    Trk.hdr(name) ++ String.join(Ker.trks(kers), "\n"),
+    Apx.hdr(name) ++ "# Size-deviation inputs\n\n" ++ String.join(Apx.pairs(ks), "\n") ++ "\n# The laws\n\n" ++ String.join(Ker.apxs(kers), "\n"),
+    Crl.hdr(name) ++ String.join(Ker.crs(kers), "\n"),
     String.concat([name, ": ", Nat.show(List.length(&2, Kd, ks)), " kinds (null basis), ", Nat.show(List.length(&2, Ker, kers)),
       " kernels, ", Nat.show(Ker.total(kers)), " multiplications"])}
 

@@ -993,5 +993,20 @@ def Track.size(", Er.ALL(), ", ", Er.RNDH(), ", ~abs_abs: E.Ord.AbsAbs(T, abs), 
   Err.bound(", Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ", ae, ", ", st, ")
 "])
 
+# every field of a kernel at once, tracked (algebras/*/track.bend)
+def Er.fields_t() -> String:
+  D.cat(["
+# every field of a kernel at once, tracked: each field's bound from computed
+# quantities, given its h(k) <= 1
+def Err.fields_t(", Er.ALL(), ", ", Er.RNDH(), ", ", Er.TRH(), ", ", Er.ENV(), ", ts: List<&2, N.Tm>)
+  -> E.Err.Fields_t(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, E.Tm.evals(~T, ~zero, ~fadd, ~fmul, ~neg, env, ts), E.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, ts),
+    E.Tm.evals(~T, ~zero, ~fadd, ~fmul, ~neg, E.Env.abs(~T, ~abs, env), E.Tm.strips(ts)), E.Tm.ks(ts)):
+  match ts:
+    case Nil{}:
+      Unit{}
+    case +t <> r:
+      (hl => Err.track(", Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ~abs_abs, ~le_abs, env, t, hl), Err.fields_t(", Er.A(), ", ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, ~abs_abs, ~le_abs, env, r))
+"])
+
 def Er.text() -> String:
-  D.cat([Er.order(), Er.hs(), Er.terms(), Er.bound(), Er.dpos(), Er.bound_u(), Er.fields(), Er.strips(), Er.tsize(), Er.track()])
+  D.cat([Er.order(), Er.hs(), Er.terms(), Er.bound(), Er.dpos(), Er.bound_u(), Er.fields(), Er.strips(), Er.tsize(), Er.track(), Er.fields_t()])

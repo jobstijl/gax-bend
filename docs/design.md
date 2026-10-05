@@ -32,7 +32,7 @@ stands. Six amendments follow from the measurements.
 - `sig` is an ordinary (runtime) argument, not a `~` one. A `~` argument cannot be matched, and a type-level def applied to it stays stuck (Q3, Q2c).
 - Laws are proved for every signature by induction on `sig`. The pattern passes bend2 and `--verdict` (Q10: `MV.add` commutativity in 0.25 s).
 - The tree's metric is diagonal. CGA's null basis comes in through a proven change of basis, as in the brief.
-- **Open for Phase 1: canonical zero.** e0·e0 evaluates to `N{Z{}, Z{}}`, not `Z{}`, and equality is intensional (Q3). Two options:
+- **Open for Phase 1: canonical zero** (closed by A3 below: products build levels through a collapsing constructor). e0·e0 evaluates to `N{Z{}, Z{}}`, not `Z{}`, and equality is intensional (Q3). Two options:
   - (a) state every law up to a canonicalising `MV.canon`;
   - (b) build every tree through a collapsing smart constructor.
 
@@ -501,7 +501,8 @@ unchanged, because they are generic in T.
 - Slot lists are not types: there is no `B<(A,)>` kind, no typed
   composition, and the multicategory laws (gax family A) are not stated.
   Linearity (family B) is checked on values (`tests/dual_map.bend`: matrix
-  times point equals the kernel), not yet proven per kernel.
+  times point equals the kernel) and proven per kernel
+  (`algebras/*/lin.bend`, 22 806 laws).
 - Lifting (family C) holds by construction: the dual-number instance of a
   kernel is the same code.
 
@@ -623,7 +624,7 @@ two-case corollary.
   shows both exact before the switch); its proof has more cases than
   Fast2Sum's and buys nothing on this target.
 
-## ADR-010: Dekker's product is proven for even precision, without underflow
+## ADR-010: Dekker's product is proven at every precision from 4 bits, without underflow
 
 **Status:** accepted, 2026-10-05.
 
@@ -653,9 +654,10 @@ the integers rounded to p bits, as `proofs/eft.bend` does for Fast2Sum.
 
 ### What it costs
 
-- **Even p only.** Binary64 (p = 53) is not covered. Dekker's product
-  is exact there too in radix 2 (Boldo, 2006), but that is a separate
-  argument.
+- **Odd p is a second proof.** `proofs/eft3.bend` covers p = 2s − 1 with
+  s ≥ 3, binary64 included (s = 27): the split lemmas carry over with
+  2^p = 2^(s−1) 2^s, and the bounds get their own certificates (`PolyO1`,
+  `PolyO2`). Together the two cover every precision from 4 bits.
 - **The product's theorem excludes underflow.** With gradual underflow,
   the error of a b can fall below the subnormal grid, and then e is not
   exact. The native test skips those products (2 568 of 20 000 in
@@ -672,3 +674,62 @@ the integers rounded to p bits, as `proofs/eft.bend` does for Fast2Sum.
   (lex order) found valid certificates, but with up to about 60 relation
   copies for S·S >= 4S. Hand-chosen multipliers, checked by sympy before
   Bend sees them, need 4.
+
+## ADR-011: Bounds on approximate inputs, and correctly rounded kernels, per kernel
+
+**Status:** accepted, 2026-10-05. Answers the numerics plan's `Approx`
+type and its correctly rounded kernels.
+
+### Decision
+
+- **Approximate inputs.** A kernel's inputs are often outputs of another
+  kernel, so they carry error. `proofs/approx.bend` proves, for every term:
+  if each input moves by at most dᵢ, the value moves by at most `Tm.dev`.
+  The deviation of a product is da (|b| + db) + |a| db, and of a sum
+  da + db (`Prop.bound`). With the rounding of the run itself
+  (`Err.approx`), a computed run at the moved inputs is within
+  h(k) A′ + dev of the exact value at the exact inputs.
+  - The deviation is the kernel itself, run in the size-deviation semiring
+    `Ad` (`src/approx.bend`), so it is computable by the same generated
+    code. That is the same trick as the depth semiring for k.
+  - Every kernel gets the law (`algebras/*/approx.bend`, 7189 laws).
+- **Correct rounding.** A kernel run on big dyadics computes its outputs
+  exactly (`Ev.lk`, from the value maps of `Bd.add` and `Bd.mul`).
+  Rounding each output once is then `Dy.f32` of the exact output
+  (`CR.fields`, `F32.lk`). Every kernel gets the law
+  (`algebras/*/cr.bend`, 7189 laws), and `src/cr.bend` reads and writes
+  F32 exactly around it.
+- Like the error and tracked laws, both are corollaries of one theorem
+  over terms, applied to each kernel's own terms. The generator
+  (`gen/gen.bend`, `Ker.approx`, `Ker.cr`) writes them.
+
+### What it costs
+
+- **Check time.** Approx laws take 3 s (VGA2D) to 284 s (CSTA); CR laws
+  take 4 s to 371 s (CSTA). All run in every gate tier.
+- **The CR limb base is 2^12** (`CR.h`), not big.bend's 2^24, for two
+  reasons:
+  - A kernel's zero outputs make closed terms (a rounded `Bd.zero()`),
+    which the checker evaluates. With h = 2^23 that expanded a unary
+    number and ran out of memory.
+  - 2^12 is the least base at which `Bn.of` reads a 24-bit significand
+    into two limbs.
+
+  Limb products stay far below run-time Nat's 2^48.
+- **Run time.** A CR kernel costs big-number arithmetic per multiply.
+  `tests/cr_kernels.bend` runs 500 PGA3D motor products three ways in
+  6 s.
+- The `Approx` bound is proven over exact scalars. Computing D at run time
+  in F32 rounds it in turn; the tracked bound (`api/track.bend`) shows how
+  to inflate it, not yet applied to D.
+
+### Measured, not adopted
+
+- **Compensated kernels as the accurate path.** A kernel run in
+  double-F32 (`num/df32.bend`) and rounded to F32 differs from the
+  correctly rounded result in 6 of 4000 PGA3D motor-product fields, and
+  is farther from the exact value than plain F32 in 2. Its last step
+  rounds twice. Correct rounding needs the exact accumulator; double-F32
+  stays the fast near-correct path.
+- **h = 2^23 for CR**, the base of the binary32 and binary64 tests: it
+  made the checker run out of memory on VGA2D's laws (see above).

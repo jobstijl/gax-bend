@@ -175,20 +175,29 @@ and it does.
   gives A·(1 − h) ≤ Â, and chains it with the main bound. It needs two
   more order facts, ||x|| = |x| and x ≤ |x|, both easy for Int and Dy.
   `api/track.bend` turns this into a factor, `Track.factor(k)` ≥ h/(1 − h),
-  so B = factor · Â, at about twice the kernel's cost. Measured in
+  so B = factor · Â, at about twice the kernel's cost. The bound is also
+  proven per kernel (`algebras/*/track.bend`, `K.track`, 7189 laws). Measured in
   `bench/measure_pga3d.bend`: err/B is at most 0.96 over 300 000 samples,
   as tight as the exact-size bound. `tests/err_measure.bend` checks
   err/B ≤ 1 in the gate.
-- **A type for it:** `Approx(b)`, a value with an erased proof that its
-  error is at most b. Kernel signatures then compose bounds the way
-  NumFuzz composes its grades, but in the absolute / |e|abs metric:
-  NumFuzz's relative-precision metric does not survive signed cancellation,
-  and GA coefficients are signed.
+- **A type for it (done, ADR-011):** `Approx` (`src/approx.bend`), a
+  value with a bound on its distance from the exact value. Every kernel has
+  a proven law for approximate inputs (`algebras/*/approx.bend`):
+  |K(fadd, fmul)(a′, b′) − K(a, b)| ≤ h(k) A′ + D, field by field, where D
+  is the kernel run in a size-deviation semiring on (|a|, da), (|b|, db).
+  So bounds compose through chains of kernels the way NumFuzz composes its
+  grades, but in the absolute metric: NumFuzz's relative-precision metric
+  does not survive signed cancellation, and GA coefficients are signed.
 - **More accuracy where it matters:**
-  - compensated kernels: TwoSum, plus the Veltkamp/Dekker product, since
-    Bend has no FMA (Ogita–Rump–Oishi's Dot2: as if in twice the
-    precision);
-  - correctly rounded kernels through the exact accumulator;
+  - compensated kernels: any kernel run in double-F32 (`num/df32.bend`),
+    built on TwoSum and the Veltkamp/Dekker product, since Bend has no FMA.
+    On 500 PGA3D motor products (`tests/cr_kernels.bend`) it differs from
+    the correctly rounded result in 6 of 4000 fields, against 699 for
+    plain F32; its last step rounds twice, so it is not correctly rounded;
+  - **correctly rounded kernels (done, ADR-011):** any kernel run on big
+    dyadics (`src/cr.bend`) and rounded once per output is proven to give
+    the binary32 value nearest the exact one (`algebras/*/cr.bend`,
+    `proofs/cr.bend`), and runs at F32 inputs and outputs;
   - double-F32 (Joldes–Muller–Popescu, formalised by Muller–Rideau).
     **Checked exactly** against big dyadics (`tests/df32_exact.bend`):
     Fast2Sum, TwoSum, Veltkamp's split and Dekker's product are exact on
@@ -206,8 +215,9 @@ and it does.
     Fast2Sum's. **Veltkamp's split and Dekker's product are proven
     exact** (`proofs/eft2.bend`, ADR-010): the split for every
     representable input in every binary format, subnormals included;
-    Dekker's product for even precision (binary32: p = 24 = 2 · 12),
-    barring underflow and overflow. Still tested only: the double-word
+    Dekker's product at every precision from 4 bits (binary32: s = 12;
+    binary64: s = 27, `proofs/eft3.bend`), barring underflow and
+    overflow. Still tested only: the double-word
     bounds themselves (Muller and Rideau's Coq proofs).
   All of them belong to the numbers package.
 - **Not planned:** stochastic arithmetic (CADNA, Verificarlo) as a
@@ -219,8 +229,8 @@ and it does.
 1. `Tm.fl`, `Tm.abs`, k and h, and the theorem over an ordered ring with
    an abstract `rnd` (no underflow), then the η term. **Done.**
 2. Per-kernel corollaries from the generator (dₖ, the ⊛ kernel).
-   **Done**, without underflow; the underflow form (`Err.bound_u`) has
-   no per-kernel law yet.
+   **Done**, with and without underflow: every kernel has `K.err` and
+   `K.erru` (`Err.fields_u`), in `algebras/*/err.bend`.
 3. Dyadic numbers and the exact oracle; a measurement report per algebra.
    **Dyadics done and proven an ordered ring** (`proofs/dyadic.bend`).
    **The exact oracle is done too:** big dyadics on 24-bit limbs
@@ -247,8 +257,11 @@ and it does.
    sums bit for bit (`tests/big_f64.bend`). The same limbs give big
    binary32, which matches native F32 over the whole finite range
    (`tests/big_f32.bend`).
-5. Running bounds (**done**: `Err.track`, `api/track.bend`) and `Approx`;
-   compensated and exact-accumulator kernels. **Exact accumulator done:**
+5. Running bounds (**done**: `Err.track`, `api/track.bend`, and per
+   kernel `algebras/*/track.bend`) and `Approx` (**done**,
+   `algebras/*/approx.bend`); compensated kernels (double-F32, measured)
+   and exact-accumulator kernels (**done**, correctly rounded,
+   `algebras/*/cr.bend`). **Exact accumulator done:**
    `Bd.dot` is a Kulisch accumulator; rounded once it gives the correctly
    rounded dot product (`Dot32.lk`, `Dot64.lk`), the error at most
    u·|x·y| + η whatever the length. A plain F32 loop of length 8 differs

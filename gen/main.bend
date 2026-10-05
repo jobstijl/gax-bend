@@ -29,7 +29,7 @@ def Gen.more(+dir: String, ms: List<&2, String>, +i: Nat) -> IO(Unit):
 
 def Gen.emit(+dir: String, o: G.Out) -> IO(Unit):
   match o:
-    case G.Out{k, p, f, ms, a, e, s}:
+    case G.Out{k, p, f, ms, a, e, l, t, x, c, s}:
       do IO<Unit>:
         r : U32 & (String & String) <- IO.try(U32 & (String & String), Process.run("mkdir", ["-p", dir], "", 4096, 10000))
         Gen.put(dir ++ "/kinds.bend", k)
@@ -38,6 +38,10 @@ def Gen.emit(+dir: String, o: G.Out) -> IO(Unit):
         Gen.more(dir, ms, 2n)
         Gen.put(dir ++ "/f32.bend", a)
         Gen.put(dir ++ "/err.bend", e)
+        Gen.put(dir ++ "/lin.bend", l)
+        Gen.put(dir ++ "/track.bend", t)
+        Gen.put(dir ++ "/approx.bend", x)
+        Gen.put(dir ++ "/cr.bend", c)
         IO.print(s)
 
 def Gen.ops() -> List<&2, G.Op>:

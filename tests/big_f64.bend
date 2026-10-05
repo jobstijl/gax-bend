@@ -11,6 +11,27 @@
 import Base
 import ../src/big.bend as B
 import ../proofs/big.bend as BP
+import ../src/int.bend as I
+import ../src/dyadic.bend as D
+import ../src/round.bend as RD
+import ../proofs/eft.bend as E
+import ../proofs/eft2.bend as E2
+import ../proofs/eft3.bend as E3
+
+# Proven (proofs/eft2.bend): Veltkamp's split with C = 2^27 + 1 is exact in
+# binary64 rounding with gradual underflow, for every binary64 value
+# A / 2^1074: hi + lo = a.
+def F64.Split(+aa: I.Int, +fa: {E.Rn(53n, RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat})
+  -> {D.Dy.add(E2.DRf.h(52n, 1022n, 27n, D.Dy.of(Nat.add(1022n, 52n), aa)), E2.DRf.l(52n, 1022n, 27n, D.Dy.of(Nat.add(1022n, 52n), aa))) == D.Dy.of(Nat.add(1022n, 52n), aa) : D.Dy}:
+  E2.DRf.split(52n, 1022n, 27n, aa, fa)
+
+# Proven (proofs/eft3.bend): Dekker's product at 53 bits, s = 27, is exact
+# with no exponent bounds (binary64 barring underflow and overflow), for a =
+# A / 2^k, b = B / 2^k with A, B 53-bit integers. p = 1 + (26 + 26) and s =
+# 27 are written as DTwoProd.odd states them.
+def F64.TwoProd(+k: Nat, +aa: I.Int, +bb: I.Int, +fa: {E.Rn(1n+Nat.add(1n+1n+24n, 1n+1n+24n), RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {E.Rn(1n+Nat.add(1n+1n+24n, 1n+1n+24n), RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
+  -> {D.Dy.add(E2.DTP.p(Nat.add(1n+1n+24n, 1n+1n+24n), D.Dy.of(k, aa), D.Dy.of(k, bb)), E2.DTP.e(Nat.add(1n+1n+24n, 1n+1n+24n), 1n+1n+1n+24n, D.Dy.of(k, aa), D.Dy.of(k, bb))) == D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)) : D.Dy}:
+  E3.DTwoProd.odd(24n, k, aa, bb, fa, fb)
 
 def hb() -> Nat:
   8388608n
