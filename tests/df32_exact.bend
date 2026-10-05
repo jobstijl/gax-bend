@@ -1,5 +1,6 @@
 # The error-free transformations under double-F32 (num/df32.bend), proven
-# for Fast2Sum and TwoSum (below) and checked exactly: big dyadics (src/big.bend) hold the exact values, so
+# for Fast2Sum, TwoSum, Veltkamp's split and Dekker's product (below) and
+# checked exactly: big dyadics (src/big.bend) hold the exact values, so
 # s + t = a + b is a test of equality, not of closeness. Fast2Sum (with
 # |a| >= |b|) and TwoSum must give s + t = a + b for all finite inputs;
 # Dekker's product p + e = a b barring underflow and overflow (products
@@ -24,6 +25,7 @@ import ../src/round.bend as RD
 import ../src/big.bend as B
 import ../num/df32.bend as DF
 import ../proofs/eft.bend as E
+import ../proofs/eft2.bend as E2
 
 # Proven (proofs/eft.bend): binary32 values are A / 2^149 with A an integer
 # that rounds to itself at 24 bits. For those, Fast2Sum (|b| <= |a|) and
@@ -39,6 +41,23 @@ def F32.Fast2Sum(aa: I.Int, +bb: I.Int, fa: E.Fi(24n, aa), +fb: {E.Rn(24n, RD.In
 def F32.TwoSum(+aa: I.Int, +bb: I.Int, +fa: {E.Rn(24n, RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {E.Rn(24n, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
   -> {D.Dy.add(E.DTS.s(23n, 126n, aa, bb), E.DTS.t(23n, 126n, aa, bb)) == D.Dy.add(D.Dy.of(149n, aa), D.Dy.of(149n, bb)) : D.Dy}:
   E.DTwoSum(23n, 126n, aa, bb, fa, fb)
+
+# Proven (proofs/eft2.bend): Veltkamp's split as num/df32.bend computes it
+# (C = 4097) is exact in Dy.f32 arithmetic for every binary32 value,
+# subnormals included: hi + lo = a.
+def F32.Split(+aa: I.Int, +fa: {E.Rn(24n, RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat})
+  -> {D.Dy.add(E2.DRf.h(23n, 126n, 12n, D.Dy.of(149n, aa)), E2.DRf.l(23n, 126n, 12n, D.Dy.of(149n, aa))) == D.Dy.of(149n, aa) : D.Dy}:
+  E2.DRf.split(23n, 126n, 12n, aa, fa)
+
+# Proven (proofs/eft2.bend): Dekker's product as num/df32.bend computes it is
+# exact in 24-bit binary rounding with no exponent bounds, that is binary32
+# barring underflow and overflow: for a = A / 2^k, b = B / 2^k with A, B
+# 24-bit integers, p = RN(a b) and e give p + e = a b. (p = 1 + (12 + 11)
+# and s = 12 are written as DTwoProd states them: the checker compares them
+# without expanding 2^24.)
+def F32.TwoProd(+k: Nat, +aa: I.Int, +bb: I.Int, +fa: {E.Rn(1n+Nat.add(1n+1n+10n, 1n+10n), RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {E.Rn(1n+Nat.add(1n+1n+10n, 1n+10n), RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
+  -> {D.Dy.add(E2.DTP.p(Nat.add(1n+1n+10n, 1n+10n), D.Dy.of(k, aa), D.Dy.of(k, bb)), E2.DTP.e(Nat.add(1n+1n+10n, 1n+10n), 1n+1n+10n, D.Dy.of(k, aa), D.Dy.of(k, bb))) == D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)) : D.Dy}:
+  E2.DTwoProd(10n, k, aa, bb, fa, fb)
 
 def hb() -> Nat:
   8388608n

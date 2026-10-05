@@ -622,3 +622,53 @@ two-case corollary.
 - **Knuth's 6-operation TwoSum:** same results (`tests/df32_exact.bend`
   shows both exact before the switch); its proof has more cases than
   Fast2Sum's and buys nothing on this target.
+
+## ADR-010: Dekker's product is proven for even precision, without underflow
+
+**Status:** accepted, 2026-10-05.
+
+### Decision
+
+`proofs/eft2.bend` proves the two halves of `num/df32.bend`'s TwoProd on
+the integers rounded to p bits, as `proofs/eft.bend` does for Fast2Sum.
+
+- **Veltkamp's split** is exact for every representable input, at every
+  precision and for every s. The hi step is Fast2Sum's opposite-sign case
+  (`F2S.opp`). lo is a rounding error, representable by `LA.d`.
+- **Dekker's product** is exact for p = 2s with s >= 2, for every
+  representable input:
+  - Each input is scaled by a power of two into [2^(p-1), 2^p). Every
+    step commutes with that scaling (`TP.sh.e`), and with negation.
+  - There the split gives hi = Ah 2^s with Ah <= 2^s and 2 |lo| <= 2^s.
+  - The partial sums lie on a grid: e1 = ah bh - pi on 2^(p-1), e2 on
+    2^s. They are also small: |e1| <= 2^p 2^(p-1), |e2| <= 2^p 2^s,
+    |e3| <= 2^p. So each one is representable (`Rep`).
+  - The magnitude bounds are polynomial certificates under 2^s >= 4,
+    checked by the ring normaliser (`Poly1`, `Poly2`).
+- **Binary32.** p = 24 = 2 · 12 is an instance:
+  - `F32.Split` holds in Dy.f32 arithmetic for every binary32 value,
+    since on the 2^-149 grid the format's rounding is the integer
+    rounding (FlL).
+  - `F32.TwoProd` holds in 24-bit rounding with no exponent bounds.
+
+### What it costs
+
+- **Even p only.** Binary64 (p = 53) is not covered. Dekker's product
+  is exact there too in radix 2 (Boldo, 2006), but that is a separate
+  argument.
+- **The product's theorem excludes underflow.** With gradual underflow,
+  the error of a b can fall below the subnormal grid, and then e is not
+  exact. The native test skips those products (2 568 of 20 000 in
+  `tests/df32_exact.bend`). The split has no such restriction.
+- **Size.** 1 872 lines, which check in about 2 s.
+
+### Measured, not adopted
+
+- **Analysing σ, the shift of g - a, for every input.** The brute force
+  (p <= 10) confirms σ <= s and hi on p - s bits for any a. For
+  normalised a and p = 2s, σ = s exactly (p <= 14), so scaling to
+  normalised inputs removes that case analysis.
+- **Machine-chosen multipliers.** sympy's division by the relations
+  (lex order) found valid certificates, but with up to about 60 relation
+  copies for S·S >= 4S. Hand-chosen multipliers, checked by sympy before
+  Bend sees them, need 4.

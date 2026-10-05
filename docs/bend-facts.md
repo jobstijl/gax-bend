@@ -392,3 +392,29 @@ single job.
   needs it (`Cy.bound.go`, `Half.dig`).
 - **Bend has no native F64.** Binary64 is checked against
   Python-generated cases (`tests/big_f64.bend`).
+
+## Q18. Proof idioms from the TwoProd work (2026-10-05)
+
+- **Lambda-bound variables are linear.** In
+  `i => t => nn => e => h1 => h2 => k(1n+i, …)`, a second use of `i`
+  fails with "consumed more than once". Move the body into a def whose
+  parameters are `+` (`Nm.step`, `Nz.step`), and call it from the lambda.
+- **A let can shadow a parameter, with no error at the let.** In `TP.asm`,
+  `+s2 = Y.Int.cong2(…)` shadowed the parameter `s2`. A later call then
+  passed a proof where a Nat was expected. The checker did not report a
+  mismatch: it ran into the 16 GB cap and was killed (exit 137). Name
+  lets apart from parameters.
+- **State a corollary in the lemma's own forms.** Suppose a type writes
+  `23n` where the lemma has `Nat.add(1n+1n+10n, 1n+10n)`. The checker
+  then unfolds both sides, and with 24-bit rounding that expands 2^24 in
+  unary: "the machine stack overflowed". Written in the lemma's form, the
+  same corollary checks in 3 s (`F32.TwoProd`).
+- **`I.Int.mul(I.IPos{n}, I.IPos{m})` does not reduce for a variable n.**
+  Int.mul has an `IPos{0n} INeg{n}` case, so its compiled match inspects
+  n. Case on n; both cases are `{==}` (`Int.mulpp`).
+- **Inequalities as certificates.** Prove `Le(x, y)` from
+  `y == x + k` with `Ge.of`:
+  - k is a polynomial with nonnegative coefficients;
+  - the identity is checked by `NatN.eq`;
+  - hypotheses enter as witnesses: S·S >= 4S becomes
+    S·S = 4S + w (`Poly1`, `Poly2`, `Sq4`).

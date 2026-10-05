@@ -1,7 +1,13 @@
 # Veltkamp's split and Dekker's product (num/df32.bend) are exact, on the
-# integers rounded to p bits of proofs/eft.bend. This file: how a value's
-# shift (the number of bits rounding drops) bounds its size, then the
-# split, then the product.
+# integers rounded to p bits of proofs/eft.bend (ADR-010). In order:
+# - shifts: how many bits rounding drops bounds a value and its error;
+# - the split: exact for every representable input (`Split`), and its
+#   sizes on normalised inputs (`V.hi.grid`, `V.ah.le`, `V.lo.le`);
+# - Dekker's product for p = 2s: on normalised inputs (`Dk.core`,
+#   `TwoProd.norm`), then for all inputs by scaling and negation
+#   (`TwoProd`);
+# - the same in dyadic arithmetic (`DRf.split`, `DTwoProd`), which
+#   tests/df32_exact.bend instantiates for binary32.
 
 import Base
 import ../src/int.bend as I
@@ -1226,3 +1232,641 @@ def TwoProd.norm(+s2: Nat, +n: Nat, +m: Nat,
   Dk.core(s1, a, b, Sp.h(p, s, a), Sp.l(p, s, a), Sp.h(p, s, b), Sp.l(p, s, b), pi, V.ah(p, s, n), V.ah(p, s, m), Gq(p, nm, p1),
     Split(p1, s, a, fn), Split(p1, s, b, fm), Sp.facts.h(s1, n, hn, hhn, hc), Sp.facts.h(s1, m, hm, hhm, hc),
     V.ah.le(p1, s, s, n, hn, hhn, hc, hP), V.ah.le(p1, s, s, m, hm, hhm, hc, hP), Sp.facts.l(s1, n, hn), Sp.facts.l(s1, m, hm), hpi, herr, h4)
+
+# Scaling by 2^k
+# --------------
+# Every step of the split and of Dekker's product commutes with sh.
+
+def Sh.mulc(+k: Nat, +c: I.Int, +a: I.Int) -> {I.Int.mul(c, D.Int.sh(k, a)) == D.Int.sh(k, I.Int.mul(c, a)) : I.Int}:
+  +pk = Y.P(k)
+  +env : List<&2, I.Int> = [c, a, pk]
+  Equal.trans(I.Int, I.Int.mul(c, D.Int.sh(k, a)), I.Int.mul(I.Int.mul(c, a), pk), D.Int.sh(k, I.Int.mul(c, a)),
+    Equal.trans(I.Int, I.Int.mul(c, D.Int.sh(k, a)), I.Int.mul(c, I.Int.mul(a, pk)), I.Int.mul(I.Int.mul(c, a), pk), Equal.cong(I.Int, I.Int, z => I.Int.mul(c, z), D.Int.sh(k, a), I.Int.mul(a, pk), Y.Sh.p(k, a)),
+      BP.IntN(env, R.Ml(R.V(0n), R.Ml(R.V(1n), R.V(2n))), R.Ml(R.Ml(R.V(0n), R.V(1n)), R.V(2n)), [], [], {==}, Unit{})),
+    Equal.sym(I.Int, D.Int.sh(k, I.Int.mul(c, a)), I.Int.mul(I.Int.mul(c, a), pk), Y.Sh.p(k, I.Int.mul(c, a))))
+
+def Sh.mul2(+i: Nat, +j: Nat, +x: I.Int, +y: I.Int) -> {I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y)) == D.Int.sh(Nat.add(i, j), I.Int.mul(x, y)) : I.Int}:
+  +pi = Y.P(i)
+  +pj = Y.P(j)
+  +pij = Y.P(Nat.add(i, j))
+  +eij : {pij == I.Int.mul(pj, pi) : I.Int} = Equal.trans(I.Int, pij, D.Int.sh(i, pj), I.Int.mul(pj, pi), Equal.sym(I.Int, D.Int.sh(i, pj), pij, Y.Int.sh_sh(i, j, I.IPos{1n})), Y.Sh.p(i, pj))
+  +env : List<&2, I.Int> = [x, y, pi, pj]
+  Equal.trans(I.Int, I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y)), I.Int.mul(I.Int.mul(x, y), pij), D.Int.sh(Nat.add(i, j), I.Int.mul(x, y)),
+    Equal.trans(I.Int, I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y)), I.Int.mul(I.Int.mul(x, pi), I.Int.mul(y, pj)), I.Int.mul(I.Int.mul(x, y), pij),
+      Equal.trans(I.Int, I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y)), I.Int.mul(I.Int.mul(x, pi), D.Int.sh(j, y)), I.Int.mul(I.Int.mul(x, pi), I.Int.mul(y, pj)),
+        Equal.cong(I.Int, I.Int, z => I.Int.mul(z, D.Int.sh(j, y)), D.Int.sh(i, x), I.Int.mul(x, pi), Y.Sh.p(i, x)),
+        Equal.cong(I.Int, I.Int, z => I.Int.mul(I.Int.mul(x, pi), z), D.Int.sh(j, y), I.Int.mul(y, pj), Y.Sh.p(j, y))),
+      Equal.trans(I.Int, I.Int.mul(I.Int.mul(x, pi), I.Int.mul(y, pj)), I.Int.mul(I.Int.mul(x, y), I.Int.mul(pj, pi)), I.Int.mul(I.Int.mul(x, y), pij),
+        BP.IntN(env, R.Ml(R.Ml(R.V(0n), R.V(2n)), R.Ml(R.V(1n), R.V(3n))), R.Ml(R.Ml(R.V(0n), R.V(1n)), R.Ml(R.V(3n), R.V(2n))), [], [], {==}, Unit{}),
+        Equal.cong(I.Int, I.Int, z => I.Int.mul(I.Int.mul(x, y), z), I.Int.mul(pj, pi), pij, Equal.sym(I.Int, pij, I.Int.mul(pj, pi), eij)))),
+    Equal.sym(I.Int, D.Int.sh(Nat.add(i, j), I.Int.mul(x, y)), I.Int.mul(I.Int.mul(x, y), pij), Y.Sh.p(Nat.add(i, j), I.Int.mul(x, y))))
+
+# R(sh x + sh y) = sh R(x + y), R(sh x - sh y) = sh R(x - y)
+def RNi.shadd(+p: Nat, +k: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.add(D.Int.sh(k, x), D.Int.sh(k, y))) == D.Int.sh(k, E.RNi(p, I.Int.add(x, y))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(D.Int.sh(k, x), D.Int.sh(k, y))), E.RNi(p, D.Int.sh(k, I.Int.add(x, y))), D.Int.sh(k, E.RNi(p, I.Int.add(x, y))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(D.Int.sh(k, x), D.Int.sh(k, y)), D.Int.sh(k, I.Int.add(x, y)), Equal.sym(I.Int, D.Int.sh(k, I.Int.add(x, y)), I.Int.add(D.Int.sh(k, x), D.Int.sh(k, y)), Y.Int.sh_add(k, x, y))),
+    E.RNi.sh(p, k, I.Int.add(x, y)))
+
+def RNi.shsub(+p: Nat, +k: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.add(D.Int.sh(k, x), I.Int.neg(D.Int.sh(k, y)))) == D.Int.sh(k, E.RNi(p, I.Int.add(x, I.Int.neg(y)))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(D.Int.sh(k, x), I.Int.neg(D.Int.sh(k, y)))), E.RNi(p, D.Int.sh(k, I.Int.add(x, I.Int.neg(y)))), D.Int.sh(k, E.RNi(p, I.Int.add(x, I.Int.neg(y)))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(D.Int.sh(k, x), I.Int.neg(D.Int.sh(k, y))), D.Int.sh(k, I.Int.add(x, I.Int.neg(y))), Sh.diff(k, x, y)),
+    E.RNi.sh(p, k, I.Int.add(x, I.Int.neg(y))))
+
+def Sp.sh.g(+p: Nat, +s: Nat, +k: Nat, +a: I.Int) -> {Sp.g(p, s, D.Int.sh(k, a)) == D.Int.sh(k, Sp.g(p, s, a)) : I.Int}:
+  Equal.trans(I.Int, Sp.g(p, s, D.Int.sh(k, a)), E.RNi(p, D.Int.sh(k, I.Int.mul(Sp.c(s), a))), D.Int.sh(k, Sp.g(p, s, a)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.mul(Sp.c(s), D.Int.sh(k, a)), D.Int.sh(k, I.Int.mul(Sp.c(s), a)), Sh.mulc(k, Sp.c(s), a)),
+    E.RNi.sh(p, k, I.Int.mul(Sp.c(s), a)))
+
+def Sp.sh.d(+p: Nat, +s: Nat, +k: Nat, +a: I.Int) -> {Sp.d(p, s, D.Int.sh(k, a)) == D.Int.sh(k, Sp.d(p, s, a)) : I.Int}:
+  Equal.trans(I.Int, Sp.d(p, s, D.Int.sh(k, a)), E.RNi(p, I.Int.add(D.Int.sh(k, a), I.Int.neg(D.Int.sh(k, Sp.g(p, s, a))))), D.Int.sh(k, Sp.d(p, s, a)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, I.Int.add(D.Int.sh(k, a), I.Int.neg(z))), Sp.g(p, s, D.Int.sh(k, a)), D.Int.sh(k, Sp.g(p, s, a)), Sp.sh.g(p, s, k, a)),
+    RNi.shsub(p, k, a, Sp.g(p, s, a)))
+
+def Sp.sh.h(+p: Nat, +s: Nat, +k: Nat, +a: I.Int) -> {Sp.h(p, s, D.Int.sh(k, a)) == D.Int.sh(k, Sp.h(p, s, a)) : I.Int}:
+  Equal.trans(I.Int, Sp.h(p, s, D.Int.sh(k, a)), E.RNi(p, I.Int.add(D.Int.sh(k, Sp.g(p, s, a)), D.Int.sh(k, Sp.d(p, s, a)))), D.Int.sh(k, Sp.h(p, s, a)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Sp.g(p, s, D.Int.sh(k, a)), Sp.d(p, s, D.Int.sh(k, a))), I.Int.add(D.Int.sh(k, Sp.g(p, s, a)), D.Int.sh(k, Sp.d(p, s, a))),
+      Y.Int.cong2(Sp.g(p, s, D.Int.sh(k, a)), D.Int.sh(k, Sp.g(p, s, a)), Sp.d(p, s, D.Int.sh(k, a)), D.Int.sh(k, Sp.d(p, s, a)), Sp.sh.g(p, s, k, a), Sp.sh.d(p, s, k, a))),
+    RNi.shadd(p, k, Sp.g(p, s, a), Sp.d(p, s, a)))
+
+def Sp.sh.l(+p: Nat, +s: Nat, +k: Nat, +a: I.Int) -> {Sp.l(p, s, D.Int.sh(k, a)) == D.Int.sh(k, Sp.l(p, s, a)) : I.Int}:
+  Equal.trans(I.Int, Sp.l(p, s, D.Int.sh(k, a)), E.RNi(p, I.Int.add(D.Int.sh(k, a), I.Int.neg(D.Int.sh(k, Sp.h(p, s, a))))), D.Int.sh(k, Sp.l(p, s, a)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, I.Int.add(D.Int.sh(k, a), I.Int.neg(z))), Sp.h(p, s, D.Int.sh(k, a)), D.Int.sh(k, Sp.h(p, s, a)), Sp.sh.h(p, s, k, a)),
+    RNi.shsub(p, k, a, Sp.h(p, s, a)))
+
+# R(sh_i x sh_j y) = sh_(i+j) R(x y)
+def RNi.shmul(+p: Nat, +i: Nat, +j: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y))) == D.Int.sh(Nat.add(i, j), E.RNi(p, I.Int.mul(x, y))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y))), E.RNi(p, D.Int.sh(Nat.add(i, j), I.Int.mul(x, y))), D.Int.sh(Nat.add(i, j), E.RNi(p, I.Int.mul(x, y))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.mul(D.Int.sh(i, x), D.Int.sh(j, y)), D.Int.sh(Nat.add(i, j), I.Int.mul(x, y)), Sh.mul2(i, j, x, y)),
+    E.RNi.sh(p, Nat.add(i, j), I.Int.mul(x, y)))
+
+def Dk.sh.e1(+p: Nat, +i: Nat, +j: Nat, +ah: I.Int, +bh: I.Int, +pi: I.Int)
+  -> {Dk.e1(p, D.Int.sh(i, ah), D.Int.sh(j, bh), D.Int.sh(Nat.add(i, j), pi)) == D.Int.sh(Nat.add(i, j), Dk.e1(p, ah, bh, pi)) : I.Int}:
+  +k = Nat.add(i, j)
+  Equal.trans(I.Int, Dk.e1(p, D.Int.sh(i, ah), D.Int.sh(j, bh), D.Int.sh(k, pi)), E.RNi(p, I.Int.add(D.Int.sh(k, E.RNi(p, I.Int.mul(ah, bh))), I.Int.neg(D.Int.sh(k, pi)))), D.Int.sh(k, Dk.e1(p, ah, bh, pi)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, I.Int.add(z, I.Int.neg(D.Int.sh(k, pi)))), E.RNi(p, I.Int.mul(D.Int.sh(i, ah), D.Int.sh(j, bh))), D.Int.sh(k, E.RNi(p, I.Int.mul(ah, bh))), RNi.shmul(p, i, j, ah, bh)),
+    RNi.shsub(p, k, E.RNi(p, I.Int.mul(ah, bh)), pi))
+
+def Dk.sh.e2(+p: Nat, +i: Nat, +j: Nat, +ah: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int)
+  -> {Dk.e2(p, D.Int.sh(i, ah), D.Int.sh(j, bh), D.Int.sh(j, bl), D.Int.sh(Nat.add(i, j), pi)) == D.Int.sh(Nat.add(i, j), Dk.e2(p, ah, bh, bl, pi)) : I.Int}:
+  +k = Nat.add(i, j)
+  +x = Dk.e1(p, D.Int.sh(i, ah), D.Int.sh(j, bh), D.Int.sh(k, pi))
+  +y = E.RNi(p, I.Int.mul(D.Int.sh(i, ah), D.Int.sh(j, bl)))
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(x, y)), E.RNi(p, I.Int.add(D.Int.sh(k, Dk.e1(p, ah, bh, pi)), D.Int.sh(k, E.RNi(p, I.Int.mul(ah, bl))))), D.Int.sh(k, Dk.e2(p, ah, bh, bl, pi)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(x, y), I.Int.add(D.Int.sh(k, Dk.e1(p, ah, bh, pi)), D.Int.sh(k, E.RNi(p, I.Int.mul(ah, bl)))),
+      Y.Int.cong2(x, D.Int.sh(k, Dk.e1(p, ah, bh, pi)), y, D.Int.sh(k, E.RNi(p, I.Int.mul(ah, bl))), Dk.sh.e1(p, i, j, ah, bh, pi), RNi.shmul(p, i, j, ah, bl))),
+    RNi.shadd(p, k, Dk.e1(p, ah, bh, pi), E.RNi(p, I.Int.mul(ah, bl))))
+
+def Dk.sh.e3(+p: Nat, +i: Nat, +j: Nat, +ah: I.Int, +al: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int)
+  -> {Dk.e3(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), D.Int.sh(Nat.add(i, j), pi)) == D.Int.sh(Nat.add(i, j), Dk.e3(p, ah, al, bh, bl, pi)) : I.Int}:
+  +k = Nat.add(i, j)
+  +x = Dk.e2(p, D.Int.sh(i, ah), D.Int.sh(j, bh), D.Int.sh(j, bl), D.Int.sh(k, pi))
+  +y = E.RNi(p, I.Int.mul(D.Int.sh(i, al), D.Int.sh(j, bh)))
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(x, y)), E.RNi(p, I.Int.add(D.Int.sh(k, Dk.e2(p, ah, bh, bl, pi)), D.Int.sh(k, E.RNi(p, I.Int.mul(al, bh))))), D.Int.sh(k, Dk.e3(p, ah, al, bh, bl, pi)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(x, y), I.Int.add(D.Int.sh(k, Dk.e2(p, ah, bh, bl, pi)), D.Int.sh(k, E.RNi(p, I.Int.mul(al, bh)))),
+      Y.Int.cong2(x, D.Int.sh(k, Dk.e2(p, ah, bh, bl, pi)), y, D.Int.sh(k, E.RNi(p, I.Int.mul(al, bh))), Dk.sh.e2(p, i, j, ah, bh, bl, pi), RNi.shmul(p, i, j, al, bh))),
+    RNi.shadd(p, k, Dk.e2(p, ah, bh, bl, pi), E.RNi(p, I.Int.mul(al, bh))))
+
+def Dk.sh.e(+p: Nat, +i: Nat, +j: Nat, +ah: I.Int, +al: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int)
+  -> {Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), D.Int.sh(Nat.add(i, j), pi)) == D.Int.sh(Nat.add(i, j), Dk.e(p, ah, al, bh, bl, pi)) : I.Int}:
+  +k = Nat.add(i, j)
+  +x = Dk.e3(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), D.Int.sh(k, pi))
+  +y = E.RNi(p, I.Int.mul(D.Int.sh(i, al), D.Int.sh(j, bl)))
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(x, y)), E.RNi(p, I.Int.add(D.Int.sh(k, Dk.e3(p, ah, al, bh, bl, pi)), D.Int.sh(k, E.RNi(p, I.Int.mul(al, bl))))), D.Int.sh(k, Dk.e(p, ah, al, bh, bl, pi)),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(x, y), I.Int.add(D.Int.sh(k, Dk.e3(p, ah, al, bh, bl, pi)), D.Int.sh(k, E.RNi(p, I.Int.mul(al, bl)))),
+      Y.Int.cong2(x, D.Int.sh(k, Dk.e3(p, ah, al, bh, bl, pi)), y, D.Int.sh(k, E.RNi(p, I.Int.mul(al, bl))), Dk.sh.e3(p, i, j, ah, al, bh, bl, pi), RNi.shmul(p, i, j, al, bl))),
+    RNi.shadd(p, k, Dk.e3(p, ah, al, bh, bl, pi), E.RNi(p, I.Int.mul(al, bl))))
+
+def TP.sh.p(+p: Nat, +i: Nat, +j: Nat, +a: I.Int, +b: I.Int) -> {TP.p(p, D.Int.sh(i, a), D.Int.sh(j, b)) == D.Int.sh(Nat.add(i, j), TP.p(p, a, b)) : I.Int}:
+  RNi.shmul(p, i, j, a, b)
+
+def TP.sh.e(+p: Nat, +s: Nat, +i: Nat, +j: Nat, +a: I.Int, +b: I.Int) -> {TP.e(p, s, D.Int.sh(i, a), D.Int.sh(j, b)) == D.Int.sh(Nat.add(i, j), TP.e(p, s, a, b)) : I.Int}:
+  +k = Nat.add(i, j)
+  +ia = D.Int.sh(i, a)
+  +jb = D.Int.sh(j, b)
+  +ah = Sp.h(p, s, a)
+  +al = Sp.l(p, s, a)
+  +bh = Sp.h(p, s, b)
+  +bl = Sp.l(p, s, b)
+  +pi = TP.p(p, a, b)
+  +e1 = Equal.cong(I.Int, I.Int, z => Dk.e(p, z, Sp.l(p, s, ia), Sp.h(p, s, jb), Sp.l(p, s, jb), TP.p(p, ia, jb)), Sp.h(p, s, ia), D.Int.sh(i, ah), Sp.sh.h(p, s, i, a))
+  +e2 = Equal.cong(I.Int, I.Int, z => Dk.e(p, D.Int.sh(i, ah), z, Sp.h(p, s, jb), Sp.l(p, s, jb), TP.p(p, ia, jb)), Sp.l(p, s, ia), D.Int.sh(i, al), Sp.sh.l(p, s, i, a))
+  +e3 = Equal.cong(I.Int, I.Int, z => Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), z, Sp.l(p, s, jb), TP.p(p, ia, jb)), Sp.h(p, s, jb), D.Int.sh(j, bh), Sp.sh.h(p, s, j, b))
+  +e4 = Equal.cong(I.Int, I.Int, z => Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), z, TP.p(p, ia, jb)), Sp.l(p, s, jb), D.Int.sh(j, bl), Sp.sh.l(p, s, j, b))
+  +e5 = Equal.cong(I.Int, I.Int, z => Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), z), TP.p(p, ia, jb), D.Int.sh(k, pi), TP.sh.p(p, i, j, a, b))
+  Equal.trans(I.Int, TP.e(p, s, ia, jb), Dk.e(p, D.Int.sh(i, ah), Sp.l(p, s, ia), Sp.h(p, s, jb), Sp.l(p, s, jb), TP.p(p, ia, jb)), D.Int.sh(k, TP.e(p, s, a, b)), e1,
+    Equal.trans(I.Int, Dk.e(p, D.Int.sh(i, ah), Sp.l(p, s, ia), Sp.h(p, s, jb), Sp.l(p, s, jb), TP.p(p, ia, jb)), Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), Sp.h(p, s, jb), Sp.l(p, s, jb), TP.p(p, ia, jb)), D.Int.sh(k, TP.e(p, s, a, b)), e2,
+      Equal.trans(I.Int, Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), Sp.h(p, s, jb), Sp.l(p, s, jb), TP.p(p, ia, jb)), Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), Sp.l(p, s, jb), TP.p(p, ia, jb)), D.Int.sh(k, TP.e(p, s, a, b)), e3,
+        Equal.trans(I.Int, Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), Sp.l(p, s, jb), TP.p(p, ia, jb)), Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), TP.p(p, ia, jb)), D.Int.sh(k, TP.e(p, s, a, b)), e4,
+          Equal.trans(I.Int, Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), TP.p(p, ia, jb)), Dk.e(p, D.Int.sh(i, ah), D.Int.sh(i, al), D.Int.sh(j, bh), D.Int.sh(j, bl), D.Int.sh(k, pi)), D.Int.sh(k, TP.e(p, s, a, b)), e5,
+            Dk.sh.e(p, i, j, ah, al, bh, bl, pi))))))
+
+# Negation
+# --------
+
+def RNi.nml(+p: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.mul(I.Int.neg(x), y)) == I.Int.neg(E.RNi(p, I.Int.mul(x, y))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.mul(I.Int.neg(x), y)), E.RNi(p, I.Int.neg(I.Int.mul(x, y))), I.Int.neg(E.RNi(p, I.Int.mul(x, y))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.mul(I.Int.neg(x), y), I.Int.neg(I.Int.mul(x, y)), BP.IntN([x, y], R.Ml(R.Ng(R.V(0n)), R.V(1n)), R.Ng(R.Ml(R.V(0n), R.V(1n))), [], [], {==}, Unit{})),
+    E.RNi.neg(p, I.Int.mul(x, y)))
+
+def RNi.nmr(+p: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.mul(x, I.Int.neg(y))) == I.Int.neg(E.RNi(p, I.Int.mul(x, y))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.mul(x, I.Int.neg(y))), E.RNi(p, I.Int.neg(I.Int.mul(x, y))), I.Int.neg(E.RNi(p, I.Int.mul(x, y))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.mul(x, I.Int.neg(y)), I.Int.neg(I.Int.mul(x, y)), BP.IntN([x, y], R.Ml(R.V(0n), R.Ng(R.V(1n))), R.Ng(R.Ml(R.V(0n), R.V(1n))), [], [], {==}, Unit{})),
+    E.RNi.neg(p, I.Int.mul(x, y)))
+
+def RNi.nadd(+p: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.add(I.Int.neg(x), I.Int.neg(y))) == I.Int.neg(E.RNi(p, I.Int.add(x, y))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(I.Int.neg(x), I.Int.neg(y))), E.RNi(p, I.Int.neg(I.Int.add(x, y))), I.Int.neg(E.RNi(p, I.Int.add(x, y))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.neg(I.Int.add(x, y)), BP.IntN([x, y], R.Ad(R.Ng(R.V(0n)), R.Ng(R.V(1n))), R.Ng(R.Ad(R.V(0n), R.V(1n))), [], [], {==}, Unit{})),
+    E.RNi.neg(p, I.Int.add(x, y)))
+
+def RNi.nsub(+p: Nat, +x: I.Int, +y: I.Int) -> {E.RNi(p, I.Int.add(I.Int.neg(x), I.Int.neg(I.Int.neg(y)))) == I.Int.neg(E.RNi(p, I.Int.add(x, I.Int.neg(y)))) : I.Int}:
+  Equal.trans(I.Int, E.RNi(p, I.Int.add(I.Int.neg(x), I.Int.neg(I.Int.neg(y)))), E.RNi(p, I.Int.neg(I.Int.add(x, I.Int.neg(y)))), I.Int.neg(E.RNi(p, I.Int.add(x, I.Int.neg(y)))),
+    Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(I.Int.neg(x), I.Int.neg(I.Int.neg(y))), I.Int.neg(I.Int.add(x, I.Int.neg(y))), BP.IntN([x, y], R.Ad(R.Ng(R.V(0n)), R.Ng(R.Ng(R.V(1n)))), R.Ng(R.Ad(R.V(0n), R.Ng(R.V(1n)))), [], [], {==}, Unit{})),
+    E.RNi.neg(p, I.Int.add(x, I.Int.neg(y))))
+
+# Dekker's steps commute with negating a's or b's half
+
+def Dk.na.e1(+p: Nat, +ah: I.Int, +bh: I.Int, +pi: I.Int) -> {Dk.e1(p, I.Int.neg(ah), bh, I.Int.neg(pi)) == I.Int.neg(Dk.e1(p, ah, bh, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e1(p, I.Int.neg(ah), bh, I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(E.RNi(p, I.Int.mul(ah, bh))), I.Int.neg(I.Int.neg(pi)))), I.Int.neg(Dk.e1(p, ah, bh, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, I.Int.add(z, I.Int.neg(I.Int.neg(pi)))), E.RNi(p, I.Int.mul(I.Int.neg(ah), bh)), I.Int.neg(E.RNi(p, I.Int.mul(ah, bh))), RNi.nml(p, ah, bh)), RNi.nsub(p, E.RNi(p, I.Int.mul(ah, bh)), pi))
+
+def Dk.na.e2(+p: Nat, +ah: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int) -> {Dk.e2(p, I.Int.neg(ah), bh, bl, I.Int.neg(pi)) == I.Int.neg(Dk.e2(p, ah, bh, bl, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e2(p, I.Int.neg(ah), bh, bl, I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(Dk.e1(p, ah, bh, pi)), I.Int.neg(E.RNi(p, I.Int.mul(ah, bl))))), I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Dk.e1(p, I.Int.neg(ah), bh, I.Int.neg(pi)), E.RNi(p, I.Int.mul(I.Int.neg(ah), bl))), I.Int.add(I.Int.neg(Dk.e1(p, ah, bh, pi)), I.Int.neg(E.RNi(p, I.Int.mul(ah, bl)))), Y.Int.cong2(Dk.e1(p, I.Int.neg(ah), bh, I.Int.neg(pi)), I.Int.neg(Dk.e1(p, ah, bh, pi)), E.RNi(p, I.Int.mul(I.Int.neg(ah), bl)), I.Int.neg(E.RNi(p, I.Int.mul(ah, bl))), Dk.na.e1(p, ah, bh, pi), RNi.nml(p, ah, bl))), RNi.nadd(p, Dk.e1(p, ah, bh, pi), E.RNi(p, I.Int.mul(ah, bl))))
+
+def Dk.na.e3(+p: Nat, +ah: I.Int, +al: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int) -> {Dk.e3(p, I.Int.neg(ah), I.Int.neg(al), bh, bl, I.Int.neg(pi)) == I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e3(p, I.Int.neg(ah), I.Int.neg(al), bh, bl, I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bh))))), I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Dk.e2(p, I.Int.neg(ah), bh, bl, I.Int.neg(pi)), E.RNi(p, I.Int.mul(I.Int.neg(al), bh))), I.Int.add(I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bh)))), Y.Int.cong2(Dk.e2(p, I.Int.neg(ah), bh, bl, I.Int.neg(pi)), I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), E.RNi(p, I.Int.mul(I.Int.neg(al), bh)), I.Int.neg(E.RNi(p, I.Int.mul(al, bh))), Dk.na.e2(p, ah, bh, bl, pi), RNi.nml(p, al, bh))), RNi.nadd(p, Dk.e2(p, ah, bh, bl, pi), E.RNi(p, I.Int.mul(al, bh))))
+
+def Dk.na.e(+p: Nat, +ah: I.Int, +al: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int) -> {Dk.e(p, I.Int.neg(ah), I.Int.neg(al), bh, bl, I.Int.neg(pi)) == I.Int.neg(Dk.e(p, ah, al, bh, bl, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e(p, I.Int.neg(ah), I.Int.neg(al), bh, bl, I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bl))))), I.Int.neg(Dk.e(p, ah, al, bh, bl, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Dk.e3(p, I.Int.neg(ah), I.Int.neg(al), bh, bl, I.Int.neg(pi)), E.RNi(p, I.Int.mul(I.Int.neg(al), bl))), I.Int.add(I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bl)))), Y.Int.cong2(Dk.e3(p, I.Int.neg(ah), I.Int.neg(al), bh, bl, I.Int.neg(pi)), I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), E.RNi(p, I.Int.mul(I.Int.neg(al), bl)), I.Int.neg(E.RNi(p, I.Int.mul(al, bl))), Dk.na.e3(p, ah, al, bh, bl, pi), RNi.nml(p, al, bl))), RNi.nadd(p, Dk.e3(p, ah, al, bh, bl, pi), E.RNi(p, I.Int.mul(al, bl))))
+
+def Dk.nb.e1(+p: Nat, +ah: I.Int, +bh: I.Int, +pi: I.Int) -> {Dk.e1(p, ah, I.Int.neg(bh), I.Int.neg(pi)) == I.Int.neg(Dk.e1(p, ah, bh, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e1(p, ah, I.Int.neg(bh), I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(E.RNi(p, I.Int.mul(ah, bh))), I.Int.neg(I.Int.neg(pi)))), I.Int.neg(Dk.e1(p, ah, bh, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, I.Int.add(z, I.Int.neg(I.Int.neg(pi)))), E.RNi(p, I.Int.mul(ah, I.Int.neg(bh))), I.Int.neg(E.RNi(p, I.Int.mul(ah, bh))), RNi.nmr(p, ah, bh)), RNi.nsub(p, E.RNi(p, I.Int.mul(ah, bh)), pi))
+
+def Dk.nb.e2(+p: Nat, +ah: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int) -> {Dk.e2(p, ah, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)) == I.Int.neg(Dk.e2(p, ah, bh, bl, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e2(p, ah, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(Dk.e1(p, ah, bh, pi)), I.Int.neg(E.RNi(p, I.Int.mul(ah, bl))))), I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Dk.e1(p, ah, I.Int.neg(bh), I.Int.neg(pi)), E.RNi(p, I.Int.mul(ah, I.Int.neg(bl)))), I.Int.add(I.Int.neg(Dk.e1(p, ah, bh, pi)), I.Int.neg(E.RNi(p, I.Int.mul(ah, bl)))), Y.Int.cong2(Dk.e1(p, ah, I.Int.neg(bh), I.Int.neg(pi)), I.Int.neg(Dk.e1(p, ah, bh, pi)), E.RNi(p, I.Int.mul(ah, I.Int.neg(bl))), I.Int.neg(E.RNi(p, I.Int.mul(ah, bl))), Dk.nb.e1(p, ah, bh, pi), RNi.nmr(p, ah, bl))), RNi.nadd(p, Dk.e1(p, ah, bh, pi), E.RNi(p, I.Int.mul(ah, bl))))
+
+def Dk.nb.e3(+p: Nat, +ah: I.Int, +al: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int) -> {Dk.e3(p, ah, al, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)) == I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e3(p, ah, al, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bh))))), I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Dk.e2(p, ah, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), E.RNi(p, I.Int.mul(al, I.Int.neg(bh)))), I.Int.add(I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bh)))), Y.Int.cong2(Dk.e2(p, ah, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), I.Int.neg(Dk.e2(p, ah, bh, bl, pi)), E.RNi(p, I.Int.mul(al, I.Int.neg(bh))), I.Int.neg(E.RNi(p, I.Int.mul(al, bh))), Dk.nb.e2(p, ah, bh, bl, pi), RNi.nmr(p, al, bh))), RNi.nadd(p, Dk.e2(p, ah, bh, bl, pi), E.RNi(p, I.Int.mul(al, bh))))
+
+def Dk.nb.e(+p: Nat, +ah: I.Int, +al: I.Int, +bh: I.Int, +bl: I.Int, +pi: I.Int) -> {Dk.e(p, ah, al, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)) == I.Int.neg(Dk.e(p, ah, al, bh, bl, pi)) : I.Int}:
+  Equal.trans(I.Int, Dk.e(p, ah, al, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), E.RNi(p, I.Int.add(I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bl))))), I.Int.neg(Dk.e(p, ah, al, bh, bl, pi)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), I.Int.add(Dk.e3(p, ah, al, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), E.RNi(p, I.Int.mul(al, I.Int.neg(bl)))), I.Int.add(I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), I.Int.neg(E.RNi(p, I.Int.mul(al, bl)))), Y.Int.cong2(Dk.e3(p, ah, al, I.Int.neg(bh), I.Int.neg(bl), I.Int.neg(pi)), I.Int.neg(Dk.e3(p, ah, al, bh, bl, pi)), E.RNi(p, I.Int.mul(al, I.Int.neg(bl))), I.Int.neg(E.RNi(p, I.Int.mul(al, bl))), Dk.nb.e3(p, ah, al, bh, bl, pi), RNi.nmr(p, al, bl))), RNi.nadd(p, Dk.e3(p, ah, al, bh, bl, pi), E.RNi(p, I.Int.mul(al, bl))))
+
+def TP.na.e(+p: Nat, +s: Nat, +a: I.Int, +b: I.Int) -> {TP.e(p, s, I.Int.neg(a), b) == I.Int.neg(TP.e(p, s, a, b)) : I.Int}:
+  Equal.trans(I.Int, Dk.e(p, Sp.h(p, s, I.Int.neg(a)), Sp.l(p, s, I.Int.neg(a)), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), Dk.e(p, I.Int.neg(Sp.h(p, s, a)), Sp.l(p, s, I.Int.neg(a)), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), I.Int.neg(TP.e(p, s, a, b)), Equal.cong(I.Int, I.Int, z => Dk.e(p, z, Sp.l(p, s, I.Int.neg(a)), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), Sp.h(p, s, I.Int.neg(a)), I.Int.neg(Sp.h(p, s, a)), Sp.sym.h(p, s, a)), Equal.trans(I.Int, Dk.e(p, I.Int.neg(Sp.h(p, s, a)), Sp.l(p, s, I.Int.neg(a)), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), Dk.e(p, I.Int.neg(Sp.h(p, s, a)), I.Int.neg(Sp.l(p, s, a)), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), I.Int.neg(TP.e(p, s, a, b)), Equal.cong(I.Int, I.Int, z => Dk.e(p, I.Int.neg(Sp.h(p, s, a)), z, Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), Sp.l(p, s, I.Int.neg(a)), I.Int.neg(Sp.l(p, s, a)), Sp.sym.l(p, s, a)), Equal.trans(I.Int, Dk.e(p, I.Int.neg(Sp.h(p, s, a)), I.Int.neg(Sp.l(p, s, a)), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, I.Int.neg(a), b)), Dk.e(p, I.Int.neg(Sp.h(p, s, a)), I.Int.neg(Sp.l(p, s, a)), Sp.h(p, s, b), Sp.l(p, s, b), I.Int.neg(TP.p(p, a, b))), I.Int.neg(TP.e(p, s, a, b)), Equal.cong(I.Int, I.Int, z => Dk.e(p, I.Int.neg(Sp.h(p, s, a)), I.Int.neg(Sp.l(p, s, a)), Sp.h(p, s, b), Sp.l(p, s, b), z), TP.p(p, I.Int.neg(a), b), I.Int.neg(TP.p(p, a, b)), RNi.nml(p, a, b)), Dk.na.e(p, Sp.h(p, s, a), Sp.l(p, s, a), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, a, b)))))
+
+def TP.nb.e(+p: Nat, +s: Nat, +a: I.Int, +b: I.Int) -> {TP.e(p, s, a, I.Int.neg(b)) == I.Int.neg(TP.e(p, s, a, b)) : I.Int}:
+  Equal.trans(I.Int, Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), Sp.h(p, s, I.Int.neg(b)), Sp.l(p, s, I.Int.neg(b)), TP.p(p, a, I.Int.neg(b))), Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), Sp.l(p, s, I.Int.neg(b)), TP.p(p, a, I.Int.neg(b))), I.Int.neg(TP.e(p, s, a, b)), Equal.cong(I.Int, I.Int, z => Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), z, Sp.l(p, s, I.Int.neg(b)), TP.p(p, a, I.Int.neg(b))), Sp.h(p, s, I.Int.neg(b)), I.Int.neg(Sp.h(p, s, b)), Sp.sym.h(p, s, b)), Equal.trans(I.Int, Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), Sp.l(p, s, I.Int.neg(b)), TP.p(p, a, I.Int.neg(b))), Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), I.Int.neg(Sp.l(p, s, b)), TP.p(p, a, I.Int.neg(b))), I.Int.neg(TP.e(p, s, a, b)), Equal.cong(I.Int, I.Int, z => Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), z, TP.p(p, a, I.Int.neg(b))), Sp.l(p, s, I.Int.neg(b)), I.Int.neg(Sp.l(p, s, b)), Sp.sym.l(p, s, b)), Equal.trans(I.Int, Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), I.Int.neg(Sp.l(p, s, b)), TP.p(p, a, I.Int.neg(b))), Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), I.Int.neg(Sp.l(p, s, b)), I.Int.neg(TP.p(p, a, b))), I.Int.neg(TP.e(p, s, a, b)), Equal.cong(I.Int, I.Int, z => Dk.e(p, Sp.h(p, s, a), Sp.l(p, s, a), I.Int.neg(Sp.h(p, s, b)), I.Int.neg(Sp.l(p, s, b)), z), TP.p(p, a, I.Int.neg(b)), I.Int.neg(TP.p(p, a, b)), RNi.nmr(p, a, b)), Dk.nb.e(p, Sp.h(p, s, a), Sp.l(p, s, a), Sp.h(p, s, b), Sp.l(p, s, b), TP.p(p, a, b)))))
+
+# Normalising
+# -----------
+# A representable n > 0 is N 2^j / 2^i with N in [2^(p-1), 2^p).
+
+def Lt.dself(+x: Nat, +h: {RD.Nat.lt(0n, x) == True{} : Bool}) -> {RD.Nat.lt(x, Nat.double(x)) == True{} : Bool}:
+  +w = RD.Nat.monus(x, 1n)
+  +ex : {x == 1n+w : Nat} = BP.Lt.wit(0n, x)(h)
+  Equal.trans(Bool, RD.Nat.lt(x, Nat.double(x)), RD.Nat.lt(x, Nat.add(x, 1n+w)), True{},
+    Equal.cong(Nat, Bool, z => RD.Nat.lt(x, z), Nat.double(x), Nat.add(x, 1n+w), Equal.trans(Nat, Nat.double(x), Nat.add(x, x), Nat.add(x, 1n+w), Y.Nat.double_add(x), Equal.cong(Nat, Nat, z => Nat.add(x, z), x, 1n+w, ex))),
+    BP.Lt.self(x, w))
+
+def Nm.top(+p1: Nat, +m: Nat, +hm: {RD.Nat.lt(RD.Nat.pow2(1n+p1), m) == False{} : Bool}, +hh: {RD.Nat.lt(m, RD.Nat.pow2(p1)) == False{} : Bool}, -G: Type,
+  k: @i: Nat -> @t: Nat -> @nn: Nat -> {Nat.mul(m, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(t)) : Nat} -> {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool} -> {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool} -> G,
+  l: Bool, +el: {RD.Nat.lt(m, RD.Nat.pow2(1n+p1)) == l : Bool}) -> G:
+  match l:
+    case True{}:
+      k(0n, 0n, m, {==}, el, hh)
+    case False{}:
+      # m = 2^p = 2^(p-1) 2
+      +H = RD.Nat.pow2(p1)
+      +em : {m == RD.Nat.pow2(1n+p1) : Nat} = Le.anti(m, RD.Nat.pow2(1n+p1), hm, el)
+      k(0n, 1n, H,
+        Equal.trans(Nat, Nat.mul(m, 1n), m, Nat.mul(H, 2n), NL.Nat.mul_one_r(m),
+          Equal.trans(Nat, m, Nat.double(H), Nat.mul(H, 2n), em, Equal.sym(Nat, Nat.mul(H, 2n), Nat.double(H), Equal.trans(Nat, Nat.mul(H, Nat.double(1n)), Nat.double(Nat.mul(H, 1n)), Nat.double(H), R.Nat.mul_double(H, 1n), Equal.cong(Nat, Nat, z => Nat.double(z), Nat.mul(H, 1n), H, NL.Nat.mul_one_r(H)))))),
+        Lt.dself(H, BP.Pow2.pos(p1)), E.Lt.irr(H))
+
+# m 2^(1+i) = (2m) 2^i
+def Nm.step(+p1: Nat, +m: Nat, -G: Type, k: @i: Nat -> @t: Nat -> @nn: Nat -> {Nat.mul(m, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(t)) : Nat} -> {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool} -> {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool} -> G, +i: Nat, +t: Nat, +nn: Nat,
+  +e: {Nat.mul(Nat.double(m), RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(t)) : Nat}, +h1: {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool}, +h2: {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool}) -> G:
+  +m2 = Nat.double(m)
+  k(1n+i, t, nn, Equal.trans(Nat, Nat.mul(m, RD.Nat.pow2(1n+i)), Nat.mul(m2, RD.Nat.pow2(i)), Nat.mul(nn, RD.Nat.pow2(t)),
+    Equal.trans(Nat, Nat.mul(m, Nat.double(RD.Nat.pow2(i))), Nat.double(Nat.mul(m, RD.Nat.pow2(i))), Nat.mul(m2, RD.Nat.pow2(i)), R.Nat.mul_double(m, RD.Nat.pow2(i)), Equal.sym(Nat, Nat.mul(m2, RD.Nat.pow2(i)), Nat.double(Nat.mul(m, RD.Nat.pow2(i))), BP.Mul.dbl_l(m, RD.Nat.pow2(i)))), e), h1, h2)
+
+def Nm.go(+p1: Nat, +f: Nat, +m: Nat, +hf: {RD.Nat.lt(Nat.mul(m, RD.Nat.pow2(f)), RD.Nat.pow2(p1)) == False{} : Bool}, +hm: {RD.Nat.lt(RD.Nat.pow2(1n+p1), m) == False{} : Bool}, -G: Type,
+  k: @i: Nat -> @t: Nat -> @nn: Nat -> {Nat.mul(m, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(t)) : Nat} -> {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool} -> {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool} -> G,
+  l: Bool, +el: {RD.Nat.lt(m, RD.Nat.pow2(p1)) == l : Bool}) -> G:
+  match f:
+    case 0n:
+      match l:
+        case False{}:
+          Nm.top(p1, m, hm, el, G, k, RD.Nat.lt(m, RD.Nat.pow2(1n+p1)), {==})
+        case True{}:
+          # m 2^0 >= 2^(p-1) > m
+          +hh : {RD.Nat.lt(m, RD.Nat.pow2(p1)) == False{} : Bool} = E.Le.trans(RD.Nat.pow2(p1), Nat.mul(m, 1n), m, hf, E.Le.eq(Nat.mul(m, 1n), m, NL.Nat.mul_one_r(m)))
+          Empty.absurd(G, Z.Bool.ft(Equal.trans(Bool, False{}, RD.Nat.lt(m, RD.Nat.pow2(p1)), True{}, Equal.sym(Bool, RD.Nat.lt(m, RD.Nat.pow2(p1)), False{}, hh), el)))
+    case 1n+(+f2):
+      match l:
+        case False{}:
+          Nm.top(p1, m, hm, el, G, k, RD.Nat.lt(m, RD.Nat.pow2(1n+p1)), {==})
+        case True{}:
+          +H = RD.Nat.pow2(p1)
+          +m2 = Nat.double(m)
+          +em : {Nat.mul(m, RD.Nat.pow2(1n+f2)) == Nat.mul(m2, RD.Nat.pow2(f2)) : Nat} = Equal.trans(Nat, Nat.mul(m, Nat.double(RD.Nat.pow2(f2))), Nat.double(Nat.mul(m, RD.Nat.pow2(f2))), Nat.mul(m2, RD.Nat.pow2(f2)),
+            R.Nat.mul_double(m, RD.Nat.pow2(f2)), Equal.sym(Nat, Nat.mul(m2, RD.Nat.pow2(f2)), Nat.double(Nat.mul(m, RD.Nat.pow2(f2))), BP.Mul.dbl_l(m, RD.Nat.pow2(f2))))
+          +hf2 : {RD.Nat.lt(Nat.mul(m2, RD.Nat.pow2(f2)), H) == False{} : Bool} = E.Le.trans(H, Nat.mul(m, RD.Nat.pow2(1n+f2)), Nat.mul(m2, RD.Nat.pow2(f2)), hf, E.Le.eq(Nat.mul(m, RD.Nat.pow2(1n+f2)), Nat.mul(m2, RD.Nat.pow2(f2)), em))
+          +hm2 : {RD.Nat.lt(RD.Nat.pow2(1n+p1), m2) == False{} : Bool} = E.Le.dd(m, H, Lt.to_le(m, H, el))
+          Nm.go(p1, f2, m2, hf2, hm2, G,
+            i => t => nn => e => h1 => h2 => Nm.step(p1, m, G, k, i, t, nn, e, h1, h2),
+            RD.Nat.lt(m2, H), {==})
+
+# 1 <= m <= 2^p: m 2^i = N 2^t with N in [2^(p-1), 2^p)
+def Nm(+p1: Nat, +m: Nat, +hm: {RD.Nat.lt(RD.Nat.pow2(1n+p1), m) == False{} : Bool}, +h1: {RD.Nat.lt(m, 1n) == False{} : Bool}, -G: Type,
+  k: @i: Nat -> @t: Nat -> @nn: Nat -> {Nat.mul(m, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(t)) : Nat} -> {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool} -> {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool} -> G) -> G:
+  +H = RD.Nat.pow2(p1)
+  +hf : {RD.Nat.lt(Nat.mul(m, H), H) == False{} : Bool} = E.Le.trans(H, Nat.mul(1n, H), Nat.mul(m, H), E.Le.eq(H, Nat.mul(1n, H), Equal.sym(Nat, Nat.mul(1n, H), H, NL.Nat.add_zero_r(H))), Le.mulr(1n, m, H, h1))
+  Nm.go(p1, p1, m, hf, hm, G, k, RD.Nat.lt(m, H), {==})
+
+def Nz.one(+n: Nat, +m: Nat, +j: Nat, +e: {n == Nat.mul(m, RD.Nat.pow2(j)) : Nat}, +h0: {RD.Nat.lt(0n, n) == True{} : Bool}) -> {RD.Nat.lt(m, 1n) == False{} : Bool}:
+  match m:
+    case 0n:
+      Empty.absurd({RD.Nat.lt(0n, 1n) == False{} : Bool}, Z.Bool.ft(Equal.trans(Bool, False{}, RD.Nat.lt(0n, n), True{}, Equal.cong(Nat, Bool, z => RD.Nat.lt(0n, z), 0n, n, Equal.sym(Nat, n, 0n, e)), h0)))
+    case 1n+(+m2):
+      BP.Lt.z(m2)
+
+def Nz.step(+p1: Nat, +n: Nat, +mm: Nat, +jj: Nat, +en: {n == Nat.mul(mm, RD.Nat.pow2(jj)) : Nat}, -G: Type, k: @i: Nat -> @j: Nat -> @nn: Nat -> {Nat.mul(n, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(j)) : Nat} -> {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool} -> {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool} -> G, +i: Nat, +t: Nat, +nn: Nat,
+  +e: {Nat.mul(mm, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(t)) : Nat}, +h1: {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool}, +h2: {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool}) -> G:
+  k(i, Nat.add(t, jj), nn,
+      Equal.trans(Nat, Nat.mul(n, RD.Nat.pow2(i)), Nat.mul(Nat.mul(mm, RD.Nat.pow2(jj)), RD.Nat.pow2(i)), Nat.mul(nn, RD.Nat.pow2(Nat.add(t, jj))),
+        Equal.cong(Nat, Nat, z => Nat.mul(z, RD.Nat.pow2(i)), n, Nat.mul(mm, RD.Nat.pow2(jj)), en),
+        Equal.trans(Nat, Nat.mul(Nat.mul(mm, RD.Nat.pow2(jj)), RD.Nat.pow2(i)), Nat.mul(Nat.mul(nn, RD.Nat.pow2(t)), RD.Nat.pow2(jj)), Nat.mul(nn, RD.Nat.pow2(Nat.add(t, jj))),
+          R.NatN.eq2([mm, RD.Nat.pow2(jj), RD.Nat.pow2(i), nn, RD.Nat.pow2(t)], R.Ml(R.Ml(R.V(0n), R.V(1n)), R.V(2n)), R.Ml(R.Ml(R.V(3n), R.V(4n)), R.V(1n)), [R.V(1n)], [R.Ad(R.Ml(R.V(0n), R.V(2n)), R.Ng(R.Ml(R.V(3n), R.V(4n))))], [],
+            {==}, (R.NatN.z([mm, RD.Nat.pow2(jj), RD.Nat.pow2(i), nn, RD.Nat.pow2(t)], R.Ml(R.V(0n), R.V(2n)), R.Ml(R.V(3n), R.V(4n)), {==}, {==}, e), Unit{}), Unit{}, {==}, {==}),
+          Equal.sym(Nat, Nat.mul(nn, RD.Nat.pow2(Nat.add(t, jj))), Nat.mul(Nat.mul(nn, RD.Nat.pow2(t)), RD.Nat.pow2(jj)), E.Sh.mul(nn, jj, t, Nat.add(t, jj), NL.Nat.add_comm(t, jj))))),
+      h1, h2)
+
+# a representable n > 0: n 2^i = N 2^j, N in [2^(p-1), 2^p)
+def Nz(+p1: Nat, +n: Nat, +fn: {E.Rn(1n+p1, n) == n : Nat}, +h0: {RD.Nat.lt(0n, n) == True{} : Bool}, -G: Type,
+  k: @i: Nat -> @j: Nat -> @nn: Nat -> {Nat.mul(n, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(j)) : Nat} -> {RD.Nat.lt(nn, RD.Nat.pow2(1n+p1)) == True{} : Bool} -> {RD.Nat.lt(nn, RD.Nat.pow2(p1)) == False{} : Bool} -> G) -> G:
+  +p : Nat = 1n+p1
+  +mm = E.Fm.m(p, n)
+  +jj = E.Fm.j(p, n)
+  +en : {n == Nat.mul(mm, RD.Nat.pow2(jj)) : Nat} = E.Fm.of(p1, n, fn)
+  Nm(p1, mm, E.Fm.le2(p1, n), Nz.one(n, mm, jj, en, h0), G,
+    i => t => nn => e => h1 => h2 => Nz.step(p1, n, mm, jj, en, G, k, i, t, nn, e, h1, h2))
+
+# Zero
+# ----
+
+def Rn.z(+p1: Nat) -> {E.Rn(1n+p1, 0n) == 0n : Nat}:
+  E.Small(p1, 0n, BP.Lt.z(RD.Nat.pow2(1n+p1)))
+
+def Z1(+p1: Nat, +x: I.Int, +h: {x == I.IPos{0n} : I.Int}) -> {E.RNi(1n+p1, x) == I.IPos{0n} : I.Int}:
+  Equal.trans(I.Int, E.RNi(1n+p1, x), E.RNi(1n+p1, I.IPos{0n}), I.IPos{0n}, Equal.cong(I.Int, I.Int, z => E.RNi(1n+p1, z), x, I.IPos{0n}, h), Equal.cong(Nat, I.Int, z => I.IPos{z}, E.Rn(1n+p1, 0n), 0n, Rn.z(p1)))
+
+def Int.mul0l(+x: I.Int) -> {I.Int.mul(I.IPos{0n}, x) == I.IPos{0n} : I.Int}:
+  match x:
+    case I.IPos{+n}:
+      {==}
+    case I.INeg{+n}:
+      {==}
+
+def Int.mul0r(+x: I.Int) -> {I.Int.mul(x, I.IPos{0n}) == I.IPos{0n} : I.Int}:
+  match x:
+    case I.IPos{+n}:
+      Equal.trans(I.Int, I.Int.mul(I.IPos{n}, I.IPos{0n}), I.IPos{Nat.mul(n, 0n)}, I.IPos{0n}, Int.mulpp(n, 0n), Equal.cong(Nat, I.Int, z => I.IPos{z}, Nat.mul(n, 0n), 0n, NL.Nat.mul_zero_r(n)))
+    case I.INeg{+n}:
+      {==}
+
+def V.z(+p1: Nat, +s: Nat) -> {V.hi(1n+p1, s, 0n) == 0n : Nat}:
+  +p : Nat = 1n+p1
+  +eg : {V.g(p, s, 0n) == 0n : Nat} = Equal.trans(Nat, V.g(p, s, 0n), E.Rn(p, 0n), 0n, Equal.cong(Nat, Nat, z => E.Rn(p, z), Nat.mul(1n+RD.Nat.pow2(s), 0n), 0n, NL.Nat.mul_zero_r(1n+RD.Nat.pow2(s))), Rn.z(p1))
+  +ex : {V.x(p, s, 0n) == 0n : Nat} = Equal.cong(Nat, Nat, z => RD.Nat.monus(z, 0n), V.g(p, s, 0n), 0n, eg)
+  +ed : {V.d(p, s, 0n) == 0n : Nat} = Equal.trans(Nat, V.d(p, s, 0n), E.Rn(p, 0n), 0n, Equal.cong(Nat, Nat, z => E.Rn(p, z), V.x(p, s, 0n), 0n, ex), Rn.z(p1))
+  Equal.trans(Nat, V.hi(p, s, 0n), RD.Nat.monus(0n, V.d(p, s, 0n)), 0n, Equal.cong(Nat, Nat, z => RD.Nat.monus(z, V.d(p, s, 0n)), V.g(p, s, 0n), 0n, eg), Equal.cong(Nat, Nat, z => RD.Nat.monus(0n, z), V.d(p, s, 0n), 0n, ed))
+
+def Sp.z.h(+p1: Nat, +s: Nat) -> {Sp.h(1n+p1, s, I.IPos{0n}) == I.IPos{0n} : I.Int}:
+  +p : Nat = 1n+p1
+  +hi = V.hi(p, s, 0n)
+  Equal.trans(I.Int, Sp.h(p, s, I.IPos{0n}), I.IPos{hi}, I.IPos{0n}, Pair.fst({Sp.h(p, s, I.IPos{0n}) == I.IPos{hi} : I.Int}, {Sp.l(p, s, I.IPos{0n}) == I.Int.add(I.IPos{0n}, I.Int.neg(I.IPos{hi})) : I.Int}, Sp.pos(p1, s, 0n, Rn.z(p1))),
+    Equal.cong(Nat, I.Int, z => I.IPos{z}, hi, 0n, V.z(p1, s)))
+
+def Sp.z.l(+p1: Nat, +s: Nat) -> {Sp.l(1n+p1, s, I.IPos{0n}) == I.IPos{0n} : I.Int}:
+  +p : Nat = 1n+p1
+  +hi = V.hi(p, s, 0n)
+  Equal.trans(I.Int, Sp.l(p, s, I.IPos{0n}), I.Int.add(I.IPos{0n}, I.Int.neg(I.IPos{hi})), I.IPos{0n}, Pair.snd({Sp.h(p, s, I.IPos{0n}) == I.IPos{hi} : I.Int}, {Sp.l(p, s, I.IPos{0n}) == I.Int.add(I.IPos{0n}, I.Int.neg(I.IPos{hi})) : I.Int}, Sp.pos(p1, s, 0n, Rn.z(p1))),
+    Equal.cong(Nat, I.Int, z => I.Int.add(I.IPos{0n}, I.Int.neg(I.IPos{z})), hi, 0n, V.z(p1, s)))
+
+def Dk.zl(+p1: Nat, +bh: I.Int, +bl: I.Int) -> {Dk.e(1n+p1, I.IPos{0n}, I.IPos{0n}, bh, bl, I.IPos{0n}) == I.IPos{0n} : I.Int}:
+  +p : Nat = 1n+p1
+  +h1 : {Dk.e1(p, I.IPos{0n}, bh, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.add(E.RNi(p, I.Int.mul(I.IPos{0n}, bh)), I.Int.neg(I.IPos{0n})), Equal.cong(I.Int, I.Int, z => I.Int.add(z, I.Int.neg(I.IPos{0n})), E.RNi(p, I.Int.mul(I.IPos{0n}, bh)), I.IPos{0n}, Z1(p1, I.Int.mul(I.IPos{0n}, bh), Int.mul0l(bh))))
+  +h2 : {Dk.e2(p, I.IPos{0n}, bh, bl, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.add(Dk.e1(p, I.IPos{0n}, bh, I.IPos{0n}), E.RNi(p, I.Int.mul(I.IPos{0n}, bl))), Y.Int.cong2(Dk.e1(p, I.IPos{0n}, bh, I.IPos{0n}), I.IPos{0n}, E.RNi(p, I.Int.mul(I.IPos{0n}, bl)), I.IPos{0n}, h1, Z1(p1, I.Int.mul(I.IPos{0n}, bl), Int.mul0l(bl))))
+  +h3 : {Dk.e3(p, I.IPos{0n}, I.IPos{0n}, bh, bl, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.add(Dk.e2(p, I.IPos{0n}, bh, bl, I.IPos{0n}), E.RNi(p, I.Int.mul(I.IPos{0n}, bh))), Y.Int.cong2(Dk.e2(p, I.IPos{0n}, bh, bl, I.IPos{0n}), I.IPos{0n}, E.RNi(p, I.Int.mul(I.IPos{0n}, bh)), I.IPos{0n}, h2, Z1(p1, I.Int.mul(I.IPos{0n}, bh), Int.mul0l(bh))))
+  Z1(p1, I.Int.add(Dk.e3(p, I.IPos{0n}, I.IPos{0n}, bh, bl, I.IPos{0n}), E.RNi(p, I.Int.mul(I.IPos{0n}, bl))), Y.Int.cong2(Dk.e3(p, I.IPos{0n}, I.IPos{0n}, bh, bl, I.IPos{0n}), I.IPos{0n}, E.RNi(p, I.Int.mul(I.IPos{0n}, bl)), I.IPos{0n}, h3, Z1(p1, I.Int.mul(I.IPos{0n}, bl), Int.mul0l(bl))))
+
+def Dk.zr(+p1: Nat, +ah: I.Int, +al: I.Int) -> {Dk.e(1n+p1, ah, al, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}) == I.IPos{0n} : I.Int}:
+  +p : Nat = 1n+p1
+  +h1 : {Dk.e1(p, ah, I.IPos{0n}, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.add(E.RNi(p, I.Int.mul(ah, I.IPos{0n})), I.Int.neg(I.IPos{0n})), Equal.cong(I.Int, I.Int, z => I.Int.add(z, I.Int.neg(I.IPos{0n})), E.RNi(p, I.Int.mul(ah, I.IPos{0n})), I.IPos{0n}, Z1(p1, I.Int.mul(ah, I.IPos{0n}), Int.mul0r(ah))))
+  +h2 : {Dk.e2(p, ah, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.add(Dk.e1(p, ah, I.IPos{0n}, I.IPos{0n}), E.RNi(p, I.Int.mul(ah, I.IPos{0n}))), Y.Int.cong2(Dk.e1(p, ah, I.IPos{0n}, I.IPos{0n}), I.IPos{0n}, E.RNi(p, I.Int.mul(ah, I.IPos{0n})), I.IPos{0n}, h1, Z1(p1, I.Int.mul(ah, I.IPos{0n}), Int.mul0r(ah))))
+  +h3 : {Dk.e3(p, ah, al, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.add(Dk.e2(p, ah, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}), E.RNi(p, I.Int.mul(al, I.IPos{0n}))), Y.Int.cong2(Dk.e2(p, ah, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}), I.IPos{0n}, E.RNi(p, I.Int.mul(al, I.IPos{0n})), I.IPos{0n}, h2, Z1(p1, I.Int.mul(al, I.IPos{0n}), Int.mul0r(al))))
+  Z1(p1, I.Int.add(Dk.e3(p, ah, al, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}), E.RNi(p, I.Int.mul(al, I.IPos{0n}))), Y.Int.cong2(Dk.e3(p, ah, al, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}), I.IPos{0n}, E.RNi(p, I.Int.mul(al, I.IPos{0n})), I.IPos{0n}, h3, Z1(p1, I.Int.mul(al, I.IPos{0n}), Int.mul0r(al))))
+
+# a zero input gives pi = e = 0
+def TP.zl(+p1: Nat, +s: Nat, +b: I.Int) -> {I.Int.add(TP.p(1n+p1, I.IPos{0n}, b), TP.e(1n+p1, s, I.IPos{0n}, b)) == I.Int.mul(I.IPos{0n}, b) : I.Int}:
+  +p : Nat = 1n+p1
+  +bh = Sp.h(p, s, b)
+  +bl = Sp.l(p, s, b)
+  +hp : {TP.p(p, I.IPos{0n}, b) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.mul(I.IPos{0n}, b), Int.mul0l(b))
+  +e1 = Equal.cong(I.Int, I.Int, z => Dk.e(p, z, Sp.l(p, s, I.IPos{0n}), bh, bl, TP.p(p, I.IPos{0n}, b)), Sp.h(p, s, I.IPos{0n}), I.IPos{0n}, Sp.z.h(p1, s))
+  +e2 = Equal.cong(I.Int, I.Int, z => Dk.e(p, I.IPos{0n}, z, bh, bl, TP.p(p, I.IPos{0n}, b)), Sp.l(p, s, I.IPos{0n}), I.IPos{0n}, Sp.z.l(p1, s))
+  +e3 = Equal.cong(I.Int, I.Int, z => Dk.e(p, I.IPos{0n}, I.IPos{0n}, bh, bl, z), TP.p(p, I.IPos{0n}, b), I.IPos{0n}, hp)
+  +he : {TP.e(p, s, I.IPos{0n}, b) == I.IPos{0n} : I.Int} = Equal.trans(I.Int, TP.e(p, s, I.IPos{0n}, b), Dk.e(p, I.IPos{0n}, Sp.l(p, s, I.IPos{0n}), bh, bl, TP.p(p, I.IPos{0n}, b)), I.IPos{0n}, e1,
+    Equal.trans(I.Int, Dk.e(p, I.IPos{0n}, Sp.l(p, s, I.IPos{0n}), bh, bl, TP.p(p, I.IPos{0n}, b)), Dk.e(p, I.IPos{0n}, I.IPos{0n}, bh, bl, TP.p(p, I.IPos{0n}, b)), I.IPos{0n}, e2,
+      Equal.trans(I.Int, Dk.e(p, I.IPos{0n}, I.IPos{0n}, bh, bl, TP.p(p, I.IPos{0n}, b)), Dk.e(p, I.IPos{0n}, I.IPos{0n}, bh, bl, I.IPos{0n}), I.IPos{0n}, e3, Dk.zl(p1, bh, bl))))
+  Equal.trans(I.Int, I.Int.add(TP.p(p, I.IPos{0n}, b), TP.e(p, s, I.IPos{0n}, b)), I.IPos{0n}, I.Int.mul(I.IPos{0n}, b), Y.Int.cong2(TP.p(p, I.IPos{0n}, b), I.IPos{0n}, TP.e(p, s, I.IPos{0n}, b), I.IPos{0n}, hp, he), Equal.sym(I.Int, I.Int.mul(I.IPos{0n}, b), I.IPos{0n}, Int.mul0l(b)))
+
+def TP.zr(+p1: Nat, +s: Nat, +a: I.Int) -> {I.Int.add(TP.p(1n+p1, a, I.IPos{0n}), TP.e(1n+p1, s, a, I.IPos{0n})) == I.Int.mul(a, I.IPos{0n}) : I.Int}:
+  +p : Nat = 1n+p1
+  +ah = Sp.h(p, s, a)
+  +al = Sp.l(p, s, a)
+  +hp : {TP.p(p, a, I.IPos{0n}) == I.IPos{0n} : I.Int} = Z1(p1, I.Int.mul(a, I.IPos{0n}), Int.mul0r(a))
+  +e1 = Equal.cong(I.Int, I.Int, z => Dk.e(p, ah, al, z, Sp.l(p, s, I.IPos{0n}), TP.p(p, a, I.IPos{0n})), Sp.h(p, s, I.IPos{0n}), I.IPos{0n}, Sp.z.h(p1, s))
+  +e2 = Equal.cong(I.Int, I.Int, z => Dk.e(p, ah, al, I.IPos{0n}, z, TP.p(p, a, I.IPos{0n})), Sp.l(p, s, I.IPos{0n}), I.IPos{0n}, Sp.z.l(p1, s))
+  +e3 = Equal.cong(I.Int, I.Int, z => Dk.e(p, ah, al, I.IPos{0n}, I.IPos{0n}, z), TP.p(p, a, I.IPos{0n}), I.IPos{0n}, hp)
+  +he : {TP.e(p, s, a, I.IPos{0n}) == I.IPos{0n} : I.Int} = Equal.trans(I.Int, TP.e(p, s, a, I.IPos{0n}), Dk.e(p, ah, al, I.IPos{0n}, Sp.l(p, s, I.IPos{0n}), TP.p(p, a, I.IPos{0n})), I.IPos{0n}, e1,
+    Equal.trans(I.Int, Dk.e(p, ah, al, I.IPos{0n}, Sp.l(p, s, I.IPos{0n}), TP.p(p, a, I.IPos{0n})), Dk.e(p, ah, al, I.IPos{0n}, I.IPos{0n}, TP.p(p, a, I.IPos{0n})), I.IPos{0n}, e2,
+      Equal.trans(I.Int, Dk.e(p, ah, al, I.IPos{0n}, I.IPos{0n}, TP.p(p, a, I.IPos{0n})), Dk.e(p, ah, al, I.IPos{0n}, I.IPos{0n}, I.IPos{0n}), I.IPos{0n}, e3, Dk.zr(p1, ah, al))))
+  Equal.trans(I.Int, I.Int.add(TP.p(p, a, I.IPos{0n}), TP.e(p, s, a, I.IPos{0n})), I.IPos{0n}, I.Int.mul(a, I.IPos{0n}), Y.Int.cong2(TP.p(p, a, I.IPos{0n}), I.IPos{0n}, TP.e(p, s, a, I.IPos{0n}), I.IPos{0n}, hp, he), Equal.sym(I.Int, I.Int.mul(a, I.IPos{0n}), I.IPos{0n}, Int.mul0r(a)))
+
+# All representable inputs
+# ------------------------
+
+def Fx(+p: Nat, +s: Nat, +a: I.Int, +b: I.Int) -> I.Int:
+  I.Int.add(TP.p(p, a, b), TP.e(p, s, a, b))
+
+def Sh.eq(+i: Nat, +j: Nat, +n: Nat, +nn: Nat, +e: {Nat.mul(n, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(j)) : Nat}) -> {D.Int.sh(i, I.IPos{n}) == D.Int.sh(j, I.IPos{nn}) : I.Int}:
+  Equal.trans(I.Int, D.Int.sh(i, I.IPos{n}), I.IPos{Nat.mul(n, RD.Nat.pow2(i))}, D.Int.sh(j, I.IPos{nn}), R.Sh.ipos(i, n),
+    Equal.trans(I.Int, I.IPos{Nat.mul(n, RD.Nat.pow2(i))}, I.IPos{Nat.mul(nn, RD.Nat.pow2(j))}, D.Int.sh(j, I.IPos{nn}), Equal.cong(Nat, I.Int, z => I.IPos{z}, Nat.mul(n, RD.Nat.pow2(i)), Nat.mul(nn, RD.Nat.pow2(j)), e),
+      Equal.sym(I.Int, D.Int.sh(j, I.IPos{nn}), I.IPos{Nat.mul(nn, RD.Nat.pow2(j))}, R.Sh.ipos(j, nn))))
+
+# n 2^i = N 2^j and m 2^k = M 2^l with N, M normalised: scale, apply
+# TwoProd.norm, scale back
+def TP.asm(+s2: Nat, +n: Nat, +m: Nat, +i: Nat, +j: Nat, +nn: Nat, +e1: {Nat.mul(n, RD.Nat.pow2(i)) == Nat.mul(nn, RD.Nat.pow2(j)) : Nat}, +hnn1: {RD.Nat.lt(nn, RD.Nat.pow2(1n+Nat.add(1n+1n+s2, 1n+s2))) == True{} : Bool}, +hnn2: {RD.Nat.lt(nn, RD.Nat.pow2(Nat.add(1n+1n+s2, 1n+s2))) == False{} : Bool},
+  +k: Nat, +l: Nat, +mm: Nat, +e2: {Nat.mul(m, RD.Nat.pow2(k)) == Nat.mul(mm, RD.Nat.pow2(l)) : Nat}, +hmm1: {RD.Nat.lt(mm, RD.Nat.pow2(1n+Nat.add(1n+1n+s2, 1n+s2))) == True{} : Bool}, +hmm2: {RD.Nat.lt(mm, RD.Nat.pow2(Nat.add(1n+1n+s2, 1n+s2))) == False{} : Bool})
+  -> {Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{n}, I.IPos{m}) == I.Int.mul(I.IPos{n}, I.IPos{m}) : I.Int}:
+  +a : I.Int = I.IPos{n}
+  +b : I.Int = I.IPos{m}
+  +a2 : I.Int = I.IPos{nn}
+  +b2 : I.Int = I.IPos{mm}
+  +ea = Sh.eq(i, j, n, nn, e1)
+  +eb = Sh.eq(k, l, m, mm, e2)
+  +ik = Nat.add(i, k)
+  +jl = Nat.add(j, l)
+  +x = Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a, b)
+  +q1 = Y.Int.sh_add(ik, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a, b), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a, b))
+  +q2 = Y.Int.cong2(D.Int.sh(ik, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a, b)), TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), D.Int.sh(i, a), D.Int.sh(k, b)), D.Int.sh(ik, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a, b)), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(i, a), D.Int.sh(k, b)),
+    Equal.sym(I.Int, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), D.Int.sh(i, a), D.Int.sh(k, b)), D.Int.sh(ik, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a, b)), TP.sh.p(1n+Nat.add(1n+1n+s2, 1n+s2), i, k, a, b)), Equal.sym(I.Int, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(i, a), D.Int.sh(k, b)), D.Int.sh(ik, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a, b)), TP.sh.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, i, k, a, b)))
+  +q3 = Equal.trans(I.Int, Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(i, a), D.Int.sh(k, b)), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(j, a2), D.Int.sh(k, b)), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(j, a2), D.Int.sh(l, b2)), Equal.cong(I.Int, I.Int, z => Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, z, D.Int.sh(k, b)), D.Int.sh(i, a), D.Int.sh(j, a2), ea), Equal.cong(I.Int, I.Int, z => Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(j, a2), z), D.Int.sh(k, b), D.Int.sh(l, b2), eb))
+  +q4 = Y.Int.cong2(TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), D.Int.sh(j, a2), D.Int.sh(l, b2)), D.Int.sh(jl, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a2, b2)), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(j, a2), D.Int.sh(l, b2)), D.Int.sh(jl, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2)), TP.sh.p(1n+Nat.add(1n+1n+s2, 1n+s2), j, l, a2, b2), TP.sh.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, j, l, a2, b2))
+  +q5 = Equal.sym(I.Int, D.Int.sh(jl, Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2)), I.Int.add(D.Int.sh(jl, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a2, b2)), D.Int.sh(jl, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2))), Y.Int.sh_add(jl, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a2, b2), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2)))
+  +q6 = Equal.cong(I.Int, I.Int, z => D.Int.sh(jl, z), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2), I.Int.mul(a2, b2), TwoProd.norm(s2, nn, mm, hnn1, hnn2, hmm1, hmm2))
+  +q7 = Equal.sym(I.Int, I.Int.mul(D.Int.sh(j, a2), D.Int.sh(l, b2)), D.Int.sh(jl, I.Int.mul(a2, b2)), Sh.mul2(j, l, a2, b2))
+  +q8 = Equal.trans(I.Int, I.Int.mul(D.Int.sh(j, a2), D.Int.sh(l, b2)), I.Int.mul(D.Int.sh(i, a), D.Int.sh(l, b2)), I.Int.mul(D.Int.sh(i, a), D.Int.sh(k, b)), Equal.cong(I.Int, I.Int, z => I.Int.mul(z, D.Int.sh(l, b2)), D.Int.sh(j, a2), D.Int.sh(i, a), Equal.sym(I.Int, D.Int.sh(i, a), D.Int.sh(j, a2), ea)), Equal.cong(I.Int, I.Int, z => I.Int.mul(D.Int.sh(i, a), z), D.Int.sh(l, b2), D.Int.sh(k, b), Equal.sym(I.Int, D.Int.sh(k, b), D.Int.sh(l, b2), eb)))
+  +q9 = Sh.mul2(i, k, a, b)
+  +c1 = Equal.trans(I.Int, D.Int.sh(ik, x), I.Int.add(D.Int.sh(ik, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a, b)), D.Int.sh(ik, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a, b))), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(i, a), D.Int.sh(k, b)), q1, q2)
+  +c2 = Equal.trans(I.Int, D.Int.sh(ik, x), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(i, a), D.Int.sh(k, b)), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(j, a2), D.Int.sh(l, b2)), c1, q3)
+  +c3 = Equal.trans(I.Int, D.Int.sh(ik, x), Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Int.sh(j, a2), D.Int.sh(l, b2)), I.Int.add(D.Int.sh(jl, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a2, b2)), D.Int.sh(jl, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2))), c2, q4)
+  +c4 = Equal.trans(I.Int, D.Int.sh(ik, x), I.Int.add(D.Int.sh(jl, TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a2, b2)), D.Int.sh(jl, TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2))), D.Int.sh(jl, Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2)), c3, q5)
+  +c5 = Equal.trans(I.Int, D.Int.sh(ik, x), D.Int.sh(jl, Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a2, b2)), D.Int.sh(jl, I.Int.mul(a2, b2)), c4, q6)
+  +c6 = Equal.trans(I.Int, D.Int.sh(ik, x), D.Int.sh(jl, I.Int.mul(a2, b2)), I.Int.mul(D.Int.sh(j, a2), D.Int.sh(l, b2)), c5, q7)
+  +c7 = Equal.trans(I.Int, D.Int.sh(ik, x), I.Int.mul(D.Int.sh(j, a2), D.Int.sh(l, b2)), I.Int.mul(D.Int.sh(i, a), D.Int.sh(k, b)), c6, q8)
+  +c8 = Equal.trans(I.Int, D.Int.sh(ik, x), I.Int.mul(D.Int.sh(i, a), D.Int.sh(k, b)), D.Int.sh(ik, I.Int.mul(a, b)), c7, q9)
+  Y.Int.sh_inj(ik, x, I.Int.mul(a, b))(c8)
+
+def TP.pos(+s2: Nat, +n: Nat, +m: Nat, +fn: {E.Rn(1n+Nat.add(1n+1n+s2, 1n+s2), n) == n : Nat}, +fm: {E.Rn(1n+Nat.add(1n+1n+s2, 1n+s2), m) == m : Nat})
+  -> {Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{n}, I.IPos{m}) == I.Int.mul(I.IPos{n}, I.IPos{m}) : I.Int}:
+  match n:
+    case 0n:
+      TP.zl(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{m})
+    case 1n+(+n2):
+      match m:
+        case 0n:
+          TP.zr(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{1n+n2})
+        case 1n+(+m2):
+          Nz(Nat.add(1n+1n+s2, 1n+s2), 1n+n2, fn, {==}, {Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{1n+n2}, I.IPos{1n+m2}) == I.Int.mul(I.IPos{1n+n2}, I.IPos{1n+m2}) : I.Int},
+            i => j => nn => e1 => h1 => h2 => Nz(Nat.add(1n+1n+s2, 1n+s2), 1n+m2, fm, {==}, {Fx(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{1n+n2}, I.IPos{1n+m2}) == I.Int.mul(I.IPos{1n+n2}, I.IPos{1n+m2}) : I.Int},
+              k => l => mm => e2 => h3 => h4 => TP.asm(s2, 1n+n2, 1n+m2, i, j, nn, e1, h1, h2, k, l, mm, e2, h3, h4)))
+
+def TP.ok.na(+p: Nat, +s: Nat, +a: I.Int, +b: I.Int, +h: {Fx(p, s, a, b) == I.Int.mul(a, b) : I.Int}) -> {Fx(p, s, I.Int.neg(a), b) == I.Int.mul(I.Int.neg(a), b) : I.Int}:
+  +x = TP.p(p, a, b)
+  +y = TP.e(p, s, a, b)
+  Equal.trans(I.Int, Fx(p, s, I.Int.neg(a), b), I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.mul(I.Int.neg(a), b), Y.Int.cong2(TP.p(p, I.Int.neg(a), b), I.Int.neg(x), TP.e(p, s, I.Int.neg(a), b), I.Int.neg(y), RNi.nml(p, a, b), TP.na.e(p, s, a, b)), Equal.trans(I.Int, I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.neg(I.Int.mul(a, b)), I.Int.mul(I.Int.neg(a), b), Equal.trans(I.Int, I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.neg(I.Int.add(x, y)), I.Int.neg(I.Int.mul(a, b)), BP.IntN([x, y], R.Ad(R.Ng(R.V(0n)), R.Ng(R.V(1n))), R.Ng(R.Ad(R.V(0n), R.V(1n))), [], [], {==}, Unit{}), Equal.cong(I.Int, I.Int, z => I.Int.neg(z), I.Int.add(x, y), I.Int.mul(a, b), h)), BP.IntN([a, b], R.Ng(R.Ml(R.V(0n), R.V(1n))), R.Ml(R.Ng(R.V(0n)), R.V(1n)), [], [], {==}, Unit{})))
+
+def TP.ok.nb(+p: Nat, +s: Nat, +a: I.Int, +b: I.Int, +h: {Fx(p, s, a, b) == I.Int.mul(a, b) : I.Int}) -> {Fx(p, s, a, I.Int.neg(b)) == I.Int.mul(a, I.Int.neg(b)) : I.Int}:
+  +x = TP.p(p, a, b)
+  +y = TP.e(p, s, a, b)
+  Equal.trans(I.Int, Fx(p, s, a, I.Int.neg(b)), I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.mul(a, I.Int.neg(b)), Y.Int.cong2(TP.p(p, a, I.Int.neg(b)), I.Int.neg(x), TP.e(p, s, a, I.Int.neg(b)), I.Int.neg(y), RNi.nmr(p, a, b), TP.nb.e(p, s, a, b)), Equal.trans(I.Int, I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.neg(I.Int.mul(a, b)), I.Int.mul(a, I.Int.neg(b)), Equal.trans(I.Int, I.Int.add(I.Int.neg(x), I.Int.neg(y)), I.Int.neg(I.Int.add(x, y)), I.Int.neg(I.Int.mul(a, b)), BP.IntN([x, y], R.Ad(R.Ng(R.V(0n)), R.Ng(R.V(1n))), R.Ng(R.Ad(R.V(0n), R.V(1n))), [], [], {==}, Unit{}), Equal.cong(I.Int, I.Int, z => I.Int.neg(z), I.Int.add(x, y), I.Int.mul(a, b), h)), BP.IntN([a, b], R.Ng(R.Ml(R.V(0n), R.V(1n))), R.Ml(R.V(0n), R.Ng(R.V(1n))), [], [], {==}, Unit{})))
+
+# Dekker's product is exact: for p = 2s with s >= 2 and every representable
+# a, b, pi = RN(a b) and num/df32.bend's e give pi + e = a b
+def TwoProd(+s2: Nat, +a: I.Int, +b: I.Int, +fa: {E.Rn(1n+Nat.add(1n+1n+s2, 1n+s2), RD.Int.mag(a)) == RD.Int.mag(a) : Nat}, +fb: {E.Rn(1n+Nat.add(1n+1n+s2, 1n+s2), RD.Int.mag(b)) == RD.Int.mag(b) : Nat})
+  -> {I.Int.add(TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), a, b), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, a, b)) == I.Int.mul(a, b) : I.Int}:
+  match a b:
+    case I.IPos{+n} I.IPos{+m}:
+      TP.pos(s2, n, m, fa, fb)
+    case I.INeg{+x} I.IPos{+m}:
+      TP.ok.na(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{1n+x}, I.IPos{m}, TP.pos(s2, 1n+x, m, fa, fb))
+    case I.IPos{+n} I.INeg{+y}:
+      TP.ok.nb(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{n}, I.IPos{1n+y}, TP.pos(s2, n, 1n+y, fa, fb))
+    case I.INeg{+x} I.INeg{+y}:
+      TP.ok.na(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{1n+x}, I.INeg{y}, TP.ok.nb(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, I.IPos{1n+x}, I.IPos{1n+y}, TP.pos(s2, 1n+x, 1n+y, fa, fb)))
+
+# In dyadic arithmetic
+# --------------------
+# Rounding to p bits commutes with the grid: R(N / 2^k) = R(N) / 2^k
+# (Rne.of, any k), and binary32's rounding does on the grid 2^-149 (FlL,
+# subnormals included). So the split and Dekker's product in Dy arithmetic
+# are the integer ones above, divided by 2^k.
+
+# R(N / 2^k) = RNi(N) / 2^k, binary rounding with no exponent bounds
+def Rne.of(+p1: Nat, +k: Nat, +nn: I.Int) -> {RD.Dy.rne(1n+p1, D.Dy.of(k, nn)) == D.Dy.of(k, E.RNi(1n+p1, nn)) : D.Dy}:
+  +p : Nat = 1n+p1
+  +x = D.Dy.of(k, nn)
+  +d = D.Dy.den(x)
+  +n = D.Dy.num(x)
+  +j = RD.Nat.monus(k, d)
+  +r = E.Rn(p, RD.Int.mag(n))
+  +ek = E.Le.wit(d, k, E.Of.den.go(k, nn, D.Int.even(nn), {==}))
+  +en = E.Num.sh(k, nn)
+  +er = Equal.trans(I.Int, E.RNi(p, nn), E.RNi(p, D.Int.sh(j, n)), D.Int.sh(j, RD.Int.signed(n, r)), Equal.cong(I.Int, I.Int, z => E.RNi(p, z), nn, D.Int.sh(j, n), en), E.RNi.sh(p, j, n))
+  Equal.sym(D.Dy, D.Dy.of(k, E.RNi(p, nn)), D.Dy.of(d, RD.Int.signed(n, r)),
+    Equal.trans(D.Dy, D.Dy.of(k, E.RNi(p, nn)), D.Dy.of(Nat.add(d, j), D.Int.sh(j, RD.Int.signed(n, r))), D.Dy.of(d, RD.Int.signed(n, r)),
+      Y.Of.cong(k, Nat.add(d, j), E.RNi(p, nn), D.Int.sh(j, RD.Int.signed(n, r)), ek, er), Y.Of.shift(j, d, RD.Int.signed(n, r))))
+
+# a / 2^k1 times b / 2^k2 is a b / 2^(k1 + k2)
+def Mul.of(+k1: Nat, +a: I.Int, +k2: Nat, +b: I.Int) -> {D.Dy.mul(D.Dy.of(k1, a), D.Dy.of(k2, b)) == D.Dy.of(Nat.add(k1, k2), I.Int.mul(a, b)) : D.Dy}:
+  +nx = D.Dy.num(D.Dy.of(k1, a))
+  +ny = D.Dy.num(D.Dy.of(k2, b))
+  +dx = D.Dy.den(D.Dy.of(k1, a))
+  +dy = D.Dy.den(D.Dy.of(k2, b))
+  +env : List<&2, I.Int> = [nx, ny, a, b, Y.P(k1), Y.P(k2), Y.P(dx), Y.P(dy), Y.P(Nat.add(k1, k2)), Y.P(Nat.add(dx, dy))]
+  Y.Of.eqvP(Nat.add(dx, dy), Nat.add(k1, k2), I.Int.mul(nx, ny), I.Int.mul(a, b), BP.IntN(env, R.Ml(R.Ml(R.V(0n), R.V(1n)), R.V(8n)), R.Ml(R.Ml(R.V(2n), R.V(3n)), R.V(9n)), [R.Ml(R.V(0n), R.V(1n)), R.Ml(R.V(1n), R.V(5n)), R.Ml(R.V(2n), R.V(6n)), R.Ng(R.Ml(R.V(2n), R.V(3n)))], [R.Ad(R.V(8n), R.Ng(R.Ml(R.V(4n), R.V(5n)))), R.Ad(R.Ml(R.V(0n), R.V(4n)), R.Ng(R.Ml(R.V(2n), R.V(6n)))), R.Ad(R.Ml(R.V(1n), R.V(5n)), R.Ng(R.Ml(R.V(3n), R.V(7n)))), R.Ad(R.V(9n), R.Ng(R.Ml(R.V(6n), R.V(7n))))], {==}, (IntZ(env, R.V(8n), R.Ml(R.V(4n), R.V(5n)), Y.P.add(k1, k2)), (IntZ(env, R.Ml(R.V(0n), R.V(4n)), R.Ml(R.V(2n), R.V(6n)), Y.Of.valP(k1, a)), (IntZ(env, R.Ml(R.V(1n), R.V(5n)), R.Ml(R.V(3n), R.V(7n)), Y.Of.valP(k2, b)), (IntZ(env, R.V(9n), R.Ml(R.V(6n), R.V(7n)), Y.P.add(dx, dy)), Unit{}))))))
+
+def Dsub(+k: Nat, +a: I.Int, +b: I.Int) -> {D.Dy.add(D.Dy.of(k, a), D.Dy.neg(D.Dy.of(k, b))) == D.Dy.of(k, I.Int.add(a, I.Int.neg(b))) : D.Dy}:
+  Equal.trans(D.Dy, D.Dy.add(D.Dy.of(k, a), D.Dy.neg(D.Dy.of(k, b))), D.Dy.add(D.Dy.of(k, a), D.Dy.of(k, I.Int.neg(b))), D.Dy.of(k, I.Int.add(a, I.Int.neg(b))),
+    Equal.cong(D.Dy, D.Dy, z => D.Dy.add(D.Dy.of(k, a), z), D.Dy.neg(D.Dy.of(k, b)), D.Dy.of(k, I.Int.neg(b)), Y.Of.neg(k, b)), Y.Add.of(k, a, I.Int.neg(b)))
+
+def Dmul(+k1: Nat, +k2: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(k1, a) : D.Dy}, +hy: {y == D.Dy.of(k2, b) : D.Dy}) -> {D.Dy.mul(x, y) == D.Dy.of(Nat.add(k1, k2), I.Int.mul(a, b)) : D.Dy}:
+  Equal.trans(D.Dy, D.Dy.mul(x, y), D.Dy.mul(D.Dy.of(k1, a), D.Dy.of(k2, b)), D.Dy.of(Nat.add(k1, k2), I.Int.mul(a, b)),
+    Equal.trans(D.Dy, D.Dy.mul(x, y), D.Dy.mul(D.Dy.of(k1, a), y), D.Dy.mul(D.Dy.of(k1, a), D.Dy.of(k2, b)), Equal.cong(D.Dy, D.Dy, z => D.Dy.mul(z, y), x, D.Dy.of(k1, a), hx), Equal.cong(D.Dy, D.Dy, z => D.Dy.mul(D.Dy.of(k1, a), z), y, D.Dy.of(k2, b), hy)),
+    Mul.of(k1, a, k2, b))
+
+def Dadd(+k: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(k, a) : D.Dy}, +hy: {y == D.Dy.of(k, b) : D.Dy}) -> {D.Dy.add(x, y) == D.Dy.of(k, I.Int.add(a, b)) : D.Dy}:
+  Equal.trans(D.Dy, D.Dy.add(x, y), D.Dy.add(D.Dy.of(k, a), D.Dy.of(k, b)), D.Dy.of(k, I.Int.add(a, b)), Y.Dy.cong2(x, D.Dy.of(k, a), y, D.Dy.of(k, b), hx, hy), Y.Add.of(k, a, b))
+
+def Dsub2(+k: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(k, a) : D.Dy}, +hy: {y == D.Dy.of(k, b) : D.Dy}) -> {D.Dy.add(x, D.Dy.neg(y)) == D.Dy.of(k, I.Int.add(a, I.Int.neg(b))) : D.Dy}:
+  Equal.trans(D.Dy, D.Dy.add(x, D.Dy.neg(y)), D.Dy.add(D.Dy.of(k, a), D.Dy.neg(D.Dy.of(k, b))), D.Dy.of(k, I.Int.add(a, I.Int.neg(b))),
+    Y.Dy.cong2(x, D.Dy.of(k, a), D.Dy.neg(y), D.Dy.neg(D.Dy.of(k, b)), hx, Equal.cong(D.Dy, D.Dy, z => D.Dy.neg(z), y, D.Dy.of(k, b), hy)), Dsub(k, a, b))
+
+def Rr.e(+x: D.Dy, +y: D.Dy, +e: {x == y : D.Dy}, +p1: Nat) -> {RD.Dy.rne(1n+p1, x) == RD.Dy.rne(1n+p1, y) : D.Dy}:
+  Equal.cong(D.Dy, D.Dy, z => RD.Dy.rne(1n+p1, z), x, y, e)
+
+def Rr.add(+p1: Nat, +k: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(k, a) : D.Dy}, +hy: {y == D.Dy.of(k, b) : D.Dy}) -> {RD.Dy.rne(1n+p1, D.Dy.add(x, y)) == D.Dy.of(k, E.RNi(1n+p1, I.Int.add(a, b))) : D.Dy}:
+  Equal.trans(D.Dy, RD.Dy.rne(1n+p1, D.Dy.add(x, y)), RD.Dy.rne(1n+p1, D.Dy.of(k, I.Int.add(a, b))), D.Dy.of(k, E.RNi(1n+p1, I.Int.add(a, b))), Rr.e(D.Dy.add(x, y), D.Dy.of(k, I.Int.add(a, b)), Dadd(k, x, a, y, b, hx, hy), p1), Rne.of(p1, k, I.Int.add(a, b)))
+
+def Rr.sub(+p1: Nat, +k: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(k, a) : D.Dy}, +hy: {y == D.Dy.of(k, b) : D.Dy}) -> {RD.Dy.rne(1n+p1, D.Dy.add(x, D.Dy.neg(y))) == D.Dy.of(k, E.RNi(1n+p1, I.Int.add(a, I.Int.neg(b)))) : D.Dy}:
+  Equal.trans(D.Dy, RD.Dy.rne(1n+p1, D.Dy.add(x, D.Dy.neg(y))), RD.Dy.rne(1n+p1, D.Dy.of(k, I.Int.add(a, I.Int.neg(b)))), D.Dy.of(k, E.RNi(1n+p1, I.Int.add(a, I.Int.neg(b)))), Rr.e(D.Dy.add(x, D.Dy.neg(y)), D.Dy.of(k, I.Int.add(a, I.Int.neg(b))), Dsub2(k, x, a, y, b, hx, hy), p1), Rne.of(p1, k, I.Int.add(a, I.Int.neg(b))))
+
+# c x, c an integer
+def Rr.mulc(+p1: Nat, +k: Nat, +c: I.Int, +x: D.Dy, +a: I.Int, +hx: {x == D.Dy.of(k, a) : D.Dy}) -> {RD.Dy.rne(1n+p1, D.Dy.mul(D.Dy.of(0n, c), x)) == D.Dy.of(k, E.RNi(1n+p1, I.Int.mul(c, a))) : D.Dy}:
+  Equal.trans(D.Dy, RD.Dy.rne(1n+p1, D.Dy.mul(D.Dy.of(0n, c), x)), RD.Dy.rne(1n+p1, D.Dy.of(k, I.Int.mul(c, a))), D.Dy.of(k, E.RNi(1n+p1, I.Int.mul(c, a))), Rr.e(D.Dy.mul(D.Dy.of(0n, c), x), D.Dy.of(k, I.Int.mul(c, a)), Dmul(0n, k, D.Dy.of(0n, c), c, x, a, {==}, hx), p1), Rne.of(p1, k, I.Int.mul(c, a)))
+
+def DRr.g(+p1: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.mul(D.Dy.of(0n, Sp.c(s)), x))
+
+def DRr.d(+p1: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(x, D.Dy.neg(DRr.g(p1, s, x))))
+
+def DRr.h(+p1: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(DRr.g(p1, s, x), DRr.d(p1, s, x)))
+
+def DRr.l(+p1: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(x, D.Dy.neg(DRr.h(p1, s, x))))
+
+def DRr.lg(+p1: Nat, +k: Nat, +s: Nat, +a: I.Int) -> {DRr.g(p1, s, D.Dy.of(k, a)) == D.Dy.of(k, Sp.g(1n+p1, s, a)) : D.Dy}:
+  Rr.mulc(p1, k, Sp.c(s), D.Dy.of(k, a), a, {==})
+
+def DRr.ld(+p1: Nat, +k: Nat, +s: Nat, +a: I.Int) -> {DRr.d(p1, s, D.Dy.of(k, a)) == D.Dy.of(k, Sp.d(1n+p1, s, a)) : D.Dy}:
+  Rr.sub(p1, k, D.Dy.of(k, a), a, DRr.g(p1, s, D.Dy.of(k, a)), Sp.g(1n+p1, s, a), {==}, DRr.lg(p1, k, s, a))
+
+def DRr.lh(+p1: Nat, +k: Nat, +s: Nat, +a: I.Int) -> {DRr.h(p1, s, D.Dy.of(k, a)) == D.Dy.of(k, Sp.h(1n+p1, s, a)) : D.Dy}:
+  Rr.add(p1, k, DRr.g(p1, s, D.Dy.of(k, a)), Sp.g(1n+p1, s, a), DRr.d(p1, s, D.Dy.of(k, a)), Sp.d(1n+p1, s, a), DRr.lg(p1, k, s, a), DRr.ld(p1, k, s, a))
+
+def DRr.ll(+p1: Nat, +k: Nat, +s: Nat, +a: I.Int) -> {DRr.l(p1, s, D.Dy.of(k, a)) == D.Dy.of(k, Sp.l(1n+p1, s, a)) : D.Dy}:
+  Rr.sub(p1, k, D.Dy.of(k, a), a, DRr.h(p1, s, D.Dy.of(k, a)), Sp.h(1n+p1, s, a), {==}, DRr.lh(p1, k, s, a))
+
+# Veltkamp's split is exact in this rounding: hi + lo = a
+def DRr.split(+p1: Nat, +k: Nat, +s: Nat, +a: I.Int, +fa: {E.Rn(1n+p1, RD.Int.mag(a)) == RD.Int.mag(a) : Nat}) -> {D.Dy.add(DRr.h(p1, s, D.Dy.of(k, a)), DRr.l(p1, s, D.Dy.of(k, a))) == D.Dy.of(k, a) : D.Dy}:
+  +h = Sp.h(1n+p1, s, a)
+  Equal.trans(D.Dy, D.Dy.add(DRr.h(p1, s, D.Dy.of(k, a)), DRr.l(p1, s, D.Dy.of(k, a))), D.Dy.of(k, I.Int.add(h, Sp.l(1n+p1, s, a))), D.Dy.of(k, a),
+    Dadd(k, DRr.h(p1, s, D.Dy.of(k, a)), h, DRr.l(p1, s, D.Dy.of(k, a)), Sp.l(1n+p1, s, a), DRr.lh(p1, k, s, a), DRr.ll(p1, k, s, a)),
+    Y.Of.cong(k, k, I.Int.add(h, Sp.l(1n+p1, s, a)), a, {==},
+      Equal.trans(I.Int, I.Int.add(h, Sp.l(1n+p1, s, a)), I.Int.add(h, I.Int.add(a, I.Int.neg(h))), a, Equal.cong(I.Int, I.Int, z => I.Int.add(h, z), Sp.l(1n+p1, s, a), I.Int.add(a, I.Int.neg(h)), Split(p1, s, a, fa)),
+        BP.IntN([a, h], R.Ad(R.V(1n), R.Ad(R.V(0n), R.Ng(R.V(1n)))), R.V(0n), [], [], {==}, Unit{}))))
+
+def Rf.e(+x: D.Dy, +y: D.Dy, +e: {x == y : D.Dy}, +p1: Nat, +emin: Nat) -> {E.Flg(p1, emin, x) == E.Flg(p1, emin, y) : D.Dy}:
+  Equal.cong(D.Dy, D.Dy, z => E.Flg(p1, emin, z), x, y, e)
+
+def Rf.add(+p1: Nat, +emin: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(Nat.add(emin, p1), a) : D.Dy}, +hy: {y == D.Dy.of(Nat.add(emin, p1), b) : D.Dy}) -> {E.Flg(p1, emin, D.Dy.add(x, y)) == D.Dy.of(Nat.add(emin, p1), E.RNi(1n+p1, I.Int.add(a, b))) : D.Dy}:
+  Equal.trans(D.Dy, E.Flg(p1, emin, D.Dy.add(x, y)), E.Flg(p1, emin, D.Dy.of(Nat.add(emin, p1), I.Int.add(a, b))), D.Dy.of(Nat.add(emin, p1), E.RNi(1n+p1, I.Int.add(a, b))), Rf.e(D.Dy.add(x, y), D.Dy.of(Nat.add(emin, p1), I.Int.add(a, b)), Dadd(Nat.add(emin, p1), x, a, y, b, hx, hy), p1, emin), E.FlL(p1, emin, I.Int.add(a, b)))
+
+def Rf.sub(+p1: Nat, +emin: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(Nat.add(emin, p1), a) : D.Dy}, +hy: {y == D.Dy.of(Nat.add(emin, p1), b) : D.Dy}) -> {E.Flg(p1, emin, D.Dy.add(x, D.Dy.neg(y))) == D.Dy.of(Nat.add(emin, p1), E.RNi(1n+p1, I.Int.add(a, I.Int.neg(b)))) : D.Dy}:
+  Equal.trans(D.Dy, E.Flg(p1, emin, D.Dy.add(x, D.Dy.neg(y))), E.Flg(p1, emin, D.Dy.of(Nat.add(emin, p1), I.Int.add(a, I.Int.neg(b)))), D.Dy.of(Nat.add(emin, p1), E.RNi(1n+p1, I.Int.add(a, I.Int.neg(b)))), Rf.e(D.Dy.add(x, D.Dy.neg(y)), D.Dy.of(Nat.add(emin, p1), I.Int.add(a, I.Int.neg(b))), Dsub2(Nat.add(emin, p1), x, a, y, b, hx, hy), p1, emin), E.FlL(p1, emin, I.Int.add(a, I.Int.neg(b))))
+
+# c x, c an integer
+def Rf.mulc(+p1: Nat, +emin: Nat, +c: I.Int, +x: D.Dy, +a: I.Int, +hx: {x == D.Dy.of(Nat.add(emin, p1), a) : D.Dy}) -> {E.Flg(p1, emin, D.Dy.mul(D.Dy.of(0n, c), x)) == D.Dy.of(Nat.add(emin, p1), E.RNi(1n+p1, I.Int.mul(c, a))) : D.Dy}:
+  Equal.trans(D.Dy, E.Flg(p1, emin, D.Dy.mul(D.Dy.of(0n, c), x)), E.Flg(p1, emin, D.Dy.of(Nat.add(emin, p1), I.Int.mul(c, a))), D.Dy.of(Nat.add(emin, p1), E.RNi(1n+p1, I.Int.mul(c, a))), Rf.e(D.Dy.mul(D.Dy.of(0n, c), x), D.Dy.of(Nat.add(emin, p1), I.Int.mul(c, a)), Dmul(0n, Nat.add(emin, p1), D.Dy.of(0n, c), c, x, a, {==}, hx), p1, emin), E.FlL(p1, emin, I.Int.mul(c, a)))
+
+def DRf.g(+p1: Nat, +emin: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  E.Flg(p1, emin, D.Dy.mul(D.Dy.of(0n, Sp.c(s)), x))
+
+def DRf.d(+p1: Nat, +emin: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  E.Flg(p1, emin, D.Dy.add(x, D.Dy.neg(DRf.g(p1, emin, s, x))))
+
+def DRf.h(+p1: Nat, +emin: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  E.Flg(p1, emin, D.Dy.add(DRf.g(p1, emin, s, x), DRf.d(p1, emin, s, x)))
+
+def DRf.l(+p1: Nat, +emin: Nat, +s: Nat, +x: D.Dy) -> D.Dy:
+  E.Flg(p1, emin, D.Dy.add(x, D.Dy.neg(DRf.h(p1, emin, s, x))))
+
+def DRf.lg(+p1: Nat, +emin: Nat, +s: Nat, +a: I.Int) -> {DRf.g(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)) == D.Dy.of(Nat.add(emin, p1), Sp.g(1n+p1, s, a)) : D.Dy}:
+  Rf.mulc(p1, emin, Sp.c(s), D.Dy.of(Nat.add(emin, p1), a), a, {==})
+
+def DRf.ld(+p1: Nat, +emin: Nat, +s: Nat, +a: I.Int) -> {DRf.d(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)) == D.Dy.of(Nat.add(emin, p1), Sp.d(1n+p1, s, a)) : D.Dy}:
+  Rf.sub(p1, emin, D.Dy.of(Nat.add(emin, p1), a), a, DRf.g(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), Sp.g(1n+p1, s, a), {==}, DRf.lg(p1, emin, s, a))
+
+def DRf.lh(+p1: Nat, +emin: Nat, +s: Nat, +a: I.Int) -> {DRf.h(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)) == D.Dy.of(Nat.add(emin, p1), Sp.h(1n+p1, s, a)) : D.Dy}:
+  Rf.add(p1, emin, DRf.g(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), Sp.g(1n+p1, s, a), DRf.d(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), Sp.d(1n+p1, s, a), DRf.lg(p1, emin, s, a), DRf.ld(p1, emin, s, a))
+
+def DRf.ll(+p1: Nat, +emin: Nat, +s: Nat, +a: I.Int) -> {DRf.l(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)) == D.Dy.of(Nat.add(emin, p1), Sp.l(1n+p1, s, a)) : D.Dy}:
+  Rf.sub(p1, emin, D.Dy.of(Nat.add(emin, p1), a), a, DRf.h(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), Sp.h(1n+p1, s, a), {==}, DRf.lh(p1, emin, s, a))
+
+# Veltkamp's split is exact in this rounding: hi + lo = a
+def DRf.split(+p1: Nat, +emin: Nat, +s: Nat, +a: I.Int, +fa: {E.Rn(1n+p1, RD.Int.mag(a)) == RD.Int.mag(a) : Nat}) -> {D.Dy.add(DRf.h(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), DRf.l(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a))) == D.Dy.of(Nat.add(emin, p1), a) : D.Dy}:
+  +h = Sp.h(1n+p1, s, a)
+  Equal.trans(D.Dy, D.Dy.add(DRf.h(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), DRf.l(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a))), D.Dy.of(Nat.add(emin, p1), I.Int.add(h, Sp.l(1n+p1, s, a))), D.Dy.of(Nat.add(emin, p1), a),
+    Dadd(Nat.add(emin, p1), DRf.h(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), h, DRf.l(p1, emin, s, D.Dy.of(Nat.add(emin, p1), a)), Sp.l(1n+p1, s, a), DRf.lh(p1, emin, s, a), DRf.ll(p1, emin, s, a)),
+    Y.Of.cong(Nat.add(emin, p1), Nat.add(emin, p1), I.Int.add(h, Sp.l(1n+p1, s, a)), a, {==},
+      Equal.trans(I.Int, I.Int.add(h, Sp.l(1n+p1, s, a)), I.Int.add(h, I.Int.add(a, I.Int.neg(h))), a, Equal.cong(I.Int, I.Int, z => I.Int.add(h, z), Sp.l(1n+p1, s, a), I.Int.add(a, I.Int.neg(h)), Split(p1, s, a, fa)),
+        BP.IntN([a, h], R.Ad(R.V(1n), R.Ad(R.V(0n), R.Ng(R.V(1n)))), R.V(0n), [], [], {==}, Unit{}))))
+
+# Dekker's product in binary rounding with no exponent bounds
+
+def Rr.mul(+p1: Nat, +k1: Nat, +k2: Nat, +x: D.Dy, +a: I.Int, +y: D.Dy, +b: I.Int, +hx: {x == D.Dy.of(k1, a) : D.Dy}, +hy: {y == D.Dy.of(k2, b) : D.Dy})
+  -> {RD.Dy.rne(1n+p1, D.Dy.mul(x, y)) == D.Dy.of(Nat.add(k1, k2), E.RNi(1n+p1, I.Int.mul(a, b))) : D.Dy}:
+  Equal.trans(D.Dy, RD.Dy.rne(1n+p1, D.Dy.mul(x, y)), RD.Dy.rne(1n+p1, D.Dy.of(Nat.add(k1, k2), I.Int.mul(a, b))), D.Dy.of(Nat.add(k1, k2), E.RNi(1n+p1, I.Int.mul(a, b))),
+    Rr.e(D.Dy.mul(x, y), D.Dy.of(Nat.add(k1, k2), I.Int.mul(a, b)), Dmul(k1, k2, x, a, y, b, hx, hy), p1), Rne.of(p1, Nat.add(k1, k2), I.Int.mul(a, b)))
+
+def DDk.e1(+p1: Nat, +ah: D.Dy, +bh: D.Dy, +pi: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(RD.Dy.rne(1n+p1, D.Dy.mul(ah, bh)), D.Dy.neg(pi)))
+
+def DDk.e2(+p1: Nat, +ah: D.Dy, +bh: D.Dy, +bl: D.Dy, +pi: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(DDk.e1(p1, ah, bh, pi), RD.Dy.rne(1n+p1, D.Dy.mul(ah, bl))))
+
+def DDk.e3(+p1: Nat, +ah: D.Dy, +al: D.Dy, +bh: D.Dy, +bl: D.Dy, +pi: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(DDk.e2(p1, ah, bh, bl, pi), RD.Dy.rne(1n+p1, D.Dy.mul(al, bh))))
+
+def DDk.e(+p1: Nat, +ah: D.Dy, +al: D.Dy, +bh: D.Dy, +bl: D.Dy, +pi: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.add(DDk.e3(p1, ah, al, bh, bl, pi), RD.Dy.rne(1n+p1, D.Dy.mul(al, bl))))
+
+def DTP.p(+p1: Nat, +a: D.Dy, +b: D.Dy) -> D.Dy:
+  RD.Dy.rne(1n+p1, D.Dy.mul(a, b))
+
+def DTP.e(+p1: Nat, +s: Nat, +a: D.Dy, +b: D.Dy) -> D.Dy:
+  DDk.e(p1, DRr.h(p1, s, a), DRr.l(p1, s, a), DRr.h(p1, s, b), DRr.l(p1, s, b), DTP.p(p1, a, b))
+
+def DDk.l1(+p1: Nat, +k: Nat, +ah: D.Dy, +ah2: I.Int, +al: D.Dy, +al2: I.Int, +bh: D.Dy, +bh2: I.Int, +bl: D.Dy, +bl2: I.Int, +pi: D.Dy, +pi2: I.Int,
+  +hah: {ah == D.Dy.of(k, ah2) : D.Dy}, +hal: {al == D.Dy.of(k, al2) : D.Dy}, +hbh: {bh == D.Dy.of(k, bh2) : D.Dy}, +hbl: {bl == D.Dy.of(k, bl2) : D.Dy}, +hpi: {pi == D.Dy.of(Nat.add(k, k), pi2) : D.Dy}) -> {DDk.e1(p1, ah, bh, pi) == D.Dy.of(Nat.add(k, k), Dk.e1(1n+p1, ah2, bh2, pi2)) : D.Dy}:
+  Rr.sub(p1, Nat.add(k, k), RD.Dy.rne(1n+p1, D.Dy.mul(ah, bh)), E.RNi(1n+p1, I.Int.mul(ah2, bh2)), pi, pi2, Rr.mul(p1, k, k, ah, ah2, bh, bh2, hah, hbh), hpi)
+
+def DDk.l2(+p1: Nat, +k: Nat, +ah: D.Dy, +ah2: I.Int, +al: D.Dy, +al2: I.Int, +bh: D.Dy, +bh2: I.Int, +bl: D.Dy, +bl2: I.Int, +pi: D.Dy, +pi2: I.Int,
+  +hah: {ah == D.Dy.of(k, ah2) : D.Dy}, +hal: {al == D.Dy.of(k, al2) : D.Dy}, +hbh: {bh == D.Dy.of(k, bh2) : D.Dy}, +hbl: {bl == D.Dy.of(k, bl2) : D.Dy}, +hpi: {pi == D.Dy.of(Nat.add(k, k), pi2) : D.Dy}) -> {DDk.e2(p1, ah, bh, bl, pi) == D.Dy.of(Nat.add(k, k), Dk.e2(1n+p1, ah2, bh2, bl2, pi2)) : D.Dy}:
+  Rr.add(p1, Nat.add(k, k), DDk.e1(p1, ah, bh, pi), Dk.e1(1n+p1, ah2, bh2, pi2), RD.Dy.rne(1n+p1, D.Dy.mul(ah, bl)), E.RNi(1n+p1, I.Int.mul(ah2, bl2)), DDk.l1(p1, k, ah, ah2, al, al2, bh, bh2, bl, bl2, pi, pi2, hah, hal, hbh, hbl, hpi), Rr.mul(p1, k, k, ah, ah2, bl, bl2, hah, hbl))
+
+def DDk.l3(+p1: Nat, +k: Nat, +ah: D.Dy, +ah2: I.Int, +al: D.Dy, +al2: I.Int, +bh: D.Dy, +bh2: I.Int, +bl: D.Dy, +bl2: I.Int, +pi: D.Dy, +pi2: I.Int,
+  +hah: {ah == D.Dy.of(k, ah2) : D.Dy}, +hal: {al == D.Dy.of(k, al2) : D.Dy}, +hbh: {bh == D.Dy.of(k, bh2) : D.Dy}, +hbl: {bl == D.Dy.of(k, bl2) : D.Dy}, +hpi: {pi == D.Dy.of(Nat.add(k, k), pi2) : D.Dy}) -> {DDk.e3(p1, ah, al, bh, bl, pi) == D.Dy.of(Nat.add(k, k), Dk.e3(1n+p1, ah2, al2, bh2, bl2, pi2)) : D.Dy}:
+  Rr.add(p1, Nat.add(k, k), DDk.e2(p1, ah, bh, bl, pi), Dk.e2(1n+p1, ah2, bh2, bl2, pi2), RD.Dy.rne(1n+p1, D.Dy.mul(al, bh)), E.RNi(1n+p1, I.Int.mul(al2, bh2)), DDk.l2(p1, k, ah, ah2, al, al2, bh, bh2, bl, bl2, pi, pi2, hah, hal, hbh, hbl, hpi), Rr.mul(p1, k, k, al, al2, bh, bh2, hal, hbh))
+
+def DDk.l(+p1: Nat, +k: Nat, +ah: D.Dy, +ah2: I.Int, +al: D.Dy, +al2: I.Int, +bh: D.Dy, +bh2: I.Int, +bl: D.Dy, +bl2: I.Int, +pi: D.Dy, +pi2: I.Int,
+  +hah: {ah == D.Dy.of(k, ah2) : D.Dy}, +hal: {al == D.Dy.of(k, al2) : D.Dy}, +hbh: {bh == D.Dy.of(k, bh2) : D.Dy}, +hbl: {bl == D.Dy.of(k, bl2) : D.Dy}, +hpi: {pi == D.Dy.of(Nat.add(k, k), pi2) : D.Dy}) -> {DDk.e(p1, ah, al, bh, bl, pi) == D.Dy.of(Nat.add(k, k), Dk.e(1n+p1, ah2, al2, bh2, bl2, pi2)) : D.Dy}:
+  Rr.add(p1, Nat.add(k, k), DDk.e3(p1, ah, al, bh, bl, pi), Dk.e3(1n+p1, ah2, al2, bh2, bl2, pi2), RD.Dy.rne(1n+p1, D.Dy.mul(al, bl)), E.RNi(1n+p1, I.Int.mul(al2, bl2)), DDk.l3(p1, k, ah, ah2, al, al2, bh, bh2, bl, bl2, pi, pi2, hah, hal, hbh, hbl, hpi), Rr.mul(p1, k, k, al, al2, bl, bl2, hal, hbl))
+
+# Dekker's product is exact in binary rounding at p = 2s bits, s >= 2,
+# with no exponent bounds (so, in a binary format, barring underflow and
+# overflow): for a = A / 2^k and b = B / 2^k with A, B representable,
+# pi = RN(a b) and e give pi + e = a b
+def DTwoProd(+s2: Nat, +k: Nat, +aa: I.Int, +bb: I.Int, +fa: {E.Rn(1n+Nat.add(1n+1n+s2, 1n+s2), RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {E.Rn(1n+Nat.add(1n+1n+s2, 1n+s2), RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
+  -> {D.Dy.add(DTP.p(Nat.add(1n+1n+s2, 1n+s2), D.Dy.of(k, aa), D.Dy.of(k, bb)), DTP.e(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, aa), D.Dy.of(k, bb))) == D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)) : D.Dy}:
+  +hp = Rr.mul(Nat.add(1n+1n+s2, 1n+s2), k, k, D.Dy.of(k, aa), aa, D.Dy.of(k, bb), bb, {==}, {==})
+  +he = DDk.l(Nat.add(1n+1n+s2, 1n+s2), k, DRr.h(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, aa)), Sp.h(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, aa), DRr.l(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, aa)), Sp.l(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, aa), DRr.h(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, bb)), Sp.h(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, bb), DRr.l(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, bb)), Sp.l(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, bb), DTP.p(Nat.add(1n+1n+s2, 1n+s2), D.Dy.of(k, aa), D.Dy.of(k, bb)), TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), aa, bb),
+    DRr.lh(Nat.add(1n+1n+s2, 1n+s2), k, 1n+1n+s2, aa), DRr.ll(Nat.add(1n+1n+s2, 1n+s2), k, 1n+1n+s2, aa), DRr.lh(Nat.add(1n+1n+s2, 1n+s2), k, 1n+1n+s2, bb), DRr.ll(Nat.add(1n+1n+s2, 1n+s2), k, 1n+1n+s2, bb), hp)
+  Equal.trans(D.Dy, D.Dy.add(DTP.p(Nat.add(1n+1n+s2, 1n+s2), D.Dy.of(k, aa), D.Dy.of(k, bb)), DTP.e(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, aa), D.Dy.of(k, bb))), D.Dy.of(Nat.add(k, k), I.Int.add(TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), aa, bb), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, aa, bb))), D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)),
+    Dadd(Nat.add(k, k), DTP.p(Nat.add(1n+1n+s2, 1n+s2), D.Dy.of(k, aa), D.Dy.of(k, bb)), TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), aa, bb), DTP.e(Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, D.Dy.of(k, aa), D.Dy.of(k, bb)), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, aa, bb), hp, he),
+    Equal.trans(D.Dy, D.Dy.of(Nat.add(k, k), I.Int.add(TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), aa, bb), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, aa, bb))), D.Dy.of(Nat.add(k, k), I.Int.mul(aa, bb)), D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)),
+      Y.Of.cong(Nat.add(k, k), Nat.add(k, k), I.Int.add(TP.p(1n+Nat.add(1n+1n+s2, 1n+s2), aa, bb), TP.e(1n+Nat.add(1n+1n+s2, 1n+s2), 1n+1n+s2, aa, bb)), I.Int.mul(aa, bb), {==}, TwoProd(s2, aa, bb, fa, fb)),
+      Equal.sym(D.Dy, D.Dy.mul(D.Dy.of(k, aa), D.Dy.of(k, bb)), D.Dy.of(Nat.add(k, k), I.Int.mul(aa, bb)), Mul.of(k, aa, k, bb))))

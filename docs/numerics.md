@@ -203,8 +203,12 @@ and it does.
     monotone, Sterbenz's lemma, and the error of a rounded sum or
     difference is representable (`LA`, `LA.d`). TwoSum is computed as
     Fast2Sum on the magnitude-sorted pair (ADR-009), so its proof is
-    Fast2Sum's. Still tested only: Veltkamp's split and Dekker's product,
-    and the double-word bounds themselves (Muller and Rideau's Coq proofs).
+    Fast2Sum's. **Veltkamp's split and Dekker's product are proven
+    exact** (`proofs/eft2.bend`, ADR-010): the split for every
+    representable input in every binary format, subnormals included;
+    Dekker's product for even precision (binary32: p = 24 = 2 · 12),
+    barring underflow and overflow. Still tested only: the double-word
+    bounds themselves (Muller and Rideau's Coq proofs).
   All of them belong to the numbers package.
 - **Not planned:** stochastic arithmetic (CADNA, Verificarlo) as a
   product, since it estimates and does not bound, and proving

@@ -285,7 +285,7 @@ reference first showed that minpos is pattern 1, 2^−192 (1 + 2^−20), not
 five saturating products, and was fixed. Above maxpos the format
 saturates, outside the model, as IEEE overflow is.
 
-## Error-free transformations (`proofs/eft.bend`, ADR-009)
+## Error-free transformations (`proofs/eft.bend`, `proofs/eft2.bend`, ADR-009, ADR-010)
 
 On integers rounded to p significant bits by the loop of `src/round.bend`
 (any p; a binary format's values are integers over 2^k):
@@ -301,8 +301,13 @@ On integers rounded to p significant bits by the loop of `src/round.bend`
 | `Fast2Sum`, `TwoSum` | s = RN(a + b), z = RN(s - a), t = RN(b - z) give s + t = a + b when \|b\| <= \|a\|; TwoSum is Fast2Sum on the magnitude-sorted pair, exact for all a, b | a, b representable | proof | `proofs/eft.bend` |
 | `FlL`, `DFast2Sum`, `DTwoSum` | a binary format (p = 1 + p1, normal from 2^-emin, grid 2^-(emin + p1)) rounds N / 2^k to RN(N) / 2^k, so Fast2Sum and TwoSum are exact in the format; `F32.Fast2Sum`, `F32.TwoSum` instantiate binary32 | A, B representable | proof | `proofs/eft.bend`, `tests/df32_exact.bend` |
 
-Veltkamp's split, Dekker's product and the double-word bounds are checked
-exactly on samples (`tests/df32_exact.bend`), not proven.
+| `Split` | Veltkamp: g = RN(C a), d = RN(a - g), hi = RN(g + d), lo = RN(a - hi) with C = 2^s + 1 give lo = a - hi exactly, so hi + lo = a, at any precision and any s | a representable | proof | `proofs/eft2.bend` |
+| `V.hi.grid`, `V.ah.le`, `V.lo.le` | for a in [2^(p-1), 2^p) and 2^p = 2^r 2^s: hi = Ah 2^s with Ah <= 2^r, and 2 \|lo\| <= 2^s | a normalised | proof | `proofs/eft2.bend` |
+| `TwoProd` | Dekker: pi = RN(a b), e1 = RN(RN(ah bh) - pi), e2 = RN(e1 + RN(ah bl)), e3 = RN(e2 + RN(al bh)), e = RN(e3 + RN(al bl)) give pi + e = a b, for p = 2s, s >= 2 | a, b representable | proof | `proofs/eft2.bend` |
+| `DRf.split`, `DTwoProd` | the same in dyadic arithmetic: the split in a binary format with gradual underflow; Dekker's product in binary rounding with no exponent bounds. `F32.Split` instantiates binary32 for every value, subnormals included; `F32.TwoProd` instantiates p = 24, s = 12, so binary32 barring underflow and overflow | A, B representable | proof | `proofs/eft2.bend`, `tests/df32_exact.bend` |
+
+The double-word bounds are checked exactly on samples
+(`tests/df32_exact.bend`), not proven.
 
 ## Dual numbers (`src/dual.bend`, ADR-006)
 
