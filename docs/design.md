@@ -598,3 +598,27 @@ is proven equal (`Pz.lk`). The quire is `Bd.dot` rounded once.
   and admit no uniform model. Left out.
 - **Takums** (Hunhold 2024), another bounded tapered format: same shape of
   model, different encoding. Not needed for the brief.
+
+## ADR-009: TwoSum is Fast2Sum on the magnitude-sorted pair
+
+**Status:** accepted, 2026-10-05.
+
+### Decision
+
+Knuth's TwoSum is branch-free and takes 6 additions. `num/df32.bend`
+instead orders the operands by magnitude with two selects and runs
+Fast2Sum, which takes 3. The two return the same pair, since both are
+exact. Fast2Sum's exactness is proven (`proofs/eft.bend`), from
+nearest-ness, monotonicity and Sterbenz's lemma, so TwoSum's is a
+two-case corollary.
+
+### What it costs
+
+- One magnitude comparison per TwoSum, as a select; no branch on GPU.
+- Knuth's version would need its own, longer proof.
+
+### Measured, not adopted
+
+- **Knuth's 6-operation TwoSum:** same results (`tests/df32_exact.bend`
+  shows both exact before the switch); its proof has more cases than
+  Fast2Sum's and buys nothing on this target.

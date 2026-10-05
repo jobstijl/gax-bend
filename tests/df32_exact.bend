@@ -1,5 +1,5 @@
-# The error-free transformations under double-F32 (num/df32.bend), checked
-# exactly: big dyadics (src/big.bend) hold the exact values, so
+# The error-free transformations under double-F32 (num/df32.bend), proven
+# for Fast2Sum and TwoSum (below) and checked exactly: big dyadics (src/big.bend) hold the exact values, so
 # s + t = a + b is a test of equality, not of closeness. Fast2Sum (with
 # |a| >= |b|) and TwoSum must give s + t = a + b for all finite inputs;
 # Dekker's product p + e = a b barring underflow and overflow (products
@@ -18,8 +18,27 @@
 # counts inexact products, so the comparison can fail. These are tests:
 # the proofs of the bounds are Muller and Rideau's, not redone here.
 import Base
+import ../src/int.bend as I
+import ../src/dyadic.bend as D
+import ../src/round.bend as RD
 import ../src/big.bend as B
 import ../num/df32.bend as DF
+import ../proofs/eft.bend as E
+
+# Proven (proofs/eft.bend): binary32 values are A / 2^149 with A an integer
+# that rounds to itself at 24 bits. For those, Fast2Sum (|b| <= |a|) and
+# TwoSum as num/df32.bend computes it (Fast2Sum on the magnitude-sorted
+# pair) are exact in Dy.f32 arithmetic. The tests below check the same on
+# native F32.
+def F32.Fast2Sum(aa: I.Int, +bb: I.Int, fa: E.Fi(24n, aa), +fb: {E.Rn(24n, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat}, +hle: {RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)) == False{} : Bool})
+  -> {D.Dy.add(RD.Dy.f32(D.Dy.add(D.Dy.of(149n, aa), D.Dy.of(149n, bb))),
+        RD.Dy.f32(D.Dy.add(D.Dy.of(149n, bb), D.Dy.neg(RD.Dy.f32(D.Dy.add(RD.Dy.f32(D.Dy.add(D.Dy.of(149n, aa), D.Dy.of(149n, bb))), D.Dy.neg(D.Dy.of(149n, aa))))))))
+      == D.Dy.add(D.Dy.of(149n, aa), D.Dy.of(149n, bb)) : D.Dy}:
+  E.DFast2Sum(23n, 126n, aa, bb, fa, fb, hle)
+
+def F32.TwoSum(+aa: I.Int, +bb: I.Int, +fa: {E.Rn(24n, RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {E.Rn(24n, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
+  -> {D.Dy.add(E.DTS.s(23n, 126n, aa, bb), E.DTS.t(23n, 126n, aa, bb)) == D.Dy.add(D.Dy.of(149n, aa), D.Dy.of(149n, bb)) : D.Dy}:
+  E.DTwoSum(23n, 126n, aa, bb, fa, fb)
 
 def hb() -> Nat:
   8388608n

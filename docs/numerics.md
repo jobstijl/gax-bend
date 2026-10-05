@@ -195,10 +195,16 @@ and it does.
     20 000 pairs over 2⁻¹⁰⁰ to 2⁶⁰ (products outside the range Dekker
     needs are skipped and counted). On 20 000 double-word pairs,
     AccurateDWPlusDW stays within 3u² and DWTimesDW within 5u², the bound
-    Muller and Rideau proved in Coq. Those proofs are not redone in Bend:
-    they rest on rounding to nearest being nearest among all floats and on
-    Sterbenz-type grid lemmas, which our model (a relative bound per
-    operation) does not state. That is the next proof step for this item.
+    Muller and Rideau proved in Coq. **Fast2Sum and TwoSum are proven
+    exact** (`proofs/eft.bend`), for every binary format and every
+    precision, in the spec's rounding: binary32 values become integers
+    A / 2^149, and rounding is the integer loop of `src/round.bend`. On the
+    way: rounding is nearest among representable values (`Near`),
+    monotone, Sterbenz's lemma, and the error of a rounded sum or
+    difference is representable (`LA`, `LA.d`). TwoSum is computed as
+    Fast2Sum on the magnitude-sorted pair (ADR-009), so its proof is
+    Fast2Sum's. Still tested only: Veltkamp's split and Dekker's product,
+    and the double-word bounds themselves (Muller and Rideau's Coq proofs).
   All of them belong to the numbers package.
 - **Not planned:** stochastic arithmetic (CADNA, Verificarlo) as a
   product, since it estimates and does not bound, and proving

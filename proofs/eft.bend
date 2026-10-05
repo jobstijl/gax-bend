@@ -1238,3 +1238,289 @@ def Fast2Sum(+p1: Nat, a: I.Int, +b: I.Int, fa: Fi(1n+p1, a), +fb: {Rn(1n+p1, RD
         Equal.trans(I.Int, I.Int.neg(I.Int.add(I.Int.neg(s), I.Int.neg(t))), I.Int.neg(I.Int.add(I.IPos{1n+an}, nb)), I.Int.add(a2, b),
           Equal.cong(I.Int, I.Int, w => I.Int.neg(w), I.Int.add(I.Int.neg(s), I.Int.neg(t)), I.Int.add(I.IPos{1n+an}, nb), h2),
           BP.IntN(env, R.Ng(R.Ad(R.Ng(R.V(2n)), R.Ng(R.V(3n)))), R.Ad(R.V(2n), R.V(3n)), [], [], {==}, Unit{})))
+
+# TwoSum as num/df32.bend computes it: Fast2Sum on the inputs ordered by
+# magnitude
+def TS.s(+p: Nat, +a: I.Int, +b: I.Int) -> I.Int:
+  Bool.pick(I.Int, RD.Nat.lt(RD.Int.mag(a), RD.Int.mag(b)), F2.s(p, b, a), F2.s(p, a, b))
+
+def TS.t(+p: Nat, +a: I.Int, +b: I.Int) -> I.Int:
+  Bool.pick(I.Int, RD.Nat.lt(RD.Int.mag(a), RD.Int.mag(b)), F2.t(p, b, a), F2.t(p, a, b))
+
+def TwoSum.go(+p1: Nat, +a: I.Int, +b: I.Int, +fa: {Rn(1n+p1, RD.Int.mag(a)) == RD.Int.mag(a) : Nat}, +fb: {Rn(1n+p1, RD.Int.mag(b)) == RD.Int.mag(b) : Nat}, l: Bool, +el: {RD.Nat.lt(RD.Int.mag(a), RD.Int.mag(b)) == l : Bool})
+  -> {I.Int.add(Bool.pick(I.Int, l, F2.s(1n+p1, b, a), F2.s(1n+p1, a, b)), Bool.pick(I.Int, l, F2.t(1n+p1, b, a), F2.t(1n+p1, a, b))) == I.Int.add(a, b) : I.Int}:
+  match l:
+    case True{}:
+      Equal.trans(I.Int, I.Int.add(F2.s(1n+p1, b, a), F2.t(1n+p1, b, a)), I.Int.add(b, a), I.Int.add(a, b),
+        Fast2Sum(p1, b, a, fb, fa, BP.Lt.asym(RD.Int.mag(a), RD.Int.mag(b), el)), Z.Int.add_comm(b, a))
+    case False{}:
+      Fast2Sum(p1, a, b, fa, fb, el)
+
+# TwoSum is exact for any representable a, b
+def TwoSum(+p1: Nat, +a: I.Int, +b: I.Int, +fa: {Rn(1n+p1, RD.Int.mag(a)) == RD.Int.mag(a) : Nat}, +fb: {Rn(1n+p1, RD.Int.mag(b)) == RD.Int.mag(b) : Nat})
+  -> {I.Int.add(TS.s(1n+p1, a, b), TS.t(1n+p1, a, b)) == I.Int.add(a, b) : I.Int}:
+  TwoSum.go(p1, a, b, fa, fb, RD.Nat.lt(RD.Int.mag(a), RD.Int.mag(b)), {==})
+
+# Binary formats as scaled integers
+# ---------------------------------
+
+def Lt.irr(+a: Nat) -> {RD.Nat.lt(a, a) == False{} : Bool}:
+  match a:
+    case 0n:
+      {==}
+    case 1n+b:
+      Lt.irr(b)
+
+def Le.add1(+a: Nat) -> Le(a, 1n+a):
+  Equal.trans(Bool, RD.Nat.lt(1n+a, a), RD.Nat.lt(Nat.add(a, 1n), a), False{}, Equal.cong(Nat, Bool, z => RD.Nat.lt(z, a), 1n+a, Nat.add(a, 1n),
+    Equal.sym(Nat, Nat.add(a, 1n), 1n+a, Equal.trans(Nat, Nat.add(a, 1n), 1n+Nat.add(a, 0n), 1n+a, NL.Nat.add_succ_r(a, 0n), Equal.cong(Nat, Nat, z => 1n+z, Nat.add(a, 0n), a, NL.Nat.add_zero_r(a))))), BP.Lt.ge(a, 1n))
+
+# Dy.of(e, m) has denominator at most 2^e
+def Of.den.go(+e: Nat, +m: I.Int, ev: Bool, +eev: {D.Int.even(m) == ev : Bool}) -> Le(D.Dy.den(D.Dy.of(e, m)), e):
+  match e:
+    case 0n:
+      {==}
+    case 1n+(+f):
+      match ev:
+        case True{}:
+          +eo = Y.Of.even(f, m, eev)
+          Equal.trans(Bool, RD.Nat.lt(1n+f, D.Dy.den(D.Dy.of(1n+f, m))), RD.Nat.lt(1n+f, D.Dy.den(D.Dy.of(f, D.Int.half(m)))), False{},
+            Equal.cong(D.Dy, Bool, z => RD.Nat.lt(1n+f, D.Dy.den(z)), D.Dy.of(1n+f, m), D.Dy.of(f, D.Int.half(m)), eo),
+            Le.trans(D.Dy.den(D.Dy.of(f, D.Int.half(m))), f, 1n+f, Of.den.go(f, D.Int.half(m), D.Int.even(D.Int.half(m)), {==}), Le.add1(f)))
+        case False{}:
+          +eo = Y.Of.odd(f, m, eev)
+          Equal.trans(Bool, RD.Nat.lt(1n+f, D.Dy.den(D.Dy.of(1n+f, m))), RD.Nat.lt(1n+f, 1n+f), False{},
+            Equal.cong(Nat, Bool, z => RD.Nat.lt(1n+f, z), D.Dy.den(D.Dy.of(1n+f, m)), 1n+f,
+              Equal.trans(Nat, D.Dy.den(D.Dy.of(1n+f, m)), D.Dy.den(D.Dy.odd(m, f)), 1n+f, Equal.cong(D.Dy, Nat, z => D.Dy.den(z), D.Dy.of(1n+f, m), D.Dy.odd(m, f), eo), Y.Odd.den(m, f))),
+            Lt.irr(1n+f))
+
+def Add.cancel(+a: Nat, +x: Nat, +y: Nat, h: {Nat.add(a, x) == Nat.add(a, y) : Nat}) -> {x == y : Nat}:
+  match a:
+    case 0n:
+      h
+    case 1n+b:
+      Add.cancel(b, x, y, Equal.cong(Nat, Nat, z => BP.Pd(z), 1n+Nat.add(b, x), 1n+Nat.add(b, y), h))
+
+# the numerator of Dy.of(k, N) at its own denominator: N = n 2^(k - d)
+def Num.sh(+k: Nat, +nn: I.Int) -> {nn == D.Int.sh(RD.Nat.monus(k, D.Dy.den(D.Dy.of(k, nn))), D.Dy.num(D.Dy.of(k, nn))) : I.Int}:
+  +x = D.Dy.of(k, nn)
+  +d = D.Dy.den(x)
+  +n = D.Dy.num(x)
+  +j = RD.Nat.monus(k, d)
+  +ek = Le.wit(d, k, Of.den.go(k, nn, D.Int.even(nn), {==}))
+  +ev : {D.Int.sh(k, n) == D.Int.sh(d, nn) : I.Int} = Y.Of.val(k, nn)
+  +e1 = Equal.trans(I.Int, D.Int.sh(d, D.Int.sh(j, n)), D.Int.sh(Nat.add(d, j), n), D.Int.sh(d, nn), Y.Int.sh_sh(d, j, n),
+    Equal.trans(I.Int, D.Int.sh(Nat.add(d, j), n), D.Int.sh(k, n), D.Int.sh(d, nn), Equal.cong(Nat, I.Int, z => D.Int.sh(z, n), Nat.add(d, j), k, Equal.sym(Nat, k, Nat.add(d, j), ek)), ev))
+  Equal.sym(I.Int, D.Int.sh(j, n), nn, Y.Int.sh_inj(d, D.Int.sh(j, n), nn)(e1))
+
+def Sh.mag(+j: Nat, +n: I.Int) -> {RD.Int.mag(D.Int.sh(j, n)) == Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)) : Nat}:
+  match n:
+    case I.IPos{+a}:
+      Equal.cong(I.Int, Nat, z => RD.Int.mag(z), D.Int.sh(j, I.IPos{a}), I.IPos{Nat.mul(a, RD.Nat.pow2(j))}, R.Sh.ipos(j, a))
+    case I.INeg{+a}:
+      +m = Nat.mul(1n+a, RD.Nat.pow2(j))
+      Equal.trans(Nat, RD.Int.mag(D.Int.sh(j, I.Int.neg(I.IPos{1n+a}))), RD.Int.mag(I.Int.neg(I.IPos{m})), m,
+        Equal.cong(I.Int, Nat, z => RD.Int.mag(z), D.Int.sh(j, I.Int.neg(I.IPos{1n+a})), I.Int.neg(I.IPos{m}),
+          Equal.trans(I.Int, D.Int.sh(j, I.Int.neg(I.IPos{1n+a})), I.Int.neg(D.Int.sh(j, I.IPos{1n+a})), I.Int.neg(I.IPos{m}), Y.Int.sh_neg(j, I.IPos{1n+a}),
+            Equal.cong(I.Int, I.Int, z => I.Int.neg(z), D.Int.sh(j, I.IPos{1n+a}), I.IPos{m}, R.Sh.ipos(j, 1n+a)))),
+        Mag.neg(I.IPos{m}))
+
+def Sgn.pos1(+w: Nat, +r: Nat) -> {RD.Int.signed(I.Int.neg(I.IPos{1n+w}), r) == I.Int.neg(I.IPos{r}) : I.Int}:
+  {==}
+
+# shifting keeps the sign
+def Sh.sgn(+j: Nat, +n: I.Int, +r: Nat) -> {RD.Int.signed(D.Int.sh(j, n), r) == RD.Int.signed(n, r) : I.Int}:
+  match n:
+    case I.IPos{+a}:
+      Equal.cong(I.Int, I.Int, z => RD.Int.signed(z, r), D.Int.sh(j, I.IPos{a}), I.IPos{Nat.mul(a, RD.Nat.pow2(j))}, R.Sh.ipos(j, a))
+    case I.INeg{+a}:
+      +x = RD.Nat.pow2(j)
+      +w = RD.Nat.monus(x, 1n)
+      +m = Nat.mul(1n+a, x)
+      +em = Equal.trans(Nat, m, Nat.add(x, Nat.mul(a, x)), 1n+Nat.add(w, Nat.mul(a, x)), {==},
+        Equal.cong(Nat, Nat, z => Nat.add(z, Nat.mul(a, x)), x, 1n+w, BP.Lt.wit(0n, x)(BP.Pow2.pos(j))))
+      Equal.trans(I.Int, RD.Int.signed(D.Int.sh(j, I.Int.neg(I.IPos{1n+a})), r), RD.Int.signed(I.Int.neg(I.IPos{1n+Nat.add(w, Nat.mul(a, x))}), r), I.Int.neg(I.IPos{r}),
+        Equal.cong(I.Int, I.Int, z => RD.Int.signed(z, r), D.Int.sh(j, I.Int.neg(I.IPos{1n+a})), I.Int.neg(I.IPos{1n+Nat.add(w, Nat.mul(a, x))}),
+          Equal.trans(I.Int, D.Int.sh(j, I.Int.neg(I.IPos{1n+a})), I.Int.neg(I.IPos{m}), I.Int.neg(I.IPos{1n+Nat.add(w, Nat.mul(a, x))}),
+            Equal.trans(I.Int, D.Int.sh(j, I.Int.neg(I.IPos{1n+a})), I.Int.neg(D.Int.sh(j, I.IPos{1n+a})), I.Int.neg(I.IPos{m}), Y.Int.sh_neg(j, I.IPos{1n+a}),
+              Equal.cong(I.Int, I.Int, z => I.Int.neg(z), D.Int.sh(j, I.IPos{1n+a}), I.IPos{m}, R.Sh.ipos(j, 1n+a))),
+            Equal.cong(Nat, I.Int, z => I.Int.neg(I.IPos{z}), m, 1n+Nat.add(w, Nat.mul(a, x)), em))),
+        Sgn.pos1(Nat.add(w, Nat.mul(a, x)), r))
+
+def Sh.signed(+k: Nat, +n: I.Int, +m: Nat) -> {D.Int.sh(k, RD.Int.signed(n, m)) == RD.Int.signed(n, Nat.mul(m, RD.Nat.pow2(k))) : I.Int}:
+  match n:
+    case I.IPos{a}:
+      R.Sh.ipos(k, m)
+    case I.INeg{a}:
+      Equal.trans(I.Int, D.Int.sh(k, I.Int.neg(I.IPos{m})), I.Int.neg(D.Int.sh(k, I.IPos{m})), I.Int.neg(I.IPos{Nat.mul(m, RD.Nat.pow2(k))}), Y.Int.sh_neg(k, I.IPos{m}),
+        Equal.cong(I.Int, I.Int, z => I.Int.neg(z), D.Int.sh(k, I.IPos{m}), I.IPos{Nat.mul(m, RD.Nat.pow2(k))}, R.Sh.ipos(k, m)))
+
+# rounding a shifted integer: RNi(n 2^j) = RNi(n) 2^j
+def RNi.sh(+p: Nat, +j: Nat, +n: I.Int) -> {RNi(p, D.Int.sh(j, n)) == D.Int.sh(j, RNi(p, n)) : I.Int}:
+  +r = Rn(p, RD.Int.mag(n))
+  Equal.trans(I.Int, RD.Int.signed(D.Int.sh(j, n), Rn(p, RD.Int.mag(D.Int.sh(j, n)))), RD.Int.signed(D.Int.sh(j, n), Nat.mul(r, RD.Nat.pow2(j))), D.Int.sh(j, RD.Int.signed(n, r)),
+    Equal.cong(Nat, I.Int, z => RD.Int.signed(D.Int.sh(j, n), z), Rn(p, RD.Int.mag(D.Int.sh(j, n))), Nat.mul(r, RD.Nat.pow2(j)),
+      Equal.trans(Nat, Rn(p, RD.Int.mag(D.Int.sh(j, n))), Rn(p, Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j))), Nat.mul(r, RD.Nat.pow2(j)),
+        Equal.cong(Nat, Nat, z => Rn(p, z), RD.Int.mag(D.Int.sh(j, n)), Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), Sh.mag(j, n)), Sc.pow(p, RD.Int.mag(n), j))),
+    Equal.trans(I.Int, RD.Int.signed(D.Int.sh(j, n), Nat.mul(r, RD.Nat.pow2(j))), RD.Int.signed(n, Nat.mul(r, RD.Nat.pow2(j))), D.Int.sh(j, RD.Int.signed(n, r)),
+      Sh.sgn(j, n, Nat.mul(r, RD.Nat.pow2(j))), Equal.sym(I.Int, D.Int.sh(j, RD.Int.signed(n, r)), RD.Int.signed(n, Nat.mul(r, RD.Nat.pow2(j))), Sh.signed(j, n, r))))
+
+# below the normal range the grid is the integers themselves: |N| < 2^p1,
+# so RNi(N) = N, and the format leaves N / 2^k alone
+def FlL.lo.go(+p1: Nat, +emin: Nat, +nn: I.Int, +eb: {RD.Dy.bige(emin, D.Dy.of(Nat.add(emin, p1), nn)) == False{} : Bool}, c: Bool, +ec: {RD.Nat.lt(emin, D.Dy.den(D.Dy.of(Nat.add(emin, p1), nn))) == c : Bool})
+  -> {RD.Dy.fl(1n+p1, Nat.add(emin, p1), False{}, D.Dy.of(Nat.add(emin, p1), nn)) == D.Dy.of(Nat.add(emin, p1), RNi(1n+p1, nn)) : D.Dy}:
+  match c:
+    case False{}:
+      +x = D.Dy.of(Nat.add(emin, p1), nn)
+      +ebx = Equal.trans(Bool, True{}, RD.Dy.bige(emin, x), False{},
+        Equal.sym(Bool, RD.Dy.bige(emin, x), True{}, Equal.cong(Bool, Bool, z => Bool.pick(Bool, z, Bool.not(RD.Nat.lt(RD.Int.mag(D.Dy.num(x)), RD.Nat.pow2(RD.Nat.monus(D.Dy.den(x), emin)))), True{}), RD.Nat.lt(emin, D.Dy.den(x)), False{}, ec)), eb)
+      Empty.absurd({RD.Dy.fl(1n+p1, Nat.add(emin, p1), False{}, x) == D.Dy.of(Nat.add(emin, p1), RNi(1n+p1, nn)) : D.Dy}, Z.Bool.ft(Equal.sym(Bool, True{}, False{}, ebx)))
+    case True{}:
+      +p : Nat = 1n+p1
+      +k = Nat.add(emin, p1)
+      +x = D.Dy.of(k, nn)
+      +d = D.Dy.den(x)
+      +n = D.Dy.num(x)
+      +j = RD.Nat.monus(k, d)
+      +t = RD.Nat.monus(d, emin)
+      # |n| < 2^t
+      +ent = Y.Bool.not_f(RD.Nat.lt(RD.Int.mag(n), RD.Nat.pow2(t)))(Equal.trans(Bool, Bool.not(RD.Nat.lt(RD.Int.mag(n), RD.Nat.pow2(t))), RD.Dy.bige(emin, x), False{},
+        Equal.sym(Bool, RD.Dy.bige(emin, x), Bool.not(RD.Nat.lt(RD.Int.mag(n), RD.Nat.pow2(t))), Equal.cong(Bool, Bool, z => Bool.pick(Bool, z, Bool.not(RD.Nat.lt(RD.Int.mag(n), RD.Nat.pow2(t))), True{}), RD.Nat.lt(emin, d), True{}, ec)), eb))
+      # d = emin + t and k = d + j, so p1 = t + j
+      +ed = R.Nat.lt_t(emin, d)(ec)
+      +ek = Le.wit(d, k, Of.den.go(k, nn, D.Int.even(nn), {==}))
+      +ep = Add.cancel(emin, p1, Nat.add(t, j), Equal.trans(Nat, Nat.add(emin, p1), Nat.add(d, j), Nat.add(emin, Nat.add(t, j)), ek,
+        Equal.trans(Nat, Nat.add(d, j), Nat.add(Nat.add(emin, t), j), Nat.add(emin, Nat.add(t, j)), Equal.cong(Nat, Nat, z => Nat.add(z, j), d, Nat.add(emin, t), ed), NL.Nat.add_assoc(emin, t, j))))
+      +en = Num.sh(k, nn)
+      # |N| = |n| 2^j < 2^t 2^j = 2^p1
+      +emn = Equal.trans(Nat, RD.Int.mag(nn), RD.Int.mag(D.Int.sh(j, n)), Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), Equal.cong(I.Int, Nat, z => RD.Int.mag(z), nn, D.Int.sh(j, n), en), Sh.mag(j, n))
+      +hlt = Equal.trans(Bool, RD.Nat.lt(RD.Int.mag(nn), RD.Nat.pow2(p1)), RD.Nat.lt(Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), Nat.mul(RD.Nat.pow2(t), RD.Nat.pow2(j))), True{},
+        Equal.trans(Bool, RD.Nat.lt(RD.Int.mag(nn), RD.Nat.pow2(p1)), RD.Nat.lt(Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), RD.Nat.pow2(p1)), RD.Nat.lt(Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), Nat.mul(RD.Nat.pow2(t), RD.Nat.pow2(j))),
+          Equal.cong(Nat, Bool, z => RD.Nat.lt(z, RD.Nat.pow2(p1)), RD.Int.mag(nn), Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), emn),
+          Equal.cong(Nat, Bool, z => RD.Nat.lt(Nat.mul(RD.Int.mag(n), RD.Nat.pow2(j)), z), RD.Nat.pow2(p1), Nat.mul(RD.Nat.pow2(t), RD.Nat.pow2(j)),
+            Equal.trans(Nat, RD.Nat.pow2(p1), RD.Nat.pow2(Nat.add(t, j)), Nat.mul(RD.Nat.pow2(t), RD.Nat.pow2(j)), Equal.cong(Nat, Nat, z => RD.Nat.pow2(z), p1, Nat.add(t, j), ep), BP.Pow2.add(t, j)))),
+        Lt.mono(RD.Int.mag(n), RD.Nat.pow2(t), RD.Nat.pow2(j), ent, BP.Pow2.pos(j)))
+      +hle = BP.Lt.asym(RD.Int.mag(nn), RD.Nat.pow2(p), BP.Lt.dbl(RD.Int.mag(nn), RD.Nat.pow2(p1), hlt))
+      +ex = RNi.exact(p, nn, Small(p1, RD.Int.mag(nn), hle))
+      # the grid branch returns x: k is not below d
+      +ekd = Equal.trans(Bool, RD.Nat.lt(k, d), RD.Nat.lt(Nat.add(d, j), d), False{}, Equal.cong(Nat, Bool, z => RD.Nat.lt(z, d), k, Nat.add(d, j), ek), BP.Lt.ge(d, j))
+      Equal.trans(D.Dy, RD.Dy.rfix(k, x), x, D.Dy.of(k, RNi(p, nn)),
+        Equal.cong(Bool, D.Dy, z => Bool.pick(D.Dy, z, D.Dy.of(d, RD.Int.signed(n, RD.Tr.near(RD.Fx.go(RD.Nat.monus(d, k), RD.Int.mag(n))))), x), RD.Nat.lt(k, d), False{}, ekd),
+        Equal.cong(I.Int, D.Dy, z => D.Dy.of(k, z), nn, RNi(p, nn), Equal.sym(I.Int, RNi(p, nn), nn, ex)))
+
+def FlL.lo(+p1: Nat, +emin: Nat, +nn: I.Int, +eb: {RD.Dy.bige(emin, D.Dy.of(Nat.add(emin, p1), nn)) == False{} : Bool})
+  -> {RD.Dy.fl(1n+p1, Nat.add(emin, p1), False{}, D.Dy.of(Nat.add(emin, p1), nn)) == D.Dy.of(Nat.add(emin, p1), RNi(1n+p1, nn)) : D.Dy}:
+  FlL.lo.go(p1, emin, nn, eb, RD.Nat.lt(emin, D.Dy.den(D.Dy.of(Nat.add(emin, p1), nn))), {==})
+
+# a format (p = 1 + p1, normal from 2^-emin, grid 2^-k with k = emin + p1)
+# rounds N / 2^k to RNi(N) / 2^k
+def FlL.go(+p1: Nat, +emin: Nat, +nn: I.Int, b: Bool, +eb: {RD.Dy.bige(emin, D.Dy.of(Nat.add(emin, p1), nn)) == b : Bool})
+  -> {RD.Dy.fl(1n+p1, Nat.add(emin, p1), b, D.Dy.of(Nat.add(emin, p1), nn)) == D.Dy.of(Nat.add(emin, p1), RNi(1n+p1, nn)) : D.Dy}:
+  match b:
+    case True{}:
+      +p : Nat = 1n+p1
+      +k = Nat.add(emin, p1)
+      +x = D.Dy.of(k, nn)
+      +d = D.Dy.den(x)
+      +n = D.Dy.num(x)
+      +j = RD.Nat.monus(k, d)
+      +r = Rn(p, RD.Int.mag(n))
+      +ek = Le.wit(d, k, Of.den.go(k, nn, D.Int.even(nn), {==}))
+      +en = Num.sh(k, nn)
+      # RNi(N) = RNi(n 2^j) = RNi(n) 2^j
+      +er = Equal.trans(I.Int, RNi(p, nn), RNi(p, D.Int.sh(j, n)), D.Int.sh(j, RD.Int.signed(n, r)), Equal.cong(I.Int, I.Int, z => RNi(p, z), nn, D.Int.sh(j, n), en), RNi.sh(p, j, n))
+      Equal.sym(D.Dy, D.Dy.of(k, RNi(p, nn)), D.Dy.of(d, RD.Int.signed(n, r)),
+        Equal.trans(D.Dy, D.Dy.of(k, RNi(p, nn)), D.Dy.of(Nat.add(d, j), D.Int.sh(j, RD.Int.signed(n, r))), D.Dy.of(d, RD.Int.signed(n, r)),
+          Y.Of.cong(k, Nat.add(d, j), RNi(p, nn), D.Int.sh(j, RD.Int.signed(n, r)), ek, er), Y.Of.shift(j, d, RD.Int.signed(n, r))))
+    case False{}:
+      FlL.lo(p1, emin, nn, eb)
+
+def FlL(+p1: Nat, +emin: Nat, +nn: I.Int)
+  -> {RD.Dy.fl(1n+p1, Nat.add(emin, p1), RD.Dy.bige(emin, D.Dy.of(Nat.add(emin, p1), nn)), D.Dy.of(Nat.add(emin, p1), nn)) == D.Dy.of(Nat.add(emin, p1), RNi(1n+p1, nn)) : D.Dy}:
+  FlL.go(p1, emin, nn, RD.Dy.bige(emin, D.Dy.of(Nat.add(emin, p1), nn)), {==})
+
+# Fast2Sum and TwoSum in a binary format
+# --------------------------------------
+
+# the format's rounding (Dy.f32 is p1 = 23, emin = 126) and its integers
+def Flg(+p1: Nat, +emin: Nat, +x: D.Dy) -> D.Dy:
+  RD.Dy.fl(1n+p1, Nat.add(emin, p1), RD.Dy.bige(emin, x), x)
+
+def Iota(+p1: Nat, +emin: Nat, +nn: I.Int) -> D.Dy:
+  D.Dy.of(Nat.add(emin, p1), nn)
+
+def DF2.s(+p1: Nat, +emin: Nat, +a: D.Dy, +b: D.Dy) -> D.Dy:
+  Flg(p1, emin, D.Dy.add(a, b))
+
+def DF2.z(+p1: Nat, +emin: Nat, +a: D.Dy, +b: D.Dy) -> D.Dy:
+  Flg(p1, emin, D.Dy.add(DF2.s(p1, emin, a, b), D.Dy.neg(a)))
+
+def DF2.t(+p1: Nat, +emin: Nat, +a: D.Dy, +b: D.Dy) -> D.Dy:
+  Flg(p1, emin, D.Dy.add(b, D.Dy.neg(DF2.z(p1, emin, a, b))))
+
+def Iota.add(+p1: Nat, +emin: Nat, +a: I.Int, +b: I.Int) -> {D.Dy.add(Iota(p1, emin, a), Iota(p1, emin, b)) == Iota(p1, emin, I.Int.add(a, b)) : D.Dy}:
+  Y.Add.of(Nat.add(emin, p1), a, b)
+
+def Iota.neg(+p1: Nat, +emin: Nat, +a: I.Int) -> {D.Dy.neg(Iota(p1, emin, a)) == Iota(p1, emin, I.Int.neg(a)) : D.Dy}:
+  Y.Of.neg(Nat.add(emin, p1), a)
+
+# rounding a sum (x + (-y)) of format integers is the integer rounding
+def Iota.fl(+p1: Nat, +emin: Nat, +a: I.Int, +b: I.Int) -> {Flg(p1, emin, D.Dy.add(Iota(p1, emin, a), Iota(p1, emin, b))) == Iota(p1, emin, RNi(1n+p1, I.Int.add(a, b))) : D.Dy}:
+  Equal.trans(D.Dy, Flg(p1, emin, D.Dy.add(Iota(p1, emin, a), Iota(p1, emin, b))), Flg(p1, emin, Iota(p1, emin, I.Int.add(a, b))), Iota(p1, emin, RNi(1n+p1, I.Int.add(a, b))),
+    Equal.cong(D.Dy, D.Dy, z => Flg(p1, emin, z), D.Dy.add(Iota(p1, emin, a), Iota(p1, emin, b)), Iota(p1, emin, I.Int.add(a, b)), Iota.add(p1, emin, a, b)),
+    FlL(p1, emin, I.Int.add(a, b)))
+
+def Iota.fln(+p1: Nat, +emin: Nat, +x: D.Dy, +a: I.Int, +b: I.Int, +ex: {x == Iota(p1, emin, a) : D.Dy})
+  -> {Flg(p1, emin, D.Dy.add(x, D.Dy.neg(Iota(p1, emin, b)))) == Iota(p1, emin, RNi(1n+p1, I.Int.add(a, I.Int.neg(b)))) : D.Dy}:
+  Equal.trans(D.Dy, Flg(p1, emin, D.Dy.add(x, D.Dy.neg(Iota(p1, emin, b)))), Flg(p1, emin, D.Dy.add(Iota(p1, emin, a), Iota(p1, emin, I.Int.neg(b)))), Iota(p1, emin, RNi(1n+p1, I.Int.add(a, I.Int.neg(b)))),
+    Equal.cong(D.Dy, D.Dy, z => Flg(p1, emin, z), D.Dy.add(x, D.Dy.neg(Iota(p1, emin, b))), D.Dy.add(Iota(p1, emin, a), Iota(p1, emin, I.Int.neg(b))),
+      Y.Dy.cong2(x, Iota(p1, emin, a), D.Dy.neg(Iota(p1, emin, b)), Iota(p1, emin, I.Int.neg(b)), ex, Iota.neg(p1, emin, b))),
+    Iota.fl(p1, emin, a, I.Int.neg(b)))
+
+def DFast2Sum.go(+p1: Nat, +emin: Nat, +aa: I.Int, +bb: I.Int, fa: Fi(1n+p1, aa), +fb: {Rn(1n+p1, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat}, +hle: {RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)) == False{} : Bool})
+  -> {D.Dy.add(DF2.s(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb)), DF2.t(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb))) == D.Dy.add(Iota(p1, emin, aa), Iota(p1, emin, bb)) : D.Dy}:
+  +p : Nat = 1n+p1
+  +a = Iota(p1, emin, aa)
+  +b = Iota(p1, emin, bb)
+  +ss = F2.s(p, aa, bb)
+  +zz = F2.z(p, aa, bb)
+  +tt = F2.t(p, aa, bb)
+  +es = Iota.fl(p1, emin, aa, bb)
+  +ez = Iota.fln(p1, emin, DF2.s(p1, emin, a, b), ss, aa, es)
+  +et = Equal.trans(D.Dy, DF2.t(p1, emin, a, b), Flg(p1, emin, D.Dy.add(b, D.Dy.neg(Iota(p1, emin, zz)))), Iota(p1, emin, tt),
+    Equal.cong(D.Dy, D.Dy, w => Flg(p1, emin, D.Dy.add(b, D.Dy.neg(w))), DF2.z(p1, emin, a, b), Iota(p1, emin, zz), ez),
+    Iota.fln(p1, emin, b, bb, zz, {==}))
+  Equal.trans(D.Dy, D.Dy.add(DF2.s(p1, emin, a, b), DF2.t(p1, emin, a, b)), D.Dy.add(Iota(p1, emin, ss), Iota(p1, emin, tt)), D.Dy.add(a, b),
+    Y.Dy.cong2(DF2.s(p1, emin, a, b), Iota(p1, emin, ss), DF2.t(p1, emin, a, b), Iota(p1, emin, tt), es, et),
+    Equal.trans(D.Dy, D.Dy.add(Iota(p1, emin, ss), Iota(p1, emin, tt)), Iota(p1, emin, I.Int.add(ss, tt)), D.Dy.add(a, b), Iota.add(p1, emin, ss, tt),
+      Equal.trans(D.Dy, Iota(p1, emin, I.Int.add(ss, tt)), Iota(p1, emin, I.Int.add(aa, bb)), D.Dy.add(a, b),
+        Equal.cong(I.Int, D.Dy, w => Iota(p1, emin, w), I.Int.add(ss, tt), I.Int.add(aa, bb), Fast2Sum(p1, aa, bb, fa, fb, hle)),
+        Equal.sym(D.Dy, D.Dy.add(a, b), Iota(p1, emin, I.Int.add(aa, bb)), Iota.add(p1, emin, aa, bb)))))
+
+# Fast2Sum in the format: for format values a = A / 2^k, b = B / 2^k with A, B
+# representable and |b| <= |a|, s + t = a + b exactly (Dy.f32: p1 = 23,
+# emin = 126, k = 149)
+def DFast2Sum(+p1: Nat, +emin: Nat, aa: I.Int, +bb: I.Int, fa: Fi(1n+p1, aa), +fb: {Rn(1n+p1, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat}, +hle: {RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)) == False{} : Bool})
+  -> {D.Dy.add(DF2.s(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb)), DF2.t(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb))) == D.Dy.add(Iota(p1, emin, aa), Iota(p1, emin, bb)) : D.Dy}:
+  DFast2Sum.go(p1, emin, aa, bb, fa, fb, hle)
+
+# TwoSum in the format: Fast2Sum on the operands ordered by magnitude
+def DTS.s(+p1: Nat, +emin: Nat, +aa: I.Int, +bb: I.Int) -> D.Dy:
+  Bool.pick(D.Dy, RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)), DF2.s(p1, emin, Iota(p1, emin, bb), Iota(p1, emin, aa)), DF2.s(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb)))
+
+def DTS.t(+p1: Nat, +emin: Nat, +aa: I.Int, +bb: I.Int) -> D.Dy:
+  Bool.pick(D.Dy, RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)), DF2.t(p1, emin, Iota(p1, emin, bb), Iota(p1, emin, aa)), DF2.t(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb)))
+
+def DTwoSum.go(+p1: Nat, +emin: Nat, +aa: I.Int, +bb: I.Int, +fa: {Rn(1n+p1, RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {Rn(1n+p1, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat}, l: Bool, +el: {RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)) == l : Bool})
+  -> {D.Dy.add(Bool.pick(D.Dy, l, DF2.s(p1, emin, Iota(p1, emin, bb), Iota(p1, emin, aa)), DF2.s(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb))), Bool.pick(D.Dy, l, DF2.t(p1, emin, Iota(p1, emin, bb), Iota(p1, emin, aa)), DF2.t(p1, emin, Iota(p1, emin, aa), Iota(p1, emin, bb)))) == D.Dy.add(Iota(p1, emin, aa), Iota(p1, emin, bb)) : D.Dy}:
+  match l:
+    case True{}:
+      Equal.trans(D.Dy, D.Dy.add(DF2.s(p1, emin, Iota(p1, emin, bb), Iota(p1, emin, aa)), DF2.t(p1, emin, Iota(p1, emin, bb), Iota(p1, emin, aa))), D.Dy.add(Iota(p1, emin, bb), Iota(p1, emin, aa)), D.Dy.add(Iota(p1, emin, aa), Iota(p1, emin, bb)),
+        DFast2Sum(p1, emin, bb, aa, fb, fa, BP.Lt.asym(RD.Int.mag(aa), RD.Int.mag(bb), el)), Y.Dy.add_comm(Iota(p1, emin, bb), Iota(p1, emin, aa)))
+    case False{}:
+      DFast2Sum(p1, emin, aa, bb, fa, fb, el)
+
+# TwoSum is exact for any two format values
+def DTwoSum(+p1: Nat, +emin: Nat, +aa: I.Int, +bb: I.Int, +fa: {Rn(1n+p1, RD.Int.mag(aa)) == RD.Int.mag(aa) : Nat}, +fb: {Rn(1n+p1, RD.Int.mag(bb)) == RD.Int.mag(bb) : Nat})
+  -> {D.Dy.add(DTS.s(p1, emin, aa, bb), DTS.t(p1, emin, aa, bb)) == D.Dy.add(Iota(p1, emin, aa), Iota(p1, emin, bb)) : D.Dy}:
+  DTwoSum.go(p1, emin, aa, bb, fa, fb, RD.Nat.lt(RD.Int.mag(aa), RD.Int.mag(bb)), {==})

@@ -285,6 +285,25 @@ reference first showed that minpos is pattern 1, 2^−192 (1 + 2^−20), not
 five saturating products, and was fixed. Above maxpos the format
 saturates, outside the model, as IEEE overflow is.
 
+## Error-free transformations (`proofs/eft.bend`, ADR-009)
+
+On integers rounded to p significant bits by the loop of `src/round.bend`
+(any p; a binary format's values are integers over 2^k):
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| `Sc.near`, `Sc.pow` | R(n 2^g) = R(n) 2^g | nothing | proof | `proofs/eft.bend` |
+| `G.le`, `RF` | m 2^j with m <= 2^p is representable (R fixes it); so is every rounded value | nothing | proof | `proofs/eft.bend` |
+| `Near` | no representable c is closer to n than R(n) | c representable | proof | `proofs/eft.bend` |
+| `Mono.lo`, `Mono.hi` | rounding never crosses a representable value | c representable | proof | `proofs/eft.bend` |
+| `Sterbenz` | b <= a <= 2b, both representable: a - b is representable | nothing else | proof | `proofs/eft.bend` |
+| `LA`, `LA.d` | the error of a rounded sum or difference of representable values is representable | nothing else | proof | `proofs/eft.bend` |
+| `Fast2Sum`, `TwoSum` | s = RN(a + b), z = RN(s - a), t = RN(b - z) give s + t = a + b when \|b\| <= \|a\|; TwoSum is Fast2Sum on the magnitude-sorted pair, exact for all a, b | a, b representable | proof | `proofs/eft.bend` |
+| `FlL`, `DFast2Sum`, `DTwoSum` | a binary format (p = 1 + p1, normal from 2^-emin, grid 2^-(emin + p1)) rounds N / 2^k to RN(N) / 2^k, so Fast2Sum and TwoSum are exact in the format; `F32.Fast2Sum`, `F32.TwoSum` instantiate binary32 | A, B representable | proof | `proofs/eft.bend`, `tests/df32_exact.bend` |
+
+Veltkamp's split, Dekker's product and the double-word bounds are checked
+exactly on samples (`tests/df32_exact.bend`), not proven.
+
 ## Dual numbers (`src/dual.bend`, ADR-006)
 
 | law | statement | assumes | tag | proof |

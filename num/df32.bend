@@ -30,12 +30,12 @@ def Fast2Sum(+a: F32, +b: F32) -> DF:
   +s = (a + b : F32)
   DF{s, (b - (s - a : F32) : F32)}
 
-# s + t = a + b exactly
+# s + t = a + b exactly: Fast2Sum with the inputs ordered by magnitude.
+# Knuth's branch-free 2Sum takes 6 operations; this takes 3 and two
+# selects, and its exactness is proven (proofs/eft.bend, Fast2Sum, TwoSum).
 def TwoSum(+a: F32, +b: F32) -> DF:
-  +s = (a + b : F32)
-  +a2 = (s - b : F32)
-  +b2 = (s - a2 : F32)
-  DF{s, ((a - a2 : F32) + (b - b2 : F32) : F32)}
+  +sw = F32.is_lt(F32.abs(a), F32.abs(b))
+  Fast2Sum(Bool.pick(F32, sw, b, a), Bool.pick(F32, sw, a, b))
 
 # a = hi + lo with hi on 12 bits: Veltkamp's split, C = 2^12 + 1
 def Split(+a: F32) -> DF:
