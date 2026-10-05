@@ -154,6 +154,39 @@ def Err.Fields(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T
                 case k <> kt:
                   {pos(add(mul(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, k), a), neg(abs(add(f, neg(e)))))) == True{} : Bool} & Err.Fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, ft, et, at, kt)
 
+# the absolute parts D(t) of a kernel's fields
+def Tm.Ds(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~abs: T -> T, ~eps: T, ~eta_a: T, ~eta_m: T, +env: List<&2, T>, ts: List<&2, N.Tm>) -> List<&2, T>:
+  match ts:
+    case Nil{}:
+      Nil{}
+    case t <> r:
+      Err.D(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, t) <> Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, r)
+
+# field by field, with underflow: |f - e| <= h(k) a + d
+def Err.Fields_u(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T, ~pos: T -> Bool, ~abs: T -> T, ~eps: T,
+  fs: List<&2, T>, es: List<&2, T>, as: List<&2, T>, ds: List<&2, T>, ks: List<&2, Nat>) -> Type:
+  match fs:
+    case Nil{}:
+      Unit
+    case f <> ft:
+      match es:
+        case Nil{}:
+          Unit
+        case e <> et:
+          match as:
+            case Nil{}:
+              Unit
+            case a <> at:
+              match ds:
+                case Nil{}:
+                  Unit
+                case d <> dt:
+                  match ks:
+                    case Nil{}:
+                      Unit
+                    case k <> kt:
+                      {pos(add(add(mul(Err.H(~T, ~zero, ~one, ~add, ~mul, ~eps, k), a), d), neg(abs(add(f, neg(e)))))) == True{} : Bool} & Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, ft, et, at, dt, kt)
+
 # the depth semiring: a generic kernel run on Nat with these operations
 # and zero inputs computes k for each output field
 def Err.dadd(a: Nat, b: Nat) -> Nat:

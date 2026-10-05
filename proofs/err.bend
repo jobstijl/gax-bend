@@ -327,6 +327,22 @@ def Err.fields(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T
     case +t <> r:
       (Err.bound(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, t), Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, r))
 
+# the same with underflow (Err.bound_u): each field within h(k) a + D
+def Err.fields_u(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool}, ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool}, ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul), +env: List<&2, T>, ts: List<&2, N.Tm>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, E.Tm.evals(~T, ~zero, ~fadd, ~fmul, ~neg, env, ts), E.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, ts),
+    E.Tm.absevs(~T, ~zero, ~add, ~mul, ~abs, env, ts), E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, ts), E.Tm.ks(ts)):
+  match ts:
+    case Nil{}:
+      Unit{}
+    case +t <> r:
+      (Err.bound_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, t), Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, env, r))
+
 # Tracking
 # --------
 

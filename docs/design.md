@@ -455,9 +455,9 @@ sources are in [numerics.md](numerics.md).
   exact, not over a rounding function. rnd∘add is one instance, and
   F32.add is one directly. This is what lets a kernel law be a `{==}`
   instantiation.
-- Per-kernel laws: 18 MB of generated source (`algebras/*/err.bend`,
-  7189 laws, mostly the repeated hypothesis list) and about 3 minutes of
-  gate time.
+- Per-kernel laws: 40 MB of generated source (`algebras/*/err.bend`, 7189 laws and
+  as many underflow laws, mostly the repeated hypothesis list) and about
+  4 minutes of gate time.
 
 ### Measured, not adopted
 

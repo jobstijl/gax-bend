@@ -822,6 +822,16 @@ def Err.fields(", Er.ALL(), ", ", Er.RNDH(), ", ", Er.ENV(), ", ts: List<&2, N.T
       Unit{}
     case +t <> r:
       (", Er.callR("Err.bound", ["t"]), ", ", Er.callR("Err.fields", ["r"]), ")
+
+# the same with underflow (Err.bound_u): each field within h(k) a + D
+def Err.fields_u(", Er.ALL(), ", ", Er.ETAH(), ", ", Er.RNDUH(), ", ", Er.ENV(), ", ts: List<&2, N.Tm>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps, E.Tm.evals(~T, ~zero, ~fadd, ~fmul, ~neg, env, ts), E.Tm.evals(~T, ~zero, ~add, ~mul, ~neg, env, ts),
+    E.Tm.absevs(~T, ~zero, ~add, ~mul, ~abs, env, ts), E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, env, ts), E.Tm.ks(ts)):
+  match ts:
+    case Nil{}:
+      Unit{}
+    case +t <> r:
+      (", Er.callU("Err.bound_u", ["t"]), ", ", Er.callU("Err.fields_u", ["r"]), ")
 "])
 
 # Tracking

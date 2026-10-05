@@ -13,7 +13,7 @@
 # Usage: tools/gate.sh [-q] [--full]
 #   -q      one line per failure only
 #   --full  also check the slow proof files (CGA3D's, about an hour).
-#           Every err.bend is checked in every tier (CSTA's takes 94 s).
+#           Every err.bend is checked in every tier (CSTA's takes 145 s).
 #   --csta  also check CSTA's proof files (1.6 hours, all 25 checked on
 #           2026-10-05). Without these flags they are counted as skipped.
 set -u

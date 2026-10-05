@@ -11,8 +11,9 @@ import ./kinds.bend as K
 import ./ops.bend as O
 
 # Every kernel's rounding error: each output field is within h(k) times its
-# absolute size of the exact value (proofs/err.bend, Err.fields). Unary
-# kernels that only negate are exact and have no law.
+# absolute size of the exact value (proofs/err.bend, Err.fields), and with
+# underflow, within that plus D (name.erru, Err.fields_u). Unary kernels
+# that only negate are exact and have no law.
 
 def Scalar.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
@@ -31,6 +32,27 @@ def Scalar.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Scalar{a_s} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Scalar.gp.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.gp.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.gp.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.gp.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.gp.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Scalar.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -52,6 +74,27 @@ def Scalar.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Scalar.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Scalar.gp.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Scalar.gp.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.gp.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.gp.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Scalar.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Scalar.gp.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Scalar.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Scalar.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -69,6 +112,27 @@ def Scalar.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Scalar.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Scalar.gp.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Scalar.gp.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Scalar.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Scalar.gp.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Scalar.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Scalar.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -90,6 +154,27 @@ def Scalar.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Scalar.gp.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.gp.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.gp.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.gp.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.gp.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Scalar.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -107,6 +192,27 @@ def Scalar.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Scalar.gp.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.gp.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.gp.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.gp.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.gp.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Vector.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -128,6 +234,27 @@ def Vector.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Vector.fields(N.Tm, O.Vector.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Vector.gp.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.gp.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.gp.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.gp.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.gp.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Vector.fields(N.Tm, O.Vector.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Vector.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -145,6 +272,27 @@ def Vector.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Rotor.fields(N.Tm, O.Vector.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.gp.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Vector.gp.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Vector.gp.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Vector.gp.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Rotor.fields(N.Tm, O.Vector.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Vector.gp.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Rotor.fields(N.Tm, O.Vector.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -166,6 +314,27 @@ def Vector.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Vector.fields(N.Tm, O.Vector.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Vector.gp.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.gp.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.gp.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Vector.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -183,6 +352,27 @@ def Vector.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.gp.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.gp.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.gp.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.gp.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.gp.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -204,6 +394,27 @@ def Vector.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.gp.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.gp.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.gp.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.gp.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.gp.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -221,6 +432,27 @@ def Pseudoscalar.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Pseudoscalar.gp.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.gp.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.gp.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.gp.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.gp.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Pseudoscalar.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -242,6 +474,27 @@ def Pseudoscalar.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Pseudoscalar.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.gp.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Pseudoscalar.gp.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.gp.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.gp.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Pseudoscalar.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Pseudoscalar.gp.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Pseudoscalar.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -259,6 +512,27 @@ def Pseudoscalar.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Pseudoscalar.gp.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.gp.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.gp.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Pseudoscalar.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -280,6 +554,27 @@ def Pseudoscalar.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.gp.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.gp.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.gp.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.gp.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.gp.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -297,6 +592,27 @@ def Pseudoscalar.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.gp.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.gp.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.gp.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.gp.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.gp.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -318,6 +634,27 @@ def Rotor.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Rotor.gp.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.gp.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.gp.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.gp.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.gp.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Rotor.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -335,6 +672,27 @@ def Rotor.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.gp.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.gp.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.gp.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.gp.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.gp.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -356,6 +714,27 @@ def Rotor.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.gp.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.gp.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.gp.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -373,6 +752,27 @@ def Rotor.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.gp.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.gp.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.gp.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.gp.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.gp.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -394,6 +794,27 @@ def Rotor.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.gp.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.gp.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.gp.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.gp.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.gp.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -411,6 +832,27 @@ def Multivector.gp.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.gp.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.gp.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.gp.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.gp.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -432,6 +874,27 @@ def Multivector.gp.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.gp.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.gp.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.gp.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.gp.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -449,6 +912,27 @@ def Multivector.gp.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.gp.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.gp.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.gp.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.gp.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -470,6 +954,27 @@ def Multivector.gp.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.gp.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.gp.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.gp.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.gp.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -487,6 +992,27 @@ def Multivector.gp.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.gp.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.gp.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.gp.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.gp.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.gp.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -508,6 +1034,27 @@ def Scalar.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Scalar.wedge.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.wedge.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.wedge.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.wedge.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.wedge.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Scalar.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -525,6 +1072,27 @@ def Scalar.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
   match a b:
     case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Scalar.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.wedge.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Scalar.wedge.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.wedge.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.wedge.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Scalar.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Scalar.wedge.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Scalar.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.wedge.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -546,6 +1114,27 @@ def Scalar.wedge.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Scalar.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Scalar.wedge.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Scalar.wedge.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.wedge.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.wedge.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Scalar.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Scalar.wedge.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Scalar.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Scalar.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -563,6 +1152,27 @@ def Scalar.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul:
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.wedge.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.wedge.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.wedge.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.wedge.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.wedge.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -584,6 +1194,27 @@ def Scalar.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.wedge.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.wedge.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.wedge.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.wedge.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.wedge.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -601,6 +1232,27 @@ def Vector.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
   match a b:
     case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Vector.fields(N.Tm, O.Vector.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Vector.wedge.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.wedge.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.wedge.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.wedge.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.wedge.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Vector.fields(N.Tm, O.Vector.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Vector.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -622,6 +1274,27 @@ def Vector.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Pseudoscalar.fields(N.Tm, O.Vector.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.wedge.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Vector.wedge.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Vector.wedge.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Vector.wedge.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Vector.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Pseudoscalar.fields(Nat, O.Vector.wedge.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Pseudoscalar.fields(N.Tm, O.Vector.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -639,6 +1312,27 @@ def Vector.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul:
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.wedge.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.wedge.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.wedge.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.wedge.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.wedge.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -660,6 +1354,27 @@ def Vector.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.wedge.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.wedge.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.wedge.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.wedge.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.wedge.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -677,6 +1392,27 @@ def Pseudoscalar.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T
   match a b:
     case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Pseudoscalar.wedge.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.wedge.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Pseudoscalar.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -698,6 +1434,27 @@ def Pseudoscalar.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.wedge.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.wedge.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -715,6 +1472,27 @@ def Pseudoscalar.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.wedge.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.wedge.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.wedge.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -736,6 +1514,27 @@ def Rotor.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Rotor.wedge.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.wedge.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.wedge.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.wedge.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.wedge.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Rotor.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -753,6 +1552,27 @@ def Rotor.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul:
   match a b:
     case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.wedge.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.wedge.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.wedge.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.wedge.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.wedge.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.wedge.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -774,6 +1594,27 @@ def Rotor.wedge.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Rotor.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.wedge.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Rotor.wedge.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Rotor.wedge.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Rotor.wedge.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Rotor.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Pseudoscalar.fields(Nat, O.Rotor.wedge.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Rotor.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -791,6 +1632,27 @@ def Rotor.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.wedge.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.wedge.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.wedge.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.wedge.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.wedge.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -812,6 +1674,27 @@ def Rotor.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.wedge.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.wedge.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.wedge.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.wedge.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.wedge.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -829,6 +1712,27 @@ def Multivector.wedge.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.wedge.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.wedge.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.wedge.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.wedge.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -850,6 +1754,27 @@ def Multivector.wedge.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.wedge.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.wedge.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.wedge.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.wedge.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.wedge.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -867,6 +1792,27 @@ def Multivector.wedge.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Multivector.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.wedge.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Multivector.wedge.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Multivector.wedge.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Multivector.wedge.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Multivector.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Pseudoscalar.fields(Nat, O.Multivector.wedge.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Multivector.wedge.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -888,6 +1834,27 @@ def Multivector.wedge.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.wedge.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.wedge.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.wedge.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.wedge.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -905,6 +1872,27 @@ def Multivector.wedge.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.wedge.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.wedge.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.wedge.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.wedge.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.wedge.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -926,6 +1914,27 @@ def Scalar.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Scalar.vee.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.vee.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.vee.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Scalar.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -943,6 +1952,27 @@ def Scalar.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.vee.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.vee.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.vee.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.vee.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Scalar.vee.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -964,6 +1994,27 @@ def Scalar.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.vee.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.vee.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.vee.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.vee.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Scalar.vee.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -981,6 +2032,27 @@ def Vector.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Vector.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.vee.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.vee.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.vee.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.vee.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Vector.vee.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Vector.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1002,6 +2074,27 @@ def Vector.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Vector.fields(N.Tm, O.Vector.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Vector.vee.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.vee.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.vee.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Vector.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1019,6 +2112,27 @@ def Vector.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.vee.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.vee.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.vee.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.vee.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.vee.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1040,6 +2154,27 @@ def Vector.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.vee.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.vee.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.vee.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.vee.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.vee.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.vee.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1057,6 +2192,27 @@ def Pseudoscalar.vee.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Pseudoscalar.vee.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.vee.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.vee.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.vee.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.vee.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Pseudoscalar.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1078,6 +2234,27 @@ def Pseudoscalar.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Pseudoscalar.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.vee.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Pseudoscalar.vee.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.vee.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.vee.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Pseudoscalar.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Pseudoscalar.vee.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Pseudoscalar.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1095,6 +2272,27 @@ def Pseudoscalar.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
   match a b:
     case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Pseudoscalar.vee.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.vee.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.vee.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Pseudoscalar.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1116,6 +2314,27 @@ def Pseudoscalar.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.vee.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.vee.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.vee.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.vee.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.vee.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1133,6 +2352,27 @@ def Pseudoscalar.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.vee.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.vee.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.vee.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.vee.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.vee.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.vee.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1154,6 +2394,27 @@ def Rotor.vee.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Rotor.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Rotor.vee.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.vee.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.vee.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.vee.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Rotor.vee.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Rotor.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Rotor.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1171,6 +2432,27 @@ def Rotor.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.vee.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.vee.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.vee.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.vee.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.vee.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1192,6 +2474,27 @@ def Rotor.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.vee.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.vee.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.vee.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1209,6 +2512,27 @@ def Rotor.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.vee.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.vee.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.vee.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.vee.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.vee.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1230,6 +2554,27 @@ def Rotor.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.vee.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.vee.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.vee.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.vee.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.vee.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.vee.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1247,6 +2592,27 @@ def Multivector.vee.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Multivector.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.vee.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.vee.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.vee.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.vee.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Multivector.vee.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Multivector.vee.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1268,6 +2634,27 @@ def Multivector.vee.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.vee.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.vee.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.vee.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.vee.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1285,6 +2672,27 @@ def Multivector.vee.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.vee.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.vee.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.vee.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.vee.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1306,6 +2714,27 @@ def Multivector.vee.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.vee.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.vee.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.vee.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.vee.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1323,6 +2752,27 @@ def Multivector.vee.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.vee.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.vee.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.vee.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.vee.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.vee.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.lc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1344,6 +2794,27 @@ def Scalar.lc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Scalar.lc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.lc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.lc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.lc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.lc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Scalar.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1361,6 +2832,27 @@ def Scalar.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Scalar.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.lc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Scalar.lc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.lc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Scalar.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Scalar.lc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Scalar.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1382,6 +2874,27 @@ def Scalar.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Scalar.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Scalar.lc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Scalar.lc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Scalar.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Scalar.lc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Scalar.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Scalar.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1399,6 +2912,27 @@ def Scalar.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.lc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.lc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.lc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.lc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1420,6 +2954,27 @@ def Scalar.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.lc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.lc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.lc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.lc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1437,6 +2992,27 @@ def Vector.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Vector.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.lc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.lc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.lc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Vector.lc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Vector.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1458,6 +3034,27 @@ def Vector.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Vector.fields(N.Tm, O.Vector.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Vector.lc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.lc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.lc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Vector.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1475,6 +3072,27 @@ def Vector.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.lc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.lc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.lc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.lc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1496,6 +3114,27 @@ def Vector.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.lc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.lc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.lc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.lc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1513,6 +3152,27 @@ def Pseudoscalar.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Pseudoscalar.lc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.lc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Pseudoscalar.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1534,6 +3194,27 @@ def Pseudoscalar.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.lc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.lc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1551,6 +3232,27 @@ def Pseudoscalar.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.lc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.lc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.lc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.lc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1572,6 +3274,27 @@ def Rotor.lc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Rotor.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Rotor.lc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.lc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.lc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.lc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Rotor.lc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Rotor.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Rotor.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1589,6 +3312,27 @@ def Rotor.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.lc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.lc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.lc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.lc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1610,6 +3354,27 @@ def Rotor.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.lc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.lc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.lc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1627,6 +3392,27 @@ def Rotor.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.lc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.lc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.lc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.lc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1648,6 +3434,27 @@ def Rotor.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.lc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.lc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.lc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.lc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.lc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1665,6 +3472,27 @@ def Multivector.lc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Multivector.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.lc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.lc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.lc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.lc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Multivector.lc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Multivector.lc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1686,6 +3514,27 @@ def Multivector.lc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.lc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.lc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.lc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.lc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1703,6 +3552,27 @@ def Multivector.lc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.lc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.lc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.lc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.lc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1724,6 +3594,27 @@ def Multivector.lc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.lc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.lc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.lc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.lc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1741,6 +3632,27 @@ def Multivector.lc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.lc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.lc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.lc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.lc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.lc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1762,6 +3674,27 @@ def Scalar.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Scalar.rc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.rc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.rc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.rc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Scalar.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1779,6 +3712,27 @@ def Scalar.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.rc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.rc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.rc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Scalar.rc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1800,6 +3754,27 @@ def Scalar.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.rc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.rc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.rc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Scalar.rc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1817,6 +3792,27 @@ def Vector.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Vector.fields(N.Tm, O.Vector.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Vector.rc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.rc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.rc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.rc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Vector.fields(N.Tm, O.Vector.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Vector.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1838,6 +3834,27 @@ def Vector.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Vector.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.rc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.rc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.rc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Vector.rc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Vector.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1855,6 +3872,27 @@ def Vector.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.rc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.rc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.rc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.rc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1876,6 +3914,27 @@ def Vector.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.rc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.rc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.rc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.rc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1893,6 +3952,27 @@ def Pseudoscalar.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Pseudoscalar.rc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.rc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.rc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.rc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Pseudoscalar.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1914,6 +3994,27 @@ def Pseudoscalar.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Pseudoscalar.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.rc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Pseudoscalar.rc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.rc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Pseudoscalar.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Pseudoscalar.rc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Pseudoscalar.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.rc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1931,6 +4032,27 @@ def Pseudoscalar.rc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Pseudoscalar.rc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.rc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.rc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Pseudoscalar.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1952,6 +4074,27 @@ def Pseudoscalar.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.rc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.rc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.rc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.rc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -1969,6 +4112,27 @@ def Pseudoscalar.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.rc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.rc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.rc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.rc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -1990,6 +4154,27 @@ def Rotor.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Rotor.rc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.rc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.rc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.rc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Rotor.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2007,6 +4192,27 @@ def Rotor.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.rc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.rc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.rc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.rc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.rc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2028,6 +4234,27 @@ def Rotor.rc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Rotor.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.rc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.rc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Rotor.rc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Rotor.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2045,6 +4272,27 @@ def Rotor.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.rc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.rc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.rc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.rc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2066,6 +4314,27 @@ def Rotor.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.rc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.rc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.rc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.rc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2083,6 +4352,27 @@ def Multivector.rc.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.rc.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.rc.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.rc.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.rc.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2104,6 +4394,27 @@ def Multivector.rc.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.rc.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.rc.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.rc.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.rc.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.rc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2121,6 +4432,27 @@ def Multivector.rc.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Multivector.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.rc.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.rc.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.rc.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Multivector.rc.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Multivector.rc.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2142,6 +4474,27 @@ def Multivector.rc.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mu
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.rc.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.rc.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.rc.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.rc.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2159,6 +4512,27 @@ def Multivector.rc.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.rc.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.rc.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.rc.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.rc.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.rc.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2180,6 +4554,27 @@ def Scalar.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Scalar.dot.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.dot.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.dot.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.dot.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Scalar.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2197,6 +4592,27 @@ def Scalar.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Scalar.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.dot.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Scalar.dot.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.dot.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Scalar.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Scalar.dot.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Scalar.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2218,6 +4634,27 @@ def Scalar.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Scalar.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Scalar.dot.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Scalar.dot.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Scalar.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Scalar.dot.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Scalar.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Scalar.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2235,6 +4672,27 @@ def Scalar.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.dot.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.dot.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.dot.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.dot.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2256,6 +4714,27 @@ def Scalar.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.dot.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.dot.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.dot.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.dot.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2273,6 +4752,27 @@ def Vector.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Vector.fields(N.Tm, O.Vector.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Vector.dot.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.dot.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.dot.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.dot.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Vector.fields(N.Tm, O.Vector.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Vector.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2294,6 +4794,27 @@ def Vector.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Vector.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.dot.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.dot.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.dot.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Vector.dot.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Vector.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2311,6 +4832,27 @@ def Vector.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Vector.dot.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.dot.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.dot.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Vector.fields(N.Tm, O.Vector.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Vector.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2332,6 +4874,27 @@ def Vector.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.dot.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.dot.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.dot.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.dot.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2349,6 +4912,27 @@ def Vector.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Vector.dot.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.dot.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.dot.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.dot.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Pseudoscalar.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2370,6 +4954,27 @@ def Pseudoscalar.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Pseudoscalar.dot.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.dot.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.dot.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.dot.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Pseudoscalar.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2387,6 +4992,27 @@ def Pseudoscalar.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Pseudoscalar.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Pseudoscalar.dot.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Pseudoscalar.dot.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.dot.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Pseudoscalar.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Pseudoscalar.dot.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Pseudoscalar.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Pseudoscalar.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2408,6 +5034,27 @@ def Pseudoscalar.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Pseudoscalar.dot.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.dot.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.dot.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Pseudoscalar.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2425,6 +5072,27 @@ def Pseudoscalar.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Pseudoscalar.dot.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.dot.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.dot.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.dot.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Pseudoscalar.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2446,6 +5114,27 @@ def Pseudoscalar.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Pseudoscalar.dot.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.dot.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.dot.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.dot.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Rotor.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2463,6 +5152,27 @@ def Rotor.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Rotor.dot.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.dot.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.dot.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.dot.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Rotor.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2484,6 +5194,27 @@ def Rotor.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.dot.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.dot.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.dot.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.dot.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2501,6 +5232,27 @@ def Rotor.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Rotor.dot.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.dot.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.dot.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Rotor.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2522,6 +5274,27 @@ def Rotor.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.dot.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.dot.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.dot.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.dot.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2539,6 +5312,27 @@ def Rotor.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Rotor.dot.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.dot.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.dot.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.dot.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2560,6 +5354,27 @@ def Multivector.dot.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
+def Multivector.dot.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.dot.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.dot.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.dot.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
 def Multivector.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2577,6 +5392,27 @@ def Multivector.dot.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
+def Multivector.dot.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.dot.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.dot.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.dot.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2598,6 +5434,27 @@ def Multivector.dot.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
+def Multivector.dot.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.dot.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.dot.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.dot.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
 def Multivector.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2615,6 +5472,27 @@ def Multivector.dot.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
+def Multivector.dot.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.dot.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.dot.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.dot.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2636,6 +5514,27 @@ def Multivector.dot.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
+def Multivector.dot.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.dot.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.dot.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.dot.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.dot.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
 def Scalar.scalar_product.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2653,6 +5552,27 @@ def Scalar.scalar_product.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Scalar{a_s} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Scalar.scalar_product.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.scalar_product.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.scalar_product.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Scalar.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2674,6 +5594,27 @@ def Scalar.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Scalar.scalar_product.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.scalar_product.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Scalar.scalar_product.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Scalar.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2691,6 +5632,27 @@ def Scalar.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Scalar.scalar_product.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.scalar_product.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Scalar.scalar_product.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Scalar.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Vector.scalar_product.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2712,6 +5674,27 @@ def Vector.scalar_product.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Vector.scalar_product.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.scalar_product.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.scalar_product.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.scalar_product.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.scalar_product.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.scalar_product.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Vector.scalar_product.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Vector.scalar_product.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2729,6 +5712,27 @@ def Vector.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Vector.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Vector.scalar_product.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.scalar_product.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Scalar.fields(Nat, O.Vector.scalar_product.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Vector.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Pseudoscalar.scalar_product.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2750,6 +5754,27 @@ def Pseudoscalar.scalar_product.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~a
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Pseudoscalar.scalar_product.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.scalar_product.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Pseudoscalar.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2767,6 +5792,27 @@ def Pseudoscalar.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Pseudoscalar.scalar_product.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.scalar_product.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Pseudoscalar.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2788,6 +5834,27 @@ def Pseudoscalar.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~ad
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Pseudoscalar.scalar_product.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.scalar_product.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Rotor.scalar_product.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2805,6 +5872,27 @@ def Rotor.scalar_product.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Rotor.scalar_product.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.scalar_product.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Rotor.scalar_product.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Rotor.scalar_product.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2826,6 +5914,27 @@ def Rotor.scalar_product.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.scalar_product.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.scalar_product.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Rotor.scalar_product.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2843,6 +5952,27 @@ def Rotor.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.scalar_product.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.scalar_product.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Rotor.scalar_product.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2864,6 +5994,27 @@ def Rotor.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.scalar_product.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.scalar_product.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Scalar.fields(Nat, O.Rotor.scalar_product.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Rotor.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.scalar_product.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2881,6 +6032,27 @@ def Multivector.scalar_product.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.scalar_product.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.scalar_product.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Multivector.scalar_product.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.scalar_product.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2902,6 +6074,27 @@ def Multivector.scalar_product.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.scalar_product.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.scalar_product.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Scalar.fields(Nat, O.Multivector.scalar_product.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.scalar_product.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2919,6 +6112,27 @@ def Multivector.scalar_product.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~ad
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.scalar_product.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.scalar_product.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Scalar.fields(Nat, O.Multivector.scalar_product.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2940,6 +6154,27 @@ def Multivector.scalar_product.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.scalar_product.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.scalar_product.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Scalar.fields(Nat, O.Multivector.scalar_product.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2957,6 +6192,27 @@ def Multivector.scalar_product.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.scalar_product.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Multivector.scalar_product.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Multivector.scalar_product.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Scalar.fields(Nat, O.Multivector.scalar_product.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Scalar.fields(N.Tm, O.Multivector.scalar_product.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -2978,6 +6234,27 @@ def Scalar.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Scalar.add.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.add.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.add.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.add.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Scalar.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -2995,6 +6272,27 @@ def Scalar.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Scalar.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.add.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.add.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.add.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.add.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Scalar.add.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Scalar.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3016,6 +6314,27 @@ def Scalar.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Scalar.add.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.add.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Rotor.fields(Nat, O.Scalar.add.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Scalar.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3033,6 +6352,27 @@ def Scalar.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.add.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.add.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.add.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.add.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3054,6 +6394,27 @@ def Scalar.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.add.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.add.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.add.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.add.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3071,6 +6432,27 @@ def Vector.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Multivector.fields(N.Tm, O.Vector.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Vector.add.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.add.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Vector.add.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Multivector.fields(N.Tm, O.Vector.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Vector.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3092,6 +6474,27 @@ def Vector.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.add.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.add.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.add.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.add.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Vector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3109,6 +6512,27 @@ def Vector.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Vector.add.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.add.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Vector.add.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Vector.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3130,6 +6554,27 @@ def Vector.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.add.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.add.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Multivector.fields(Nat, O.Vector.add.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3147,6 +6592,27 @@ def Vector.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Vector.add.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.add.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.add.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.add.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Pseudoscalar.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3168,6 +6634,27 @@ def Pseudoscalar.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Pseudoscalar.add.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.add.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.add.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.add.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Pseudoscalar.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3185,6 +6672,27 @@ def Pseudoscalar.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Pseudoscalar.add.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.add.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.add.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.add.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.add.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Pseudoscalar.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3206,6 +6714,27 @@ def Pseudoscalar.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Pseudoscalar.add.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.add.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.add.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Pseudoscalar.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3223,6 +6752,27 @@ def Pseudoscalar.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Pseudoscalar.add.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.add.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.add.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.add.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Pseudoscalar.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3244,6 +6794,27 @@ def Pseudoscalar.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Pseudoscalar.add.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.add.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.add.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.add.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Rotor.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3261,6 +6832,27 @@ def Rotor.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Rotor.add.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.add.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.add.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.add.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Rotor.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3282,6 +6874,27 @@ def Rotor.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Rotor.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.add.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.add.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.add.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.add.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Multivector.fields(Nat, O.Rotor.add.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Rotor.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3299,6 +6912,27 @@ def Rotor.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Rotor.add.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.add.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.add.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Rotor.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3320,6 +6954,27 @@ def Rotor.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.add.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.add.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.add.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.add.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3337,6 +6992,27 @@ def Rotor.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Rotor.add.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.add.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.add.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.add.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3358,6 +7034,27 @@ def Multivector.add.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
+def Multivector.add.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.add.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.add.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.add.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
 def Multivector.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3375,6 +7072,27 @@ def Multivector.add.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
+def Multivector.add.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.add.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.add.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.add.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3396,6 +7114,27 @@ def Multivector.add.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
+def Multivector.add.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.add.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.add.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.add.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
 def Multivector.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3413,6 +7152,27 @@ def Multivector.add.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
+def Multivector.add.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.add.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.add.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.add.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3434,6 +7194,27 @@ def Multivector.add.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
+def Multivector.add.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.add.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.add.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.add.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.add.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
 def Scalar.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3451,6 +7232,27 @@ def Scalar.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Scalar{a_s} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Scalar.sub.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.sub.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.sub.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.sub.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.sub.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Scalar.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3472,6 +7274,27 @@ def Scalar.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Scalar.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Scalar.sub.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.sub.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.sub.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.sub.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Scalar.sub.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Scalar.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Scalar.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3489,6 +7312,27 @@ def Scalar.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Scalar.sub.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.sub.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Rotor.fields(Nat, O.Scalar.sub.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Scalar.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3510,6 +7354,27 @@ def Scalar.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Scalar.sub.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.sub.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.sub.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.sub.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.sub.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Scalar.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3527,6 +7392,27 @@ def Scalar.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Scalar.sub.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.sub.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.sub.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.sub.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.sub.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Vector.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3548,6 +7434,27 @@ def Vector.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Multivector.fields(N.Tm, O.Vector.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Vector.sub.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.sub.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Vector.sub.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Multivector.fields(N.Tm, O.Vector.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Vector.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3565,6 +7472,27 @@ def Vector.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: 
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Vector.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.sub.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.sub.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.sub.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.sub.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.sub.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Vector.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3586,6 +7514,27 @@ def Vector.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Vector.sub.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.sub.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Vector.sub.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Vector.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3603,6 +7552,27 @@ def Vector.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.sub.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.sub.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Multivector.fields(Nat, O.Vector.sub.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3624,6 +7594,27 @@ def Vector.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.sub.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.sub.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.sub.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.sub.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3641,6 +7632,27 @@ def Pseudoscalar.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Pseudoscalar.sub.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.sub.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.sub.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.sub.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.sub.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Pseudoscalar.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3662,6 +7674,27 @@ def Pseudoscalar.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.sub.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.sub.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.sub.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.sub.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.sub.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3679,6 +7712,27 @@ def Pseudoscalar.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
   match a b:
     case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
+def Pseudoscalar.sub.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.sub.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.sub.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
 def Pseudoscalar.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3700,6 +7754,27 @@ def Pseudoscalar.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.sub.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.sub.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.sub.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.sub.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.sub.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3717,6 +7792,27 @@ def Pseudoscalar.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Pseudoscalar.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.sub.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Pseudoscalar.sub.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.sub.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Pseudoscalar.sub.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Pseudoscalar.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Pseudoscalar.sub.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Pseudoscalar.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3738,6 +7834,27 @@ def Rotor.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Rotor.sub.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.sub.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.sub.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.sub.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.sub.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Rotor.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3755,6 +7872,27 @@ def Rotor.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T
   match a b:
     case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Rotor.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.sub.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.sub.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.sub.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.sub.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Multivector.fields(Nat, O.Rotor.sub.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Rotor.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3776,6 +7914,27 @@ def Rotor.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Rotor.sub.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.sub.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.sub.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Rotor.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3793,6 +7952,27 @@ def Rotor.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T 
   match a b:
     case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Rotor.sub.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.sub.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.sub.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.sub.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.sub.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Rotor.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3814,6 +7994,27 @@ def Rotor.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Rotor.sub.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.sub.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.sub.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.sub.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.sub.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3831,6 +8032,27 @@ def Multivector.sub.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
+def Multivector.sub.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.sub.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.sub.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.sub.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
 def Multivector.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3852,6 +8074,27 @@ def Multivector.sub.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.sub.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.sub.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.sub.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.sub.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3869,6 +8112,27 @@ def Multivector.sub.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.sub.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.sub.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.sub.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.sub.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3890,6 +8154,27 @@ def Multivector.sub.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.sub.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.sub.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.sub.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.sub.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3907,6 +8192,27 @@ def Multivector.sub.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.sub.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.sub.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.sub.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.sub.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.sub.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Vector.transform.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3928,6 +8234,27 @@ def Vector.transform.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Scalar.fields(N.Tm, O.Vector.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
+def Vector.transform.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.transform.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.transform.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Vector.transform.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Scalar.fields(N.Tm, O.Vector.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
 def Vector.transform.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3945,6 +8272,27 @@ def Vector.transform.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
   match a b:
     case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Vector.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.transform.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.transform.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.transform.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.transform.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Vector.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.transform.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -3966,6 +8314,27 @@ def Vector.transform.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Vector.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
+def Vector.transform.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Vector.transform.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Vector.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Vector.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Vector.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Pseudoscalar.fields(Nat, O.Vector.transform.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Vector.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
 def Vector.transform.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -3983,6 +8352,27 @@ def Vector.transform.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Vector.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.transform.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Vector.transform.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Vector.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Vector.transform.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Vector.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Vector.transform.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Vector.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.transform.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4004,6 +8394,27 @@ def Vector.transform.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.transform.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.transform.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.transform.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.transform.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Rotor.transform.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4021,6 +8432,27 @@ def Rotor.transform.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
   match a b:
     case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Scalar.fields(N.Tm, O.Rotor.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Rotor.transform.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Rotor.transform.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.transform.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Rotor.transform.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Rotor.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Scalar.fields(Nat, O.Rotor.transform.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Scalar.fields(N.Tm, O.Rotor.transform.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Rotor.transform.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4042,6 +8474,27 @@ def Rotor.transform.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.transform.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.transform.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.transform.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.transform.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.transform.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.transform.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.transform.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4059,6 +8512,27 @@ def Rotor.transform.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Rotor.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Rotor.transform.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Rotor.transform.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Rotor.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Rotor.transform.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Rotor.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Pseudoscalar.fields(Nat, O.Rotor.transform.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Rotor.transform.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Rotor.transform.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4080,6 +8554,27 @@ def Rotor.transform.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~m
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.transform.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.transform.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.transform.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.transform.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.transform.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.transform.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.transform.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4097,6 +8592,27 @@ def Rotor.transform.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Rotor.transform.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.transform.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.transform.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.transform.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.transform.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.transform.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Vector.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4118,6 +8634,27 @@ def Vector.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T,
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Pseudoscalar.fields(N.Tm, O.Vector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.commutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Vector.commutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Vector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Vector.commutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Vector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Pseudoscalar.fields(Nat, O.Vector.commutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Pseudoscalar.fields(N.Tm, O.Vector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.commutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4135,6 +8672,27 @@ def Vector.commutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T
   match a b:
     case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Vector.commutator.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.commutator.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.commutator.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e12],
         K.Vector.fields(N.Tm, O.Vector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Vector.commutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4156,6 +8714,27 @@ def Vector.commutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.commutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.commutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.commutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4173,6 +8752,27 @@ def Vector.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
   match a b:
     case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Vector.commutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.commutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.commutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Pseudoscalar.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4194,6 +8794,27 @@ def Pseudoscalar.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
+def Pseudoscalar.commutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Pseudoscalar.commutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.commutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Pseudoscalar.commutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Pseudoscalar.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
 def Pseudoscalar.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4211,6 +8832,27 @@ def Pseudoscalar.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T
   match a b:
     case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
+def Pseudoscalar.commutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Pseudoscalar.commutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Vector.fields(N.Tm, O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Vector.fields(Nat, O.Pseudoscalar.commutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Vector.fields(N.Tm, O.Pseudoscalar.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
 def Rotor.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4232,6 +8874,27 @@ def Rotor.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.commutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.commutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.commutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.commutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4249,6 +8912,27 @@ def Rotor.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Vector.fields(N.Tm, O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Rotor.commutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.commutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.commutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Vector.fields(Nat, O.Rotor.commutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Vector.fields(N.Tm, O.Rotor.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4270,6 +8954,27 @@ def Multivector.commutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.commutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.commutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.commutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.commutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.commutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.commutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4287,6 +8992,27 @@ def Multivector.commutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Vector.fields(N.Tm, O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
+def Multivector.commutator.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Multivector.commutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Vector.fields(N.Tm, O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Vector.fields(Nat, O.Multivector.commutator.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Vector.fields(N.Tm, O.Multivector.commutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
 def Multivector.commutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4308,6 +9034,27 @@ def Multivector.commutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.commutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Multivector.commutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Multivector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Multivector.commutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Vector.fields(Nat, O.Multivector.commutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Multivector.commutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4325,6 +9072,27 @@ def Multivector.commutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T 
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.commutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.commutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.commutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.commutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.commutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
 
 def Scalar.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4346,6 +9114,27 @@ def Scalar.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
         K.Scalar.fields(N.Tm, O.Scalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
+def Scalar.anticommutator.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Scalar.anticommutator.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Scalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Scalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Scalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Scalar.anticommutator.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s],
+        K.Scalar.fields(N.Tm, O.Scalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
 def Scalar.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4363,6 +9152,27 @@ def Scalar.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.anticommutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Scalar.anticommutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Scalar.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Scalar.anticommutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Scalar.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Vector{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4384,6 +9194,27 @@ def Scalar.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
         K.Pseudoscalar.fields(N.Tm, O.Scalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Scalar.anticommutator.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Scalar.anticommutator.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Scalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Scalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Scalar.anticommutator.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_e12],
+        K.Pseudoscalar.fields(N.Tm, O.Scalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Scalar.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4401,6 +9232,27 @@ def Scalar.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Scalar.anticommutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Scalar.anticommutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Scalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Scalar.anticommutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Scalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Scalar.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4422,6 +9274,27 @@ def Scalar.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Scalar.anticommutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Scalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Scalar.anticommutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Scalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Scalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Scalar.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Scalar.anticommutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Scalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Scalar{a_s} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Scalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Scalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Vector.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4439,6 +9312,27 @@ def Vector.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
   match a b:
     case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
+        K.Vector.fields(N.Tm, O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Vector.anticommutator.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.anticommutator.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Scalar.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Vector.fields(Nat, O.Vector.anticommutator.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s],
         K.Vector.fields(N.Tm, O.Vector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Vector.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4460,6 +9354,27 @@ def Vector.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
         K.Scalar.fields(N.Tm, O.Vector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Vector.anticommutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Vector.anticommutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Vector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Vector.fields(T, b)), K.Scalar.fields(N.Tm, O.Vector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Scalar.fields(Nat, O.Vector.anticommutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_e1, b_e2],
+        K.Scalar.fields(N.Tm, O.Vector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Vector.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4477,6 +9392,27 @@ def Vector.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
+        K.Vector.fields(N.Tm, O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
+def Vector.anticommutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Vector.anticommutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Vector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Rotor.fields(T, b)), K.Vector.fields(N.Tm, O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Vector.anticommutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e12],
         K.Vector.fields(N.Tm, O.Vector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
 def Vector.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4498,6 +9434,27 @@ def Vector.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
+def Vector.anticommutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Vector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Vector.anticommutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Vector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Vector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Vector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Vector.anticommutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Vector{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Vector{a_e1, a_e2} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e1, a_e2, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Vector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Vector{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
 def Pseudoscalar.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4515,6 +9472,27 @@ def Pseudoscalar.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T 
   match a b:
     case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
+        K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
+
+def Pseudoscalar.anticommutator.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.anticommutator.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Pseudoscalar.fields(T, O.Pseudoscalar.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Scalar.fields(T, b)), K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}}))),
+    K.Pseudoscalar.fields(Nat, O.Pseudoscalar.anticommutator.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s],
         K.Pseudoscalar.fields(N.Tm, O.Pseudoscalar.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Scalar{N.TVar{1n}})))
 
 def Pseudoscalar.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4536,6 +9514,27 @@ def Pseudoscalar.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~a
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
         K.Scalar.fields(N.Tm, O.Pseudoscalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
 
+def Pseudoscalar.anticommutator.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Scalar.fields(T, O.Pseudoscalar.anticommutator.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Scalar.fields(T, O.Pseudoscalar.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Scalar.fields(N.Tm, O.Pseudoscalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}}))),
+    K.Scalar.fields(Nat, O.Pseudoscalar.anticommutator.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_e12],
+        K.Scalar.fields(N.Tm, O.Pseudoscalar.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Pseudoscalar{N.TVar{1n}})))
+
 def Pseudoscalar.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4553,6 +9552,27 @@ def Pseudoscalar.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
+
+def Pseudoscalar.anticommutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.anticommutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Rotor{N.TVar{1n}, N.TVar{2n}})))
 
 def Pseudoscalar.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4574,6 +9594,27 @@ def Pseudoscalar.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~ad
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
         K.Rotor.fields(N.Tm, O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
 
+def Pseudoscalar.anticommutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Pseudoscalar<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Pseudoscalar.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Pseudoscalar.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Pseudoscalar.fields(T, a), K.Multivector.fields(T, b)), K.Rotor.fields(N.Tm, O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}}))),
+    K.Rotor.fields(Nat, O.Pseudoscalar.anticommutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Pseudoscalar{0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Pseudoscalar{a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Rotor.fields(N.Tm, O.Pseudoscalar.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Pseudoscalar{N.TVar{0n}}, K.Multivector{N.TVar{1n}, N.TVar{2n}, N.TVar{3n}, N.TVar{4n}})))
+
 def Rotor.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4591,6 +9632,27 @@ def Rotor.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
   match a b:
     case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
+        K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
+
+def Rotor.anticommutator.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.anticommutator.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Scalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.anticommutator.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s],
         K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Scalar{N.TVar{2n}})))
 
 def Rotor.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4612,6 +9674,27 @@ def Rotor.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
         K.Vector.fields(N.Tm, O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.anticommutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Vector.fields(T, O.Rotor.anticommutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Vector.fields(T, O.Rotor.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Vector.fields(T, b)), K.Vector.fields(N.Tm, O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}}))),
+    K.Vector.fields(Nat, O.Rotor.anticommutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e1, b_e2],
+        K.Vector.fields(N.Tm, O.Rotor.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Vector{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4629,6 +9712,27 @@ def Rotor.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
+
+def Rotor.anticommutator.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}}))),
+    K.Rotor.fields(Nat, O.Rotor.anticommutator.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Pseudoscalar{N.TVar{2n}})))
 
 def Rotor.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4650,6 +9754,27 @@ def Rotor.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> 
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
         K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
 
+def Rotor.anticommutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Rotor.anticommutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Rotor.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Rotor.fields(T, b)), K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}}))),
+    K.Rotor.fields(Nat, O.Rotor.anticommutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e12],
+        K.Rotor.fields(N.Tm, O.Rotor.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Rotor{N.TVar{2n}, N.TVar{3n}})))
+
 def Rotor.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4667,6 +9792,27 @@ def Rotor.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T ->
   match a b:
     case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
+
+def Rotor.anticommutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Rotor<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Rotor.anticommutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Rotor.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Rotor.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Rotor.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Rotor.anticommutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Rotor{0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Rotor{a_s, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Rotor.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Rotor{N.TVar{0n}, N.TVar{1n}}, K.Multivector{N.TVar{2n}, N.TVar{3n}, N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4688,6 +9834,27 @@ def Multivector.anticommutator.Scalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
         K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
 
+def Multivector.anticommutator.Scalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Scalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.anticommutator.Scalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Scalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Scalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Scalar.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}}))),
+    K.Multivector.fields(Nat, O.Multivector.anticommutator.Scalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Scalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Scalar{b_s}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s],
+        K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Scalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Scalar{N.TVar{4n}})))
+
 def Multivector.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4705,6 +9872,27 @@ def Multivector.anticommutator.Vector.err(~T: Data, ~zero: T, ~one: T, ~add: T -
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
+        K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
+
+def Multivector.anticommutator.Vector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Vector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.anticommutator.Vector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Vector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Vector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Vector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.anticommutator.Vector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Vector{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Vector{b_e1, b_e2}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e1, b_e2],
         K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Vector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Vector{N.TVar{4n}, N.TVar{5n}})))
 
 def Multivector.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
@@ -4726,6 +9914,27 @@ def Multivector.anticommutator.Pseudoscalar.err(~T: Data, ~zero: T, ~one: T, ~ad
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
         K.Rotor.fields(N.Tm, O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
 
+def Multivector.anticommutator.Pseudoscalar.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Pseudoscalar<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Rotor.fields(T, O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Rotor.fields(T, O.Multivector.anticommutator.Pseudoscalar(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Pseudoscalar.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Pseudoscalar.fields(T, b)), K.Rotor.fields(N.Tm, O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}}))),
+    K.Rotor.fields(Nat, O.Multivector.anticommutator.Pseudoscalar(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Pseudoscalar{0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Pseudoscalar{b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_e12],
+        K.Rotor.fields(N.Tm, O.Multivector.anticommutator.Pseudoscalar(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Pseudoscalar{N.TVar{4n}})))
+
 def Multivector.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4745,6 +9954,27 @@ def Multivector.anticommutator.Rotor.err(~T: Data, ~zero: T, ~one: T, ~add: T ->
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
 
+def Multivector.anticommutator.Rotor.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Rotor<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.anticommutator.Rotor(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Rotor(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Rotor.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Rotor.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}}))),
+    K.Multivector.fields(Nat, O.Multivector.anticommutator.Rotor(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Rotor{0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Rotor{b_s, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Rotor(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Rotor{N.TVar{4n}, N.TVar{5n}})))
+
 def Multivector.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
   ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
   ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
@@ -4762,4 +9992,25 @@ def Multivector.anticommutator.Multivector.err(~T: Data, ~zero: T, ~one: T, ~add
   match a b:
     case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
       ER.Err.fields(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
+        K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))
+
+def Multivector.anticommutator.Multivector.erru(~T: Data, ~zero: T, ~one: T, ~add: T -> T -> T, ~mul: T -> T -> T, ~neg: T -> T,
+  ~aa: R.Ring.Assoc(T, add), ~ac: R.Ring.Comm(T, add), ~z: R.Ring.ZeroL(T, add, zero), ~inv: R.Ring.AddInv(T, add, neg, zero),
+  ~ma: R.Ring.Assoc(T, mul), ~mc: R.Ring.Comm(T, mul), ~u: R.Ring.UnitR(T, mul, one), ~dl: R.Ring.DistL(T, add, mul),
+  ~na: R.Ring.NegAdd(T, add, neg), ~nm: R.Ring.NegMulL(T, mul, neg), ~nn: R.Ring.NegNeg(T, neg),
+  ~pos: T -> Bool, ~abs: T -> T, ~pos_add: E.Ord.PosAdd(T, add, pos), ~pos_mul: E.Ord.PosMul(T, mul, pos), ~pos_abs: E.Ord.PosAbs(T, abs, pos),
+  ~tri: E.Ord.Tri(T, add, neg, abs, pos), ~abs_mul: E.Ord.AbsMul(T, mul, abs), ~abs_neg: E.Ord.AbsNeg(T, neg, abs), ~abs_zero: {abs(zero) == zero : T},
+  ~eps: T, ~pos_eps: {pos(eps) == True{} : Bool},
+  ~eta_a: T, ~eta_m: T, ~pos_eta_a: {pos(eta_a) == True{} : Bool}, ~pos_eta_m: {pos(eta_m) == True{} : Bool},
+  ~fadd: T -> T -> T, ~fmul: T -> T -> T, ~fadd_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_a, add, fadd), ~fmul_ok: E.Ord.Approx(T, add, mul, neg, abs, pos, eps, eta_m, mul, fmul),
+  a: K.Multivector<T>, b: K.Multivector<T>)
+  -> E.Err.Fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~pos, ~abs, ~eps,
+    K.Multivector.fields(T, O.Multivector.anticommutator.Multivector(~T, ~zero, ~fadd, ~fmul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~neg, a, b)),
+    K.Multivector.fields(T, O.Multivector.anticommutator.Multivector(~T, ~zero, ~add, ~mul, ~(x => x), K.Multivector.map(~T, ~T, ~abs, a), K.Multivector.map(~T, ~T, ~abs, b))),
+    E.Tm.Ds(~T, ~zero, ~one, ~add, ~mul, ~abs, ~eps, ~eta_a, ~eta_m, List.append(&2, T, K.Multivector.fields(T, a), K.Multivector.fields(T, b)), K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}}))),
+    K.Multivector.fields(Nat, O.Multivector.anticommutator.Multivector(~Nat, ~0n, ~E.Err.dadd, ~E.Err.dmul, ~(x => x), K.Multivector{0n, 0n, 0n, 0n}, K.Multivector{0n, 0n, 0n, 0n}))):
+  match a b:
+    case K.Multivector{a_s, a_e1, a_e2, a_e12} K.Multivector{b_s, b_e1, b_e2, b_e12}:
+      ER.Err.fields_u(~T, ~zero, ~one, ~add, ~mul, ~neg, ~aa, ~ac, ~z, ~inv, ~ma, ~mc, ~u, ~dl, ~na, ~nm, ~nn, ~pos, ~abs, ~pos_add, ~pos_mul, ~pos_abs, ~tri, ~abs_mul, ~abs_neg, ~abs_zero, ~eps, ~pos_eps, ~eta_a, ~eta_m, ~pos_eta_a, ~pos_eta_m, ~fadd, ~fmul, ~fadd_ok, ~fmul_ok, [a_s, a_e1, a_e2, a_e12, b_s, b_e1, b_e2, b_e12],
         K.Multivector.fields(N.Tm, O.Multivector.anticommutator.Multivector(~N.Tm, ~N.TZero{}, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, K.Multivector{N.TVar{0n}, N.TVar{1n}, N.TVar{2n}, N.TVar{3n}}, K.Multivector{N.TVar{4n}, N.TVar{5n}, N.TVar{6n}, N.TVar{7n}})))

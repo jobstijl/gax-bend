@@ -352,8 +352,12 @@ The proof matches the operand records and calls `Err.fields` on the
 kernel run over `N.Tm` (the kernel's own terms). The checker's
 conversion then identifies each instantiation with the term's
 evaluation. Unary kernels that only negate are exact and have no law;
-that leaves 7189 laws. They check in under three minutes in total (CSTA:
-94 s). Giving the law the wrong terms (operands swapped) fails.
+that leaves 7189 laws. Each kernel also has the underflow law
+(`name.erru`, from `Err.fields_u`): every field within h(k)·(its size)
+plus D, the absolute term of `Err.bound_u`, for any η_a and η_m, so for
+binary32 with η = 2⁻¹⁵⁰ and b-posits with η = minpos. That is 7189 more.
+Both check in about four minutes (CSTA: 145 s, was 94 s without the
+underflow laws). Giving the law the wrong terms (operands swapped) fails.
 
 | algebra | kinds | kernels | of which sandwiches | zero laws | multiplications |
 |---|---|---|---|---|---|
