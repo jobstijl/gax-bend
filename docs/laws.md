@@ -259,6 +259,32 @@ of length 8, a plain F32 loop differs from the correctly rounded result
 products and sums: 42 subnormal products, 21 underflows to zero, 100
 cancelling sums. Each test has a control that fails on every operation.
 
+## Posits (`src/posit.bend`, ADR-008)
+
+Bounded posits (b-posits, Jonnalagadda, Thotli and Gustafson 2026): the
+regime field stops at rs bits, so every value keeps at least
+p0 = n − es − rs significant bits. A format is (p0, 2^es, rs); b-posit32
+is (21, 32, 6), range 2^±192, 21 to 25 bits.
+
+| law | statement | assumes | tag | proof |
+|---|---|---|---|---|
+| `Pz.model` | \|fl(x) − x\| ≤ 2^−p0 \|x\| + minpos for every x with \|x\| ≤ maxpos, minpos = 2^−bias (1 + 2^−(p0−1)); for every format | nothing beyond \|x\| ≤ maxpos | proof | `proofs/posit.bend` |
+| `Ulp.mono` | 2^−a ≥ 2^−(a+w): more precision never loosens the bound | nothing | proof | `proofs/posit.bend` |
+| `Pz.lk` | the run-time rounding on big dyadics (`Pz.bfl`) is the spec `Pz.fl` | limbs below 2h | proof | `proofs/posit.bend` |
+| `Pmul.lk`, `Padd.lk`, `Quire.lk` | b-posit products and sums, and the quire (the exact dot product `Bd.dot`, rounded once), are the format's rounding of the exact result | limbs below 2h | proof | `proofs/posit.bend` |
+
+The spec rounds to nearest, ties to even, at the scale's precision
+p0 + (rs − regime length), and saturates at minpos and maxpos. The
+posit standard defines rounding on the bit string instead.
+`tests/bposit.bend` checks that the two agree, against an independent
+Python reference (`tools/bposit_cases.py`): 400 products and sums, 49 of
+them saturating, 800 decode–encode round trips and 40 quire dot products
+of length 8. All match; the control fails on all 1 640 checks. The
+reference first showed that minpos is pattern 1, 2^−192 (1 + 2^−20), not
+2^−192, which is the all-zero pattern, zero. The spec was wrong there for
+five saturating products, and was fixed. Above maxpos the format
+saturates, outside the model, as IEEE overflow is.
+
 ## Dual numbers (`src/dual.bend`, ADR-006)
 
 | law | statement | assumes | tag | proof |

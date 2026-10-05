@@ -560,3 +560,41 @@ with it every error theorem, holds for big binary32 and binary64.
 - **Proving rounding invariant under scaling** instead of normalising
   before rounding: it needs the loop's behaviour on 2n, a longer proof
   than mirroring `Dy.of`.
+
+## ADR-008: Posits are bounded posits (b-posits), rounded as tapered binary floats
+
+**Status:** accepted, 2026-10-05. Answers the brief's "posits/b-posits with
+quires".
+
+### Decision
+
+A posit's regime can fill the word. Then exponent bits are cut off, and
+rounding on the bit string is no longer rounding to nearest in value: the
+relative error reaches a factor of 2 at the extremes. No uniform model
+holds there. A b-posit caps the regime at rs bits (Jonnalagadda, Thotli
+and Gustafson 2026), so the exponent field is always whole and at least
+p0 = n − es − rs fraction-plus-hidden bits remain. Then rounding the bit
+string to nearest, ties to even, is rounding the value to nearest at
+p0 + (rs − regime length) bits. `src/posit.bend` defines it that way, on
+dyadics, with saturation at minpos and maxpos. The model follows from
+`Rne.rel` and `Ulp.mono`, plus a direct argument below minpos
+(`Tiny.err`). The run-time version reuses the big dyadics of ADR-007 and
+is proven equal (`Pz.lk`). The quire is `Bd.dot` rounded once.
+
+### What it costs
+
+- 250 lines of code and 470 of proof; the proofs check in about a second.
+- The equivalence with the standard's bit-string rounding is tested,
+  not proven: 1 640 checks against an independent Python reference.
+- Encoding to bits and decoding run on Nat patterns; they are tested, not
+  proven.
+- Above maxpos, saturation is outside the model; theorems hold for
+  executions with no result beyond maxpos.
+
+### Measured, not adopted
+
+- **Standard posits (rs = n − 1):** in range and with whole exponents they
+  are the same spec, but the extreme regimes need the bit-string rounding
+  and admit no uniform model. Left out.
+- **Takums** (Hunhold 2024), another bounded tapered format: same shape of
+  model, different encoding. Not needed for the brief.

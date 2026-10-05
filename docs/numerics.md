@@ -233,8 +233,11 @@ and it does.
    `Bd.dot` is a Kulisch accumulator; rounded once it gives the correctly
    rounded dot product (`Dot32.lk`, `Dot64.lk`), the error at most
    u·|x·y| + η whatever the length. A plain F32 loop of length 8 differs
-   from it in 230 of 2 000 random cases. Posits and their quire are next:
-   the quire is this accumulator rounded to a posit.
+   from it in 230 of 2 000 random cases. **Posits with quires done**, as
+   b-posits (ADR-008): `Pz.model` proves |fl(x) − x| ≤ 2^−p0|x| + minpos up
+   to maxpos (b-posit32: 2^−21, minpos ≈ 2^−192). The quire is this
+   accumulator rounded once (`Quire.lk`). Standard posits differ only in
+   their extreme regimes, where exponent bits are cut off; not done.
 
 ## Survey (2015–2026), what each contributes here
 
