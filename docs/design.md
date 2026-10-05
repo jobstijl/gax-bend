@@ -584,11 +584,22 @@ is proven equal (`Pz.lk`). The quire is `Bd.dot` rounded once.
 
 ### What it costs
 
-- 250 lines of code and 470 of proof; the proofs check in about a second.
-- The equivalence with the standard's bit-string rounding is tested,
-  not proven: 1 640 checks against an independent Python reference.
-- Encoding to bits and decoding run on Nat patterns; they are tested, not
-  proven.
+- 250 lines of code and 470 of proof for the model; the proofs check in
+  about a second.
+- The bit patterns cost 2 380 more lines (`proofs/posit2.bend` to
+  `posit5.bend`, 4 to 5 s each). They prove, for every format, that every
+  positive pattern decodes to its value (`Dec.all`), that the encoder
+  writes it back (`Enc.pat`), and that the spec's rounding is the
+  standard's rounding of the bit string (`Std.rnd`). Most of the length
+  is case work: four regime shapes (a short or full run of zeros or
+  ones), three carries into the next pattern (fraction, exponent, regime)
+  and the six regime transitions behind the last. `tests/bposit.bend`
+  still checks the same at b-posit32 against an independent Python
+  reference (1 640 checks).
+- `Std.rnd` assumes p0 ≥ 2, so every class keeps a fraction bit and a
+  pattern's last bit is its significand's, and bias ≥ p0, so maxpos ≥ 1
+  as the spec's saturation test assumes. b-posit32 (p0 = 21,
+  bias = 192) meets both.
 - Above maxpos, saturation is outside the model; theorems hold for
   executions with no result beyond maxpos.
 

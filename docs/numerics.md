@@ -268,8 +268,11 @@ and it does.
    from it in 230 of 2 000 random cases. **Posits with quires done**, as
    b-posits (ADR-008): `Pz.model` proves |fl(x) − x| ≤ 2^−p0|x| + minpos up
    to maxpos (b-posit32: 2^−21, minpos ≈ 2^−192). The quire is this
-   accumulator rounded once (`Quire.lk`). Standard posits differ only in
-   their extreme regimes, where exponent bits are cut off; not done.
+   accumulator rounded once (`Quire.lk`). The bit patterns are proven
+   too: every pattern decodes to its value and encodes back, and the
+   rounding is the standard's rounding of the bit string (`Std.rnd`,
+   `proofs/posit4.bend`). Standard posits differ only in their extreme
+   regimes, where exponent bits are cut off; not done.
 
 ## Survey (2015–2026), what each contributes here
 

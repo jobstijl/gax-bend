@@ -6,15 +6,19 @@
 # saturating at maxpos and 22 at minpos, and 40 quire dot products of
 # length 8 (Bd.dot, rounded once).
 # Every input pattern also decodes and re-encodes to itself. The control
-# perturbs each expected pattern by one. proofs/posit.bend (imported, so
-# the gate checks it) proves the rounding model for every b-posit format
+# perturbs each expected pattern by one. Imported, so the gate checks them:
+# proofs/posit.bend proves the rounding model for every b-posit format
 # (Pz.model) and the run-time rounding equal to the spec (Pz.lk, Pmul.lk,
-# Padd.lk, Quire.lk); this test checks the spec against the standard's
-# bit-string rounding and checks the bit encoding.
+# Padd.lk, Quire.lk); proofs/posit2.bend to posit5.bend prove, for every
+# format, that every positive pattern decodes to its value (Dec.all), the
+# encoder writes it back (Enc.pat), and the spec's rounding is the
+# standard's rounding of the bit string (Std.rnd). This test checks the
+# same at b-posit32 against the independent reference.
 import Base
 import ../src/big.bend as B
 import ../src/posit.bend as P
 import ../proofs/posit.bend as PP
+import ../proofs/posit5.bend as PB
 
 def hb() -> Nat:
   8388608n

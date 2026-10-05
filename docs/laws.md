@@ -272,13 +272,25 @@ is (21, 32, 6), range 2^±192, 21 to 25 bits.
 | `Ulp.mono` | 2^−a ≥ 2^−(a+w): more precision never loosens the bound | nothing | proof | `proofs/posit.bend` |
 | `Pz.lk` | the run-time rounding on big dyadics (`Pz.bfl`) is the spec `Pz.fl` | limbs below 2h | proof | `proofs/posit.bend` |
 | `Pmul.lk`, `Padd.lk`, `Quire.lk` | b-posit products and sums, and the quire (the exact dot product `Bd.dot`, rounded once), are the format's rounding of the exact result | limbs below 2h | proof | `proofs/posit.bend` |
+| `Dec.all` | every positive pattern q < 2^(n−1) decodes (`Pz.dec`) to the value of its field triple, the q-th: (2^fb + fr) 2^(rb g + ee) / 2^(bias + fb) | rs ≥ 1 | proof | `proofs/posit4.bend` |
+| `Enc.pat` | the encoder (`Pz.enc`) writes back the pattern of any big dyadic worth a triple's value, in any spelling | limbs below 2h | proof | `proofs/posit5.bend` |
+| `Succ.val` | the pattern after q decodes to q's value plus one unit in q's last place, through carries into the exponent and the regime | q is not the largest pattern | proof | `proofs/posit4.bend` |
+| `Std.rnd` | b-posit rounding is the standard's rounding of the bit string: for x in [minpos, maxpos] between pattern q and q + 1, `Pz.fl` x is the value of q + 1 when guard and (sticky or q odd), else of q | p0 ≥ 2, bias ≥ p0 (b-posit32: 21, 192) | proof | `proofs/posit3.bend`, `proofs/posit4.bend` |
 
 The spec rounds to nearest, ties to even, at the scale's precision
 p0 + (rs − regime length), and saturates at minpos and maxpos. The
-posit standard defines rounding on the bit string instead.
-`tests/bposit.bend` checks that the two agree, against an independent
-Python reference (`tools/bposit_cases.py`): 400 products and sums, 49 of
-them saturating, 800 decode–encode round trips and 40 quire dot products
+posit standard defines rounding on the bit string instead; `Std.rnd`
+proves the two the same for every format with p0 ≥ 2 and bias ≥ p0.
+The proof runs through the patterns: the field triples, stepped through
+by carries (`Fld.next`), have patterns 0, 1, …, 2^(n−1) − 1
+(`Nth.pat`, with `Pat.last` at the top); the decoder reads each back
+(`Dec.val`, by the four regime cases and the regime run `Run.ok`); and
+within a class `Pz.fl` rounds n = a 2^s + t at a's precision exactly as
+the guard and sticky bits say (`Fl.at`, from `Rn.at`: the rounding
+loop stops at shift s with quotient a and remainder t).
+`tests/bposit.bend` also checks the agreement at b-posit32, against an
+independent Python reference (`tools/bposit_cases.py`): 400 products and
+sums, 49 of them saturating, 800 decode–encode round trips and 40 quire dot products
 of length 8. All match; the control fails on all 1 640 checks. The
 reference first showed that minpos is pattern 1, 2^−192 (1 + 2^−20), not
 2^−192, which is the all-zero pattern, zero. The spec was wrong there for
