@@ -872,7 +872,8 @@ equivariance law (m >> a) op (m >> b) = ±‖m‖² (m >> (a op b)) for every
   CGA3D before it was stopped. STAP's Motor and Odd gave 0 reduced laws.
 - **CSTA's vector laws.** Generating them ran 2.5 hours, after CGA3D's half
   hour, without finishing (3-hour cap). The gate's `--full` regeneration
-  would take longer still, so CSTA has no equivariance laws.
+  would take longer still, so CSTA has no equivariance laws. Where the
+  time goes and the paths to fix it: docs/guide.md, section 12.
 - **Every kind as an operand.** The first generated PGA2D file typed the
   sandwich of a Direction as a Direction and failed to check; the kernel
   returns a Point.

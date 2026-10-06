@@ -5,6 +5,10 @@ fast on Bend's CPU and GPU backends, with its algebra proven in Bend's own
 type theory instead of tested. gax ([github.com/jobstijl/gax](https://github.com/jobstijl/gax))
 is the semantic reference.
 
+New here? [docs/guide.md](docs/guide.md) covers using the library, what is
+proven and trusted, the gate, and extending it with algebras, laws and
+proofs.
+
 ## Status
 
 | layer | what | state |
@@ -127,7 +131,7 @@ examples/         small programs using the API, checked by the gate
 demos/            the CGA3D ray tracer (Phase 4 demo)
 spikes/           Phase 0 experiments, kept as evidence for bend-facts
 tools/            env, the 16 GB cap, the gate
-docs/             facts, design (ADRs), laws, upstream notes
+docs/             the guide, facts, design (ADRs), laws, numerics, upstream notes
 ```
 
 ## Conventions
