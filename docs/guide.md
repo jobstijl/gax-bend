@@ -21,7 +21,7 @@ Contents:
 9. [Checking: the gate and the generators](#9-checking-the-gate-and-the-generators)
 10. [Extending gax-bend](#10-extending-gax-bend)
 11. [Writing proofs](#11-writing-proofs)
-12. [Known limits, and CSTA's equivariance laws](#12-known-limits-and-cstas-equivariance-laws)
+12. [Known limits, and how the equivariance generator decides](#12-known-limits-and-how-the-equivariance-generator-decides)
 13. [Troubleshooting](#13-troubleshooting)
 
 ## 1. What gax-bend is
@@ -353,8 +353,8 @@ fail to check. They show that the checker rejects, for example:
 ## 9. Checking: the gate and the generators
 
 ```sh
-tools/gate.sh            # about 8 minutes
-tools/gate.sh --full     # also CGA3D's kernel proofs, every equiv_all.bend and its regeneration (about 2 hours)
+tools/gate.sh            # about 10 minutes
+tools/gate.sh --full     # also CGA3D's kernel proofs and every equiv_all.bend (about 1.5 hours)
 tools/gate.sh --csta     # also CSTA's kernel proofs (1.6 hours)
 tools/gate.sh -q         # one line per failure
 ```
@@ -373,9 +373,8 @@ Files the current tier skips are counted and reported as skipped.
 "Do not edit".
 
 ```sh
-tools/regen.sh                  # algebras/ and the generated proofs/, about 40 s
-tools/regen.sh --equiv          # also every equiv_all.bend (26 minutes, native build)
-tools/regen.sh --check [--equiv]  # compare instead of writing
+tools/regen.sh                  # algebras/ and the generated proofs/, about 2 minutes
+tools/regen.sh --check          # compare instead of writing
 ```
 
 **Writing a test.** End the file with the expected output, one `#|` line
@@ -485,7 +484,7 @@ facts"):
 | `@unsafe` | Never use it to get past a failing proof. If Bend blocks, write a minimal reproduction and record it in [upstream-notes.md](upstream-notes.md). |
 | weakening | Never weaken a law to make its proof pass. |
 
-## 12. Known limits, and CSTA's equivariance laws
+## 12. Known limits, and how the equivariance generator decides
 
 **Known limits:**
 - **Slow checks.** CGA3D's kernel proofs take about an hour and CSTA's 1.6
@@ -495,80 +494,48 @@ facts"):
   - PGA's Direction becomes a Point;
   - PGA3D's scalar becomes a Motor;
   - STA's pseudoscalar under Even and Odd;
-  - CGA3D's Twist under Vector.
-- **Single-vector versors in STAP and CGA3D.** Their equivariance laws take
-  a single vector as the versor. `Equiv.compose` extends the laws to any
-  product of vectors applied in turn. General Motor, Even and Odd elements
-  are not covered: their m m̃ has several non-scalar parts, and the
-  generator's reduction handles at most one condition.
-- **CSTA has no equivariance laws.** Generating them ran 2.5 hours without
-  finishing.
+  - CGA3D's and CSTA's Twist under Vector.
+- **Single-vector versors in STAP, CGA3D and CSTA.** Their equivariance
+  laws take a single vector as the versor. `Equiv.compose` extends the
+  laws to any product of vectors applied in turn. General Motor, Even and
+  Odd elements are not covered: their m m̃ has several non-scalar parts,
+  and the generator's reduction handles at most one condition.
 
-### Why CSTA's generation does not finish
+### Deciding the sign by evaluation
 
-For each candidate law, the generator in `gen/equiv.bend` decides three
-things before it writes anything:
-- which kinds the versor's sandwich maps to themselves (`Eq.closed`);
-- the result kind of the product (`Eq.rkn`);
-- the factor's sign, +‖m‖² or −‖m‖² (`Eq.lawn.sides`).
+Before writing an equivariance law, the generator (`gen/equiv.bend`)
+decides its factor's sign, +‖m‖² or −‖m‖². In a null-basis algebra it
+used to normalize both sides symbolically on the whole spec tree, with
+h = ½ as a variable. At d = 6 (CSTA) that meant 64 blades of degree-6
+polynomials in up to 46 variables. CGA3D took 26 minutes, and CSTA ran 2.5
+hours without finishing.
 
-In a null-basis algebra, the sign decision runs the whole spec tree
-symbolically, with h = ½ as a variable:
-- the sandwich of each operand, the product of the two results, and the
-  sandwich of the product, each on a 2^d-blade tree of unnormalized
-  `N.Tm` terms;
-- then each of the 2^d coefficients is normalized into sorted monomial
-  lists;
-- if +‖m‖² fails, all of this is computed again for −‖m‖².
+The generator now evaluates both sides modulo the prime
+Q = 16 777 213 (`Zq`), at two pseudo-random points, and takes the sign on
+which both points agree. Nothing is lost by this:
+- **An identity vanishes at every point**, so no law that the symbolic
+  method would find is dropped.
+- **A polynomial that is not identically zero** vanishes at a random point
+  with probability at most degree/Q, about 5·10⁻⁷ for one point
+  (Schwartz–Zippel).
+- **The generator is not trusted.** A wrong sign gives a law that fails to
+  check, never a false proof.
 
-At d = 6 (CSTA) the tree has 64 blades, the operand kinds have up to 20
-fields, and each coefficient is a degree-6 polynomial in up to 46
-variables. CGA3D (d = 5, 32 blades, at most 10 fields) already takes 26
-minutes. This cost estimate has not been profiled.
+The result:
+- CGA3D's file came out byte-identical to the symbolic one.
+- Generation went from 26 minutes to under a second.
+- CSTA's 119 laws generate in 2 s and check in 752 s.
+- `tools/regen.sh` now always includes `equiv_all.bend`.
 
-The checker is not where the time goes. In a written law, the checker
-normalizes the generated *kernels* (flat, sparse, already in the null
-basis), not the tree. That is why CGA3D's 84 laws check in 99 s.
-
-### Paths to make it work
-
-Ordered by expected payoff:
-
-1. **Decide by evaluation instead of symbolic normalization.** The
-   generator's decisions are not trusted. A wrong sign or kind produces a
-   law that fails to check, and can never produce a false proof. So the
-   generator can decide:
-   - the sign, by evaluating both sides at a few pseudo-random integer
-     points over exact `Int`;
-   - the kinds' support, by checking which blades come out nonzero at such
-     points.
-
-   A nonzero polynomial almost never vanishes at a random point
-   (Schwartz–Zippel), and the checker catches the rare mistake. This
-   replaces polynomial normalization with integer arithmetic, and should
-   turn hours into seconds. It would also make CGA3D's 26 minutes short
-   enough for `regen --check --equiv` to run in the default gate.
-2. **Evaluate the kernels, not the tree.** The generated `ops.bend` kernels
-   are already sparse and in the null basis. Evaluating them, symbolically
-   or at points as in path 1, avoids the 2^d tree and the e± change of
-   basis with its h variable.
-3. **Measure one CSTA law's check before generating them all.** The checker
-   cost is the next limit. Compared with CGA3D, the largest CSTA operands
-   have twice the fields and the versor has 6 components, so a law's
-   polynomial is roughly 8 to 10 times larger. If the whole file takes
-   hours, it belongs in the `--csta` tier, next to CSTA's kernel proofs.
-4. **Make the check cheaper with bilinearity**, if path 3 shows a problem.
-   Every law is linear in a and in b, and the kernels are proven linear
-   (`lin.bend`). Proving the law on pairs of basis blades leaves
-   polynomials of degree 4 in the 6 versor coordinates only. A
-   generic lemma would then lift it to all operands. That lemma is
-   real proof work; it is not written yet.
-5. **Generate in chunks, and cache.** Emit one law or one kind pair per
-   run, so that runs are bounded, can be resumed and can run in parallel
-   under the memory cap. Skip regeneration when the spec and the generator
-   are unchanged.
-
-Path 1, with the measurement in path 3, is the recommended start.
+**Open paths:**
+- The diagonal algebras still normalize symbolically. A law with a
+  condition must print its quotient l, and the evaluation gives no l.
+- **More versor kinds.** Taking general Motor, Even and Odd elements as
+  versors in CGA3D and CSTA needs a reduction by several conditions.
+- **Cheaper checks via bilinearity.** Each law is linear in a and in b,
+  and the kernels are proven linear, so the law could be proven on pairs
+  of basis blades only. That needs a generic lemma lifting it to all
+  operands, which is not written yet. No check needs it so far.
 
 ## 13. Troubleshooting
 

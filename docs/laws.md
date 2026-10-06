@@ -143,8 +143,8 @@ whose product is not identically zero. Operands and result must be kinds
 the versor's generated sandwich maps to themselves (`Eq.closed`). Kinds it
 does not are left out: under a general Motor a PGA Direction comes out
 typed as a Point, and a PGA3D scalar as a Motor (m ~m has an e0123 part);
-so are STA's pseudoscalar under Even and Odd and CGA3D's Twist under
-Vector. The factor is +‖m‖², except −‖m‖² on ∨ for odd versors in even
+so are STA's pseudoscalar under Even and Odd and CGA3D's and CSTA's
+Twist under Vector. The factor is +‖m‖², except −‖m‖² on ∨ for odd versors in even
 dimensions.
 
 | algebra | versors | laws | with −‖m‖² | condition | checked in |
@@ -156,9 +156,11 @@ dimensions.
 | STA | Even, Odd | 36 | 3 (Odd ∨) | e0123 of m ~m = 0 | 355 s |
 | STAP | Vector | 81 | 0 | none | 51 s |
 | CGA3D | Vector | 84 | 0 | none | 98 s |
+| CSTA | Vector | 119 | 26 (Vector ∨) | none | 752 s |
 
-CSTA has none: generating its vector laws ran 2.5 hours without finishing
-(ADR-013). In STAP and CGA3D the versor is a single vector, for which
+In the null-basis algebras (CGA3D, CSTA) the generator decides each
+law's sign by evaluation modulo a prime (ADR-013); the checker proves
+the law. In STAP, CGA3D and CSTA the versor is a single vector, for which
 m ~m = m² is a scalar. A general even or odd element there has several more parts in
 m ~m, so its laws need several conditions, and the generator reduces by
 one. Every versor is a product of vectors, and `Equiv.compose`

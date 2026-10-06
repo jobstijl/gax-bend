@@ -828,7 +828,8 @@ product.
 
 ## ADR-013: Equivariance for every kind pair, generated per versor kind
 
-**Status:** accepted, 2026-10-05.
+**Status:** accepted, 2026-10-05; amended 2026-10-06 (null-basis signs by
+evaluation, CSTA added).
 
 ### Decision
 
@@ -845,24 +846,33 @@ equivariance law (m >> a) op (m >> b) = ±‖m‖² (m >> (a op b)) for every
 - **Conditions.** Where m ~m has one part besides the scalar (PGA3D motor
   and flector: e0123; STA even and odd: e0123), the law takes that part
   being zero, as the curated laws do (`Rel.eqs`).
-- **STAP and CGA3D take the vector as versor**: its m ~m is a scalar,
-  and `Equiv.compose` extends the vector laws to products of vectors
-  applied in turn.
-- `tools/gate.sh --full` checks every file and diffs them against the
-  generator (`tools/regen.sh --check --equiv`).
+- **STAP, CGA3D and CSTA take the vector as versor**: its m ~m is a
+  scalar, and `Equiv.compose` extends the vector laws to products of
+  vectors applied in turn.
+- **Null-basis signs by evaluation** (`Zq` in `gen/equiv.bend`). A
+  null-basis law prints no quotients, so the generator only needs the
+  factor's sign. It evaluates both sides modulo the prime 16 777 213 at
+  two pseudo-random points and takes the sign both agree on:
+  - an identity vanishes at every point, so no law is lost;
+  - a polynomial that is not zero vanishes at a random point with
+    probability at most degree/Q (Schwartz–Zippel);
+  - a wrong sign could only give a law that fails to check.
+  CGA3D's file came out byte-identical to the symbolic generator's. A
+  CSTA ∨ law with its sign flipped to +‖m‖² fails to check.
+- Every `tools/regen.sh --check`, so every gate tier, diffs the files
+  against the generator; `tools/gate.sh --full` checks them.
 
 ### What it costs
 
 - **Generation time.** The generator runs as a native build with an
-  unlimited stack, and takes 26 minutes, nearly all of it CGA3D's
-  null-basis laws, so the default `tools/regen.sh` leaves equiv_all.bend
-  out.
+  unlimited stack. All eight files take about 95 s, nearly all of it the
+  diagonal algebras' symbolic reduction; CGA3D and CSTA take 2 s.
+  `tools/regen.sh --check` takes 133 s instead of 38 s.
 - **Check time.** VGA2D to STAP check in 1 s to 51 s each, STA in 355 s,
-  CGA3D in 98 s.
-- **Kinds left out.** PGA's Direction, PGA3D's scalar, STA's pseudoscalar
-  and CGA3D's Twist have no laws here, since the sandwich takes them to
-  another kind.
-- **CSTA has no equiv_all.bend** (see below).
+  CGA3D in 98 s, CSTA in 752 s (119 laws).
+- **Kinds left out.** PGA's Direction, PGA3D's scalar, STA's pseudoscalar,
+  and CGA3D's and CSTA's Twist have no laws here, since the sandwich takes
+  them to another kind.
 
 ### Measured, not adopted
 
@@ -870,10 +880,11 @@ equivariance law (m >> a) op (m >> b) = ±‖m‖² (m >> (a op b)) for every
   several non-scalar parts, so the laws need several conditions, which the
   one-condition reduction does not take. Generating them ran 37 minutes on
   CGA3D before it was stopped. STAP's Motor and Odd gave 0 reduced laws.
-- **CSTA's vector laws.** Generating them ran 2.5 hours, after CGA3D's half
-  hour, without finishing (3-hour cap). The gate's `--full` regeneration
-  would take longer still, so CSTA has no equivariance laws. Where the
-  time goes and the paths to fix it: docs/guide.md, section 12.
+- **Null-basis signs by symbolic normalization** (until 2026-10-06). The
+  generator normalized both sides on the whole spec tree with h = 1/2 as
+  a variable: CGA3D took 26 minutes, and CSTA's vector laws ran 2.5 hours
+  without finishing (3-hour cap), so CSTA had no laws. Replaced by
+  evaluation (above).
 - **Every kind as an operand.** The first generated PGA2D file typed the
   sandwich of a Direction as a Direction and failed to check; the kernel
   returns a Point.

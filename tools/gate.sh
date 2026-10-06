@@ -19,8 +19,7 @@
 # Usage: tools/gate.sh [-q] [--full]
 #   -q      one line per failure only
 #   --full  also check the slow proof files (CGA3D's, about an hour) and
-#           every equiv_all.bend, and diff equiv_all.bend
-#           against its generator (tools/regen.sh --check --equiv).
+#           every equiv_all.bend (CSTA's 13 min, STA's 6 min).
 #           Every err.bend is checked in every tier (CSTA's takes 145 s).
 #   --csta  also check CSTA's proof files (1.6 hours, all 25 checked on
 #           2026-10-05). Without these flags they are counted as skipped.
@@ -49,9 +48,7 @@ else
   echo "FAIL  PROOF.bend"; printf '%s\n' "$out" | head -20; fail=1
 fi
 
-regen="--check"
-[ -n "$full" ] && regen="--check --equiv"
-if tools/regen.sh $regen > /dev/null 2>&1; then
+if tools/regen.sh --check > /dev/null 2>&1; then
   say "ok    algebras/ and proofs/ match the generators"
 else
   echo "FAIL  generated sources are stale: run tools/regen.sh"; fail=1

@@ -365,30 +365,8 @@ def Eq.law(+d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> Maybe<&2, S
       Eq.law.fin(v, o, a, b, c, p, vb, ab, bb, Bl.name(sb), Bool.not(Nat.is_eq(nr, 0n)), Rl.name(rel), "~T, ~zero, ~neg",
         Eq.sign.nr(Nat.is_lt(nr, 2n), lhs, rhs, nrmt, rpoly, lead))
 
-# Null-basis algebras: the whole tree, with h = 1/2
-# -------------------------------------------------
-
-# every coefficient of x vanishes, h the variable v
-def Eq.tzh(+v: Nat, +d: Nat, x: S.MV(N.Tm, d)) -> Bool:
-  match d:
-    case 0n:
-      match x:
-        case S.LZ{}:
-          True{}
-        case S.L{a}:
-          List.is_empty(&2, N.Mono, N.NormSH.left(v, a))
-    case 1n+(+q):
-      match x:
-        case S.NZ{}:
-          True{}
-        case S.N{e, r}:
-          Bool.and(Eq.tzh(v, q, e), Eq.tzh(v, q, r))
-
-def Eq.sub(+d: Nat, x: S.MV(N.Tm, d), y: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
-  S.MV.add(~N.Tm, ~N.Tm.add, d, x, S.MV.neg(~N.Tm, ~N.Tm.neg, d, y))
-
-def Eq.scale(+d: Nat, +sig: S.Sig(d), +k: N.Tm, x: S.MV(N.Tm, d)) -> S.MV(N.Tm, d):
-  S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, S.MV.blade(N.Tm, d, Nil{}, k), x)
+# Null-basis algebras
+# --------------------
 
 def Eq.zeros(bls: List<&2, G.Bl>) -> List<&2, String>:
   match bls:
@@ -397,28 +375,145 @@ def Eq.zeros(bls: List<&2, G.Bl>) -> List<&2, String>:
     case h <> t:
       "N.TZero{}" <> Eq.zeros(t)
 
-def Eq.nsign.m(+hv: Nat, +d: Nat, +sig: S.Sig(d), +nrmt: N.Tm, lt: S.MV(N.Tm, d), rtr: S.MV(N.Tm, d), +zs: List<&2, String>) -> Maybe<&2, Sg>:
-  Bool.pick(Maybe<&2, Sg>, Eq.tzh(hv, d, S.MV.add(~N.Tm, ~N.Tm.add, d, lt, Eq.scale(d, sig, nrmt, rtr))), Some{Sg{True{}, zs}}, None{})
+# The sign by evaluation
+# ----------------------
+# A null-basis law has no quotients to print (l is zero on every field),
+# so the generator only needs the sign. Normalizing the two sides
+# symbolically costs hours at d = 6 (CSTA); evaluating them modulo a prime
+# at two pseudo-random points costs milliseconds. A polynomial that is not
+# zero vanishes at a random point with probability at most its degree over
+# Q (Schwartz–Zippel), and the checker proves every written law, so a wrong
+# sign gives a law that fails to check, never a false one; an identity
+# vanishes at every point, so no law is lost.
 
-def Eq.nsign.p(plus: Bool, +hv: Nat, +d: Nat, +sig: S.Sig(d), +nrmt: N.Tm, lt: S.MV(N.Tm, d), rtr: S.MV(N.Tm, d), +zs: List<&2, String>) -> Maybe<&2, Sg>:
-  match plus:
-    case True{}:
-      Some{Sg{False{}, zs}}
-    case False{}:
-      Eq.nsign.m(hv, d, sig, nrmt, lt, rtr, zs)
+# Q = 16777213, the largest prime below 2^24: products of two residues
+# stay below Bend's native Nat limit 2^48
+def Zq.q() -> Nat:
+  16777213n
 
-# the two sides, once m ~m is known to be a scalar
-def Eq.lawn.sides(scal: Bool, +d: Nat, +sig: S.Sig(d), +o: G.Op, +hv: Nat, +nrmt: N.Tm, +mt: S.MV(N.Tm, d), +at: S.MV(N.Tm, d), +bt: S.MV(N.Tm, d), +zs: List<&2, String>) -> Maybe<&2, Sg>:
+def Zq.add(a: Nat, b: Nat) -> Nat:
+  Nat.mod(Nat.add(a, b), Zq.q())
+
+def Zq.mul(a: Nat, b: Nat) -> Nat:
+  Nat.mod(Nat.mul(a, b), Zq.q())
+
+def Zq.neg(a: Nat) -> Nat:
+  Nat.mod(Nat.sub(Zq.q(), a), Zq.q())
+
+# h = 1/2 modulo Q
+def Zq.h() -> Nat:
+  8388607n
+
+def Zq.pow(k: Nat, +h: Nat, x: Nat) -> Nat:
+  match k:
+    case 0n:
+      x
+    case 1n+j:
+      Zq.mul(h, Zq.pow(j, h, x))
+
+# n values of the MINSTD generator (modulus 2^31 - 1) from seed s, reduced
+# modulo Q
+def Zq.draw(n: Nat, +s: Nat) -> List<&2, Nat>:
+  match n:
+    case 0n:
+      Nil{}
+    case 1n+k:
+      +t = Nat.mod(Nat.mul(s, 48271n), 2147483647n)
+      Nat.mod(t, Zq.q()) <> Zq.draw(k, t)
+
+def Zq.embV(+d: Nat, cs: List<&2, G.Cb>, +x: Nat, +h: Nat) -> S.MV(Nat, d):
+  match cs:
+    case Nil{}:
+      S.MV.zero(Nat, d)
+    case G.Cb{path, s, k} <> t:
+      S.MV.add(~Nat, ~Zq.add, d, S.MV.blade(Nat, d, path, S.Ring.negf(~Nat, ~Zq.neg, s, Zq.pow(k, h, x))), Zq.embV(d, t, x, h))
+
+# a null kind's element at the values xs, as Nl.symT builds it over Tm
+def Zq.symV(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, bls: List<&2, G.Bl>, xs: List<&2, Nat>) -> S.MV(Nat, d):
+  match bls:
+    case Nil{}:
+      S.MV.zero(Nat, d)
+    case G.Bl{name, key, pi, g} <> t:
+      match xs:
+        case Nil{}:
+          S.MV.zero(Nat, d)
+        case +x <> xt:
+          S.MV.add(~Nat, ~Zq.add, d, Zq.embV(d, G.Nb.emb(nb, ng, key, pi), x, Zq.h()), Zq.symV(nb, ng, d, t, xt))
+
+def Zq.zero(+d: Nat, x: S.MV(Nat, d)) -> Bool:
+  match d:
+    case 0n:
+      match x:
+        case S.LZ{}:
+          True{}
+        case S.L{a}:
+          Nat.is_eq(a, 0n)
+    case 1n+(+q):
+      match x:
+        case S.NZ{}:
+          True{}
+        case S.N{e, r}:
+          Bool.and(Zq.zero(q, e), Zq.zero(q, r))
+
+def Zq.run(+d: Nat, +sig: S.Sig(d), o: G.Op, x: S.MV(Nat, d), y: S.MV(Nat, d)) -> S.MV(Nat, d):
+  match o:
+    case G.OGp{}:
+      S.MV.gp(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, x, y)
+    case G.OWedge{}:
+      S.MV.wedge(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, x, y)
+    case G.OVee{}:
+      S.MV.vee(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, x, y)
+    case G.OLc{}:
+      S.MV.lc(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, x, y)
+    case G.ORc{}:
+      S.MV.rc(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, x, y)
+    case G.ODot{}:
+      S.MV.dot(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, x, y)
+    case G.OScalar{}:
+      S.MV.scalar_product(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, x, y)
+    case G.OAdd{}:
+      S.MV.add(~Nat, ~Zq.add, d, x, y)
+    case G.OSub{}:
+      S.MV.add(~Nat, ~Zq.add, d, x, S.MV.neg(~Nat, ~Zq.neg, d, y))
+
+def Zq.sw(+d: Nat, +sig: S.Sig(d), +v: S.MV(Nat, d), x: S.MV(Nat, d)) -> S.MV(Nat, d):
+  S.MV.gp(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig,
+    S.MV.gp(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, v, x),
+    S.MV.reverse(~Nat, ~Zq.neg, d, v))
+
+# x + k y
+def Zq.axpy(+d: Nat, +sig: S.Sig(d), +k: Nat, x: S.MV(Nat, d), y: S.MV(Nat, d)) -> S.MV(Nat, d):
+  S.MV.add(~Nat, ~Zq.add, d, x, S.MV.gp(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, S.MV.blade(Nat, d, Nil{}, k), y))
+
+# the sign at one point: 0 for +|m|², 1 for -|m|², 2 for neither or when
+# m ~m is not a scalar there
+def Zq.sign.go(scal: Bool, plus: Bool, minus: Bool) -> Nat:
   match scal:
     case False{}:
-      None{}
+      2n
     case True{}:
-      +lt = Eq.run(d, sig, o, G.Sw.tm(d, sig, mt, at), G.Sw.tm(d, sig, mt, bt))
-      +rtr = G.Sw.tm(d, sig, mt, Eq.run(d, sig, o, at, bt))
-      Eq.nsign.p(Eq.tzh(hv, d, Eq.sub(d, lt, Eq.scale(d, sig, nrmt, rtr))), hv, d, sig, nrmt, lt, rtr, zs)
+      Bool.pick(Nat, plus, 0n, Bool.pick(Nat, minus, 1n, 2n))
+
+def Zq.sign(+d: Nat, +sig: S.Sig(d), +o: G.Op, +mt: S.MV(Nat, d), +at: S.MV(Nat, d), +bt: S.MV(Nat, d)) -> Nat:
+  +pt = S.MV.gp(~Nat, ~Zq.add, ~Zq.mul, ~Zq.neg, d, sig, mt, S.MV.reverse(~Nat, ~Zq.neg, d, mt))
+  +nrm = S.MV.at(~Nat, ~0n, ~Zq.neg, d, Nil{}, False{}, pt)
+  +lt = Zq.run(d, sig, o, Zq.sw(d, sig, mt, at), Zq.sw(d, sig, mt, bt))
+  +rt = Zq.sw(d, sig, mt, Zq.run(d, sig, o, at, bt))
+  Zq.sign.go(Zq.zero(d, Zq.axpy(d, sig, Zq.neg(nrm), pt, S.MV.blade(Nat, d, Nil{}, 1n))),
+    Zq.zero(d, Zq.axpy(d, sig, Zq.neg(nrm), lt, rt)), Zq.zero(d, Zq.axpy(d, sig, nrm, lt, rt)))
+
+# the sign at the point drawn from seed s
+def Zq.at(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, +sig: S.Sig(d), +o: G.Op, +vb: List<&2, G.Bl>, +ab: List<&2, G.Bl>, +bb: List<&2, G.Bl>, +s: Nat) -> Nat:
+  +nm = List.length(&2, G.Bl, vb)
+  +na = List.length(&2, G.Bl, ab)
+  +xs = Zq.draw(Nat.add(Nat.add(nm, na), List.length(&2, G.Bl, bb)), s)
+  Zq.sign(d, sig, o, Zq.symV(nb, ng, d, vb, xs), Zq.symV(nb, ng, d, ab, List.drop(&2, Nat, xs, nm)), Zq.symV(nb, ng, d, bb, List.drop(&2, Nat, xs, Nat.add(nm, na))))
+
+def Zq.sg(+s1: Nat, s2: Nat, +zs: List<&2, String>) -> Maybe<&2, Sg>:
+  Bool.pick(Maybe<&2, Sg>, Bool.and(Nat.is_eq(s1, s2), Nat.is_lt(s1, 2n)), Some{Sg{Nat.is_eq(s1, 1n), zs}}, None{})
 
 # a law in a null basis: m ~m must be a scalar (no condition), and the two
-# sides equal up to +|m|² or -|m|² on every blade
+# sides equal up to +|m|² or -|m|² on every blade, both at two points
 def Eq.lawn(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, +sig: S.Sig(d), +ks: List<&2, G.Kd>, lw: Law) -> Maybe<&2, String>:
   match lw:
     case Law{+v, +o, +a, +b, +c, +p}:
@@ -427,15 +522,8 @@ def Eq.lawn(+nb: G.Nb, +ng: List<&2, Nat>, +d: Nat, +sig: S.Sig(d), +ks: List<&2
       +bb = G.Kd.bls(G.Kd.find(ks, b))
       +cb = G.Kd.bls(G.Kd.find(ks, c))
       +pb = G.Kd.bls(G.Kd.find(ks, p))
-      +nm = List.length(&2, G.Bl, vb)
-      +na = List.length(&2, G.Bl, ab)
-      +hv = Nat.add(Nat.add(nm, na), List.length(&2, G.Bl, bb))
-      +h = {N.TVar{hv} : N.Tm}
-      +mt = G.Nl.symT(nb, ng, d, vb, 0n, h)
-      +pt = S.MV.gp(~N.Tm, ~N.Tm.add, ~N.Tm.mul, ~N.Tm.neg, d, sig, mt, S.MV.reverse(~N.Tm, ~N.Tm.neg, d, mt))
-      +nrmt = S.MV.at(~N.Tm, ~N.TZero{}, ~N.Tm.neg, d, Nil{}, False{}, pt)
       Eq.law.fin(v, o, a, b, c, p, vb, ab, bb, Bl.name(Eq.scalar(pb)), False{}, "?", "~T, ~zero, ~add, ~mul, ~neg",
-        Eq.lawn.sides(Eq.tzh(hv, d, Eq.sub(d, pt, S.MV.blade(N.Tm, d, Nil{}, nrmt))), d, sig, o, hv, nrmt, mt, G.Nl.symT(nb, ng, d, ab, nm, h), G.Nl.symT(nb, ng, d, bb, Nat.add(nm, na), h), Eq.zeros(cb)))
+        Zq.sg(Zq.at(nb, ng, d, sig, o, vb, ab, bb, 20261006n), Zq.at(nb, ng, d, sig, o, vb, ab, bb, 9137n), Eq.zeros(cb)))
 
 def Eq.laws.put(r: Maybe<&2, String>, +name: String, rest: List<&2, String>) -> List<&2, String>:
   match r:

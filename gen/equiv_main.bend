@@ -2,8 +2,8 @@
 # writes <out-dir>/<algebra>/equiv_all.bend (gen/equiv.bend,
 # Eq.module.all). tools/regen.sh builds it natively and runs it with an
 # unlimited stack: its polynomials nest deeper than the interpreter's
-# stack allows. CSTA has no equiv_all.bend: its vector laws ran 2.5 hours
-# without finishing (ADR-013).
+# stack allows. It takes seconds: a null-basis law's sign is decided by
+# evaluation modulo a prime (gen/equiv.bend, Zq).
 
 import Base
 import ./gen.bend as G
@@ -78,3 +78,4 @@ def main() -> IO(Unit):
     Gen.put(out ++ "/sta/equiv_all.bend", EQ.Eq.module.all(Sp.STA(), ["Even", "Odd"]))
     Gen.put(out ++ "/stap/equiv_all.bend", EQ.Eq.module.all(Sp.STAP(), ["Vector"]))
     Gen.put(out ++ "/cga3d/equiv_all.bend", EQ.Eq.module.all(Sp.CGA3D(), ["Vector"]))
+    Gen.put(out ++ "/csta/equiv_all.bend", EQ.Eq.module.all(Sp.CSTA(), ["Vector"]))

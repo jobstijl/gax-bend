@@ -27,8 +27,8 @@ decisions in [docs/design.md](docs/design.md).
 
 ```sh
 . tools/env.sh          # bend 2.0.35 and the project's clang on PATH
-tools/gate.sh           # proofs, generated kernels and their error laws, example tests, negative controls (CGA3D's proofs skipped; about 8 min)
-tools/gate.sh --full    # also CGA3D's kernel proofs (about an hour)
+tools/gate.sh           # proofs, generated kernels and their error laws, example tests, negative controls (CGA3D's proofs skipped; about 10 min)
+tools/gate.sh --full    # also CGA3D's kernel proofs and every equivariance file (about 1.5 hours)
 tools/gate.sh --csta    # also CSTA's (1.6 hours)
 tools/regen.sh          # regenerate algebras/ from gen/specs.bend (--check: compare)
 bend tests/spec_pga3d.bend
